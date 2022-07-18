@@ -6,6 +6,7 @@ import store from "./stores";
 import { Provider } from "react-redux";
 import { PersistGate } from "redux-persist/integration/react";
 import { persistStore } from "redux-persist";
+import { SessionPage } from './pages/SessionPage';
 
 function App() {
   return (
@@ -16,6 +17,7 @@ function App() {
             <Routes>
               <Route path="/" element={<TestPage />} />
               <Route path="/main" element={<MainPage />} />
+              <Route path="/session" element={<SessionPage />} />
             </Routes>
           </BrowserRouter>
         </PersistGate>
