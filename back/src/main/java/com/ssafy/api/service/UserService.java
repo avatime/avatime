@@ -9,4 +9,6 @@ import com.ssafy.db.entity.User;
 public interface UserService {
 	User createUser(UserRegisterPostReq userRegisterInfo);
 	User getUserByUserId(String userId);
+	public String getKaKaoAccessToken(String code);
+	public void createKakaoUser(String token) throws Exception;
 }
