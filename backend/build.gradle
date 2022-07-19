@@ -184,6 +184,9 @@ dependencies {
     annotationProcessor("org.projectlombok:lombok:1.18.20")
 
     testCompile('org.springframework.boot:spring-boot-starter-test')
+    
+    // 스프링 시큐리티 관련 의존성 추가
+    compile('org.springframework.boot:spring-boot-starter-oauth2-client')
 }
 
 test {
