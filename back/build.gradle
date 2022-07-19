@@ -21,6 +21,7 @@ buildscript{
         classpath "gradle.plugin.com.ewerk.gradle.plugins:querydsl-plugin:${querydslPluginVer}"
         //[끝] 
         classpath "com.github.node-gradle:gradle-node-plugin:3.1.0"
+        
     }
 }
 
@@ -155,6 +156,9 @@ dependencies {
     //Kurento (미디어서버) 관련 의존성 추가
     implementation('org.kurento:kurento-client:6.16.0')
     implementation('org.kurento:kurento-utils-js:6.15.0')
+    
+    //Json
+    implementation('org.json:json:20210307')
 
 
 implementation'com.google.code.gson:gson:2.8.7'
