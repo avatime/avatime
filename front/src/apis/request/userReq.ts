@@ -1,3 +1,3 @@
-export interface UserPostReq {
-    id: string;
+export interface UserReq {
+  id: string;
 }
