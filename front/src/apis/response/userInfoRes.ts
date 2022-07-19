@@ -1,6 +1,6 @@
 export interface UserInfoRes {
   name: string;
-  gender: number;
-  description: string;
-  profile: number;
+  gender: boolean;
+  desc: string;
+  profile_id: number;
 }
