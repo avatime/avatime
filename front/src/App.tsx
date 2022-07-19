@@ -7,6 +7,7 @@ import { Provider } from "react-redux";
 import { PersistGate } from "redux-persist/integration/react";
 import { persistStore } from "redux-persist";
 import { SessionPage } from './pages/SessionPage';
+import "./style.css";
 
 function App() {
   return (

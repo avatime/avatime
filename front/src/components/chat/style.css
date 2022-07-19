@@ -1,0 +1,36 @@
+.chat__bubble {
+  position: relative;
+  background: #00aabb;
+  border-radius: 0.4em;
+  padding: 10px;
+}
+
+.chat__bubble:after {
+  content: "";
+  position: absolute;
+  left: 0;
+  top: 50%;
+  width: 0;
+  height: 0;
+  border: 5px solid transparent;
+  border-right-color: #00aabb;
+  border-left: 0;
+  margin-top: -5px;
+  margin-left: -5px;
+}
+.chat__footer {
+  background-color: darkgray;
+}
+
+.chat__input {
+  background: white;
+}
+
+.chat__input__textarea {
+  overflow: hidden;
+}
+
+.chat__body {
+  background-color: oldlace;
+  overflow: auto;
+}
