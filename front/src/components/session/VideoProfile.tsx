@@ -9,10 +9,10 @@ interface IProps {
 
 export const VideoProfile: FC<IProps> = ({sessionUser}) => {
   const styleGrid = {
-    "background-color": "red",
+    backgroundColor: "red",
     position: "relative",
     width: "100%",
-    "padding-top": "56.25%",
+    paddingTop: "56.25%",
   };
 
   return (
