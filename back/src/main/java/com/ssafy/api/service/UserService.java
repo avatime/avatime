@@ -11,4 +11,5 @@ public interface UserService {
 	User getUserByUserId(String userId);
 	public String getKaKaoAccessToken(String code);
 	public void createKakaoUser(String token) throws Exception;
+
 }

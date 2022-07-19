@@ -2,6 +2,7 @@ package com.ssafy.db.entity;
 
 import java.sql.Timestamp;
 import java.time.LocalDateTime;
+import java.util.Date;
 
 import javax.persistence.Column;
 import javax.persistence.Entity;
@@ -32,7 +33,8 @@ public class User extends BaseEntity{
     @Column(nullable = false, unique = true, length = 20)
     private String name;
     
-    private String desc;
+    @Column(columnDefinition = "TEXT")
+    private String description;
 	
     @Column(nullable = false, columnDefinition = "INT UNSIGNED")
     private Long profile_id;
@@ -45,10 +47,16 @@ public class User extends BaseEntity{
     
     @Temporal(TemporalType.TIMESTAMP)
     @Column(updatable = false, columnDefinition = "TIMESTAMP DEFAULT CURRENT_TIMESTAMP")
-    private Timestamp created_time;
+    private Date created_time;
     
     @PrePersist
     protected void onCreate() {
     	created_time = Timestamp.valueOf(LocalDateTime.now());
     }
+    
+    @JsonIgnore
+    @JsonProperty(access = JsonProperty.Access.WRITE_ONLY)
+    String password;
+    
+    String userId;
 }

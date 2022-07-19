@@ -2,6 +2,8 @@ package com.ssafy.db.entity;
 
 import javax.persistence.Column;
 import javax.persistence.Entity;
+import javax.persistence.JoinColumn;
+import javax.persistence.ManyToOne;
 
 import org.hibernate.annotations.DynamicInsert;
 import org.hibernate.annotations.DynamicUpdate;
@@ -18,8 +20,9 @@ import lombok.Setter;
 @Setter
 public class MeetingRoomUserRelation  extends BaseEntity {
 
-    @Column(updatable = false, nullable = false, columnDefinition = "INT UNSIGNED")
-	private Long session_id;
+	@ManyToOne
+	@JoinColumn(name = "session_id", insertable = false, updatable=false)
+	private MeetingRoom meetingRoom;
 	
     @Column(updatable = false, nullable = false, columnDefinition = "INT UNSIGNED")
 	private Long user_id;
