@@ -1,33 +1,111 @@
-import { Button, Card, CardContent, Stack, TextField, Typography } from "@mui/material";
-import { grey } from "@mui/material/colors";
-import React, { FC } from "react";
+import {
+  AccordionSummary,
+  Button,
+  CardContent,
+  List,
+  ListItem,
+  Stack,
+  TextField,
+  Typography,
+} from "@mui/material";
+import React, { FC, Suspense } from "react";
+import { ErrorBoundary } from "react-error-boundary";
+import { useQuery } from "react-query";
+import chatApi from "../../apis/chatApi";
 import { ChatRes } from "../../apis/response/chatRes";
 import { ChatBlock } from "./ChatBlock";
 import "./style.css";
+import ExpandMoreIcon from "@mui/icons-material/ExpandMore";
+import MuiAccordion, { AccordionProps } from "@mui/material/Accordion";
+import { styled } from "@mui/material/styles";
+import useScrollToBottomRef from '../../hooks/useScrollToBottomRef';
 
 type ChatType = "all" | "gender";
-type Size = "full" | "half";
 
 interface IProps {
-  openable: boolean;
-  size: Size;
   chatType: ChatType;
-  chatList: Array<ChatRes>;
+  isOpened: boolean;
+  onClickHeader: () => void | null;
+  maxHeight: string;
 }
 
-export const ChatRoom: FC<IProps> = ({ openable, size, chatType, chatList }) => {
-  const chatBodyHeight = size === "full" ? "90vh" : "30vh";
+export const ChatRoom: FC<IProps> = ({ chatType, isOpened, onClickHeader, maxHeight }) => {
   const title = chatType === "all" ? "전체 채팅" : "성별 채팅";
+
+  const { data } = useQuery<any, Array<ChatRes>>("session/allChat", () => chatApi.receive(), {
+    suspense: true,
+  });
+
+  const {chatBodyRef} = useScrollToBottomRef();
+
   return (
-    <Card>
-      <CardContent className="chat__header">
-        <Typography variant="h6">{title}</Typography>
-      </CardContent>
-      <CardContent className="chat__body" sx={{ height: chatBodyHeight }}>
+    <Suspense fallback={<h1>로딩중</h1>}>
+      <ErrorBoundary fallback={<h1>에러에러</h1>}>
+        <ChatRoomPresenter
+          title={title}
+          chatList={data}
+          isOpened={isOpened}
+          onClickHeader={onClickHeader}
+          maxHeight={maxHeight}
+          chatBodyRef={chatBodyRef}
+        />
+      </ErrorBoundary>
+    </Suspense>
+  );
+};
+
+interface IPresenterProps {
+  title: string;
+  chatList: Array<ChatRes>;
+  isOpened: boolean;
+  onClickHeader: () => void | null;
+  maxHeight: string;
+  chatBodyRef: any;
+}
+
+const Accordion = styled((props: AccordionProps) => (
+  <MuiAccordion disableGutters elevation={0} square {...props} />
+))(({ theme }) => ({
+  border: `1px solid ${theme.palette.divider}`,
+  "&:not(:last-child)": {
+    borderBottom: 0,
+  },
+  "&:before": {
+    display: "none",
+  },
+}));
+
+const ChatRoomPresenter: FC<IPresenterProps> = ({
+  title,
+  chatList,
+  isOpened,
+  onClickHeader,
+  maxHeight,
+  chatBodyRef
+}) => {
+  return (
+    <Accordion
+      className="chat"
+      expanded={isOpened}
+      onChange={onClickHeader}
+      sx={{
+        flexGrow: isOpened ? 1 : 0,
+        display: "flex",
+        flexDirection: "column",
+      }}
+    >
+      <AccordionSummary expandIcon={<ExpandMoreIcon />}>
+        <Typography align="inherit">{title}</Typography>
+      </AccordionSummary>
+
+      <List className="chat__body" ref={chatBodyRef} sx={{ maxHeight: maxHeight }}>
         {chatList.map((it, idx) => (
-          <ChatBlock key={idx} chatRes={it} />
+          <ListItem key={idx}>
+            <ChatBlock chatRes={it} />
+          </ListItem>
         ))}
-      </CardContent>
+      </List>
+
       <CardContent className="chat__footer">
         <Stack direction="row" spacing={1}>
           <TextField
@@ -41,6 +119,6 @@ export const ChatRoom: FC<IProps> = ({ openable, size, chatType, chatList }) => 
           <Button variant="contained">전송</Button>
         </Stack>
       </CardContent>
-    </Card>
+    </Accordion>
   );
 };

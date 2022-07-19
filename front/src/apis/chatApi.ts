@@ -57,6 +57,42 @@ const chatApi: ChatApi = {
             message: "하이~",
             time: "2022-07-18 17:54",
           },
+          {
+            profilePath:
+              "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcSDGZ91smVwdKqm1k0i7Um92FpitAyCY-MvOA&usqp=CAU",
+            name: "나",
+            message: "하이~",
+            time: "2022-07-18 17:54",
+          },
+          {
+            profilePath:
+              "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcSDGZ91smVwdKqm1k0i7Um92FpitAyCY-MvOA&usqp=CAU",
+            name: "나",
+            message: "하이~",
+            time: "2022-07-18 17:54",
+          },
+          {
+            profilePath:
+              "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcSDGZ91smVwdKqm1k0i7Um92FpitAyCY-MvOA&usqp=CAU",
+            name: "나",
+            message: "하이~",
+            time: "2022-07-18 17:54",
+          },
+          {
+            profilePath:
+              "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcSDGZ91smVwdKqm1k0i7Um92FpitAyCY-MvOA&usqp=CAU",
+            name: "나",
+            message: "하이~",
+            time: "2022-07-18 17:54",
+          },
+          {
+            profilePath:
+              "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcSDGZ91smVwdKqm1k0i7Um92FpitAyCY-MvOA&usqp=CAU",
+            name: "나",
+            message: "하이~",
+            time: "2022-07-18 17:54",
+          },
+          
         ]);
       }, 500);
     });

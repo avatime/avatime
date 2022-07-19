@@ -18,6 +18,7 @@
   margin-top: -5px;
   margin-left: -5px;
 }
+
 .chat__footer {
   background-color: darkgray;
 }
@@ -33,4 +34,29 @@
 .chat__body {
   background-color: oldlace;
   overflow: auto;
+  flex-grow: 1;
+}
+
+.MuiCollapse-root {
+  display: flex;
+  flex-direction: column;
+  flex-grow: 1;
+}
+
+.MuiCollapse-wrapper {
+  display: flex;
+  flex-direction: column;
+  flex-grow: 1;
+}
+
+.MuiCollapse-wrapperInner {
+  display: flex;
+  flex-direction: column;
+  flex-grow: 1;
+}
+
+.MuiAccordion-region {
+  display: flex;
+  flex-direction: column;
+  flex-grow: 1;
 }
