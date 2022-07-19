@@ -31,12 +31,8 @@ public class SsafyUserDetails implements UserDetails {
     		return this.user;
     }
 	@Override
-	public String getPassword() {
-		return this.user.getPassword();
-	}
-	@Override
 	public String getUsername() {
-		return this.user.getUserId();
+		return this.user.getSocial_id();
 	}
 	@Override
 	public boolean isAccountNonExpired() {
@@ -60,5 +56,11 @@ public class SsafyUserDetails implements UserDetails {
 	}
 	public void setAuthorities(List<GrantedAuthority> roles) {
 		this.roles = roles;
+	}
+
+	@Override
+	public String getPassword() {
+		// TODO Auto-generated method stub
+		return null;
 	}
 }

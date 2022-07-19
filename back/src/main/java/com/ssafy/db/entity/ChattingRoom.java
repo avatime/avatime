@@ -12,38 +12,25 @@ import javax.persistence.TemporalType;
 import org.hibernate.annotations.DynamicInsert;
 import org.hibernate.annotations.DynamicUpdate;
 
-import com.fasterxml.jackson.annotation.JsonIgnore;
-import com.fasterxml.jackson.annotation.JsonProperty;
-
 import lombok.Getter;
 import lombok.Setter;
 
 /**
- * 유저 모델 정의.
+ * 채팅방 모델 정의.
  */
 @DynamicInsert @DynamicUpdate
 @Entity
 @Getter
 @Setter
-public class User extends BaseEntity{
-	@Column(updatable = false, nullable = false)
-    private boolean gender;
+public class ChattingRoom extends BaseEntity {
+
+    @Column(updatable = false, nullable = false, columnDefinition = "INT UNSIGNED")
+	private Long using_room_id;
 	
-    @Column(nullable = false, unique = true, length = 20)
-    private String name;
-    
-    private String desc;
+    @Column(updatable = false, nullable = false, columnDefinition = "TINYINT(1)")
+	private String type;
 	
-    @Column(nullable = false, columnDefinition = "INT UNSIGNED")
-    private Long profile_id;
-	
-    @Column(updatable = false, nullable = false)
-    private String social_type;
-	
-    @Column(updatable = false, nullable = false)
-    private String social_id;
-    
-    @Temporal(TemporalType.TIMESTAMP)
+	@Temporal(TemporalType.TIMESTAMP)
     @Column(updatable = false, columnDefinition = "TIMESTAMP DEFAULT CURRENT_TIMESTAMP")
     private Timestamp created_time;
     

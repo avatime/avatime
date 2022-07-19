@@ -9,41 +9,37 @@ import javax.persistence.PrePersist;
 import javax.persistence.Temporal;
 import javax.persistence.TemporalType;
 
+import org.hibernate.annotations.ColumnDefault;
 import org.hibernate.annotations.DynamicInsert;
 import org.hibernate.annotations.DynamicUpdate;
-
-import com.fasterxml.jackson.annotation.JsonIgnore;
-import com.fasterxml.jackson.annotation.JsonProperty;
 
 import lombok.Getter;
 import lombok.Setter;
 
 /**
- * 유저 모델 정의.
+ * 미팅 대기 방 모델 정의.
  */
 @DynamicInsert @DynamicUpdate
 @Entity
 @Getter
 @Setter
-public class User extends BaseEntity{
-	@Column(updatable = false, nullable = false)
-    private boolean gender;
+public class WaitingRoom  extends BaseEntity {
+
+	@Column(nullable = false, length = 30)
+	private String name;
 	
-    @Column(nullable = false, unique = true, length = 20)
-    private String name;
-    
-    private String desc;
+	@Column(nullable = false)
+	private int head_count;
 	
-    @Column(nullable = false, columnDefinition = "INT UNSIGNED")
-    private Long profile_id;
+	@Column(nullable = false, columnDefinition = "TINYINT DEFAULT 0")
+	private boolean status;
 	
-    @Column(updatable = false, nullable = false)
-    private String social_type;
+	private int age;
 	
-    @Column(updatable = false, nullable = false)
-    private String social_id;
-    
-    @Temporal(TemporalType.TIMESTAMP)
+	@Column(nullable = false, columnDefinition = "INT UNSIGNED")
+	private Long sido_id;
+	
+	@Temporal(TemporalType.TIMESTAMP)
     @Column(updatable = false, columnDefinition = "TIMESTAMP DEFAULT CURRENT_TIMESTAMP")
     private Timestamp created_time;
     
