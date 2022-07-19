@@ -3,7 +3,6 @@ import {
   Button,
   CardContent,
   List,
-  ListItem,
   Stack,
   TextField,
   Typography,
@@ -18,7 +17,7 @@ import "./style.css";
 import ExpandMoreIcon from "@mui/icons-material/ExpandMore";
 import MuiAccordion, { AccordionProps } from "@mui/material/Accordion";
 import { styled } from "@mui/material/styles";
-import useScrollToBottomRef from '../../hooks/useScrollToBottomRef';
+import useScrollToBottomRef from "../../hooks/useScrollToBottomRef";
 
 type ChatType = "all" | "gender";
 
@@ -36,7 +35,7 @@ export const ChatRoom: FC<IProps> = ({ chatType, isOpened, onClickHeader, maxHei
     suspense: true,
   });
 
-  const {chatBodyRef} = useScrollToBottomRef();
+  const { chatBodyRef } = useScrollToBottomRef();
 
   return (
     <Suspense fallback={<h1>로딩중</h1>}>
@@ -81,7 +80,7 @@ const ChatRoomPresenter: FC<IPresenterProps> = ({
   isOpened,
   onClickHeader,
   maxHeight,
-  chatBodyRef
+  chatBodyRef,
 }) => {
   return (
     <Accordion
@@ -100,9 +99,13 @@ const ChatRoomPresenter: FC<IPresenterProps> = ({
 
       <List className="chat__body" ref={chatBodyRef} sx={{ maxHeight: maxHeight }}>
         {chatList.map((it, idx) => (
-          <ListItem key={idx}>
-            <ChatBlock chatRes={it} />
-          </ListItem>
+          <ChatBlock
+            key={idx}
+            chatRes={it}
+            order={it.name === "나" ? "right" : "left"}
+            showName={idx === 0 || chatList[idx - 1].name !== it.name  || chatList[idx - 1].time !== it.time}
+            showTime={idx === chatList.length - 1 || chatList[idx + 1].name !== it.name || chatList[idx + 1].time !== it.time}
+          />
         ))}
       </List>
 
