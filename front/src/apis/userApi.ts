@@ -3,7 +3,7 @@ import { UserInfoReq } from "./request/userInfoReq";
 import { UserInfoRes } from "./response/userInfoRes";
 import { ProfileRes } from "./response/profileRes";
 import { UserModifyReq } from "./request/userModifyReq";
-import { RegisterReq } from "./request/RegisterReq";
+import { RegisterReq } from "./request/registerReq";
 import { LoginKakaoReq } from "./request/loginKakaoReq";
 
 interface ProfileApi {
@@ -64,7 +64,7 @@ const userInfoApi: UserInfoApi = {
         resolve({
           name: "홍길동",
           gender: true,
-          desc: "자기소개 예시입니다.",
+          description: "자기소개 예시입니다.",
           profile_id: 5,
         });
       }, 500);

@@ -3,6 +3,6 @@ export interface RegisterReq {
     gender : boolean;
     name : string;
     profile_id : number;
-    desc : string;
+    description : string;
     social_type : string;
 }
