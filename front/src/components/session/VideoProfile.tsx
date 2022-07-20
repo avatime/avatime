@@ -12,13 +12,13 @@ export const VideoProfile: FC<IProps> = ({sessionUser}) => {
     backgroundColor: "red",
     position: "relative",
     width: "100%",
-    paddingTop: "56.25%",
+    height: "100%"
   };
 
   return (
     <Card sx={styleGrid}>
       <CardMedia>
-        <Box>{sessionUser.name}</Box>
+        <Box position="absolute" bottom={0}>{sessionUser.name}</Box>
       </CardMedia>
     </Card>
   );
