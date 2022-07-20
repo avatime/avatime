@@ -1,0 +1,83 @@
+.chat__bubble__left {
+  position: relative;
+  background: #00aabb;
+  border-radius: 0.4em;
+  padding: 10px;
+}
+
+.chat__bubble__arrow__left:after {
+  content: "";
+  position: absolute;
+  left: 0;
+  top: 50%;
+  width: 0;
+  height: 0;
+  border: 5px solid transparent;
+  border-right-color: #00aabb;
+  border-left: 0;
+  margin-top: -5px;
+  margin-left: -5px;
+}
+
+.chat__bubble__right {
+  position: relative;
+  background: darkgoldenrod;
+  border-radius: 0.4em;
+  padding: 10px;
+}
+
+.chat__bubble__arrow__right:after {
+  content: '';
+	position: absolute;
+	right: 0;
+	top: 50%;
+	width: 0;
+	height: 0;
+	border: 5px solid transparent;
+	border-left-color: darkgoldenrod;
+	border-right: 0;
+	margin-top: -5px;
+	margin-right: -5px;
+}
+
+.chat__footer {
+  background-color: darkgray;
+}
+
+.chat__input {
+  background: white;
+}
+
+.chat__input__textarea {
+  overflow: hidden;
+}
+
+.chat__body {
+  background-color: oldlace;
+  overflow: auto;
+  flex-grow: 1;
+}
+
+.MuiCollapse-root {
+  display: flex;
+  flex-direction: column;
+  flex-grow: 1;
+}
+
+.MuiCollapse-wrapper {
+  display: flex;
+  flex-direction: column;
+  flex-grow: 1;
+}
+
+.MuiCollapse-wrapperInner {
+  display: flex;
+  flex-direction: column;
+  flex-grow: 1;
+}
+
+.MuiAccordion-region {
+  display: flex;
+  flex-direction: column;
+  flex-grow: 1;
+}
