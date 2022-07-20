@@ -5,6 +5,7 @@ import { ProfileRes } from "./response/profileRes";
 import { UserModifyReq } from "./request/userModifyReq";
 import { RegisterReq } from "./request/registerReq";
 import { LoginKakaoReq } from "./request/loginKakaoReq";
+import { loginInfoKakaoRes } from "./response/loginInfoKakaoRes";
 
 interface ProfileApi {
   receive: () => Promise<Array<ProfileRes>>;
@@ -63,7 +64,7 @@ const userInfoApi: UserInfoApi = {
       setTimeout(() => {
         resolve({
           name: "홍길동",
-          gender: true,
+          gender: "M",
           description: "자기소개 예시입니다.",
           profile_id: 5,
         });
@@ -73,14 +74,23 @@ const userInfoApi: UserInfoApi = {
 };
 
 interface LoginKakaoApi {
-  loginkakao(loginKakaoReq: LoginKakaoReq): Promise<void>;
+  loginkakao(): Promise<loginInfoKakaoRes>;
 }
 
 const loginKakaoApi: LoginKakaoApi = {
-  loginkakao: function (loginKakaoReq: LoginKakaoReq): Promise<void> {
+  loginkakao: function (): Promise<loginInfoKakaoRes> {
+    const REST_API_KEY: string = "6300198dbbef93aac1c88f68eeb4525a";
+    const REDIRECT_URI: string = "http://localhost:3000/api/v1/auth/kakao";
+    // /oauth/authorize?client_id=${REST_API_KEY}&redirect_uri=${REDIRECT_URI}&response_type=code
+
     return new Promise((resolve) => {
       setTimeout(() => {
-        resolve();
+        resolve({
+          social_id: "ssafy@ssafy.com",
+          gender: "F",
+          social_type: "kakao",
+          token: "123456789",
+        });
         console.log("kakao login api 호출");
       }, 1000);
     });
