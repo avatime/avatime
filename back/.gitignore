@@ -37,3 +37,6 @@ out/
 
 ### VS Code ###
 .vscode/
+
+## api_key ##
+application-oauth.properties
