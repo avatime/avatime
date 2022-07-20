@@ -1,13 +1,28 @@
 package com.ssafy.api.controller;
 
+import java.math.BigInteger;
+import java.security.SecureRandom;
+
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpEntity;
+import org.springframework.http.HttpHeaders;
+import org.springframework.http.HttpMethod;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.crypto.password.PasswordEncoder;
+import org.springframework.util.LinkedMultiValueMap;
+import org.springframework.util.MultiValueMap;
+import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.client.RestTemplate;
+import org.yaml.snakeyaml.util.UriEncoder;
 
+import com.google.gson.JsonElement;
+import com.google.gson.JsonObject;
+import com.google.gson.JsonParser;
 import com.ssafy.api.request.UserLoginPostReq;
 import com.ssafy.api.response.UserLoginPostRes;
 import com.ssafy.api.service.UserService;
@@ -56,4 +71,73 @@ public class AuthController {
 		// 유효하지 않는 패스워드인 경우, 로그인 실패로 응답.
 		return ResponseEntity.status(401).body(UserLoginPostRes.of(401, "Invalid Password", null));
 	}
+	
+	
+//	@GetMapping("/naver")
+	public String authNaver(@RequestParam String code) {
+		System.out.println(code);
+		return "code : " + code;
+	}
+	
+	
+	@GetMapping("/naver")
+	public String authNaver(@RequestParam String code, @RequestParam String state) {
+		String accessToken = extractAccessToken(requestAccessToken(generateAuthCodeRequest(code, state)).getBody());
+		System.out.println(accessToken);
+		return requestProfile(generateProfileRequest(accessToken)).getBody();
+	}
+	
+	private ResponseEntity<String> requestProfile(HttpEntity request) {
+        RestTemplate restTemplate = new RestTemplate();
+        return restTemplate.exchange(
+                "https://openapi.naver.com/v1/nid/me",
+                HttpMethod.POST,
+                request,
+                String.class
+        );
+    }
+
+    private HttpEntity<MultiValueMap<String, String>> generateProfileRequest(String accessToken) {
+        HttpHeaders headers = new HttpHeaders();
+        headers.add("Authorization", "Bearer "+ accessToken);
+        headers.add("Content-type", "application/x-www-form-urlencoded;charset=utf-8");
+        return new HttpEntity<>(headers);
+    }
+	
+	
+	private String extractAccessToken(String accessTokenResponse) {
+		
+		JsonParser parser = new JsonParser();
+		JsonElement element = parser.parse(accessTokenResponse);
+		
+		return element.getAsJsonObject().get("access_token").getAsString();
+	}
+	
+	// AccessToken 가져오기
+	private ResponseEntity<String> requestAccessToken(HttpEntity request){
+		RestTemplate restTemplate = new RestTemplate();
+		return restTemplate.exchange(
+				"https://nid.naver.com/oauth2.0/token",
+				HttpMethod.POST,
+				request,
+				String.class
+				);
+	}
+	
+	private HttpEntity<MultiValueMap<String, String>> generateAuthCodeRequest(String code, String state) {
+		HttpHeaders headers = new HttpHeaders();
+		headers.add("Content-type","application/x-www-form-urlencoded;charset=utf-8");
+		
+		MultiValueMap<String, String> params = new LinkedMultiValueMap<>();
+		params.add("grant_type", "authorization_code");
+		params.add("client_id", "Q1na7hamigo03jqn4N3a");
+		params.add("client_secret", "BDdo388j64");
+		params.add("redirect_uri", "http://localhost:8080/api/v1/auth/naver");
+		params.add("code", code);
+		
+		return new HttpEntity<>(params, headers);
+	}
+	
+	
+	
 }
