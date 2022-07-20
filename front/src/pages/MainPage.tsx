@@ -5,7 +5,7 @@ interface IProps {}
 
 export const MainPage:FC<IProps> = (props) => {
   return (
-    <div>MainPage
+    <div>MainPage입니드ㅜㅇ
       <Button>asd</Button>
     </div>
    )

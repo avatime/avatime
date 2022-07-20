@@ -1,3 +1,3 @@
-export interface UserLoginPostReq {
-    id: string;
+export interface UserReq {
+  id: string;
 }

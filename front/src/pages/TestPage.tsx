@@ -8,6 +8,8 @@ export const TestPage: FC<IProps> = (props) => {
     <div>
       <Link to="/main">MainPage</Link><br/>
       <Link to="/session">SessionPage</Link><br/>
+      <Link to="/login">LoginPage</Link><br/>
+      <Link to="/mypage">MyPage</Link><br/>
     </div>
   );
 };
