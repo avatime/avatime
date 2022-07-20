@@ -6,6 +6,7 @@ import { SessionUserListRes } from "../apis/response/sessionRes";
 import { ChatRoom } from "../components/chat/ChatRoom";
 import { Box, Grid } from "@mui/material";
 import { ErrorBoundary } from "react-error-boundary";
+import useWindowSize from '../hooks/useWindowSize';
 
 interface IProps {}
 
@@ -19,8 +20,10 @@ export const SessionPage: FC<IProps> = (props) => {
   const [opened, setOpened] = useState<boolean[]>([true, true]);
   const cntOpened = opened.filter((it) => it).length;
 
-  const fullHeight = "77vh";
-  const halfHeight = "32vh";
+  const { windowSize } = useWindowSize();
+
+  const fullHeight = `${windowSize.height * 0.65}px`;
+  const halfHeight = `${windowSize.height * 0.25}px`;
 
   return (
     <Grid container spacing={3} sx={{ float: "left" }}>

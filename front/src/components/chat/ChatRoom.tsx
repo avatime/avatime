@@ -7,7 +7,7 @@ import {
   TextField,
   Typography,
 } from "@mui/material";
-import React, { FC, Suspense } from "react";
+import React, { FC, Suspense, useState } from "react";
 import { ErrorBoundary } from "react-error-boundary";
 import { useQuery } from "react-query";
 import chatApi from "../../apis/chatApi";
@@ -35,7 +35,31 @@ export const ChatRoom: FC<IProps> = ({ chatType, isOpened, onClickHeader, maxHei
     suspense: true,
   });
 
-  const { chatBodyRef } = useScrollToBottomRef();
+  const chatBodyRef = useScrollToBottomRef();
+  const chatInputRef = useScrollToBottomRef();
+
+  const [inputMessage, setInputMessage] = useState("");
+
+  const onKeyUp = (e: any) => {
+    if (e.key === "Enter" && !e.shiftKey) {
+        sendMessage();
+      }
+  };
+
+  const onKeyDown = (e: any) => {
+    if (e.key === "Enter" && !e.shiftKey) {
+      e.preventDefault();
+    }
+  };
+
+  const sendMessage = () => {
+    if (!inputMessage) {
+      return;
+    }
+
+    console.log("sendMessage!!");
+    setInputMessage("");
+  };
 
   return (
     <Suspense fallback={<h1>로딩중</h1>}>
@@ -47,6 +71,12 @@ export const ChatRoom: FC<IProps> = ({ chatType, isOpened, onClickHeader, maxHei
           onClickHeader={onClickHeader}
           maxHeight={maxHeight}
           chatBodyRef={chatBodyRef}
+          chatInputRef={chatInputRef}
+          inputMessage={inputMessage}
+          onChangeInputMessage={(s: string) => setInputMessage(s)}
+          onKeyUp={onKeyUp}
+          onKeyDown={onKeyDown}
+          sendMessage={sendMessage}
         />
       </ErrorBoundary>
     </Suspense>
@@ -60,6 +90,12 @@ interface IPresenterProps {
   onClickHeader: () => void | null;
   maxHeight: string;
   chatBodyRef: any;
+  chatInputRef: any;
+  inputMessage: string;
+  onChangeInputMessage: (s: string) => void;
+  onKeyUp: (e: any) => void;
+  onKeyDown: (e: any) => void;
+  sendMessage: () => void;
 }
 
 const Accordion = styled((props: AccordionProps) => (
@@ -81,6 +117,12 @@ const ChatRoomPresenter: FC<IPresenterProps> = ({
   onClickHeader,
   maxHeight,
   chatBodyRef,
+  chatInputRef,
+  inputMessage,
+  onChangeInputMessage,
+  onKeyUp,
+  onKeyDown,
+  sendMessage,
 }) => {
   return (
     <Accordion
@@ -103,8 +145,14 @@ const ChatRoomPresenter: FC<IPresenterProps> = ({
             key={idx}
             chatRes={it}
             order={it.name === "나" ? "right" : "left"}
-            showName={idx === 0 || chatList[idx - 1].name !== it.name  || chatList[idx - 1].time !== it.time}
-            showTime={idx === chatList.length - 1 || chatList[idx + 1].name !== it.name || chatList[idx + 1].time !== it.time}
+            showName={
+              idx === 0 || chatList[idx - 1].name !== it.name || chatList[idx - 1].time !== it.time
+            }
+            showTime={
+              idx === chatList.length - 1 ||
+              chatList[idx + 1].name !== it.name ||
+              chatList[idx + 1].time !== it.time
+            }
           />
         ))}
       </List>
@@ -112,14 +160,21 @@ const ChatRoomPresenter: FC<IPresenterProps> = ({
       <CardContent className="chat__footer">
         <Stack direction="row" spacing={1}>
           <TextField
+            ref={chatInputRef}
             InputProps={{ className: "chat__input" }}
             inputProps={{ className: "chat__input__textarea" }}
             multiline
             fullWidth={true}
             rows={2}
             placeholder="여기 채팅 메시지를 입력하세요."
+            value={inputMessage}
+            onChange={(e: any) => onChangeInputMessage(e.target.value)}
+            onKeyUp={onKeyUp}
+            onKeyDown={onKeyDown}
           />
-          <Button variant="contained">전송</Button>
+          <Button variant="contained" onClick={sendMessage} disabled={!inputMessage}>
+            전송
+          </Button>
         </Stack>
       </CardContent>
     </Accordion>

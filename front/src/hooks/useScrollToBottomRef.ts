@@ -1,16 +1,16 @@
 import { useEffect, useRef } from "react";
 
 const useScrollToBottomRef = () => {
-  const chatBodyRef = useRef<any>(null);
+  const ref = useRef<any>(null);
 
   useEffect(() => {
-    const domNode = chatBodyRef.current;
+    const domNode = ref.current;
     if (domNode) {
       domNode.scrollTop = domNode.scrollHeight;
     }
   });
 
-  return { chatBodyRef };
+  return ref;
 };
 
 export default useScrollToBottomRef;
