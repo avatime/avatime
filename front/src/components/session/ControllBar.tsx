@@ -1,6 +1,6 @@
 import React, { FC, useState } from "react";
 import { Box } from "@mui/system";
-import { Button, Card } from "@mui/material";
+import { Button, Card, CardContent, CardMedia, useTheme } from "@mui/material";
 import MicIcon from "@mui/icons-material/Mic";
 import MicOffIcon from "@mui/icons-material/MicOff";
 import VideocamIcon from "@mui/icons-material/Videocam";
@@ -8,6 +8,7 @@ import VideocamOffIcon from "@mui/icons-material/VideocamOff";
 import SettingsIcon from "@mui/icons-material/Settings";
 import ExitToAppIcon from "@mui/icons-material/ExitToApp";
 import PeopleIcon from "@mui/icons-material/People";
+import { Clock } from "./Clock";
 
 type Type = "master" | "normal";
 interface IProps {
@@ -66,9 +67,15 @@ export const ControllBarPresenter: FC<IPresenterProps> = ({
   onClickPick,
   onClickExit,
 }) => {
+  const theme = useTheme();
+
   return (
-    <Card>
-      <Box display="flex" flexDirection="row" justifyContent="space-between" p={2}>
+    <Card sx={{ display: "flex" }}>
+      <Box width="30%" display="flex" justifyContent="center" alignItems="center" bgcolor={theme.palette.primary.main}>
+        <Clock />
+      </Box>
+
+      <Box flex={1} display="flex" flexDirection="row" justifyContent="space-around" p={2}>
         <Button
           variant="contained"
           color={micStatus ? "primary" : "error"}
