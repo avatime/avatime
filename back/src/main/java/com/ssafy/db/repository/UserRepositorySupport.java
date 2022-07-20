@@ -25,7 +25,7 @@ public class UserRepositorySupport {
         return Optional.ofNullable(user);
     }
     
-    public Optional<User> findUserByUserName(String socialId, String socialType) {
+    public Optional<User> findUserByUserSocialId(String socialId, String socialType) {
         User user = jpaQueryFactory.select(qUser).from(qUser)
                 .where(qUser.name.eq(socialId).and(qUser.socialType.eq(socialType))).fetchOne();
         if(user == null) return Optional.empty();

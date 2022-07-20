@@ -63,16 +63,18 @@ public class AuthController {
 		String socialId = loginInfo.getSocialId();
 		String socialType = loginInfo.getSocialType();
 		
-		User user = userService.getUserByUserName(socialId, socialType);
+		User user = userService.getUserByUserSocialId(socialId, socialType);
 		
 		// 로그인 요청한 유저가 DB에 존재하는 유저인지 확인. (존재하는 회원인지 판단)
 		if(user != null) {
 			// 유저가 존재하면, 로그인 성공으로 응답.(액세스 토큰을 포함하여 응답값 전달)
-			// 성별 동의를 한 유저라면,
+			// 성별 동의를 하지 않은 유저라면,
 			if (user.getGender() == null) {
 				return ResponseEntity.status(409).body(BaseResponseBody.of(409, "성별 제공 항목에 동의하셔야합니다."));
 			}
-			return ResponseEntity.ok(UserLoginPostRes.of(200, "Success", JwtTokenUtil.getToken(user.getName())));
+			loginInfo.setToken(JwtTokenUtil.getToken(user.getName()));
+			return ResponseEntity.status(200).body(UserLoginPostRes.of(200, "Success", loginInfo.toString()));
+//			return ResponseEntity.ok(UserLoginPostRes.of(200, "Success", JwtTokenUtil.getToken(user.getName())));
 		}
 		// 존재하지 않는 유저라면 회원가입 진행
 		return ResponseEntity.status(204).body(UserLoginPostRes.of(204, "Unknown User", loginInfo.toString()));

@@ -16,5 +16,6 @@ public class UserLoginPostReq {
 	String socialId;
 	String socialType;
 	String gender;
+	String token;
 
 }

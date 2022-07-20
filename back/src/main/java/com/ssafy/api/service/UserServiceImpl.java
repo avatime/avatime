@@ -61,9 +61,9 @@ public class UserServiceImpl implements UserService {
 	}
 
 	@Override
-	public User getUserByUserName(String socialId, String socialType) {
+	public User getUserByUserSocialId(String socialId, String socialType) {
 		// 디비에 유저 정보 조회 (userId 를 통한 조회).
-		User user = userRepositorySupport.findUserByUserName(socialId, socialType).get();
+		User user = userRepositorySupport.findUserByUserSocialId(socialId, socialType).get();
 		return user;
 	}
 	
@@ -200,7 +200,8 @@ public class UserServiceImpl implements UserService {
 	
 	@Override
 	public String extractAccessToken(String accessTokenResponse) {
-		
+		System.out.println("@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@");
+		System.out.println(accessTokenResponse);
 		JsonParser parser = new JsonParser();
 		JsonElement element = parser.parse(accessTokenResponse);
 		
