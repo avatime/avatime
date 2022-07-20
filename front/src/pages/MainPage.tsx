@@ -77,10 +77,11 @@ const sidos = [
 interface IProps {}
 
 export const MainPage: FC<IProps> = (props) => {
+  const [value, setValue] = React.useState("");
   const [open, setOpen] = React.useState(false);
-  const [count, setCount] = React.useState("2:2");
-  const [age, setAge] = React.useState("20");
-  const [sido, setSido] = React.useState("seoul");
+  const [count, setCount] = React.useState("");
+  const [age, setAge] = React.useState("");
+  const [sido, setSido] = React.useState("");
   const handleOpen = () => setOpen(true);
   const handleClose = () => setOpen(false);
   const handleCountChange = (event: React.ChangeEvent<HTMLInputElement>) => {
@@ -92,6 +93,11 @@ export const MainPage: FC<IProps> = (props) => {
   const handleSidoChange = (event: React.ChangeEvent<HTMLInputElement>) => {
     setSido(event.target.value);
   };
+
+  const handleNameChange = (event: React.ChangeEvent<HTMLInputElement>) => {
+    setValue(event.target.value);
+  };
+
   return (
     <div>
       <Button onClick={handleOpen}>Open modal</Button>
@@ -119,12 +125,21 @@ export const MainPage: FC<IProps> = (props) => {
             >
               <div>
                 <TextField
+                  id="outlined-multiline-flexible"
+                  label="방 제목"
+                  multiline
+                  maxRows={4}
+                  value={value}
+                  onChange={handleNameChange}
+                />
+              </div>
+              <div>
+                <TextField
                   id="outlined-select-currency"
                   select
                   label="인원수"
                   value={count}
                   onChange={handleCountChange}
-                  helperText="Please select your currency"
                 >
                   {counts.map((option) => (
                     <MenuItem key={option.value} value={option.value}>
@@ -140,7 +155,6 @@ export const MainPage: FC<IProps> = (props) => {
                   label="연령대"
                   value={age}
                   onChange={handleAgeChange}
-                  helperText="Please select your currency"
                 >
                   {ages.map((option) => (
                     <MenuItem key={option.value} value={option.value}>
@@ -156,7 +170,6 @@ export const MainPage: FC<IProps> = (props) => {
                   label="지역"
                   value={sido}
                   onChange={handleSidoChange}
-                  helperText="Please select your currency"
                 >
                   {sidos.map((option) => (
                     <MenuItem key={option.value} value={option.value}>
@@ -165,6 +178,8 @@ export const MainPage: FC<IProps> = (props) => {
                   ))}
                 </TextField>
               </div>
+              <Button>취소</Button>
+              <Button onClick={handleClose}>확인</Button>
             </Box>
           </Typography>
         </Box>
