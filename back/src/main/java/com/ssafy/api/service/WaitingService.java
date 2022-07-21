@@ -2,8 +2,8 @@ package com.ssafy.api.service;
 
 import java.util.List;
 
-import com.ssafy.db.entity.Sido;
+import com.ssafy.db.entity.WaitingRoom;
 
 public interface WaitingService {
-	List<Sido> findAll();
+	List<WaitingRoom> findAll();
 }
