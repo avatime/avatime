@@ -6,6 +6,5 @@ import org.springframework.stereotype.Repository;
 import com.ssafy.db.entity.WaitingRoom;
 
 @Repository
-public interface WaitingRepository extends JpaRepository<WaitingRoom, Long>{
-	
+public interface WaitingRoomRepository extends JpaRepository<WaitingRoom, Long>{
 }
