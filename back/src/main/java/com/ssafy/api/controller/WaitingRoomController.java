@@ -27,7 +27,7 @@ import io.swagger.annotations.ApiOperation;
 @Api(value = "미팅방 API", tags = {"waiting"})
 @RestController
 @RequestMapping("/api/v1/waiting")
-public class WaitingController {
+public class WaitingRoomController {
 	
 	@Autowired
 	SidoService sidoService;
