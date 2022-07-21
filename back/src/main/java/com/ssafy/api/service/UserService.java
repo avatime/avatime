@@ -2,7 +2,7 @@ package com.ssafy.api.service;
 
 import org.springframework.http.HttpEntity;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.client.RestTemplate;
+import org.springframework.util.MultiValueMap;
 
 import com.ssafy.api.request.UserRegisterPostReq;
 import com.ssafy.db.entity.User;
@@ -12,8 +12,14 @@ import com.ssafy.db.entity.User;
  */
 public interface UserService {
 	User createUser(UserRegisterPostReq userRegisterInfo);
-	User getUserByUserId(String userId);
+	User getUserByUserName(String name);
+	User getUserByUserSocialId(String socialId, String socialType);
 	public String getKaKaoAccessToken(String code);
 	public void createKakaoUser(String token) throws Exception;
+	ResponseEntity<String> requestProfile(HttpEntity request);
+	HttpEntity<MultiValueMap<String, String>> generateProfileRequest(String accessToken);
+	String extractAccessToken(String accessTokenResponse);
+	ResponseEntity<String> requestAccessToken(HttpEntity request);
+	HttpEntity<MultiValueMap<String, String>> generateAuthCodeRequest(String code, String state);
 
 }

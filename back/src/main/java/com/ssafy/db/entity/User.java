@@ -28,7 +28,7 @@ import lombok.Setter;
 @Setter
 public class User extends BaseEntity{
 	@Column(updatable = false, nullable = false)
-    private boolean gender;
+    private String gender;
 	
     @Column(nullable = false, unique = true, length = 20)
     private String name;
@@ -37,26 +37,26 @@ public class User extends BaseEntity{
     private String description;
 	
     @Column(nullable = false, columnDefinition = "INT UNSIGNED")
-    private Long profile_id;
+    private Long profileId;
 	
     @Column(updatable = false, nullable = false)
-    private String social_type;
+    private String socialType;
 	
     @Column(updatable = false, nullable = false)
-    private String social_id;
+    private String socialId;
     
     @Temporal(TemporalType.TIMESTAMP)
     @Column(updatable = false, columnDefinition = "TIMESTAMP DEFAULT CURRENT_TIMESTAMP")
-    private Date created_time;
+    private Date createdTime;
     
     @PrePersist
     protected void onCreate() {
-    	created_time = Timestamp.valueOf(LocalDateTime.now());
+    	createdTime = Timestamp.valueOf(LocalDateTime.now());
     }
     
-    @JsonIgnore
-    @JsonProperty(access = JsonProperty.Access.WRITE_ONLY)
-    String password;
-    
-    String userId;
+//    @JsonIgnore
+//    @JsonProperty(access = JsonProperty.Access.WRITE_ONLY)
+//    String password;
+//    
+//    String userId;
 }

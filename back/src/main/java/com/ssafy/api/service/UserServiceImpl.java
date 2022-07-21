@@ -8,12 +8,17 @@ import java.io.OutputStreamWriter;
 import java.net.HttpURLConnection;
 import java.net.URL;
 
+import javax.print.DocFlavor.STRING;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpEntity;
+import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpMethod;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
+import org.springframework.util.LinkedMultiValueMap;
+import org.springframework.util.MultiValueMap;
 import org.springframework.web.client.RestTemplate;
 
 import com.google.gson.JsonElement;
@@ -41,16 +46,31 @@ public class UserServiceImpl implements UserService {
 	@Override
 	public User createUser(UserRegisterPostReq userRegisterInfo) {
 		User user = new User();
-		user.setUserId(userRegisterInfo.getId());
-		// 보안을 위해서 유저 패스워드 암호화 하여 디비에 저장.
-		user.setPassword(passwordEncoder.encode(userRegisterInfo.getPassword()));
+//		user.setUserId(userRegisterInfo.getId());
+//		// 보안을 위해서 유저 패스워드 암호화 하여 디비에 저장.
+//		user.setPassword(passwordEncoder.encode(userRegisterInfo.getPassword()));
+		
+		user.setSocialId(userRegisterInfo.getSocialId());
+		user.setSocialType(userRegisterInfo.getSocialType());
+		user.setName(userRegisterInfo.getName());
+		user.setProfileId(userRegisterInfo.getProfileId());
+		user.setDescription(userRegisterInfo.getDescription());
+		user.setGender(userRegisterInfo.getGender());
+		
 		return userRepository.save(user);
 	}
 
 	@Override
-	public User getUserByUserId(String userId) {
+	public User getUserByUserSocialId(String socialId, String socialType) {
 		// 디비에 유저 정보 조회 (userId 를 통한 조회).
-		User user = userRepositorySupport.findUserByUserId(userId).get();
+		User user = userRepositorySupport.findUserByUserSocialId(socialId, socialType).get();
+		return user;
+	}
+	
+	@Override
+	public User getUserByUserName(String name) {
+		// 디비에 유저 정보 조회 (userId 를 통한 조회).
+		User user = userRepositorySupport.findUserByUserName(name).get();
 		return user;
 	}
 	
@@ -158,5 +178,60 @@ public class UserServiceImpl implements UserService {
             e.printStackTrace();
         }
     }
+	
+	@Override
+	public ResponseEntity<String> requestProfile(HttpEntity request) {
+        RestTemplate restTemplate = new RestTemplate();
+        return restTemplate.exchange(
+                "https://openapi.naver.com/v1/nid/me",
+                HttpMethod.POST,
+                request,
+                String.class
+        );
+    }
+	
+	@Override
+	public HttpEntity<MultiValueMap<String, String>> generateProfileRequest(String accessToken) {
+        HttpHeaders headers = new HttpHeaders();
+        headers.add("Authorization", "Bearer "+ accessToken);
+        headers.add("Content-type", "application/x-www-form-urlencoded;charset=utf-8");
+        return new HttpEntity<>(headers);
+    }
+	
+	@Override
+	public String extractAccessToken(String accessTokenResponse) {
+		System.out.println("@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@");
+		System.out.println(accessTokenResponse);
+		JsonParser parser = new JsonParser();
+		JsonElement element = parser.parse(accessTokenResponse);
+		
+		return element.getAsJsonObject().get("access_token").getAsString();
+	}
+	
+	@Override
+	public ResponseEntity<String> requestAccessToken(HttpEntity request){
+		RestTemplate restTemplate = new RestTemplate();
+		return restTemplate.exchange(
+				"https://nid.naver.com/oauth2.0/token",
+				HttpMethod.POST,
+				request,
+				String.class
+				);
+	}
+	
+	@Override
+	public HttpEntity<MultiValueMap<String, String>> generateAuthCodeRequest(String code, String state) {
+		HttpHeaders headers = new HttpHeaders();
+		headers.add("Content-type","application/x-www-form-urlencoded;charset=utf-8");
+		
+		MultiValueMap<String, String> params = new LinkedMultiValueMap<>();
+		params.add("grant_type", "authorization_code");
+		params.add("client_id", "P3kt5zg5MHlb3zGhNEph");
+		params.add("client_secret", "cK5IoJYEGE");
+		params.add("redirect_uri", "http://localhost:8080/api/v1/auth/naver");
+		params.add("code", code);
+		
+		return new HttpEntity<>(params, headers);
+	}
 		
 }

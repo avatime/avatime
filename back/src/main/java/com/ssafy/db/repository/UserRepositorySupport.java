@@ -18,9 +18,16 @@ public class UserRepositorySupport {
     private JPAQueryFactory jpaQueryFactory;
     QUser qUser = QUser.user;
 
-    public Optional<User> findUserByUserId(String userId) {
+    public Optional<User> findUserByUserName(String name) {
         User user = jpaQueryFactory.select(qUser).from(qUser)
-                .where(qUser.userId.eq(userId)).fetchOne();
+                .where(qUser.name.eq(name)).fetchOne();
+        if(user == null) return Optional.empty();
+        return Optional.ofNullable(user);
+    }
+    
+    public Optional<User> findUserByUserSocialId(String socialId, String socialType) {
+        User user = jpaQueryFactory.select(qUser).from(qUser)
+                .where(qUser.name.eq(socialId).and(qUser.socialType.eq(socialType))).fetchOne();
         if(user == null) return Optional.empty();
         return Optional.ofNullable(user);
     }
