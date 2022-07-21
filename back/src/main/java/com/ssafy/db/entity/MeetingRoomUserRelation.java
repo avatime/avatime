@@ -24,10 +24,14 @@ public class MeetingRoomUserRelation  extends BaseEntity {
 	@JoinColumn(name = "session_id", insertable = false, updatable=false)
 	private MeetingRoom meetingRoom;
 	
-    @Column(updatable = false, nullable = false, columnDefinition = "INT UNSIGNED")
-	private Long user_id;
+    @Column(name="user_id", updatable = false, nullable = false, columnDefinition = "INT UNSIGNED")
+	private Long userId;
 	
-    @Column(columnDefinition = "INT UNSIGNED")
-	private Long avatar_id;
+    @Column(name = "avatar_id",columnDefinition = "INT UNSIGNED")
+	private Long avatarId;
 
+    @Column(name="pick_user_id",columnDefinition = "INT UNSIGNED")
+    private Long pickUserId;
+    
+    private boolean matched;
 }
