@@ -133,13 +133,14 @@ const ChatRoomPresenter: FC<IPresenterProps> = ({
         flexGrow: isOpened ? 1 : 0,
         display: "flex",
         flexDirection: "column",
+        maxHeight: maxHeight
       }}
     >
       <AccordionSummary expandIcon={<ExpandMoreIcon />}>
         <Typography align="inherit">{title}</Typography>
       </AccordionSummary>
 
-      <List className="chat__body" ref={chatBodyRef} sx={{ maxHeight: maxHeight }}>
+      <List className="chat__body" ref={chatBodyRef} sx={{ flexGrow: "1" }}>
         {chatList.map((it, idx) => (
           <ChatBlock
             key={idx}
