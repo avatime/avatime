@@ -2,7 +2,6 @@ import React, { FC, useState } from "react";
 import { Conference } from "../components/session/Conference";
 import { ChatRoom } from "../components/chat/ChatRoom";
 import { Box, Grid } from "@mui/material";
-import useWindowSize from "../hooks/useWindowSize";
 import { ControllBar } from "../components/session/ControllBar";
 
 interface IProps {}
@@ -10,11 +9,6 @@ interface IProps {}
 export const SessionPage: FC<IProps> = (props) => {
   const [opened, setOpened] = useState<boolean[]>([true, true]);
   const cntOpened = opened.filter((it) => it).length;
-
-  const { windowSize } = useWindowSize();
-
-  const fullHeight = `${windowSize.height * 0.64}px`;
-  const halfHeight = `${windowSize.height * 0.23}px`;
 
   return (
     <Grid container spacing={3} sx={{ float: "left" }} p={2}>
@@ -29,24 +23,25 @@ export const SessionPage: FC<IProps> = (props) => {
         <Box
           display="flex"
           flexDirection="column"
+          height="95vh"
           sx={{ overflow: "hidden" }}
         >
-          <ChatRoom
-            chatType="all"
-            isOpened={opened[0]}
-            onClickHeader={() => {
-              setOpened((prev) => [!prev[0], prev[1]]);
-            }}
-            maxHeight={opened[0] && cntOpened === 1 ? fullHeight : halfHeight}
-          />
-          <ChatRoom
-            chatType="gender"
-            isOpened={opened[1]}
-            onClickHeader={() => {
-              setOpened((prev) => [prev[0], !prev[1]]);
-            }}
-            maxHeight={opened[1] && cntOpened === 1 ? fullHeight : halfHeight}
-          />
+            <ChatRoom
+              chatType="all"
+              isOpened={opened[0]}
+              onClickHeader={() => {
+                setOpened((prev) => [!prev[0], prev[1]]);
+              }}
+              maxHeight={opened[0] && cntOpened === 1 ? "100%" : "50%"}
+            />
+            <ChatRoom
+              chatType="gender"
+              isOpened={opened[1]}
+              onClickHeader={() => {
+                setOpened((prev) => [prev[0], !prev[1]]);
+              }}
+              maxHeight={opened[1] && cntOpened === 1 ? "100%" : "50%"}
+            />
         </Box>
       </Grid>
     </Grid>

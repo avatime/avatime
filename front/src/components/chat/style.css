@@ -62,22 +62,26 @@
   display: flex;
   flex-direction: column;
   flex-grow: 1;
+  max-height: 100%;
 }
 
 .MuiCollapse-wrapper {
   display: flex;
   flex-direction: column;
   flex-grow: 1;
+  max-height: 100%;
 }
 
 .MuiCollapse-wrapperInner {
   display: flex;
   flex-direction: column;
   flex-grow: 1;
+  max-height: 100%;
 }
 
 .MuiAccordion-region {
   display: flex;
   flex-direction: column;
   flex-grow: 1;
+  max-height: 100%;
 }

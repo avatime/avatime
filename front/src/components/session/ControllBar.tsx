@@ -1,6 +1,6 @@
 import React, { FC, useState } from "react";
 import { Box } from "@mui/system";
-import { Button, Card, CardContent, CardMedia, useTheme } from "@mui/material";
+import { Button, Card, useTheme } from "@mui/material";
 import MicIcon from "@mui/icons-material/Mic";
 import MicOffIcon from "@mui/icons-material/MicOff";
 import VideocamIcon from "@mui/icons-material/Videocam";
