@@ -1,4 +1,4 @@
-import { Box, Modal, Typography, Grid } from "@mui/material";
+import { Box,  Typography, Grid } from "@mui/material";
 import React, { FC, useState } from "react";
 import { useEffect } from "react";
 import { useQuery } from "react-query";
@@ -6,6 +6,7 @@ import { useSelector } from "react-redux";
 import { useNavigate } from "react-router";
 import sessionApi from "../../../apis/sessionApi";
 import { AvatarProfile } from "./AvatarProfile";
+import { SessionModal } from "./SessionModal";
 
 interface IProps {
   isOpened: boolean;
@@ -86,26 +87,8 @@ const FinalPickModalPresenter: FC<IPresenterProps> = ({
   isLoading,
 }) => {
   return (
-    <Modal open={isOpened}>
-      <Box
-        sx={{
-          position: "absolute",
-          top: "50%",
-          left: "50%",
-          transform: "translate(-50%, -50%)",
-          width: "70%",
-          height: "55%",
-          bgcolor: "background.paper",
-          border: "1px solid #000000",
-          boxShadow: 24,
-          p: 4,
-          borderRadius: "10px",
-          display: "flex",
-          flexDirection: "column",
-          justifyContent: "stretch",
-          alignItems: "center",
-        }}
-      >
+    <SessionModal open={isOpened} justifyContent="stretch">
+      <>
         <Typography variant="h4">마음에 드는 상대를 골라주세요! {timer}</Typography>
         <Box p={3} />
         <Grid container width="100%" height="100%" spacing={3}>
@@ -120,7 +103,7 @@ const FinalPickModalPresenter: FC<IPresenterProps> = ({
             </Grid>
           ))}
         </Grid>
-      </Box>
-    </Modal>
+      </>
+    </SessionModal>
   );
 };
