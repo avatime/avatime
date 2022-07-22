@@ -13,16 +13,17 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
+import com.ssafy.api.request.WaitingRoomPostReq;
 import com.ssafy.api.service.SidoService;
 import com.ssafy.api.service.WaitingRoomService;
 import com.ssafy.api.service.WaitingRoomUserRelationService;
 import com.ssafy.db.entity.Sido;
 import com.ssafy.db.entity.User;
 import com.ssafy.db.entity.WaitingRoom;
-import com.ssafy.dto.WaitingRoomValue;
 
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
+import io.swagger.annotations.ApiParam;
 
 @Api(value = "미팅방 API", tags = {"waiting"})
 @RestController
@@ -56,7 +57,7 @@ public class WaitingRoomController {
 	
 	@PostMapping("create")
 	@ApiOperation(value = "대기방 생성", notes = "대기방을 생성합니다.")
-	public void create(@RequestBody WaitingRoomValue value) {
+	public void create(@RequestBody @ApiParam(value="대기방 생성시 정보", required = true) WaitingRoomPostReq value) {
 		Map<String, Long> userRelation = new HashedMap<>();
 		WaitingRoom waitingRoom = waitingRoomService.save(value);
 		userRelation.put("user_id", value.getUser_id());
