@@ -6,6 +6,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import com.ssafy.db.entity.MeetingRoom;
+import com.ssafy.db.entity.MeetingRoomUserRelation;
 import com.ssafy.db.repository.MeetingRoomRepository;
 
 /**
@@ -37,13 +38,19 @@ public class MeetingRoomServiceImpl implements MeetingRoomService {
 	}
 
 	@Override
-	public List<MeetingRoom> getMeetingRoomList() {
+	public void choiceAvatar() throws Exception {
 		// TODO Auto-generated method stub
-		return null;
+		
 	}
 
 	@Override
-	public MeetingRoom GetMeetingRoomByMeetingRoomId(Long id) {
+	public void finalChoice() throws Exception {
+		// TODO Auto-generated method stub
+		
+	}
+
+	@Override
+	public List<MeetingRoomUserRelation> finalChoiceResult() throws Exception {
 		// TODO Auto-generated method stub
 		return null;
 	}
