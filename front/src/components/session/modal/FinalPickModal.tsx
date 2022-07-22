@@ -22,7 +22,7 @@ export const FinalPickModal: FC<IProps> = ({ isOpened }) => {
 
   useEffect(() => {
     if (isOpened) {
-      setTimer(2);
+      setTimer(5);
     }
   }, [isOpened]);
 
@@ -110,7 +110,7 @@ const FinalPickModalPresenter: FC<IPresenterProps> = ({
         <Box p={3} />
         <Grid container width="100%" height="100%" spacing={3}>
           {userList?.map((it, idx) => (
-            <Grid item key={idx} xs={3}>
+            <Grid item key={idx} xs>
               <AvatarProfile
                 selected={selectedUserId === it.userId}
                 onClick={() => onClickAvatar(it.userId)}
