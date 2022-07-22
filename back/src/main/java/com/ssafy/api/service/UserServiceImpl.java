@@ -7,6 +7,7 @@ import java.io.InputStreamReader;
 import java.io.OutputStreamWriter;
 import java.net.HttpURLConnection;
 import java.net.URL;
+import java.util.NoSuchElementException;
 
 import javax.print.DocFlavor.STRING;
 
@@ -61,10 +62,14 @@ public class UserServiceImpl implements UserService {
 	}
 
 	@Override
-	public User getUserByUserSocialId(String socialId, String socialType) {
+	public User getUserBySocialIdAndSocialType(String socialId, int socialType) {
 		// 디비에 유저 정보 조회 (userId 를 통한 조회).
-		User user = userRepositorySupport.findUserByUserSocialId(socialId, socialType).get();
-		return user;
+		try {			
+			User user = userRepository.findBySocialIdAndSocialType(socialId.trim(), socialType).get();
+			return user;
+		} catch(NoSuchElementException e) {
+			return null;
+		}
 	}
 	
 	@Override
@@ -72,6 +77,12 @@ public class UserServiceImpl implements UserService {
 		// 디비에 유저 정보 조회 (userId 를 통한 조회).
 		User user = userRepositorySupport.findUserByUserName(name).get();
 		return user;
+	}
+	
+	// 아이디 중복체크
+	@Override
+	public boolean checkNameDuplicate(String name) {
+		return userRepository.existsByName(name);
 	}
 	
 	@Override
@@ -200,8 +211,6 @@ public class UserServiceImpl implements UserService {
 	
 	@Override
 	public String extractAccessToken(String accessTokenResponse) {
-		System.out.println("@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@");
-		System.out.println(accessTokenResponse);
 		JsonParser parser = new JsonParser();
 		JsonElement element = parser.parse(accessTokenResponse);
 		
@@ -226,11 +235,11 @@ public class UserServiceImpl implements UserService {
 		
 		MultiValueMap<String, String> params = new LinkedMultiValueMap<>();
 		params.add("grant_type", "authorization_code");
-		params.add("client_id", "P3kt5zg5MHlb3zGhNEph");
-		params.add("client_secret", "cK5IoJYEGE");
+		params.add("client_id", "UZzm3q6_v7QsL_RHeEgn");
+		params.add("client_secret", "6Zwhqfzb61");
 		params.add("redirect_uri", "http://localhost:8080/api/v1/auth/naver");
 		params.add("code", code);
-		
+
 		return new HttpEntity<>(params, headers);
 	}
 		

@@ -14,7 +14,7 @@ import lombok.Setter;
 public class UserLoginPostReq {
 	@ApiModelProperty(name="유저 Name", example="ssafy_web")
 	String socialId;
-	String socialType;
+	int socialType;
 	String gender;
 	String token;
 

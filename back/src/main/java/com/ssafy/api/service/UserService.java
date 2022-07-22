@@ -13,7 +13,7 @@ import com.ssafy.db.entity.User;
 public interface UserService {
 	User createUser(UserRegisterPostReq userRegisterInfo);
 	User getUserByUserName(String name);
-	User getUserByUserSocialId(String socialId, String socialType);
+	User getUserBySocialIdAndSocialType(String socialId, int socialType);
 	public String getKaKaoAccessToken(String code);
 	public void createKakaoUser(String token) throws Exception;
 	ResponseEntity<String> requestProfile(HttpEntity request);
@@ -21,5 +21,6 @@ public interface UserService {
 	String extractAccessToken(String accessTokenResponse);
 	ResponseEntity<String> requestAccessToken(HttpEntity request);
 	HttpEntity<MultiValueMap<String, String>> generateAuthCodeRequest(String code, String state);
+	boolean checkNameDuplicate(String name);
 
 }

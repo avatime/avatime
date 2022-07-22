@@ -37,10 +37,10 @@ public class User extends BaseEntity{
     private String description;
 	
     @Column(nullable = false, columnDefinition = "INT UNSIGNED")
-    private Long profileId;
+    private long profileId;
 	
     @Column(updatable = false, nullable = false)
-    private String socialType;
+    private int socialType;
 	
     @Column(updatable = false, nullable = false)
     private String socialId;
