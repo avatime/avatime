@@ -8,6 +8,7 @@ import javax.persistence.ManyToOne;
 import org.hibernate.annotations.DynamicInsert;
 import org.hibernate.annotations.DynamicUpdate;
 
+import lombok.Builder;
 import lombok.Getter;
 import lombok.Setter;
 
@@ -24,10 +25,16 @@ public class WaitingRoomUserRelation extends BaseEntity {
 	private int type;
 	
 	@ManyToOne
-	@JoinColumn(name = "session_id", insertable = false, updatable=false)
+	@JoinColumn(name = "waiting_room_id", insertable = false, updatable=false)
 	private WaitingRoom waitingRoom;
 	
     @Column(updatable = false, nullable = false, columnDefinition = "INT UNSIGNED")
 	private Long user_id;
 	
+    @Builder
+    public WaitingRoomUserRelation(WaitingRoom waitingRoom, long user_id) {
+    	this.type = 0;
+    	this.waitingRoom = waitingRoom;
+    	this.user_id = user_id;
+    }
 }
