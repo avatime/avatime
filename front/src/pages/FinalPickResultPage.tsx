@@ -1,13 +1,15 @@
 import React, { FC, useState } from "react";
-import { Backdrop, Box, Grid, Typography, useTheme } from "@mui/material";
+import { Backdrop, Box, Button, Grid, Typography, useTheme } from "@mui/material";
 import { grey } from "@mui/material/colors";
 import { useSelector } from "react-redux";
 import Xarrow, { Xwrapper } from "react-xarrows";
 import { useQuery } from "react-query";
 import sessionApi from "../apis/sessionApi";
-import { PickResult } from "../apis/response/sessionRes";
+import { FinalPickResultRes } from "../apis/response/sessionRes";
 import useTimer from "../hooks/useTimer";
 import { useEffect } from "react";
+import { SessionModal } from "../components/session/modal/SessionModal";
+import { useNavigate } from "react-router";
 
 interface IProps {}
 
@@ -38,8 +40,10 @@ export const FinalPickResultPage: FC<IProps> = (props) => {
     temp[0] = 0;
 
     while (cnt < userList.length) {
-      // eslint-disable-next-line no-loop-func
-      const pickUserIndex = data.resultList.findIndex((it) => it.userId === data.resultList[prevUserIndex].pickUserId);
+      const pickUserIndex = data.resultList.findIndex(
+        // eslint-disable-next-line no-loop-func
+        (it) => it.userId === data.resultList[prevUserIndex].pickUserId
+      );
       if (temp[pickUserIndex] !== -1) {
         while (temp[idx] !== -1 && idx < userList.length) {
           idx++;
@@ -53,28 +57,40 @@ export const FinalPickResultPage: FC<IProps> = (props) => {
     setArrowOrderList(temp);
   }, [data, userList.length]);
 
+  const navigate = useNavigate();
+  const onModalClose = () => {
+    if (data?.matched) {
+      navigate("/session");
+    } else {
+      navigate("/");
+    }
+  };
+
   return (
     <FinalPickResultPagePresenter
       userList={userList}
-      resultList={data?.resultList}
+      data={data}
       timer={timer}
       arrowOrderList={arrowOrderList}
+      onModalClose={onModalClose}
     />
   );
 };
 
 interface IPresenterProps {
   userList: any[];
-  resultList: PickResult[] | undefined;
+  data?: FinalPickResultRes;
   timer: number;
   arrowOrderList: number[];
+  onModalClose: () => void;
 }
 
 const FinalPickResultPagePresenter: FC<IPresenterProps> = ({
   userList,
-  resultList,
+  data,
   timer,
   arrowOrderList,
+  onModalClose,
 }) => {
   const UserProfileList = (l: number, r: number) => (
     <Grid container item spacing={2} direction="column" xs={2}>
@@ -139,7 +155,7 @@ const FinalPickResultPagePresenter: FC<IPresenterProps> = ({
         <Grid item xs />
         {UserProfileList(userList.length / 2, userList.length)}
         <Xwrapper>
-          {resultList?.map(
+          {data?.resultList?.map(
             (it, idx) =>
               arrowOrderList[idx] <= -timer && (
                 <Xarrow
@@ -149,13 +165,15 @@ const FinalPickResultPagePresenter: FC<IPresenterProps> = ({
                   curveness={0}
                   lineColor={
                     userList.length <= -timer &&
-                    it.userId === resultList?.find((i) => i.userId === it.pickUserId)?.pickUserId
+                    it.userId ===
+                      data?.resultList?.find((i) => i.userId === it.pickUserId)?.pickUserId
                       ? "red"
                       : theme.palette.primary.main
                   }
                   headColor={
                     userList.length <= -timer &&
-                    it.userId === resultList?.find((i) => i.userId === it.pickUserId)?.pickUserId
+                    it.userId ===
+                      data?.resultList?.find((i) => i.userId === it.pickUserId)?.pickUserId
                       ? "red"
                       : theme.palette.primary.main
                   }
@@ -170,6 +188,15 @@ const FinalPickResultPagePresenter: FC<IPresenterProps> = ({
           {timer}
         </Typography>
       </Backdrop>
+      <SessionModal
+        open={timer <= -userList.length - 1}
+        justifyContent="center"
+        onClose={onModalClose}
+      >
+        <Typography variant="h3">
+          {data?.matched ? "잠시 후에 둘만의 시간을 갖게돼요 >.<" : "힝 다음 인연을 찾아보세요!"}
+        </Typography>
+      </SessionModal>
     </Box>
   );
 };
