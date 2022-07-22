@@ -1,11 +1,13 @@
-import React, { FC } from "react";
-import { Box, Grid, Typography } from "@mui/material";
+import React, { FC, useState } from "react";
+import { Backdrop, Box, Grid, Typography, useTheme } from "@mui/material";
 import { grey } from "@mui/material/colors";
 import { useSelector } from "react-redux";
 import Xarrow, { Xwrapper } from "react-xarrows";
 import { useQuery } from "react-query";
 import sessionApi from "../apis/sessionApi";
 import { PickResult } from "../apis/response/sessionRes";
+import useTimer from "../hooks/useTimer";
+import { useEffect } from "react";
 
 interface IProps {}
 
@@ -20,15 +22,60 @@ export const FinalPickResultPage: FC<IProps> = (props) => {
     }
   );
 
-  return <FinalPickResultPagePresenter userList={userList} resultList={data?.resultList} />;
+  const timer = useTimer(5, 1000);
+
+  const [arrowOrderList, setArrowOrderList] = useState<number[]>([]);
+
+  useEffect(() => {
+    if (!data) {
+      return;
+    }
+
+    let idx = 1;
+    let cnt = 1;
+    let prevUserIndex = 0;
+    const temp = Array(userList.length).fill(-1);
+    temp[0] = 0;
+
+    while (cnt < userList.length) {
+      // eslint-disable-next-line no-loop-func
+      const pickUserIndex = data.resultList.findIndex((it) => it.userId === data.resultList[prevUserIndex].pickUserId);
+      if (temp[pickUserIndex] !== -1) {
+        while (temp[idx] !== -1 && idx < userList.length) {
+          idx++;
+        }
+        temp[idx++] = cnt++;
+      } else {
+        temp[pickUserIndex] = cnt++;
+      }
+      prevUserIndex = pickUserIndex;
+    }
+    setArrowOrderList(temp);
+  }, [data, userList.length]);
+
+  return (
+    <FinalPickResultPagePresenter
+      userList={userList}
+      resultList={data?.resultList}
+      timer={timer}
+      arrowOrderList={arrowOrderList}
+    />
+  );
 };
 
 interface IPresenterProps {
   userList: any[];
   resultList: PickResult[] | undefined;
+  timer: number;
+  arrowOrderList: number[];
 }
 
-const FinalPickResultPagePresenter: FC<IPresenterProps> = ({ userList, resultList }) => {
+const FinalPickResultPagePresenter: FC<IPresenterProps> = ({
+  userList,
+  resultList,
+  timer,
+  arrowOrderList,
+}) => {
   const UserProfileList = (l: number, r: number) => (
     <Grid container item spacing={2} direction="column" xs={2}>
       {userList.slice(l, r).map((it) => (
@@ -55,14 +102,14 @@ const FinalPickResultPagePresenter: FC<IPresenterProps> = ({ userList, resultLis
             }}
           >
             <Box
-              id={"out" + it.userId}
+              id={(l === 0 ? "in" : "out") + it.userId}
               position="absolute"
               top="20%"
               right={l === 0 ? 0 : 100}
               left={l === 0 ? 100 : 0}
             />
             <Box
-              id={"in" + it.userId}
+              id={(l === 0 ? "out" : "in") + it.userId}
               position="absolute"
               bottom="20%"
               right={l === 0 ? 0 : 100}
@@ -74,6 +121,8 @@ const FinalPickResultPagePresenter: FC<IPresenterProps> = ({ userList, resultLis
       ))}
     </Grid>
   );
+
+  const theme = useTheme();
 
   return (
     <Box height="100vh" display="flex" alignItems="stretch" justifyContent="stretch">
@@ -90,19 +139,37 @@ const FinalPickResultPagePresenter: FC<IPresenterProps> = ({ userList, resultLis
         <Grid item xs />
         {UserProfileList(userList.length / 2, userList.length)}
         <Xwrapper>
-          {resultList?.map((it) => (
-            <Xarrow
-              key={it.userId}
-              start={"out" + it.userId}
-              end={"in" + it.pickUserId}
-              curveness={0}
-              lineColor="red"
-              headColor="red"
-              animateDrawing={true}
-            />
-          ))}
+          {resultList?.map(
+            (it, idx) =>
+              arrowOrderList[idx] <= -timer && (
+                <Xarrow
+                  key={it.userId}
+                  start={"out" + it.userId}
+                  end={"in" + it.pickUserId}
+                  curveness={0}
+                  lineColor={
+                    userList.length <= -timer &&
+                    it.userId === resultList?.find((i) => i.userId === it.pickUserId)?.pickUserId
+                      ? "red"
+                      : theme.palette.primary.main
+                  }
+                  headColor={
+                    userList.length <= -timer &&
+                    it.userId === resultList?.find((i) => i.userId === it.pickUserId)?.pickUserId
+                      ? "red"
+                      : theme.palette.primary.main
+                  }
+                  animateDrawing={0.5}
+                />
+              )
+          )}
         </Xwrapper>
       </Grid>
+      <Backdrop open={0 < timer}>
+        <Typography variant="h1" color="white">
+          {timer}
+        </Typography>
+      </Backdrop>
     </Box>
   );
 };
