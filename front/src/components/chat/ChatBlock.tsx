@@ -25,6 +25,7 @@ export const ChatBlock: FC<IProps> = ({ chatRes, order, showTime, showName }) =>
         <Typography
           className={`chat__bubble__${order} chat__bubble${showName && "__arrow"}__${order}`}
           variant="subtitle2"
+          color="white"
         >
           {chatRes.message}
         </Typography>

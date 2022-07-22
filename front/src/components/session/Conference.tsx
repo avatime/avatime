@@ -1,6 +1,6 @@
 import React, { FC, Suspense } from "react";
 import { VideoProfile } from "./VideoProfile";
-import { Card, Grid, Box } from "@mui/material";
+import { Grid, Box } from "@mui/material";
 import { grey } from "@mui/material/colors";
 import { SessionUser } from "../../apis/response/sessionRes";
 import { useQuery } from "react-query";
@@ -36,7 +36,7 @@ const ConferencePresenter: FC<IPresenterProps> = ({ userList }) => {
   const cntUser = userList.length;
 
   return (
-    <Card sx={{ background: grey[100], flex: "1", position: "relative" }}>
+    <Box borderRadius="10px" flex={1} position="relative" bgcolor={grey[200]}>
       {cntUser === 2 ? (
         <>
           <Box height="95%" p={2}>
@@ -61,6 +61,6 @@ const ConferencePresenter: FC<IPresenterProps> = ({ userList }) => {
           ))}
         </Box>
       )}
-    </Card>
+    </Box>
   );
 };
