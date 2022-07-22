@@ -1,10 +1,12 @@
 import { combineReducers, configureStore } from "@reduxjs/toolkit";
 import { persistReducer } from "redux-persist";
 import storage from "redux-persist/lib/storage";
-import userReducer from "./slices/userSlice"
+import userReducer from "./slices/userSlice";
+import meetingSlice from "./slices/meetingSlice";
 
 const reducers = combineReducers({
   user: userReducer,
+  meeting: meetingSlice,
 });
 
 const persistConfig = {

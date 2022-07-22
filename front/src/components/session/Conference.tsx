@@ -7,6 +7,9 @@ import { useQuery } from "react-query";
 import sessionApi from "../../apis/sessionApi";
 import { SessionUserListRes } from "../../apis/response/sessionRes";
 import { ErrorBoundary } from "react-error-boundary";
+import { useEffect } from "react";
+import { useDispatch } from "react-redux";
+import { setUserList } from "../../stores/slices/meetingSlice";
 
 interface IProps {}
 
@@ -18,6 +21,21 @@ export const Conference: FC<IProps> = (props) => {
     () => sessionApi.requestSessionUserList(8),
     { suspense: true }
   );
+
+  const dispatch = useDispatch();
+  useEffect(() => {
+    dispatch(
+      setUserList(
+        userList.map((it: SessionUser) => ({
+          userId: it.userId,
+          userName: it.userName,
+          avatarId: it.avatarId,
+          avatarName: it.avatarName,
+          avatarImagePath: it.avatarImagePath,
+        }))
+      )
+    );
+  }, [userList, dispatch]);
 
   return (
     <Suspense fallback={<h1>로딩중</h1>}>
@@ -48,8 +66,8 @@ const ConferencePresenter: FC<IPresenterProps> = ({ userList }) => {
         </>
       ) : (
         <Box height="100%" display="flex" flexDirection="column" p={2}>
-          {[0, 1].map((it) => (
-            <Box flex={1}>
+          {[0, 1].map((it, idx) => (
+            <Box flex={1} key={idx}>
               <Grid container height="95%" spacing={2} alignItems="stretch">
                 {userList.slice((it * cntUser) / 2, ((it + 1) * cntUser) / 2).map((it, idx) => (
                   <Grid item xs={24 / cntUser} key={idx}>
