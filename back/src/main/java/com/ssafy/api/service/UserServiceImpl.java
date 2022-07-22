@@ -104,7 +104,7 @@ public class UserServiceImpl implements UserService {
             StringBuilder sb = new StringBuilder();
             sb.append("grant_type=authorization_code");
             sb.append("&client_id=6300198dbbef93aac1c88f68eeb4525a"); // TODO REST_API_KEY 입력
-            sb.append("&redirect_uri=http://localhost:8080/api/v1/users/kakao"); // TODO 인가코드 받은 redirect_uri 입력
+            sb.append("&redirect_uri=http://localhost:8080/api/v1/auth/kakao"); // TODO 인가코드 받은 redirect_uri 입력
             sb.append("&code=" + code);
             bw.write(sb.toString());
             bw.flush();
@@ -142,10 +142,11 @@ public class UserServiceImpl implements UserService {
     }
 	
 	@Override
-	public void createKakaoUser(String token) throws Exception {
+	public String createKakaoUser(String token) throws Exception {
 
         String reqURL = "https://kapi.kakao.com/v2/user/me";
-
+        String line = "";
+        String result = "";
         //access_token을 이용하여 사용자 정보 조회
         try {
             URL url = new URL(reqURL);
@@ -158,36 +159,33 @@ public class UserServiceImpl implements UserService {
             //결과 코드가 200이라면 성공
             int responseCode = conn.getResponseCode();
             System.out.println("responseCode : " + responseCode);
-
             //요청을 통해 얻은 JSON타입의 Response 메세지 읽어오기
             BufferedReader br = new BufferedReader(new InputStreamReader(conn.getInputStream()));
-            String line = "";
-            String result = "";
 
             while ((line = br.readLine()) != null) {
                 result += line;
             }
             System.out.println("response body : " + result);
-
             //Gson 라이브러리로 JSON파싱
-            JsonParser parser = new JsonParser();
-            JsonElement element = parser.parse(result);
+//            JsonParser parser = new JsonParser();
+//            JsonElement element = parser.parse(result);
+//            System.out.println("element: " + element);
+//            int id = element.getAsJsonObject().get("id").getAsInt();
+//            boolean hasEmail = element.getAsJsonObject().get("kakao_account").getAsJsonObject().get("has_email").getAsBoolean();
+//            String email = "";
+//            if(hasEmail){
+//                email = element.getAsJsonObject().get("kakao_account").getAsJsonObject().get("email").getAsString();
+//            }
+//            
+//            System.out.println("id : " + id);
+//            System.out.println("email : " + email);
 
-            int id = element.getAsJsonObject().get("id").getAsInt();
-            boolean hasEmail = element.getAsJsonObject().get("kakao_account").getAsJsonObject().get("has_email").getAsBoolean();
-            String email = "";
-            if(hasEmail){
-                email = element.getAsJsonObject().get("kakao_account").getAsJsonObject().get("email").getAsString();
-            }
-
-            System.out.println("id : " + id);
-            System.out.println("email : " + email);
-
-            br.close();
-
+//            br.close();
+    
         } catch (IOException e) {
             e.printStackTrace();
         }
+        return result;
     }
 	
 	@Override

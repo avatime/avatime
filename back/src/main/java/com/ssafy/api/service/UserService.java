@@ -4,6 +4,7 @@ import org.springframework.http.HttpEntity;
 import org.springframework.http.ResponseEntity;
 import org.springframework.util.MultiValueMap;
 
+import com.google.gson.JsonElement;
 import com.ssafy.api.request.UserRegisterPostReq;
 import com.ssafy.db.entity.User;
 
@@ -15,7 +16,7 @@ public interface UserService {
 	User getUserByUserName(String name);
 	User getUserBySocialIdAndSocialType(String socialId, int socialType);
 	public String getKaKaoAccessToken(String code);
-	public void createKakaoUser(String token) throws Exception;
+	public String createKakaoUser(String token) throws Exception;
 	ResponseEntity<String> requestProfile(HttpEntity request);
 	HttpEntity<MultiValueMap<String, String>> generateProfileRequest(String accessToken);
 	String extractAccessToken(String accessTokenResponse);

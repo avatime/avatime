@@ -21,6 +21,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.client.RestTemplate;
+import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 import org.yaml.snakeyaml.util.UriEncoder;
 
 import com.google.gson.JsonElement;
@@ -102,17 +103,8 @@ public class AuthController {
 	}
 	
 	
-	@GetMapping("/kakao")
-	public void  kakaoCallback(@RequestParam String code) throws Exception {
-		String access_Token = userService.getKaKaoAccessToken(code);
-		System.out.println("access : " + access_Token);
-        userService.createKakaoUser(access_Token);
-            	
-	    }
-	
-	
 	@GetMapping("/naver")
-	public ResponseEntity<?> naverCallback(@RequestParam String code, @RequestParam String state){
+	public ResponseEntity<?> naverCallback(@RequestParam String code, @RequestParam String state) throws Exception{
 		// 네이버 소셜 타입 1
 		int socialType = 1;
 		
@@ -128,13 +120,13 @@ public class AuthController {
 		JsonElement element = parser.parse(response.getBody());
 		JsonElement userInfo = element.getAsJsonObject().get("response");
 		String socialId = userInfo.getAsJsonObject().get("email").toString();
-
+		
 		// socialId(email)와 socialType을 통해 DB에 있는지 체크
 		User user = userService.getUserBySocialIdAndSocialType(socialId, socialType);
-
+		
 		// 회원 등록 진행
 		if (user == null) {
-
+			
 			UserRegisterPostReq registerInfo = new UserRegisterPostReq();
 			registerInfo.setGender(userInfo.getAsJsonObject().get("gender").toString());
 			registerInfo.setSocialId(userInfo.getAsJsonObject().get("email").toString());
@@ -144,8 +136,46 @@ public class AuthController {
 		}else {
 			return ResponseEntity.ok(UserLoginPostRes.of(200, "Success", JwtTokenUtil.getToken(user.getName())));
 		}
-		
 	}
+	
+	@GetMapping("/kakao")
+	public ResponseEntity<?> kakaoCallback(@RequestParam String code) throws Exception {
+		// 카카오 소셜 타입 2
+		int socialType = 2;
+		System.out.println("code: " + code);
+		// 토큰 가져오기
+		String access_Token = userService.getKaKaoAccessToken(code);
+		
+		// 사용자 정보 가져오기
+        String response = userService.createKakaoUser(access_Token);
+        
+        // 경고 무시
+ 		@SuppressWarnings("deprecation")
+ 		JsonParser parser = new JsonParser();
+ 		@SuppressWarnings("deprecation")
+ 		JsonElement element = parser.parse(response);
+ 		System.out.println("element: " + element);
+ 		JsonElement userInfo = element.getAsJsonObject().get("kakao_account");
+		String socialId = userInfo.getAsJsonObject().get("email").toString();
+		
+		// socialId(email)와 socialType을 통해 DB에 있는지 체크
+		User user = userService.getUserBySocialIdAndSocialType(socialId, socialType);
+		// 회원 등록 진행
+		if (user == null) {
+			
+			UserRegisterPostReq registerInfo = new UserRegisterPostReq();
+			registerInfo.setGender(userInfo.getAsJsonObject().get("gender").toString());
+			registerInfo.setSocialId(userInfo.getAsJsonObject().get("email").toString());
+			registerInfo.setSocialType(socialType);
+			
+			return ResponseEntity.status(204).body(UserRegisterPostReq.of(204, "Unknown User", registerInfo));	
+		}else {
+			System.out.println("user: " + user.getName());
+			return ResponseEntity.ok(UserLoginPostRes.of(200, "Success", JwtTokenUtil.getToken(user.getName())));
+		}
+	}
+	
+	
 
 	// 아이디 중복 체크
 	@GetMapping("/check/{name}")
