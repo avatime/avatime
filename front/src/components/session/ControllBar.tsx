@@ -9,6 +9,7 @@ import SettingsIcon from "@mui/icons-material/Settings";
 import ExitToAppIcon from "@mui/icons-material/ExitToApp";
 import PeopleIcon from "@mui/icons-material/People";
 import { Clock } from "./Clock";
+import { FinalPickModal } from "./modal/FinalPickModal";
 
 type Type = "master" | "normal";
 interface IProps {
@@ -26,9 +27,16 @@ export const ControllBar: FC<IProps> = ({ type }) => {
     setCameraStatus((prev) => !prev);
   };
 
+  const [lastPickModalOpen, setLastPickModalOpen] = useState(false);
+
   const onClickSettings = () => {};
 
-  const onClickPick = () => {};
+  const onClickPick = () => {
+    // eslint-disable-next-line no-restricted-globals
+    if (confirm("정말 최종 선택을 하시겠습니까?")) {
+      setLastPickModalOpen(true);
+    }
+  };
 
   const onClickExit = () => {};
 
@@ -42,6 +50,8 @@ export const ControllBar: FC<IProps> = ({ type }) => {
       onClickSettings={onClickSettings}
       onClickPick={onClickPick}
       onClickExit={onClickExit}
+      lastPickModalOpen={lastPickModalOpen}
+      onCloseLastPickModal={() => setLastPickModalOpen(false)}
     />
   );
 };
@@ -55,6 +65,8 @@ interface IPresenterProps {
   onClickSettings: () => void;
   onClickPick: () => void;
   onClickExit: () => void;
+  lastPickModalOpen: boolean;
+  onCloseLastPickModal: () => void;
 }
 
 export const ControllBarPresenter: FC<IPresenterProps> = ({
@@ -66,6 +78,8 @@ export const ControllBarPresenter: FC<IPresenterProps> = ({
   onClickSettings,
   onClickPick,
   onClickExit,
+  lastPickModalOpen,
+  onCloseLastPickModal
 }) => {
   return (
     <>
@@ -104,6 +118,7 @@ export const ControllBarPresenter: FC<IPresenterProps> = ({
           </Button>
         </Box>
       </Box>
+      <FinalPickModal isOpened={lastPickModalOpen} onClose={onCloseLastPickModal} />
     </>
   );
 };

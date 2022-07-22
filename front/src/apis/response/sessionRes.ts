@@ -3,5 +3,9 @@ export interface SessionUserListRes {
 }
 
 export interface SessionUser {
-    name: string;
+    userId: number;
+    userName: string;
+    avatarId: number;
+    avatarName: string;
+    avatarImagePath: string;
 }
