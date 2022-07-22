@@ -1,6 +1,6 @@
 import React, { FC, useState } from "react";
 import { Box } from "@mui/system";
-import { Button, Card, useTheme } from "@mui/material";
+import { Button } from "@mui/material";
 import MicIcon from "@mui/icons-material/Mic";
 import MicOffIcon from "@mui/icons-material/MicOff";
 import VideocamIcon from "@mui/icons-material/Videocam";
@@ -67,43 +67,43 @@ export const ControllBarPresenter: FC<IPresenterProps> = ({
   onClickPick,
   onClickExit,
 }) => {
-  const theme = useTheme();
-
   return (
-    <Card sx={{ display: "flex" }}>
-      <Box width="30%" display="flex" justifyContent="center" alignItems="center" bgcolor={theme.palette.primary.main}>
-        <Clock />
-      </Box>
+    <>
+      <Box sx={{ display: "flex" }}>
+        <Box width="30%" display="flex" justifyContent="center" alignItems="center">
+          <Clock />
+        </Box>
 
-      <Box flex={1} display="flex" flexDirection="row" justifyContent="space-around" p={2}>
-        <Button
-          variant="contained"
-          color={micStatus ? "primary" : "error"}
-          startIcon={micStatus ? <MicIcon /> : <MicOffIcon />}
-          onClick={onChangeMicStatus}
-        >
-          마이크
-        </Button>
-        <Button
-          variant="contained"
-          color={cameraStatus ? "primary" : "error"}
-          startIcon={cameraStatus ? <VideocamIcon /> : <VideocamOffIcon />}
-          onClick={onChangeCameraStatus}
-        >
-          카메라
-        </Button>
-        <Button variant="contained" startIcon={<SettingsIcon />} onClick={onClickSettings}>
-          설정
-        </Button>
-        {type === "master" && (
-          <Button variant="contained" startIcon={<PeopleIcon />} onClick={onClickPick}>
-            최종 선택
+        <Box flex={1} display="flex" flexDirection="row" justifyContent="space-around" p={2}>
+          <Button
+            variant="contained"
+            color={micStatus ? "primary" : "error"}
+            startIcon={micStatus ? <MicIcon /> : <MicOffIcon />}
+            onClick={onChangeMicStatus}
+          >
+            마이크
           </Button>
-        )}
-        <Button variant="contained" startIcon={<ExitToAppIcon />} onClick={onClickExit}>
-          나가기
-        </Button>
+          <Button
+            variant="contained"
+            color={cameraStatus ? "primary" : "error"}
+            startIcon={cameraStatus ? <VideocamIcon /> : <VideocamOffIcon />}
+            onClick={onChangeCameraStatus}
+          >
+            카메라
+          </Button>
+          <Button variant="contained" startIcon={<SettingsIcon />} onClick={onClickSettings}>
+            설정
+          </Button>
+          {type === "master" && (
+            <Button variant="contained" startIcon={<PeopleIcon />} onClick={onClickPick}>
+              최종 선택
+            </Button>
+          )}
+          <Button variant="contained" startIcon={<ExitToAppIcon />} onClick={onClickExit}>
+            나가기
+          </Button>
+        </Box>
       </Box>
-    </Card>
+    </>
   );
 };

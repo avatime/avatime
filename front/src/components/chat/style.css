@@ -1,6 +1,6 @@
 .chat__bubble__left {
   position: relative;
-  background: #00aabb;
+  background: #1E293B;
   border-radius: 0.4em;
   padding: 10px;
 }
@@ -13,7 +13,7 @@
   width: 0;
   height: 0;
   border: 5px solid transparent;
-  border-right-color: #00aabb;
+  border-right-color: #1E293B;
   border-left: 0;
   margin-top: -5px;
   margin-left: -5px;
@@ -21,7 +21,7 @@
 
 .chat__bubble__right {
   position: relative;
-  background: darkgoldenrod;
+  background: #D97706;
   border-radius: 0.4em;
   padding: 10px;
 }
@@ -34,14 +34,10 @@
 	width: 0;
 	height: 0;
 	border: 5px solid transparent;
-	border-left-color: darkgoldenrod;
+	border-left-color: #D97706;
 	border-right: 0;
 	margin-top: -5px;
 	margin-right: -5px;
-}
-
-.chat__footer {
-  background-color: darkgray;
 }
 
 .chat__input {
@@ -50,12 +46,6 @@
 
 .chat__input__textarea {
   overflow: hidden;
-}
-
-.chat__body {
-  background-color: oldlace;
-  overflow: auto;
-  flex-grow: 1;
 }
 
 .MuiCollapse-root {
