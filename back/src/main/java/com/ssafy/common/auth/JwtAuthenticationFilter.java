@@ -78,8 +78,8 @@ public class JwtAuthenticationFilter extends BasicAuthenticationFilter {
             DecodedJWT decodedJWT = verifier.verify(token.replace(JwtTokenUtil.TOKEN_PREFIX, ""));
             String name = decodedJWT.getSubject();
             
-            // Search in the DB if we find the user by token subject (username)
-            // If so, then grab user details and create spring auth token using username, pass, authorities/roles
+            // Search in the DB if we find the user by token subject (name)
+            // If so, then grab user details and create spring auth token using name, pass, authorities/roles
             if (name != null) {
                     // jwt 토큰에 포함된 계정 정보(userId) 통해 실제 디비에 해당 정보의 계정이 있는지 조회.
             		User user = userService.getUserByUserName(name);

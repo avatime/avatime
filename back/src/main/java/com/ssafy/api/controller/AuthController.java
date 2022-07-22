@@ -1,8 +1,10 @@
 package com.ssafy.api.controller;
 
 import java.math.BigInteger;
+import java.net.URI;
 import java.security.SecureRandom;
 
+import org.omg.CORBA.UserException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpHeaders;
@@ -12,6 +14,7 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.util.LinkedMultiValueMap;
 import org.springframework.util.MultiValueMap;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -61,9 +64,9 @@ public class AuthController {
     })
 	public ResponseEntity<?> login(@RequestBody @ApiParam(value="로그인 정보", required = true) UserLoginPostReq loginInfo) {
 		String socialId = loginInfo.getSocialId();
-		String socialType = loginInfo.getSocialType();
+		int socialType = loginInfo.getSocialType();
 		
-		User user = userService.getUserByUserSocialId(socialId, socialType);
+		User user = userService.getUserBySocialIdAndSocialType(socialId, socialType);
 		
 		// 로그인 요청한 유저가 DB에 존재하는 유저인지 확인. (존재하는 회원인지 판단)
 		if(user != null) {
@@ -96,29 +99,58 @@ public class AuthController {
 		
 		// 여기서 토큰 발행
 		return ResponseEntity.ok(UserLoginPostRes.of(200, "Success", JwtTokenUtil.getToken(user.getName())));
-		
-//		return ResponseEntity.status(200).body(BaseResponseBody.of(200, "Success"));
 	}
 	
 	
 	@GetMapping("/kakao")
 	public void  kakaoCallback(@RequestParam String code) throws Exception {
-
-			System.out.println("1qjs " + code);
-			String access_Token = userService.getKaKaoAccessToken(code);
-			System.out.println("access : " + access_Token);
-            userService.createKakaoUser(access_Token);
-//	            return ResponseEntity.status(200).body(BaseResponseBody.of(200, "Success"));
-
+		String access_Token = userService.getKaKaoAccessToken(code);
+		System.out.println("access : " + access_Token);
+        userService.createKakaoUser(access_Token);
+            	
 	    }
 	
 	
 	@GetMapping("/naver")
-	public String naverCallback(@RequestParam String code, @RequestParam String state) {
+	public ResponseEntity<?> naverCallback(@RequestParam String code, @RequestParam String state){
+		// 네이버 소셜 타입 1
+		int socialType = 1;
+		
+		// 토큰 가져오기
 		String accessToken = userService.extractAccessToken(userService.requestAccessToken(userService.generateAuthCodeRequest(code, state)).getBody());
-		System.out.println(accessToken);
-		return userService.requestProfile(userService.generateProfileRequest(accessToken)).getBody();
+		
+		// 사용자 정보 가져오기
+		ResponseEntity<String> response = userService.requestProfile(userService.generateProfileRequest(accessToken));
+		// 경고 무시
+		@SuppressWarnings("deprecation")
+		JsonParser parser = new JsonParser();
+		@SuppressWarnings("deprecation")
+		JsonElement element = parser.parse(response.getBody());
+		JsonElement userInfo = element.getAsJsonObject().get("response");
+		String socialId = userInfo.getAsJsonObject().get("email").toString();
+
+		// socialId(email)와 socialType을 통해 DB에 있는지 체크
+		User user = userService.getUserBySocialIdAndSocialType(socialId, socialType);
+
+		// 회원 등록 진행
+		if (user == null) {
+
+			UserRegisterPostReq registerInfo = new UserRegisterPostReq();
+			registerInfo.setGender(userInfo.getAsJsonObject().get("gender").toString());
+			registerInfo.setSocialId(userInfo.getAsJsonObject().get("email").toString());
+			registerInfo.setSocialType(socialType);
+			
+			return ResponseEntity.status(204).body(UserRegisterPostReq.of(204, "Unknown User", registerInfo));	
+		}else {
+			return ResponseEntity.ok(UserLoginPostRes.of(200, "Success", JwtTokenUtil.getToken(user.getName())));
+		}
+		
 	}
-	
-	
+
+	// 아이디 중복 체크
+	@GetMapping("/check/{name}")
+	public ResponseEntity<Boolean> checkNameDuplicate(@PathVariable String name){
+		return ResponseEntity.ok(userService.checkNameDuplicate(name));
+	}
 }
+
