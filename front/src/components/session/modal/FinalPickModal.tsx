@@ -3,15 +3,15 @@ import React, { FC, useState } from "react";
 import { useEffect } from "react";
 import { useQuery } from "react-query";
 import { useSelector } from "react-redux";
+import { useNavigate } from "react-router";
 import sessionApi from "../../../apis/sessionApi";
 import { AvatarProfile } from "./AvatarProfile";
 
 interface IProps {
   isOpened: boolean;
-  onClose: () => void;
 }
 
-export const FinalPickModal: FC<IProps> = ({ isOpened, onClose }) => {
+export const FinalPickModal: FC<IProps> = ({ isOpened }) => {
   const totalUserList = useSelector((state: any) => state.meeting.userList);
 
   const [selectedUserId, setSelectedUserId] = useState(
@@ -33,7 +33,7 @@ export const FinalPickModal: FC<IProps> = ({ isOpened, onClose }) => {
       }, 1000);
       return () => clearInterval(id);
     }
-  }, [timer, onClose]);
+  }, [timer]);
 
   const { isLoading } = useQuery(
     "meeting/pick",
@@ -45,16 +45,16 @@ export const FinalPickModal: FC<IProps> = ({ isOpened, onClose }) => {
       }),
     {
       enabled: timer === 0,
-      keepPreviousData: false
+      keepPreviousData: false,
     }
   );
 
+  const navigate = useNavigate();
   useEffect(() => {
     if (timer === 0 && !isLoading) {
-      onClose();
-      setTimer(-1);
+      navigate("/finalPickResult");
     }
-  }, [timer, isLoading, onClose]);
+  }, [timer, isLoading, navigate]);
 
   return (
     <FinalPickModalPresenter

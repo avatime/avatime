@@ -51,7 +51,6 @@ export const ControllBar: FC<IProps> = ({ type }) => {
       onClickPick={onClickPick}
       onClickExit={onClickExit}
       lastPickModalOpen={lastPickModalOpen}
-      onCloseLastPickModal={() => setLastPickModalOpen(false)}
     />
   );
 };
@@ -66,7 +65,6 @@ interface IPresenterProps {
   onClickPick: () => void;
   onClickExit: () => void;
   lastPickModalOpen: boolean;
-  onCloseLastPickModal: () => void;
 }
 
 export const ControllBarPresenter: FC<IPresenterProps> = ({
@@ -79,7 +77,6 @@ export const ControllBarPresenter: FC<IPresenterProps> = ({
   onClickPick,
   onClickExit,
   lastPickModalOpen,
-  onCloseLastPickModal
 }) => {
   return (
     <>
@@ -118,7 +115,7 @@ export const ControllBarPresenter: FC<IPresenterProps> = ({
           </Button>
         </Box>
       </Box>
-      <FinalPickModal isOpened={lastPickModalOpen} onClose={onCloseLastPickModal} />
+      <FinalPickModal isOpened={lastPickModalOpen} />
     </>
   );
 };
