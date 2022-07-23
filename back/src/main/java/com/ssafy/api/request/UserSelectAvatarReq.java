@@ -10,8 +10,9 @@ import lombok.Setter;
 @Getter
 @Setter
 @ApiModel("UserSelectAvatar")
-public class UserSelectAvatar {
+public class UserSelectAvatarReq {
 
+	Long meetingroom_id;
 	Long user_id;
 	Long avatar_id;
 }

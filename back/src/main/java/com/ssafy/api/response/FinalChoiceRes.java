@@ -3,9 +3,10 @@ package com.ssafy.api.response;
 import java.util.List;
 
 import com.ssafy.api.response.entity.Result;
-import com.ssafy.db.entity.User;
+import com.ssafy.common.model.response.BaseResponseBody;
 
 import io.swagger.annotations.ApiModel;
+import lombok.Builder;
 import lombok.Getter;
 import lombok.Setter;
 
@@ -15,15 +16,19 @@ import lombok.Setter;
 @Getter
 @Setter
 @ApiModel("FinalChoiceResponse")
-public class FinalChoiceRes {
+public class FinalChoiceRes extends BaseResponseBody {
 
 	boolean matched;
-	int meetingroom_id;
+	Long meetingroom_id;
 	List<Result> result_list;
 	
-	public static FinalChoiceRes of(int meetingroom_id) {
+	public static FinalChoiceRes of(Integer statusCode, String message, FinalChoiceRes finalChoiceRes) {
 		FinalChoiceRes res = new FinalChoiceRes();
-		res.setMeetingroom_id(meetingroom_id);
+		res.setMeetingroom_id(finalChoiceRes.meetingroom_id);
+		res.setMatched(finalChoiceRes.matched);
+		res.setResult_list(finalChoiceRes.result_list);
+		res.setStatusCode(statusCode);
+		res.setMessage(message);
 		return res;
 	}
 }

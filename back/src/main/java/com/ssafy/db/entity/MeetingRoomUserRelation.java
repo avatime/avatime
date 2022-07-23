@@ -22,7 +22,7 @@ public class MeetingRoomUserRelation  extends BaseEntity {
 
 	@ManyToOne
 	@JoinColumn(name = "session_id", insertable = false, updatable=false)
-	private MeetingRoom meetingRoom;
+	private MeetingRoom meetingRoomId;
 	
     @Column(name="user_id", updatable = false, nullable = false, columnDefinition = "INT UNSIGNED")
 	private Long userId;
