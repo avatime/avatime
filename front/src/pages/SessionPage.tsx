@@ -1,18 +1,12 @@
 import React, { FC, useEffect, useState } from "react";
-import { Conference } from "../components/session/Conference";
 import { ChatRoom } from "../components/chat/ChatRoom";
 import { Box, Grid } from "@mui/material";
 import { ControllBar } from "../components/session/ControllBar";
 import { OpenVidu } from "openvidu-browser";
-import { useDispatch, useSelector } from 'react-redux';
-import {
-  clearSubscribers,
-  pushSubscribers,
-  removeSubscribers,
-  setCurrentVideoDevice,
-  setPublisher,
-} from "../stores/slices/meetingSlice";
 import { getToken } from "../apis/openViduApi";
+import { VideoStream } from "../components/session/VideoStream";
+import { grey } from "@mui/material/colors";
+import { useSelector } from "react-redux";
 
 interface IProps {}
 
@@ -20,58 +14,54 @@ export const SessionPage: FC<IProps> = (props) => {
   const [opened, setOpened] = useState<boolean[]>([true, true]);
   const cntOpened = opened.filter((it) => it).length;
 
-
   const roomId = useSelector((state: any) => state.meeting.roomId);
-  const dispatch = useDispatch();
+  const [subscribers, setSubscribers] = useState<any[]>([]);
+  const [publisher, setPublisher] = useState<any>();
 
   useEffect(() => {
-    const openVidu = new OpenVidu()
+    console.log(
+      "useEffectuseEffectuseEffectuseEffectuseEffectuseEffectuseEffectuseEffectuseEffectuseEffectuseEffectuseEffectuseEffect"
+    );
+    const openVidu = new OpenVidu();
     const session = openVidu.initSession();
 
     session.on("streamCreated", (event) => {
       var subscriber = session.subscribe(event.stream, "");
-      dispatch(pushSubscribers(subscriber));
+      setSubscribers((prev) => [...prev, subscriber]);
     });
 
     session.on("streamDestroyed", (event) => {
-      dispatch(removeSubscribers(event.stream.streamManager));
+      setSubscribers((prev) => {
+        let index = prev.indexOf(event.stream.streamManager, 0);
+        return -1 < index ? prev.splice(index, 1) : prev;
+      });
     });
 
     session.on("exception", (exception) => {
       console.warn(exception);
     });
 
-
     getToken(String(roomId)).then((token) => {
-      // First param is the token got from OpenVidu Server. Second param can be retrieved by every user on event
-      // 'streamCreated' (property Stream.connection.data), and will be appended to DOM as the user's nickname
       session
         .connect(token, { clientData: "userName" })
         .then(async () => {
           await navigator.mediaDevices.getUserMedia({ audio: true, video: true });
-          var devices = await openVidu.getDevices();
-          var videoDevices = devices.filter((device) => device.kind === "videoinput");
+          const devices = await openVidu.getDevices();
+          const videoDevices = devices.filter((device) => device.kind === "videoinput");
 
-          // --- 5) Get your own camera stream ---
-
-          // Init a publisher passing undefined as targetElement (we don't want OpenVidu to insert a video
-          // element: we will manage it on our own) and with the desired properties
-          let publisher = openVidu.initPublisher("", {
-            audioSource: undefined, // The source of audio. If undefined default microphone
-            videoSource: videoDevices[0].deviceId, // The source of video. If undefined default webcam
-            publishAudio: true, // Whether you want to start publishing with your audio unmuted or not
-            publishVideo: true, // Whether you want to start publishing with your video enabled or not
-            resolution: "640x480", // The resolution of your video
-            frameRate: 30, // The frame rate of your video
-            insertMode: "APPEND", // How the video is inserted in the target element 'video-container'
-            mirror: false, // Whether to mirror your local video or not
+          const publisher = openVidu.initPublisher("", {
+            audioSource: undefined,
+            videoSource: videoDevices[0].deviceId,
+            publishAudio: true,
+            publishVideo: true,
+            resolution: "640x480",
+            frameRate: 30,
+            insertMode: "APPEND",
+            mirror: false,
           });
 
-          // --- 6) Publish your stream ---
-
+          setPublisher(publisher);
           session.publish(publisher);
-          dispatch(setPublisher(publisher));
-          dispatch(setCurrentVideoDevice(videoDevices[0]));
         })
         .catch((error) => {
           console.log("There was an error connecting to the session:", error.code, error.message);
@@ -80,17 +70,45 @@ export const SessionPage: FC<IProps> = (props) => {
 
     return () => {
       session.disconnect();
-      dispatch(clearSubscribers());
-      dispatch(setPublisher(undefined));
-      dispatch(setCurrentVideoDevice(undefined));
+      setSubscribers([]);
     };
-  }, [dispatch, roomId]);
+  }, [roomId, setPublisher]);
+
+  const headCount = useSelector((state: any) => state.meeting.headCount);
 
   return (
     <Grid container spacing={3} sx={{ float: "left" }} p={2}>
       <Grid item xs={9}>
         <Box height="95vh" display="flex" flexDirection="column">
-          <Conference />
+          <Box borderRadius="10px" flex={1} position="relative" bgcolor={grey[200]}>
+            {headCount === 2 ? (
+              <>
+                <Box height="95%" p={2}>
+                  <VideoStream streamManager={subscribers[0]} name={"아무개"} />
+                </Box>
+                <Box width="30%" height="30%" p={2} position="absolute" bottom="0" right="0">
+                  <VideoStream streamManager={publisher} name={"나나나나"} />
+                </Box>
+              </>
+            ) : (
+              <Box height="100%" display="flex" flexDirection="column" p={2}>
+                {publisher &&
+                  [0, 1].map((it, idx) => (
+                    <Box flex={1} key={idx}>
+                      <Grid container height="95%" spacing={2} alignItems="stretch">
+                        {[publisher, ...subscribers]
+                          .slice((it * headCount) / 2, ((it + 1) * headCount) / 2)
+                          .map((it, idx) => (
+                            <Grid item xs={24 / headCount} key={idx}>
+                              <VideoStream streamManager={it} name={"sdafasdf"} />
+                            </Grid>
+                          ))}
+                      </Grid>
+                    </Box>
+                  ))}
+              </Box>
+            )}
+          </Box>
           <Box p={1} />
           <ControllBar type="master" />
         </Box>
