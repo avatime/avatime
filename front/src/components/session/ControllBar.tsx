@@ -115,7 +115,7 @@ export const ControllBarPresenter: FC<IPresenterProps> = ({
           </Button>
         </Box>
       </Box>
-      <FinalPickModal isOpened={lastPickModalOpen} />
+      {lastPickModalOpen && <FinalPickModal isOpened={lastPickModalOpen} />}
     </>
   );
 };
