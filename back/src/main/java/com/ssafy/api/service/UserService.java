@@ -18,6 +18,7 @@ public interface UserService {
 	User getUserByUserId(Long userId);
 	User getUserBySocialIdAndSocialType(String socialId, int socialType);
 	User updateUserInfo(Long userId, UserUpdatePostReq updateInfo);
+	void deleteUserInfo(Long userId);
 	public String getKaKaoAccessToken(String code);
 	public String createKakaoUser(String token) throws Exception;
 	ResponseEntity<String> requestProfile(HttpEntity request);

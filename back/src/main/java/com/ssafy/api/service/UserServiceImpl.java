@@ -105,7 +105,7 @@ public class UserServiceImpl implements UserService {
 		return response;
 	}
 	
-	// 회원 정보 수정
+	// 유저 정보 수정
 	@Override
 	public User updateUserInfo(Long userId, UserUpdatePostReq updateInfo) {
 		Optional<User> user = userRepository.findById(userId);
@@ -118,6 +118,13 @@ public class UserServiceImpl implements UserService {
 		newUserInfo.setDescription(updateInfo.getDescription());
 		
 		return userRepository.save(newUserInfo);
+	}
+	
+	// 유저 정보 삭제
+	@Override
+	public void deleteUserInfo(Long userId) {
+		userRepository.deleteById(userId);
+		
 	}
 	
 	// 카카오 토큰 받기
