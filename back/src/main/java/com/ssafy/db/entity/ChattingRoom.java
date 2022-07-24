@@ -15,6 +15,7 @@ import javax.persistence.TemporalType;
 import org.hibernate.annotations.DynamicInsert;
 import org.hibernate.annotations.DynamicUpdate;
 
+import lombok.Builder;
 import lombok.Getter;
 import lombok.Setter;
 
@@ -27,12 +28,11 @@ import lombok.Setter;
 @Setter
 public class ChattingRoom extends BaseEntity {
 
-	@ManyToOne
-	@JoinColumn(name = "using_room_id", insertable = false, updatable=false)
-	private WaitingRoom waitingRoom;
+	@Column(nullable = false, columnDefinition = "INT UNSIGNED")
+	private Long room_id;
 	
     @Column(updatable = false, nullable = false, columnDefinition = "TINYINT(1)")
-	private String type;
+	private int type;
 	
 	@Temporal(TemporalType.TIMESTAMP)
     @Column(updatable = false, columnDefinition = "TIMESTAMP DEFAULT CURRENT_TIMESTAMP")
@@ -41,5 +41,11 @@ public class ChattingRoom extends BaseEntity {
     @PrePersist
     protected void onCreate() {
     	created_time = Timestamp.valueOf(LocalDateTime.now());
+    }
+    
+    @Builder(builderClassName = "ByWaitingRoomBuilder", builderMethodName = "ByWaitingRoomBuilder")
+    public ChattingRoom(Long room_id) {
+    	this.room_id = room_id;
+    	this.type = 2;
     }
 }

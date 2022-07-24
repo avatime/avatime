@@ -10,7 +10,7 @@ import com.ssafy.api.request.WaitingRoomPostReq;
 import com.ssafy.db.entity.WaitingRoom;
 import com.ssafy.db.repository.WaitingRoomRepository;
 
-@Service("waitingService")
+@Service("waitingRoomService")
 public class WaitingRoomServiceImpl implements WaitingRoomService{
 	@Autowired
 	WaitingRoomRepository waitingRoomRepository;

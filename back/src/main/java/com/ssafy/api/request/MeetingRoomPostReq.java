@@ -14,6 +14,6 @@ import lombok.Setter;
 public class MeetingRoomPostReq {
 
 	@ApiModelProperty(name="Meeting Room Type", example="0")
-	String type;
+	int type;
 	Long mainSessionId; 
 }
