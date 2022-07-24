@@ -18,6 +18,8 @@ import ExpandMoreIcon from "@mui/icons-material/ExpandMore";
 import MuiAccordion, { AccordionProps } from "@mui/material/Accordion";
 import { styled } from "@mui/material/styles";
 import useScrollToBottomRef from "../../hooks/useScrollToBottomRef";
+import { grey } from "@mui/material/colors";
+import SendIcon from "@mui/icons-material/Send";
 
 type ChatType = "all" | "gender";
 
@@ -42,8 +44,8 @@ export const ChatRoom: FC<IProps> = ({ chatType, isOpened, onClickHeader, maxHei
 
   const onKeyUp = (e: any) => {
     if (e.key === "Enter" && !e.shiftKey) {
-        sendMessage();
-      }
+      sendMessage();
+    }
   };
 
   const onKeyDown = (e: any) => {
@@ -133,13 +135,16 @@ const ChatRoomPresenter: FC<IPresenterProps> = ({
         flexGrow: isOpened ? 1 : 0,
         display: "flex",
         flexDirection: "column",
+        maxHeight: maxHeight,
+        borderRadius: "10px",
+        bgcolor: grey[50],
       }}
     >
       <AccordionSummary expandIcon={<ExpandMoreIcon />}>
         <Typography align="inherit">{title}</Typography>
       </AccordionSummary>
 
-      <List className="chat__body" ref={chatBodyRef} sx={{ maxHeight: maxHeight }}>
+      <List ref={chatBodyRef} sx={{ flexGrow: "1", bgcolor: grey[50], overflow: "auto" }}>
         {chatList.map((it, idx) => (
           <ChatBlock
             key={idx}
@@ -157,7 +162,9 @@ const ChatRoomPresenter: FC<IPresenterProps> = ({
         ))}
       </List>
 
-      <CardContent className="chat__footer">
+      <CardContent
+        sx={{ borderBottomLeftRadius: "10px", borderBottomRightRadius: "10px", bgcolor: "#D9D9D9" }}
+      >
         <Stack direction="row" spacing={1}>
           <TextField
             ref={chatInputRef}
@@ -173,7 +180,7 @@ const ChatRoomPresenter: FC<IPresenterProps> = ({
             onKeyDown={onKeyDown}
           />
           <Button variant="contained" onClick={sendMessage} disabled={!inputMessage}>
-            전송
+            <SendIcon />
           </Button>
         </Stack>
       </CardContent>

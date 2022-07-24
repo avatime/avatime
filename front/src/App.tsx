@@ -8,6 +8,7 @@ import { PersistGate } from "redux-persist/integration/react";
 import { persistStore } from "redux-persist";
 import { SessionPage } from './pages/SessionPage';
 import "./style.css";
+import { FinalPickResultPage } from './pages/FinalPickResultPage';
 
 function App() {
   return (
@@ -19,6 +20,7 @@ function App() {
               <Route path="/" element={<TestPage />} />
               <Route path="/main" element={<MainPage />} />
               <Route path="/session" element={<SessionPage />} />
+              <Route path="/finalPickResult" element={<FinalPickResultPage />} />
             </Routes>
           </BrowserRouter>
         </PersistGate>
