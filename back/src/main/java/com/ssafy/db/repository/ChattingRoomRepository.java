@@ -7,5 +7,4 @@ import com.ssafy.db.entity.ChattingRoom;
 
 @Repository
 public interface ChattingRoomRepository extends JpaRepository<ChattingRoom, Long>{
-
 }
