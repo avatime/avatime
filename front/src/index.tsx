@@ -13,11 +13,11 @@ const queryClient = new QueryClient();
 dayjs.extend(customParseFormat);
 
 root.render(
-  <React.StrictMode>
+  // <React.StrictMode>
     <QueryClientProvider client={queryClient}>
       <App />
     </QueryClientProvider>
-  </React.StrictMode>
+  // </React.StrictMode>
 );
 
 // If you want to start measuring performance in your app, pass a function
