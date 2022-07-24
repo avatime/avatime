@@ -1,79 +1,39 @@
-import React, { FC, Suspense } from "react";
-import { VideoProfile } from "./VideoProfile";
+import React, { FC } from "react";
+import { VideoStream } from "./VideoStream";
 import { Grid, Box } from "@mui/material";
 import { grey } from "@mui/material/colors";
-import { SessionUser } from "../../apis/response/sessionRes";
-import { useQuery } from "react-query";
-import sessionApi from "../../apis/sessionApi";
-import { SessionUserListRes } from "../../apis/response/sessionRes";
-import { ErrorBoundary } from "react-error-boundary";
-import { useEffect } from "react";
-import { useDispatch } from "react-redux";
-import { setUserList } from "../../stores/slices/meetingSlice";
+import { useSelector } from "react-redux";
 
 interface IProps {}
 
 export const Conference: FC<IProps> = (props) => {
-  const {
-    data: { userList },
-  } = useQuery<any, SessionUserListRes>(
-    "session/getUserList",
-    () => sessionApi.requestSessionUserList(8),
-    { suspense: true }
-  );
-
-  const dispatch = useDispatch();
-  useEffect(() => {
-    dispatch(
-      setUserList(
-        userList.map((it: SessionUser) => ({
-          userId: it.userId,
-          userName: it.userName,
-          avatarId: it.avatarId,
-          avatarName: it.avatarName,
-          avatarImagePath: it.avatarImagePath,
-        }))
-      )
-    );
-  }, [userList, dispatch]);
-
-  return (
-    <Suspense fallback={<h1>로딩중</h1>}>
-      <ErrorBoundary fallback={<h1>에러에러</h1>}>
-        <ConferencePresenter userList={userList} />
-      </ErrorBoundary>
-    </Suspense>
-  );
-};
-
-interface IPresenterProps {
-  userList: Array<SessionUser>;
-}
-
-const ConferencePresenter: FC<IPresenterProps> = ({ userList }) => {
-  const cntUser = userList.length;
+  const headCount = useSelector((state: any) => state.meeting.headCount);
+  const publisher = useSelector((state: any) => state.meeting.publisher);
+  const subscribers = useSelector((state: any) => state.meeting.subscribers);
 
   return (
     <Box borderRadius="10px" flex={1} position="relative" bgcolor={grey[200]}>
-      {cntUser === 2 ? (
+      {headCount === 2 ? (
         <>
           <Box height="95%" p={2}>
-            <VideoProfile sessionUser={userList[1]} />
+            <VideoStream streamManager={subscribers[0]} name={"아무개"} />
           </Box>
           <Box width="30%" height="30%" p={2} position="absolute" bottom="0" right="0">
-            <VideoProfile sessionUser={userList[0]} />
+            <VideoStream streamManager={publisher} name={"나나나나"} />
           </Box>
         </>
       ) : (
         <Box height="100%" display="flex" flexDirection="column" p={2}>
-          {[0, 1].map((it, idx) => (
+          {publisher && [0, 1].map((it, idx) => (
             <Box flex={1} key={idx}>
               <Grid container height="95%" spacing={2} alignItems="stretch">
-                {userList.slice((it * cntUser) / 2, ((it + 1) * cntUser) / 2).map((it, idx) => (
-                  <Grid item xs={24 / cntUser} key={idx}>
-                    <VideoProfile sessionUser={it} />
-                  </Grid>
-                ))}
+                {[publisher, ...subscribers]
+                  .slice((it * headCount) / 2, ((it + 1) * headCount) / 2)
+                  .map((it, idx) => (
+                    <Grid item xs={24 / headCount} key={idx}>
+                      <VideoStream streamManager={it} name={"sdafasdf"} />
+                    </Grid>
+                  ))}
               </Grid>
             </Box>
           ))}
