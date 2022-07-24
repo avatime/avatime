@@ -7,6 +7,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.Authentication;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PatchMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -15,6 +16,7 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.ssafy.api.request.UserRegisterPostReq;
+import com.ssafy.api.request.UserUpdatePostReq;
 import com.ssafy.api.response.UserRes;
 import com.ssafy.api.service.ProfileService;
 import com.ssafy.api.service.UserService;
@@ -81,6 +83,7 @@ public class UserController {
 //		return ResponseEntity.status(200).body(UserRes.of(user));
 //	}
 	
+	// 프로필 사진 목록 조회
 	@GetMapping("/profile")
 	@ApiOperation(value = "프로필 이미지 목록 조회", notes = "서버 내 모든 프로필 이미지 제공")
 	public ResponseEntity<List<Profile>> profile(){
@@ -89,6 +92,7 @@ public class UserController {
 	
 	}
 	
+	// 유저 정보 조회
 	@GetMapping("/{userId}")
 	public ResponseEntity<?> getUserInfo(@PathVariable Long userId){
 		User user = userService.getUserByUserId(userId);
@@ -98,6 +102,17 @@ public class UserController {
 			return ResponseEntity.status(404).body(null);
 		}
 		
+	}
+	
+	// 유저 정보 수정
+	@PatchMapping("/{userId}")
+	public ResponseEntity<?> modifyUserInfo(@PathVariable Long userId, UserUpdatePostReq updateInfo){
+		userService.updateUserInfo(userId, updateInfo);
+		if (userService.getUserByUserId(userId) != null) {
+			return ResponseEntity.status(200).body(BaseResponseBody.of(200, "성공적으로 변경했습니다."));
+		}else {
+			return ResponseEntity.status(409).body(BaseResponseBody.of(409, "존재하지 않는 회원입니다."));
+		}
 	}
 
 }

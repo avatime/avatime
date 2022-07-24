@@ -8,7 +8,9 @@ import java.io.OutputStreamWriter;
 import java.net.HttpURLConnection;
 import java.net.URL;
 import java.util.NoSuchElementException;
+import java.util.Optional;
 
+import javax.persistence.EntityNotFoundException;
 import javax.print.DocFlavor.STRING;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -26,6 +28,7 @@ import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonParser;
 import com.ssafy.api.request.UserRegisterPostReq;
+import com.ssafy.api.request.UserUpdatePostReq;
 import com.ssafy.api.response.UserRes;
 import com.ssafy.db.entity.User;
 import com.ssafy.db.repository.UserRepository;
@@ -102,6 +105,22 @@ public class UserServiceImpl implements UserService {
 		return response;
 	}
 	
+	// 회원 정보 수정
+	@Override
+	public User updateUserInfo(Long userId, UserUpdatePostReq updateInfo) {
+		Optional<User> user = userRepository.findById(userId);
+		if (!user.isPresent()) {
+			throw new EntityNotFoundException("존재하지 않는 회원입니다.");
+		}
+		User newUserInfo = user.get();
+		newUserInfo.setName(updateInfo.getName());
+		newUserInfo.setProfileId(updateInfo.getProfileId());
+		newUserInfo.setDescription(updateInfo.getDescription());
+		
+		return userRepository.save(newUserInfo);
+	}
+	
+	// 카카오 토큰 받기
 	@Override
 	public String getKaKaoAccessToken(String code){
         String access_Token="";
@@ -158,6 +177,7 @@ public class UserServiceImpl implements UserService {
         return access_Token;
     }
 	
+	// 카카오 유저 정보 가져오기
 	@Override
 	public String createKakaoUser(String token) throws Exception {
 
