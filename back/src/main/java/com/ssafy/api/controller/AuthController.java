@@ -105,6 +105,8 @@ public class AuthController {
 	
 	@GetMapping("/naver")
 	public ResponseEntity<?> naverCallback(@RequestParam String code, @RequestParam String state) throws Exception{
+		System.out.println(code);
+		
 		// 네이버 소셜 타입 1
 		int socialType = 1;
 		
@@ -123,7 +125,7 @@ public class AuthController {
 		
 		// socialId(email)와 socialType을 통해 DB에 있는지 체크
 		User user = userService.getUserBySocialIdAndSocialType(socialId, socialType);
-		
+		System.out.println("element: "+ element);
 		// 회원 등록 진행
 		if (user == null) {
 			
@@ -131,7 +133,7 @@ public class AuthController {
 			registerInfo.setGender(userInfo.getAsJsonObject().get("gender").toString());
 			registerInfo.setSocialId(userInfo.getAsJsonObject().get("email").toString());
 			registerInfo.setSocialType(socialType);
-			
+			System.out.println("Unknown User");
 			return ResponseEntity.status(204).body(UserRegisterPostReq.of(204, "Unknown User", registerInfo));	
 		}else {
 			return ResponseEntity.ok(UserLoginPostRes.of(200, "Success", JwtTokenUtil.getToken(user.getName())));
@@ -142,7 +144,7 @@ public class AuthController {
 	public ResponseEntity<?> kakaoCallback(@RequestParam String code) throws Exception {
 		// 카카오 소셜 타입 2
 		int socialType = 2;
-		System.out.println("code: " + code);
+		
 		// 토큰 가져오기
 		String access_Token = userService.getKaKaoAccessToken(code);
 		
@@ -154,8 +156,14 @@ public class AuthController {
  		JsonParser parser = new JsonParser();
  		@SuppressWarnings("deprecation")
  		JsonElement element = parser.parse(response);
- 		System.out.println("element: " + element);
  		JsonElement userInfo = element.getAsJsonObject().get("kakao_account");
+ 		
+ 		// socialId랑 성별에 동의하지 않았으면 리턴
+ 		if (userInfo.getAsJsonObject().get("email_needs_agreement").getAsBoolean() || userInfo.getAsJsonObject().get("gender_needs_agreement").getAsBoolean()) {
+ 			System.out.println("여기 나오냐?");
+ 			return ResponseEntity.status(204).body(UserRegisterPostReq.of(204, "E-mail과 성별에 동의해주세요."));
+ 		}
+ 		
 		String socialId = userInfo.getAsJsonObject().get("email").toString();
 		
 		// socialId(email)와 socialType을 통해 DB에 있는지 체크
@@ -176,11 +184,12 @@ public class AuthController {
 	}
 	
 	
-
 	// 아이디 중복 체크
 	@GetMapping("/check/{name}")
 	public ResponseEntity<Boolean> checkNameDuplicate(@PathVariable String name){
-		return ResponseEntity.ok(userService.checkNameDuplicate(name));
+		boolean response;
+		response = userService.checkNameDuplicate(name);
+		return ResponseEntity.ok(!response);
 	}
 }
 
