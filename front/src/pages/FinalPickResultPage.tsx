@@ -48,11 +48,12 @@ export const FinalPickResultPage: FC<IProps> = (props) => {
         while (temp[idx] !== -1 && idx < userList.length) {
           idx++;
         }
-        temp[idx++] = cnt++;
+        temp[idx] = cnt++;
+        prevUserIndex = idx++;
       } else {
         temp[pickUserIndex] = cnt++;
+        prevUserIndex = pickUserIndex;
       }
-      prevUserIndex = pickUserIndex;
     }
     setArrowOrderList(temp);
   }, [data, userList.length]);
