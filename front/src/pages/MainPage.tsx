@@ -5,21 +5,27 @@ import Typography from "@mui/material/Typography";
 import Modal from "@mui/material/Modal";
 import TextField from "@mui/material/TextField";
 import MenuItem from "@mui/material/MenuItem";
-import { IconButton } from "@mui/material";
+import { IconButton, Paper } from "@mui/material";
 import AddCircleOutlineIcon from "@mui/icons-material/AddCircleOutline";
+import "../style.css";
+import { MainSearchBar } from "../components/main/MainSearchBar";
+import { WaitingRoomList } from "../components/main/WaitingRoomList";
+import { MainHeader } from "../components/main/MainHeader";
 
 //import { MainHeader } from '../components/main/MainHeader'
-//import { MainSearchBar } from '../components/main/MainSearchBar'
+
 const style = {
   position: "absolute" as "absolute",
   top: "50%",
   left: "50%",
   transform: "translate(-50%, -50%)",
-  width: 400,
+  width: 300,
+  height: 400,
   bgcolor: "background.paper",
   border: "2px solid #000",
   boxShadow: 24,
   p: 4,
+  borderRadius: "10px",
 };
 
 const counts = [
@@ -99,11 +105,16 @@ export const MainPage: FC<IProps> = (props) => {
   };
 
   return (
-    <div>
-      <Button onClick={handleOpen}>Open modal</Button>
-      <IconButton aria-label="makenewroom" disabled color="primary">
-        <AddCircleOutlineIcon />
-      </IconButton>
+    <div className="mainback">
+      <MainHeader />
+      <MainSearchBar />
+      <WaitingRoomList />
+      <Button onClick={handleOpen} style={{ position: "absolute", bottom: "10%", right: "10%" }}>
+        새로운 방 만들기
+      </Button>
+      {/* <IconButton  aria-label="makenewroom" disabled color="primary">
+          <AddCircleOutlineIcon onClick={handleOpen} style={{position:"absolute", bottom:0}}/>
+        </IconButton> */}
       <Modal
         open={open}
         onClose={handleClose}
@@ -111,7 +122,7 @@ export const MainPage: FC<IProps> = (props) => {
         aria-describedby="modal-modal-description"
       >
         <Box sx={style}>
-          <Typography id="modal-modal-title" variant="h6" component="h2">
+          <Typography id="modal-modal-title" variant="h6" component="h2" textAlign="center">
             새로운 방 만들기
           </Typography>
           <Typography id="modal-modal-description" sx={{ mt: 2 }}>
@@ -123,63 +134,65 @@ export const MainPage: FC<IProps> = (props) => {
               noValidate
               autoComplete="off"
             >
-              <div>
-                <TextField
-                  id="outlined-multiline-flexible"
-                  label="방 제목"
-                  multiline
-                  maxRows={4}
-                  value={value}
-                  onChange={handleNameChange}
-                />
-              </div>
-              <div>
-                <TextField
-                  id="outlined-select-currency"
-                  select
-                  label="인원수"
-                  value={count}
-                  onChange={handleCountChange}
-                >
-                  {counts.map((option) => (
-                    <MenuItem key={option.value} value={option.value}>
-                      {option.label}
-                    </MenuItem>
-                  ))}
-                </TextField>
-              </div>
-              <div>
-                <TextField
-                  id="outlined-select-currency"
-                  select
-                  label="연령대"
-                  value={age}
-                  onChange={handleAgeChange}
-                >
-                  {ages.map((option) => (
-                    <MenuItem key={option.value} value={option.value}>
-                      {option.label}
-                    </MenuItem>
-                  ))}
-                </TextField>
-              </div>
-              <div>
-                <TextField
-                  id="outlined-select-currency"
-                  select
-                  label="지역"
-                  value={sido}
-                  onChange={handleSidoChange}
-                >
-                  {sidos.map((option) => (
-                    <MenuItem key={option.value} value={option.value}>
-                      {option.label}
-                    </MenuItem>
-                  ))}
-                </TextField>
-              </div>
-              <Button>취소</Button>
-              <Button onClick={handleClose}>확인</Button>
+              <TextField
+                id="outlined-multiline-flexible"
+                label="방 제목"
+                multiline
+                maxRows={4}
+                value={value}
+                onChange={handleNameChange}
+                style={{ position: "relative", top: 30, right: -30 }}
+              />
+
+              <TextField
+                id="outlined-select-currency"
+                select
+                label="인원수"
+                value={count}
+                onChange={handleCountChange}
+                style={{ position: "relative", top: 30, right: -30 }}
+              >
+                {counts.map((option) => (
+                  <MenuItem key={option.value} value={option.value}>
+                    {option.label}
+                  </MenuItem>
+                ))}
+              </TextField>
+
+              <TextField
+                id="outlined-select-currency"
+                select
+                label="연령대"
+                value={age}
+                onChange={handleAgeChange}
+                style={{ position: "relative", top: 30, right: -30 }}
+              >
+                {ages.map((option) => (
+                  <MenuItem key={option.value} value={option.value}>
+                    {option.label}
+                  </MenuItem>
+                ))}
+              </TextField>
+
+              <TextField
+                id="outlined-select-currency"
+                select
+                label="지역"
+                value={sido}
+                onChange={handleSidoChange}
+                style={{ position: "relative", top: 30, right: -30 }}
+              >
+                {sidos.map((option) => (
+                  <MenuItem key={option.value} value={option.value}>
+                    {option.label}
+                  </MenuItem>
+                ))}
+              </TextField>
+
+              <Button style={{ position: "absolute", right: 55, bottom: 10 }}>취소</Button>
+              <Button onClick={handleClose} style={{ position: "absolute", right: 5, bottom: 10 }}>
+                확인
+              </Button>
             </Box>
           </Typography>
         </Box>

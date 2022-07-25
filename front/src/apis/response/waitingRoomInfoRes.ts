@@ -8,5 +8,5 @@ export interface WaitingRoomInfoRes {
   age: String;
   sido_id: Number;
   created_time: String;
-  status: boolean;
+  status: Number;
 }
