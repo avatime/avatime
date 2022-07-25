@@ -6,11 +6,39 @@ import { OpenVidu } from "openvidu-browser";
 import { getToken } from "../apis/openViduApi";
 import { VideoStream } from "../components/session/VideoStream";
 import { grey } from "@mui/material/colors";
-import { useSelector } from "react-redux";
+import { useDispatch, useSelector } from "react-redux";
+import { SessionUser, SessionUserListRes } from "../apis/response/sessionRes";
+import { useQuery } from "react-query";
+import sessionApi from "../apis/sessionApi";
+import { setUserList } from "../stores/slices/meetingSlice";
 
 interface IProps {}
 
 export const SessionPage: FC<IProps> = (props) => {
+  const {
+    data: { userList },
+  } = useQuery<any, SessionUserListRes>(
+    "session/getUserList",
+    () => sessionApi.requestSessionUserList(8),
+    { suspense: true }
+  );
+
+  const dispatch = useDispatch();
+  useEffect(() => {
+    dispatch(
+      setUserList(
+        userList.map((it: SessionUser) => ({
+          userId: it.userId,
+          userName: it.userName,
+          avatarId: it.avatarId,
+          avatarName: it.avatarName,
+          avatarImagePath: it.avatarImagePath,
+        }))
+      )
+    );
+  }, [userList, dispatch]);
+
+
   const [opened, setOpened] = useState<boolean[]>([true, true]);
   const cntOpened = opened.filter((it) => it).length;
 
@@ -74,14 +102,12 @@ export const SessionPage: FC<IProps> = (props) => {
     };
   }, [roomId, setPublisher]);
 
-  const headCount = useSelector((state: any) => state.meeting.headCount);
-
   return (
     <Grid container spacing={3} sx={{ float: "left" }} p={2}>
       <Grid item xs={9}>
         <Box height="95vh" display="flex" flexDirection="column">
           <Box borderRadius="10px" flex={1} position="relative" bgcolor={grey[200]}>
-            {headCount === 2 ? (
+            {userList.length === 2 ? (
               <>
                 <Box height="95%" p={2}>
                   <VideoStream streamManager={subscribers[0]} name={"아무개"} />
@@ -97,9 +123,9 @@ export const SessionPage: FC<IProps> = (props) => {
                     <Box flex={1} key={idx}>
                       <Grid container height="95%" spacing={2} alignItems="stretch">
                         {[publisher, ...subscribers]
-                          .slice((it * headCount) / 2, ((it + 1) * headCount) / 2)
+                          .slice((it * userList.length) / 2, ((it + 1) * userList.length) / 2)
                           .map((it, idx) => (
-                            <Grid item xs={24 / headCount} key={idx}>
+                            <Grid item xs={24 / userList.length} key={idx}>
                               <VideoStream streamManager={it} name={"sdafasdf"} />
                             </Grid>
                           ))}
