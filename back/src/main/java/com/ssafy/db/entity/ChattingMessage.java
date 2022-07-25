@@ -32,7 +32,7 @@ public class ChattingMessage extends BaseEntity {
 	private ChattingRoom chattingRoom;
 	
 	@Column(updatable = false, nullable = false, length=255)
-	private String message;
+	private String content;
 	
 	@Column(updatable = false, nullable = false, columnDefinition = "INT UNSIGNED")
 	private Long user_id;

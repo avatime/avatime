@@ -6,11 +6,11 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import com.ssafy.api.request.WaitingRoomPostReq;
 import com.ssafy.db.entity.WaitingRoom;
 import com.ssafy.db.repository.WaitingRoomRepository;
-import com.ssafy.dto.WaitingRoomValue;
 
-@Service("waitingService")
+@Service("waitingRoomService")
 public class WaitingRoomServiceImpl implements WaitingRoomService{
 	@Autowired
 	WaitingRoomRepository waitingRoomRepository;
@@ -22,7 +22,7 @@ public class WaitingRoomServiceImpl implements WaitingRoomService{
 	
 	@Override
 	@Transactional
-	public WaitingRoom save(WaitingRoomValue value) {
+	public WaitingRoom save(WaitingRoomPostReq value) {
 		WaitingRoom waitingRoom = WaitingRoom.builder()
 				.name(value.getName())
 				.head_count(value.getHead_count())

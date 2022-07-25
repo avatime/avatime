@@ -13,6 +13,7 @@ import javax.persistence.TemporalType;
 import org.hibernate.annotations.DynamicInsert;
 import org.hibernate.annotations.DynamicUpdate;
 
+import lombok.Builder;
 import lombok.Getter;
 import lombok.Setter;
 
@@ -25,14 +26,14 @@ import lombok.Setter;
 @Setter
 public class MeetingRoom  extends BaseEntity {
 
-	@Column(updatable = false, nullable = false, length = 1, columnDefinition = "CHAR(1)")
-	private String type;
+	@Column(updatable = false, nullable = false, length = 1, columnDefinition = "TINYINT(1)")
+	private int type;
 	
     @Column(name = "main_session_id", columnDefinition = "INT UNSIGNED")
 	private Long mainSessionId;
     
-    @Column(length = 1, columnDefinition = "CHAR(1) DEFAULT 0")
-   	private String status;
+    @Column(length = 1, columnDefinition = "TINYINT(1)")
+   	private int status;
 	
 	@Temporal(TemporalType.TIMESTAMP)
     @Column(updatable = false, columnDefinition = "TIMESTAMP DEFAULT CURRENT_TIMESTAMP")
@@ -41,5 +42,12 @@ public class MeetingRoom  extends BaseEntity {
     @PrePersist
     protected void onCreate() {
     	createdTime = Timestamp.valueOf(LocalDateTime.now());
+    }
+    
+    @Builder
+    public MeetingRoom() {
+    	this.type = 0;
+    	this.mainSessionId = null;
+    	this.status = 0;
     }
 }

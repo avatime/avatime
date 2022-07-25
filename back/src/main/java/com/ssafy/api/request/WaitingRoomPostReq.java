@@ -1,11 +1,13 @@
-package com.ssafy.dto;
+package com.ssafy.api.request;
 
+import io.swagger.annotations.ApiModel;
 import lombok.Getter;
 import lombok.Setter;
 
 @Getter
 @Setter
-public class WaitingRoomValue {
+@ApiModel("WaitingRoomCreatePostRequest")
+public class WaitingRoomPostReq {
 	private Long user_id;
 	private String name;
 	private int head_count;

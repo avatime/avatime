@@ -23,16 +23,16 @@ public class MeetingRoomServiceImpl implements MeetingRoomService {
 	MeetingRoomUserRelationRepository meetingRoomUserRelationRepository;
 	
 	@Override
-	public void createMeetingRoom(String type, Long mainSessionId) throws Exception {
+	public void createMeetingRoom(int type, Long mainSessionId) throws Exception {
 		// TODO Auto-generated method stub
 		// main session
 		try {
 			MeetingRoom meetingRoom = new MeetingRoom();
 			meetingRoom.setType(type);
-			if(type.equals("0")) {
+			if(type == 0) {
 				mainSessionId = meetingRoomRepository.save(meetingRoom).getId();
 			}
-			else if(type.equals("1")) {
+			else if(type == 1) {
 				
 			}
 			meetingRoom.setMainSessionId(mainSessionId);
