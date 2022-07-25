@@ -4,9 +4,15 @@ const meetingSlice = createSlice({
   name: "meeting",
   initialState: {
     roomId: 0,
-    headCount: 8,
+    userList: undefined,
   },
-  reducers: {},
+  reducers: {
+    setUserList(state, action) {
+      state.userList = action.payload;
+    },
+  },
 });
+
+export const { setUserList } = meetingSlice.actions;
 
 export default meetingSlice.reducer;
