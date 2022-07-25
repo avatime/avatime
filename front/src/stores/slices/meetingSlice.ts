@@ -3,7 +3,8 @@ import { createSlice } from "@reduxjs/toolkit";
 const meetingSlice = createSlice({
   name: "meeting",
   initialState: {
-    userList: null,
+    roomId: 0,
+    userList: undefined,
   },
   reducers: {
     setUserList(state, action) {
