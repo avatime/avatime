@@ -25,7 +25,6 @@ public class UserRepositorySupport {
         return Optional.ofNullable(user);
     }
     
-    
     public Optional<User> findUserByUserId(Long userId) {
         User user = jpaQueryFactory.select(qUser).from(qUser)
                 .where(qUser.id.eq(userId)).fetchOne();
