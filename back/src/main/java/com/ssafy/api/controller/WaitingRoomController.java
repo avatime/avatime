@@ -52,6 +52,7 @@ public class WaitingRoomController {
 	@ApiOperation(value = "대기방 목록 조회", notes = "대기방 전부 보여줌.")
 	public ResponseEntity<List<WaitingRoom>> waitingRoom() {
 		List<WaitingRoom> waitingRoom = waitingRoomService.findAll();
+		// cnt_man, cmt_woman 쿼리 미작성
 		return new ResponseEntity<List<WaitingRoom>>(waitingRoom, HttpStatus.OK);
 	}
 	
@@ -79,6 +80,7 @@ public class WaitingRoomController {
 	@PatchMapping("/start")
 	@ApiOperation(value = "대기방이 미팅방으로 변경", notes = "미팅방을 생성합니다.")
 	public ResponseEntity<MeetingRoom> start(@RequestBody @ApiParam(value="미팅방을 만드려는 대기방 id", required = true) long waitingRoomId) {
+		// 아직 안함
 		return null;
 	}
 }
