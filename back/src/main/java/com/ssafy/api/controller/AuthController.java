@@ -186,6 +186,7 @@ public class AuthController {
 			registerInfo.setSocialType(socialType);
 			System.out.println("회원등록 진행 했어?");
 			System.out.println("registerInfo: " + registerInfo.toString());
+			System.out.println(registerInfo.getClass().getSimpleName());
 			return ResponseEntity.status(204).body(registerInfo);	
 		}else {
 			System.out.println("user: " + user.getName());
