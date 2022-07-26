@@ -8,8 +8,12 @@ import VideocamOffIcon from "@mui/icons-material/VideocamOff";
 import SettingsIcon from "@mui/icons-material/Settings";
 import ExitToAppIcon from "@mui/icons-material/ExitToApp";
 import PeopleIcon from "@mui/icons-material/People";
+import WallpaperIcon from "@mui/icons-material/Wallpaper";
+
 import { Clock } from "./Clock";
 import { FinalPickModal } from "./modal/FinalPickModal";
+import { useSelector, useDispatch } from "react-redux";
+import { changeBlurStatus } from "../../stores/slices/meetingSlice";
 
 type Type = "master" | "normal";
 interface IProps {
@@ -25,6 +29,12 @@ export const ControllBar: FC<IProps> = ({ type }) => {
   const [cameraStatus, setCameraStatus] = useState(true);
   const onChangeCameraStatus = () => {
     setCameraStatus((prev) => !prev);
+  };
+
+  const blurStatus = useSelector((state: any) => state.meeting.blurStatus);
+  const dispatch = useDispatch();
+  const onChangeBlurStatus = () => {
+    dispatch(changeBlurStatus());
   };
 
   const [lastPickModalOpen, setLastPickModalOpen] = useState(false);
@@ -47,6 +57,8 @@ export const ControllBar: FC<IProps> = ({ type }) => {
       onChangeMicStatus={onChangeMicStatus}
       cameraStatus={cameraStatus}
       onChangeCameraStatus={onChangeCameraStatus}
+      blurStatus={blurStatus}
+      onChangeBlurStatus={onChangeBlurStatus}
       onClickSettings={onClickSettings}
       onClickPick={onClickPick}
       onClickExit={onClickExit}
@@ -61,6 +73,8 @@ interface IPresenterProps {
   onChangeMicStatus: () => void;
   cameraStatus: boolean;
   onChangeCameraStatus: () => void;
+  blurStatus: boolean;
+  onChangeBlurStatus: () => void;
   onClickSettings: () => void;
   onClickPick: () => void;
   onClickExit: () => void;
@@ -73,6 +87,8 @@ export const ControllBarPresenter: FC<IPresenterProps> = ({
   onChangeMicStatus,
   cameraStatus,
   onChangeCameraStatus,
+  blurStatus,
+  onChangeBlurStatus,
   onClickSettings,
   onClickPick,
   onClickExit,
@@ -101,6 +117,13 @@ export const ControllBarPresenter: FC<IPresenterProps> = ({
             onClick={onChangeCameraStatus}
           >
             카메라
+          </Button>
+          <Button
+            variant={blurStatus ? "contained" : "outlined"}
+            startIcon={<WallpaperIcon />}
+            onClick={onChangeBlurStatus}
+          >
+            블러
           </Button>
           <Button variant="contained" startIcon={<SettingsIcon />} onClick={onClickSettings}>
             설정

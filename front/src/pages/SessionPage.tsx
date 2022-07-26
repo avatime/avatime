@@ -38,7 +38,6 @@ export const SessionPage: FC<IProps> = (props) => {
     );
   }, [userList, dispatch]);
 
-
   const [opened, setOpened] = useState<boolean[]>([true, true]);
   const cntOpened = opened.filter((it) => it).length;
 
@@ -47,9 +46,6 @@ export const SessionPage: FC<IProps> = (props) => {
   const [publisher, setPublisher] = useState<any>();
 
   useEffect(() => {
-    console.log(
-      "useEffectuseEffectuseEffectuseEffectuseEffectuseEffectuseEffectuseEffectuseEffectuseEffectuseEffectuseEffectuseEffect"
-    );
     const openVidu = new OpenVidu();
     const session = openVidu.initSession();
 
@@ -113,7 +109,7 @@ export const SessionPage: FC<IProps> = (props) => {
                   <VideoStream streamManager={subscribers[0]} name={"아무개"} />
                 </Box>
                 <Box width="30%" height="30%" p={2} position="absolute" bottom="0" right="0">
-                  <VideoStream streamManager={publisher} name={"나나나나"} />
+                  <VideoStream streamManager={publisher} name={"나나나나"} me={true} />
                 </Box>
               </>
             ) : (
@@ -126,7 +122,11 @@ export const SessionPage: FC<IProps> = (props) => {
                           .slice((it * userList.length) / 2, ((it + 1) * userList.length) / 2)
                           .map((it, idx) => (
                             <Grid item xs={24 / userList.length} key={idx}>
-                              <VideoStream streamManager={it} name={"sdafasdf"} />
+                              <VideoStream
+                                streamManager={it}
+                                name={"sdafasdf"}
+                                me={it === publisher}
+                              />
                             </Grid>
                           ))}
                       </Grid>

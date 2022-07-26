@@ -5,6 +5,7 @@ import App from "./App";
 import reportWebVitals from "./reportWebVitals";
 import dayjs from "dayjs";
 import customParseFormat from "dayjs/plugin/customParseFormat";
+import '@tensorflow/tfjs';
 
 const root = ReactDOM.createRoot(document.getElementById("root") as HTMLElement);
 

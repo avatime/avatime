@@ -8,6 +8,8 @@
     "@mui/icons-material": "^5.8.4",
     "@mui/material": "^5.9.0",
     "@reduxjs/toolkit": "^1.8.3",
+    "@tensorflow-models/body-pix": "^2.2.0",
+    "@tensorflow/tfjs": "^3.19.0",
     "@testing-library/jest-dom": "^5.16.4",
     "@testing-library/react": "^13.3.0",
     "@testing-library/user-event": "^13.5.0",
