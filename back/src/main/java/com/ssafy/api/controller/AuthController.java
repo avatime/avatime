@@ -30,6 +30,7 @@ import com.google.gson.JsonParser;
 import com.ssafy.api.request.UserLoginPostReq;
 import com.ssafy.api.request.UserRegisterPostReq;
 import com.ssafy.api.response.UserLoginPostRes;
+import com.ssafy.api.response.UserRegisterPostRes;
 import com.ssafy.api.service.UserService;
 import com.ssafy.common.model.response.BaseResponseBody;
 import com.ssafy.common.util.JwtTokenUtil;
@@ -63,7 +64,6 @@ public class AuthController {
         @ApiResponse(code = 404, message = "사용자 없음", response = BaseResponseBody.class),
         @ApiResponse(code = 500, message = "서버 오류", response = BaseResponseBody.class)
     })
-	
 	
 	
 	
@@ -170,23 +170,23 @@ public class AuthController {
  		// socialId랑 성별에 동의하지 않았으면 리턴
  		if (userInfo.getAsJsonObject().get("email_needs_agreement").getAsBoolean() || userInfo.getAsJsonObject().get("gender_needs_agreement").getAsBoolean()) {
  			System.out.println("여기 나오냐?");
- 			return ResponseEntity.status(204).body(UserRegisterPostReq.of(204, "E-mail과 성별에 동의해주세요."));
+ 			return ResponseEntity.status(204).body(UserRegisterPostRes.of(204, "E-mail과 성별에 동의해주세요."));
  		}
  		
-		String socialId = userInfo.getAsJsonObject().get("email").toString();
+		String socialId = userInfo.getAsJsonObject().get("email").toString().trim();
 		
 		// socialId(email)와 socialType을 통해 DB에 있는지 체크
 		User user = userService.getUserBySocialIdAndSocialType(socialId, socialType);
 		// 회원 등록 진행
 		if (user == null) {
 			
-			UserRegisterPostReq registerInfo = new UserRegisterPostReq();
+			UserRegisterPostRes registerInfo = new UserRegisterPostRes();
 			registerInfo.setGender(userInfo.getAsJsonObject().get("gender").toString());
 			registerInfo.setSocialId(userInfo.getAsJsonObject().get("email").toString());
 			registerInfo.setSocialType(socialType);
 			System.out.println("회원등록 진행 했어?");
-			System.out.println(registerInfo.toString());
-			return ResponseEntity.status(204).body(UserRegisterPostReq.of(204, "Unknown User", registerInfo));	
+			System.out.println("registerInfo: " + registerInfo.toString());
+			return ResponseEntity.status(204).body(registerInfo);	
 		}else {
 			System.out.println("user: " + user.getName());
 			return ResponseEntity.ok(UserLoginPostRes.of(200, "Success", JwtTokenUtil.getToken(user.getName())));
