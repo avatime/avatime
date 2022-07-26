@@ -41,9 +41,7 @@ public class ChattingRoom extends BaseEntity {
 	@Temporal(TemporalType.TIMESTAMP)
     @Column(updatable = false, columnDefinition = "TIMESTAMP DEFAULT CURRENT_TIMESTAMP")
     private Date created_time;
-    
-	private Set<WebSocketSession> sessions = new HashSet<>();
-	
+    	
     @PrePersist
     protected void onCreate() {
     	created_time = Timestamp.valueOf(LocalDateTime.now());

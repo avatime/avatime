@@ -98,7 +98,7 @@ public class MeetingController {
         @ApiResponse(code = 500, message = "서버 오류", response = BaseResponseBody.class)
     })
 	public ResponseEntity<?> selcetAvatarMeetingRoom(@RequestBody @ApiParam(value="미팅방 정보", required = true) MeetingRoomPostReq meetingRoomPostReq) {
-		String type = meetingRoomPostReq.getType();
+		int type = meetingRoomPostReq.getType();
 		Long mainSessionId = meetingRoomPostReq.getMainSessionId();
 		
 		try {
@@ -117,7 +117,7 @@ public class MeetingController {
         @ApiResponse(code = 500, message = "서버 오류", response = BaseResponseBody.class)
     })
 	public ResponseEntity<?> avatarTimer(@RequestBody @ApiParam(value="미팅방 정보", required = true) MeetingRoomPostReq meetingRoomPostReq) {
-		String type = meetingRoomPostReq.getType();
+		int type = meetingRoomPostReq.getType();
 		Long mainSessionId = meetingRoomPostReq.getMainSessionId();
 		
 		try {
@@ -136,7 +136,7 @@ public class MeetingController {
         @ApiResponse(code = 500, message = "서버 오류", response = BaseResponseBody.class)
     })
 	public ResponseEntity<?> meetingRoomInfo(@RequestBody @ApiParam(value="미팅방 정보", required = true) MeetingRoomPostReq meetingRoomPostReq) {
-		String type = meetingRoomPostReq.getType();
+		int type = meetingRoomPostReq.getType();
 		Long mainSessionId = meetingRoomPostReq.getMainSessionId();
 		
 		try {
@@ -174,7 +174,7 @@ public class MeetingController {
         @ApiResponse(code = 500, message = "서버 오류", response = BaseResponseBody.class)
     })
 	public ResponseEntity<?> finalChoiceTimer(@RequestBody @ApiParam(value="미팅방 정보", required = true) MeetingRoomPostReq meetingRoomPostReq) {
-		String type = meetingRoomPostReq.getType();
+		int type = meetingRoomPostReq.getType();
 		Long mainSessionId = meetingRoomPostReq.getMainSessionId();
 		
 		try {

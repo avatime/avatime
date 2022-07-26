@@ -1,6 +1,5 @@
 package com.ssafy.api.dto;
 
-import java.sql.Date;
 import java.util.HashSet;
 import java.util.Set;
 
@@ -11,18 +10,15 @@ import lombok.Setter;
 
 @Getter
 @Setter
-public class ChattingRoomDto {
+public class ChatRoom {
 
 	private Long chattingRoomId;
-	private Long roomId;
-	private int type;
-	private Date created_time;
 	private String name;
 	private Set<WebSocketSession> sessions = new HashSet<>();
 	
-	public static ChattingRoomDto create(String name){
-		ChattingRoomDto room = new ChattingRoomDto();
-
+	public static ChatRoom create(String name){
+		ChatRoom room = new ChatRoom();
+		room.chattingRoomId = 1L;
         room.name = name;
         return room;
     }
