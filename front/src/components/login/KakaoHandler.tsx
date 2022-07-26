@@ -17,9 +17,9 @@ export const KakaoHandler: FC<Iprops> = (props) => {
   const response = useQuery('tokentoken', kakaoLogin(code as string), {
     onSuccess: (res:any) => {
       console.log("res1 succuess : "+res.data);
-      //localStorage.setItem("temp", res:any);
+      localStorage.setItem("socialId", res.data.socialId);
       //dispatch(setUserId(res));
-      //navigate("/");
+      navigate("/login");
     },
     onError: (err) => console.log(err),
   });
