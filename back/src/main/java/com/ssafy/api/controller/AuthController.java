@@ -149,6 +149,8 @@ public class AuthController {
 	
 	@GetMapping("/kakao")
 	public ResponseEntity<?> kakaoCallback(@RequestParam String code) throws Exception {
+		System.out.println("code: "+ code);
+		
 		// 카카오 소셜 타입 2
 		int socialType = 2;
 		
@@ -164,7 +166,7 @@ public class AuthController {
  		@SuppressWarnings("deprecation")
  		JsonElement element = parser.parse(response);
  		JsonElement userInfo = element.getAsJsonObject().get("kakao_account");
- 		
+ 		System.out.println("element: " + element);
  		// socialId랑 성별에 동의하지 않았으면 리턴
  		if (userInfo.getAsJsonObject().get("email_needs_agreement").getAsBoolean() || userInfo.getAsJsonObject().get("gender_needs_agreement").getAsBoolean()) {
  			System.out.println("여기 나오냐?");
@@ -182,7 +184,8 @@ public class AuthController {
 			registerInfo.setGender(userInfo.getAsJsonObject().get("gender").toString());
 			registerInfo.setSocialId(userInfo.getAsJsonObject().get("email").toString());
 			registerInfo.setSocialType(socialType);
-			
+			System.out.println("회원등록 진행 했어?");
+			System.out.println(registerInfo.toString());
 			return ResponseEntity.status(204).body(UserRegisterPostReq.of(204, "Unknown User", registerInfo));	
 		}else {
 			System.out.println("user: " + user.getName());
