@@ -1,7 +1,7 @@
 import { Typography } from "@mui/material";
 import { Box } from "@mui/system";
 import React, { FC, useEffect } from "react";
-import { useRef, useState } from "react";
+import { useRef } from "react";
 import { loadBodyPix } from "../../utils/video/backgroundFilter";
 import { useSelector } from "react-redux";
 
@@ -12,7 +12,6 @@ interface IProps {
 }
 
 export const VideoStream: FC<IProps> = ({ streamManager, name, me = false }) => {
-  const [videoDimension, setVideoDimension] = useState({ width: 0, height: 0 });
   const videoRef = useRef<HTMLVideoElement>(null);
   const canvasRef = useRef<HTMLCanvasElement>(null);
   const blurStatus = useSelector((state: any) => state.meeting.blurStatus);
@@ -34,11 +33,6 @@ export const VideoStream: FC<IProps> = ({ streamManager, name, me = false }) => 
     if (me) {
       videoElement.play();
     }
-
-    setVideoDimension({
-      width: videoElement.clientWidth,
-      height: videoElement.clientHeight,
-    });
 
     if (blurStatus) {
       videoElement.hidden = true;
