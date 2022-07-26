@@ -3,8 +3,19 @@
   padding: 0;
 }
 
+/*메인컬러 백그라운드*/
 .mainback {
   height: 100vh;
   width: 100%;
   background: linear-gradient(#FFEBA2 60%,#79A78B 40%);
+  overflow: hidden;
+}
+
+input:focus,
+input:active,
+button:focus,
+button:active,
+menuitem:focus{
+  outline: none;
+  box-shadow: none;
 }
