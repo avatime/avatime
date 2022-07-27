@@ -99,12 +99,9 @@ public class AuthController {
 	public ResponseEntity<? extends BaseResponseBody> register(
 			@RequestBody @ApiParam(value="회원가입 정보", required = true) UserRegisterPostReq registerInfo) {
 		
-		
-		
 		//임의로 리턴된 User 인스턴스. 현재 코드는 회원 가입 성공 여부만 판단하기 때문에 굳이 Insert 된 유저 정보를 응답하지 않음.
 		User user = userService.createUser(registerInfo);
 	
-		
 		// 여기서 토큰 발행
 		return ResponseEntity.ok(UserLoginPostRes.of(200, "Success", JwtTokenUtil.getToken(user.getName())));
 	}
@@ -144,7 +141,9 @@ public class AuthController {
 			registerInfo.setSocialType(socialType);
 	
 			return ResponseEntity.status(201).body(UserRegisterPostRes.of(201, "Unknown User", registerInfo));	
-		}else {
+		}
+		
+		else {
 			return ResponseEntity.ok(UserLoginPostRes.of(200, "Success", JwtTokenUtil.getToken(user.getName())));
 		}
 	}
@@ -179,6 +178,7 @@ public class AuthController {
 		
 		// socialId(email)와 socialType을 통해 DB에 있는지 체크
 		User user = userService.getUserBySocialIdAndSocialType(socialId, socialType);
+		
 		// 회원 등록 진행
 		if (user == null) {
 		
@@ -188,7 +188,9 @@ public class AuthController {
 			registerInfo.setSocialType(socialType);
 
 			return ResponseEntity.status(201).body(UserRegisterPostRes.of(201, "Unknown User", registerInfo));	
-		}else {
+		}
+		
+		else {
 			System.out.println("user: " + user.getName());
 			return ResponseEntity.ok(UserLoginPostRes.of(200, "Success", JwtTokenUtil.getToken(user.getName())));
 		}
