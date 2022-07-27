@@ -114,24 +114,16 @@ export const SessionPage: FC<IProps> = (props) => {
               </>
             ) : (
               <Box height="100%" display="flex" flexDirection="column" p={2}>
-                {publisher &&
-                  [0, 1].map((it, idx) => (
-                    <Box flex={1} key={idx}>
-                      <Grid container height="95%" spacing={2} alignItems="stretch">
-                        {[publisher, ...subscribers]
-                          .slice((it * userList.length) / 2, ((it + 1) * userList.length) / 2)
-                          .map((it, idx) => (
-                            <Grid item xs={24 / userList.length} key={idx}>
-                              <VideoStream
-                                streamManager={it}
-                                name={"sdafasdf"}
-                                me={it === publisher}
-                              />
-                            </Grid>
-                          ))}
+                {publisher && (
+                  <>
+                    {" "}
+                    <Grid container height="95%" spacing={2} alignItems="stretch">
+                      <Grid item xs={24 / userList.length}>
+                        <VideoStream streamManager={publisher} name={"sdafasdf"} me={true} />
                       </Grid>
-                    </Box>
-                  ))}
+                    </Grid>
+                  </>
+                )}
               </Box>
             )}
           </Box>

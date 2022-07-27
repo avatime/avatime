@@ -2,9 +2,8 @@ import { Typography } from "@mui/material";
 import { Box } from "@mui/system";
 import React, { FC, useEffect } from "react";
 import { useRef } from "react";
-import { loadBodyPix } from "../../utils/video/backgroundFilter";
 import { useSelector } from "react-redux";
-import { init, facemesh } from "../../utils/video/facemesh";
+import { useFaceMesh } from "../../hooks/useFaceMesh";
 
 interface IProps {
   streamManager: any;
@@ -19,27 +18,9 @@ export const VideoStream: FC<IProps> = ({ streamManager, name, me = false }) => 
 
   useEffect(() => {
     streamManager.addVideoElement(videoRef.current);
-    init(canvasRef.current);
   }, [streamManager]);
 
-  useEffect(() => {
-    if (!videoRef || !canvasRef) {
-      return;
-    }
-
-    const videoElement = videoRef.current as HTMLVideoElement;
-    const canvasElement = canvasRef.current as HTMLCanvasElement;
-
-    if (blurStatus) {
-      // videoElement.hidden = true;
-      // canvasElement.hidden = false;
-      // facemesh(videoElement);
-      loadBodyPix(videoElement, canvasElement, () => facemesh(videoElement));
-    } else {
-      // videoElement.hidden = false;
-      // canvasElement.hidden = true;
-    }
-  }, [streamManager, videoRef, canvasRef, me, blurStatus]);
+  useFaceMesh(videoRef, canvasRef, blurStatus);
 
   return (
     <Box
@@ -66,6 +47,9 @@ export const VideoStream: FC<IProps> = ({ streamManager, name, me = false }) => 
       <canvas
         ref={canvasRef}
         style={{
+          width: "100%",
+          height: "100%",
+          position: "absolute",
           borderRadius: "10px",
           flex: 1,
           objectFit: "cover",
