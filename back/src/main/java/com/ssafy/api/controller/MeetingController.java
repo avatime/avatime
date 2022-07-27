@@ -221,7 +221,7 @@ public class MeetingController {
 						.gender(user.getGender())
 						.avatar_id(avatar.getId())
 						.avatar_name(avatar.getName())
-						.avatar_image_path(avatar.getImage_path())
+						.avatar_image_path(avatar.getImagePath())
 						.pick_user_id(m.getPickUserId())
 						.build();
 				list.add(res);

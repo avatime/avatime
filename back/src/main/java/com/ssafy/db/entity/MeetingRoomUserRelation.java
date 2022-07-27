@@ -21,19 +21,17 @@ import lombok.Setter;
 public class MeetingRoomUserRelation  extends BaseEntity {
 
 	@ManyToOne
-//	@JoinColumn(name = "session_id", insertable = false, updatable=false)
-	private MeetingRoom meetingRoom;
+	@JoinColumn(insertable = false, updatable=false)
+	private MeetingRoom meetingRoomId;
 	
-	@ManyToOne
-//    @Column(name="user_id", updatable = false, nullable = false, columnDefinition = "INT UNSIGNED")
-	private User user;
+    @Column(updatable = false, nullable = false, columnDefinition = "INT UNSIGNED")
+	private Long userId;
 	
-    @Column(name = "avatar_id",columnDefinition = "INT UNSIGNED")
+    @Column(columnDefinition = "INT UNSIGNED")
 	private Long avatarId;
 
-    @Column(name="pick_user_id",columnDefinition = "INT UNSIGNED")
+    @Column(columnDefinition = "INT UNSIGNED")
     private Long pickUserId;
     
-    @Column
     private boolean matched;
 }

@@ -20,7 +20,7 @@ public class WaitingRoomUserRelationServiceImpl implements WaitingRoomUserRelati
 	public WaitingRoomUserRelation save(Map<String, Long> userRelation, WaitingRoom waitingRoom) {
 		WaitingRoomUserRelation waitingRoomUserRelation = WaitingRoomUserRelation.builder()
 				.waitingRoom(waitingRoom)
-				.user_id(userRelation.get("user_id")).build();
+				.userId(userRelation.get("user_id")).build();
 		return waitingRoomUserRelationRepository.save(waitingRoomUserRelation);
 	}
 }

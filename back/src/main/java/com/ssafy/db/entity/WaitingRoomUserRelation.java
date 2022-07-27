@@ -29,12 +29,12 @@ public class WaitingRoomUserRelation extends BaseEntity {
 	private WaitingRoom waitingRoom;
 	
     @Column(updatable = false, nullable = false, columnDefinition = "INT UNSIGNED")
-	private Long user_id;
+	private Long userId;
 	
     @Builder
-    public WaitingRoomUserRelation(WaitingRoom waitingRoom, long user_id) {
+    public WaitingRoomUserRelation(WaitingRoom waitingRoom, long userId) {
     	this.type = 0;
     	this.waitingRoom = waitingRoom;
-    	this.user_id = user_id;
+    	this.userId = userId;
     }
 }

@@ -33,31 +33,32 @@ public class WaitingRoom extends BaseEntity {
 	private String name;
 	
 	@Column(nullable = false)
-	private int head_count;
+	private int headCount;
 	
 	@Column(nullable = false, columnDefinition = "TINYINT DEFAULT 0")
 	private int status;
 	
-	private int age;
+	@Column(nullable = false)
+	private String age;
 	
 	@Column(nullable = false)
-	private int sido_id;
+	private int sidoId;
 	
 	@Temporal(TemporalType.TIMESTAMP)
     @Column(updatable = false, columnDefinition = "TIMESTAMP DEFAULT CURRENT_TIMESTAMP")
-    private Date created_time;
+    private Date createdTime;
     
     @PrePersist
     protected void onCreate() {
-    	created_time = Timestamp.valueOf(LocalDateTime.now());
+    	createdTime = Timestamp.valueOf(LocalDateTime.now());
     }
     
     @Builder
-    public WaitingRoom(String name, int head_count, int age, int sido_id) {
+    public WaitingRoom(String name, int headCount, String age, int sido_id) {
     	this.name = name;
-    	this.head_count = head_count;
+    	this.headCount = headCount;
     	this.age = age;
     	this.status = 0;
-    	this.sido_id = sido_id;
+    	this.sidoId = sido_id;
     }
 }

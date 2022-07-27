@@ -29,7 +29,7 @@ public class MeetingRoom  extends BaseEntity {
 	@Column(nullable = false, length = 1, columnDefinition = "TINYINT(1)")
 	private int type;
 	
-    @Column(name = "main_session_id", columnDefinition = "INT UNSIGNED")
+    @Column(columnDefinition = "INT UNSIGNED")
 	private Long mainSessionId;
     
     @Column(length = 1, columnDefinition = "TINYINT(1)")

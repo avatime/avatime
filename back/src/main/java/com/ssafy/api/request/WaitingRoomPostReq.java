@@ -11,6 +11,6 @@ public class WaitingRoomPostReq {
 	private Long user_id;
 	private String name;
 	private int head_count;
-	private int age;
+	private String age;
 	private int sido_id;
 }

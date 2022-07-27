@@ -18,7 +18,7 @@ public class WaitingRoomServiceImpl implements WaitingRoomService{
 	
 	@Override
 	public List<WaitingRoom> findAll() {
-		return waitingRoomRepository.findAll(Sort.by(Sort.Direction.DESC, "created_time"));
+		return waitingRoomRepository.findAll(Sort.by(Sort.Direction.DESC, "createdTime"));
 	}
 	
 	@Override
@@ -26,7 +26,7 @@ public class WaitingRoomServiceImpl implements WaitingRoomService{
 	public WaitingRoom save(WaitingRoomPostReq value) {
 		WaitingRoom waitingRoom = WaitingRoom.builder()
 				.name(value.getName())
-				.head_count(value.getHead_count())
+				.headCount(value.getHead_count())
 				.age(value.getAge())
 				.sido_id(value.getSido_id()).build();
 		return waitingRoomRepository.save(waitingRoom);
