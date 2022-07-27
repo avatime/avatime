@@ -50,8 +50,7 @@ public class WaitingRoomController {
 	ChattingRoomService chattingRoomService;
 	
 	
-	@GetMapping("")
-	@SendTo("/topic/showList")
+	@MessageMapping("/topic/showList")
 	@ApiOperation(value = "대기방 목록 조회", notes = "대기방 전부 보여줌.")
 	public ResponseEntity<List<WaitingRoom>> waitingRoom() {
 		List<WaitingRoom> waitingRoom = waitingRoomService.findAll();
