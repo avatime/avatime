@@ -9,7 +9,7 @@ import com.ssafy.db.entity.MeetingRoomUserRelation;
  */
 public interface MeetingRoomService {
 	// 미팅방 만드는 함수
-	void createMeetingRoom(String type, Long mainSessionId) throws Exception;
+	void createMeetingRoom(int type, Long mainSessionId) throws Exception;
 	boolean isSelectedAvatar(Long meetingRoomId, Long avatarId) throws Exception;
 	void choiceAvatar(Long meetingRoomId, Long userId, Long avatarId) throws Exception;
 	void finalChoice(Long meetingRoomId, Long userId, Long pickUserId) throws Exception;

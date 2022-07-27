@@ -21,6 +21,7 @@ import lombok.extern.slf4j.Slf4j;
 public class ChatService {
 
     private Map<Long, ChatRoom> chatRooms;
+    private Long no = 0L;
 
     @PostConstruct
     //의존관게 주입완료되면 실행되는 코드
@@ -44,7 +45,7 @@ public class ChatService {
 
     //채팅방 생성
     public ChatRoom createRoom(String name) {
-        ChatRoom chatRoom = ChatRoom.create(name);
+        ChatRoom chatRoom = ChatRoom.create(no++);
         chatRooms.put(chatRoom.getChattingRoomId(), chatRoom);
         return chatRoom;
     }

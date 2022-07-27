@@ -30,7 +30,7 @@
     </div>
     <ul class="list-group">
         <li class="list-group-item list-group-item-action" v-for="item in chatrooms" v-bind:key="item.chattingRoomId" v-on:click="enterRoom(item.chattingRoomId)">
-            {{item.chattingRoomId}} : {{item.name}}
+            {{item.chattingRoomId}}
         </li>
     </ul>
 </div>
@@ -57,18 +57,20 @@
                 axios.post('/chat/room', params)
                     .then(
                         response => {
+                        	//log.console(response.data);
                             alert("방 개설에 성공하였습니다.")
                             this.room_name = ''; 
                             this.findAllRoom();
                         }
                     )
-                    .catch( response => { alert("채팅방 개설에 실패하였습니다."); } );
+                    //.catch( response => { alert("채팅방 개설에 실패하였습니다."); } );
+                    .catch(error => alert(error.message));
             },
             enterRoom: function(chattingRoomId) {
                 var sender = prompt('대화명을 입력해 주세요.');
                 if(sender !== "") {
-                    localStorage.setItem('wschat.userName',sender);
-                    localStorage.setItem('wschat.chatRoomId',chattingRoomId);
+                    localStorage.setItem('wschat.sender',sender);
+                    localStorage.setItem('wschat.chattingRoomId',chattingRoomId);
                     location.href="/chat/room/enter/"+chattingRoomId;
                 }
             }
