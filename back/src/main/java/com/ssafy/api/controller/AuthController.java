@@ -81,11 +81,11 @@ public class AuthController {
 				return ResponseEntity.status(409).body(BaseResponseBody.of(409, "성별 제공 항목에 동의하셔야합니다."));
 			}
 			loginInfo.setToken(JwtTokenUtil.getToken(user.getName()));
-			return ResponseEntity.status(200).body(UserLoginPostRes.of(200, "Success", loginInfo.toString()));
+			return ResponseEntity.status(200).body(UserLoginPostRes.of(200, "Success", user, loginInfo.toString()));
 //			return ResponseEntity.ok(UserLoginPostRes.of(200, "Success", JwtTokenUtil.getToken(user.getName())));
 		}
 		// 존재하지 않는 유저라면 회원가입 진행
-		return ResponseEntity.status(204).body(UserLoginPostRes.of(204, "Unknown User", loginInfo.toString()));
+		return ResponseEntity.status(204).body(UserLoginPostRes.of(204, "Unknown User", user, loginInfo.toString()));
 	}
 	
 	@PostMapping("/register")
@@ -103,7 +103,7 @@ public class AuthController {
 		User user = userService.createUser(registerInfo);
 	
 		// 여기서 토큰 발행
-		return ResponseEntity.ok(UserLoginPostRes.of(200, "Success", JwtTokenUtil.getToken(user.getName())));
+		return ResponseEntity.ok(UserLoginPostRes.of(200, "Success", user, JwtTokenUtil.getToken(user.getName())));
 	}
 	
 	
@@ -144,7 +144,7 @@ public class AuthController {
 		}
 		
 		else {
-			return ResponseEntity.ok(UserLoginPostRes.of(200, "Success", JwtTokenUtil.getToken(user.getName())));
+			return ResponseEntity.ok(UserLoginPostRes.of(200, "Success", user, JwtTokenUtil.getToken(user.getName())));
 		}
 	}
 	
@@ -183,7 +183,13 @@ public class AuthController {
 		if (user == null) {
 		
 			UserRegisterPostRes registerInfo = new UserRegisterPostRes();
-			registerInfo.setGender(userInfo.getAsJsonObject().get("gender").toString());
+			registerInfo.setGender(userInfo.getAsJsonObject().get("gender").toString().replaceAll("\"", ""));
+			if (registerInfo.getGender().contains("male")) {
+				registerInfo.setGender("M");
+			}else if(registerInfo.getGender().contains("female")) {
+				registerInfo.setGender("F");
+			}
+			
 			registerInfo.setSocialId(userInfo.getAsJsonObject().get("email").toString().replaceAll("\"", ""));
 			registerInfo.setSocialType(socialType);
 
@@ -192,7 +198,7 @@ public class AuthController {
 		
 		else {
 			System.out.println("user: " + user.getName());
-			return ResponseEntity.ok(UserLoginPostRes.of(200, "Success", JwtTokenUtil.getToken(user.getName())));
+			return ResponseEntity.ok(UserLoginPostRes.of(200, "Success", user, JwtTokenUtil.getToken(user.getName())));
 		}
 	}
 	

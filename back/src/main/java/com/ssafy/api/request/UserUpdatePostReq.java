@@ -9,6 +9,6 @@ import lombok.Setter;
 @ApiModel("UserUpdatePostReq")
 public class UserUpdatePostReq {
 	String name;
-	int profileId;
+	String profileImagePath;
 	String description;
 }

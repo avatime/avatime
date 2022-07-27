@@ -22,7 +22,7 @@ public class UserRegisterPostReq extends BaseResponseBody {
 	int socialType;
 	String gender;
 	String name;
-	long profileId;
+	String profileImagePath;
 	String description;
 	
 	public static UserRegisterPostReq of(Integer statusCode, String message, UserRegisterPostReq registerInfo) {

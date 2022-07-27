@@ -58,7 +58,7 @@ public class UserServiceImpl implements UserService {
 		user.setSocialId(userRegisterInfo.getSocialId());
 		user.setSocialType(userRegisterInfo.getSocialType());
 		user.setName(userRegisterInfo.getName());
-		user.setProfileId(userRegisterInfo.getProfileId());
+		user.setProfileImagePath(userRegisterInfo.getProfileImagePath());
 		user.setDescription(userRegisterInfo.getDescription());
 		user.setGender(userRegisterInfo.getGender());
 		
@@ -114,7 +114,7 @@ public class UserServiceImpl implements UserService {
 		}
 		User newUserInfo = user.get();
 		newUserInfo.setName(updateInfo.getName());
-		newUserInfo.setProfileId(updateInfo.getProfileId());
+		newUserInfo.setProfileImagePath(updateInfo.getProfileImagePath());
 		newUserInfo.setDescription(updateInfo.getDescription());
 		
 		return userRepository.save(newUserInfo);
@@ -243,7 +243,6 @@ public class UserServiceImpl implements UserService {
 	public String extractAccessToken(String accessTokenResponse) {
 		JsonParser parser = new JsonParser();
 		JsonElement element = parser.parse(accessTokenResponse);
-		
 		return element.getAsJsonObject().get("access_token").getAsString();
 	}
 	

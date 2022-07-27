@@ -37,7 +37,7 @@ public class User extends BaseEntity{
     private String description;
 	
     @Column(nullable = false, columnDefinition = "INT UNSIGNED")
-    private long profileId;
+    private String profileImagePath;
 	
     @Column(updatable = false, nullable = false)
     private int socialType;

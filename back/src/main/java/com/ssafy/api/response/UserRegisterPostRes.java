@@ -14,13 +14,12 @@ import lombok.ToString;
 @ApiModel("UserRegisterPostRequest")
 @ToString
 public class UserRegisterPostRes extends BaseResponseBody{
-	@ApiModelProperty(name="유저 ID", example="ssafy_web")
+	Long userId;
 	String socialId;
-	@ApiModelProperty(name="유저 Password", example="your_password")
 	int socialType;
 	String gender;
 	String name;
-	long profileId;
+	String profileImagePath;
 	String description;
 	
 	public static UserRegisterPostRes of(Integer statusCode, String message, UserRegisterPostRes registerInfo) {
