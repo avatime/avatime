@@ -23,7 +23,7 @@ public class UserRegisterPostRes extends BaseResponseBody{
 	long profileId;
 	String description;
 	
-	public static UserRegisterPostRes of(Integer statusCode, String message, UserRegisterPostReq registerInfo) {
+	public static UserRegisterPostRes of(Integer statusCode, String message, UserRegisterPostRes registerInfo) {
 		UserRegisterPostRes res = new UserRegisterPostRes();
 		res.setStatusCode(statusCode);
 		res.setMessage(message);
