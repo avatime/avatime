@@ -14,6 +14,7 @@ import com.querydsl.jpa.impl.JPAQueryFactory;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Primary;
+import org.springframework.data.jpa.repository.config.EnableJpaRepositories;
 
 import javax.persistence.EntityManager;
 import javax.persistence.PersistenceContext;
@@ -25,6 +26,7 @@ import java.time.format.DateTimeFormatter;
  * Spring Data JPA 관련 추가 설정 정의.
  */
 @Configuration
+@EnableJpaRepositories(basePackages = "com.ssafy.db.repository")
 public class JpaConfig {
     @PersistenceContext
     EntityManager entityManager;

@@ -39,10 +39,10 @@ public class WaitingRoom extends BaseEntity {
 	private int status;
 	
 	@Column(nullable = false)
-	private int age;
+	private long age;
 	
 	@Column(nullable = false)
-	private int sidoId;
+	private long sidoId;
 	
 	@Temporal(TemporalType.TIMESTAMP)
     @Column(updatable = false, columnDefinition = "TIMESTAMP DEFAULT CURRENT_TIMESTAMP")
@@ -52,9 +52,9 @@ public class WaitingRoom extends BaseEntity {
     protected void onCreate() {
     	createdTime = Timestamp.valueOf(LocalDateTime.now());
     }
-    
+
     @Builder
-    public WaitingRoom(String name, int headCount, int age, int sido_id) {
+    public WaitingRoom(String name, int headCount, long age, long sido_id) {
     	this.name = name;
     	this.headCount = headCount;
     	this.age = age;

@@ -1,6 +1,7 @@
 package com.ssafy.api.service;
 
 import java.util.List;
+import java.util.Optional;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -16,6 +17,11 @@ public class SidoServiceImpl implements SidoService{
 	@Override
 	public List<Sido> findAll() {
 		return sidoRepository.findAll();
+	}
+	
+	@Override
+	public Optional<Sido> findById(Long id) {
+		return sidoRepository.findById(id);
 	}
 	
 }
