@@ -9,10 +9,10 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.ResponseBody;
-import org.springframework.web.servlet.ModelAndView;
 
 import com.ssafy.api.dto.ChatRoom;
 import com.ssafy.api.service.ChatService;
+import com.ssafy.db.entity.ChattingRoom;
 
 import lombok.RequiredArgsConstructor;
 
@@ -29,27 +29,25 @@ public class ChattingRoomController {
         return "redirect:/";
     }
     // 모든 채팅방 목록 반환
+//    @GetMapping("/rooms")
+//    @ResponseBody
+//    public List<ChatRoom> room() {
+//        return chatService.findAllRoom();
+//    }
+    // 모든 채팅방 목록 반환
     @GetMapping("/rooms")
     @ResponseBody
-    public List<ChatRoom> room() {
-        return chatService.findAllRoom();
+    public List<ChattingRoom> room() {
+        return chatService.findAll();
     }
     // 채팅방 생성
     @PostMapping("/room")
     @ResponseBody
-    public ChatRoom createRoom() {
+    public ChattingRoom createRoom() {
     //public ChatRoom createRoom(@RequestParam String name) {
-        return chatService.createRoom("채팅방");
+        return chatService.createRoomInMeetingRoom(1L);
     }
     // 채팅방 입장 화면
-//    @GetMapping("/room/enter/{roomId}")
-//    public ModelAndView roomDetail(Model model, @PathVariable Long roomId) {
-//    	ModelAndView modelAndView = new ModelAndView();
-//        modelAndView.setViewName("roomdetail");
-//    	model.addAttribute("roomId", roomId);
-//    	modelAndView.addObject("roomId", roomId);
-//        return modelAndView;
-//    }
     @GetMapping("/room/enter/{roomId}")
     public String roomDetail(Model model, @PathVariable Long roomId) {
     	model.addAttribute("roomId", roomId);

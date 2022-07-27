@@ -32,24 +32,29 @@ import lombok.Setter;
 @Setter
 public class ChattingRoom extends BaseEntity {
 
-	@Column(nullable = false, columnDefinition = "INT UNSIGNED")
-	private Long room_id;
+	@Column(name = "room_id", nullable = false, columnDefinition = "INT UNSIGNED")
+	private Long roomId;
 	
     @Column(updatable = false, nullable = false, columnDefinition = "TINYINT(1)")
 	private int type;
 	
 	@Temporal(TemporalType.TIMESTAMP)
-    @Column(updatable = false, columnDefinition = "TIMESTAMP DEFAULT CURRENT_TIMESTAMP")
-    private Date created_time;
+    @Column(name="created_time", updatable = false, columnDefinition = "TIMESTAMP DEFAULT CURRENT_TIMESTAMP")
+    private Date createdTime;
     	
     @PrePersist
     protected void onCreate() {
-    	created_time = Timestamp.valueOf(LocalDateTime.now());
+    	createdTime = Timestamp.valueOf(LocalDateTime.now());
     }
     
     @Builder(builderClassName = "ByWaitingRoomBuilder", builderMethodName = "ByWaitingRoomBuilder")
-    public ChattingRoom(@Nonnull Long room_id) {
-    	this.room_id = room_id;
+    public ChattingRoom(@Nonnull Long roomId) {
+    	this.roomId = roomId;
     	this.type = 2;
+    }
+    
+    @Builder(builderClassName = "ByMeettingRoomBuilder", builderMethodName = "ByMeettingRoomBuilder")
+    public ChattingRoom(@Nonnull Long roomId, int type) {
+    	this.type = type;
     }
 }

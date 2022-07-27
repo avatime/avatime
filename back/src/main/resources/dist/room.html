@@ -29,8 +29,8 @@
         </div>
     </div>
     <ul class="list-group">
-        <li class="list-group-item list-group-item-action" v-for="item in chatrooms" v-bind:key="item.chattingRoomId" v-on:click="enterRoom(item.chattingRoomId)">
-            {{item.chattingRoomId}} : {{item.name}}
+        <li class="list-group-item list-group-item-action" v-for="item in chatrooms" v-bind:key="item.id" v-on:click="enterRoom(item.id)">
+            {{item.id}} - {{item.roomId}} 에서 {{item.type}} 의 채팅방
         </li>
     </ul>
 </div>

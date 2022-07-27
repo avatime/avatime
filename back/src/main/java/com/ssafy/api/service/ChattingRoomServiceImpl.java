@@ -17,7 +17,7 @@ public class ChattingRoomServiceImpl implements ChattingRoomService{
 	@Transactional
 	public ChattingRoom saveByWaitingRoom(ChattingRoomPostReq value) {
 		ChattingRoom chattingRoom = ChattingRoom.ByWaitingRoomBuilder()
-				.room_id(value.getRoom_id()).build();
+				.roomId(value.getRoom_id()).build();
 		return chattingRoomRepository.save(chattingRoom);
 	}
 }
