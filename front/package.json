@@ -5,6 +5,8 @@
   "dependencies": {
     "@emotion/react": "^11.9.3",
     "@emotion/styled": "^11.9.3",
+    "@mediapipe/drawing_utils": "^0.3.1620248257",
+    "@mediapipe/face_mesh": "^0.4.1633559619",
     "@mui/icons-material": "^5.8.4",
     "@mui/material": "^5.9.0",
     "@reduxjs/toolkit": "^1.8.3",

@@ -4,6 +4,7 @@ import React, { FC, useEffect } from "react";
 import { useRef } from "react";
 import { loadBodyPix } from "../../utils/video/backgroundFilter";
 import { useSelector } from "react-redux";
+import { init, facemesh } from "../../utils/video/facemesh";
 
 interface IProps {
   streamManager: any;
@@ -18,6 +19,7 @@ export const VideoStream: FC<IProps> = ({ streamManager, name, me = false }) => 
 
   useEffect(() => {
     streamManager.addVideoElement(videoRef.current);
+    init(canvasRef.current);
   }, [streamManager]);
 
   useEffect(() => {
@@ -25,22 +27,17 @@ export const VideoStream: FC<IProps> = ({ streamManager, name, me = false }) => 
       return;
     }
 
-    console.log("asdasd");
-
     const videoElement = videoRef.current as HTMLVideoElement;
     const canvasElement = canvasRef.current as HTMLCanvasElement;
 
-    if (me) {
-      videoElement.play();
-    }
-
     if (blurStatus) {
-      videoElement.hidden = true;
-      canvasElement.hidden = false;
-      loadBodyPix(videoRef.current, canvasRef.current);
+      // videoElement.hidden = true;
+      // canvasElement.hidden = false;
+      // facemesh(videoElement);
+      loadBodyPix(videoElement, canvasElement, () => facemesh(videoElement));
     } else {
-      videoElement.hidden = false;
-      canvasElement.hidden = true;
+      // videoElement.hidden = false;
+      // canvasElement.hidden = true;
     }
   }, [streamManager, videoRef, canvasRef, me, blurStatus]);
 
@@ -68,7 +65,6 @@ export const VideoStream: FC<IProps> = ({ streamManager, name, me = false }) => 
       />
       <canvas
         ref={canvasRef}
-        hidden
         style={{
           borderRadius: "10px",
           flex: 1,

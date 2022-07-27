@@ -1,27 +1,26 @@
 import { load, drawBokehEffect, toMask, drawMask } from "@tensorflow-models/body-pix";
 
-export async function loadBodyPix(video: any, canvas: any) {
+export async function loadBodyPix(video: any, canvas: any, callback: () => void) {
   const options = {
     multiplier: 0.75,
     stride: 32,
     quantBytes: 4,
   };
 
-  let id: any = -1;
-
   const net = await load(options as any);
 
-  id = setInterval(() => {
-    net
-      .segmentPerson(video)
-      .then((it) => {
-        // blurBackground(video, canvas, it);
-        silhouette(video, canvas, it);
-      })
-      .catch((e) => {
-        console.log("remove blur!!!");
-        clearInterval(id);
-      });
+  let id = setInterval(() => {
+  net
+    .segmentPerson(video)
+    .then((it) => {
+      // blurBackground(video, canvas, it);
+      // silhouette(video, canvas, it);
+      callback();
+    })
+    .catch((e) => {
+      console.log("remove blur!!!");
+      clearInterval(id);
+    });
   }, 100);
 }
 
@@ -34,7 +33,7 @@ function blurBackground(video: any, canvas: any, it: any) {
 }
 
 function silhouette(video: any, canvas: any, it: any) {
-  const bg = toMask(it, { a: 255, r: 255, g: 255, b: 255 }, { a: 255, r: 0, g: 0, b: 0 });
+  const bg = toMask(it, { a: 0, r: 255, g: 255, b: 255 }, { a: 255, r: 0, g: 0, b: 0 });
   const opacity = 1;
   drawMask(canvas, video, bg, opacity);
 }
