@@ -4,13 +4,15 @@ const userSlice = createSlice({
   name: "user",
   initialState: {
     userId: undefined,
-    userName: undefined,
+    userName: "",
     userGender: undefined,
-    userDesc: undefined,
+    userDesc: "",
     socialId: undefined,
-    token: undefined,
-    profileImagePath: undefined,
+    socialType: undefined,
+    profileImagePath: "https://jira.ssafy.com/secure/useravatar?avatarId=10334",
+    needRegister : false,
   },
+
   reducers: {
     setUserId(state, action) {
       state.userId = action.payload;
@@ -27,12 +29,15 @@ const userSlice = createSlice({
     setSocialId(state, action) {
       state.socialId = action.payload;
     },
-    setToken(state, action) {
-      state.token = action.payload;
+    setSocialType(state, action) {
+      state.socialType = action.payload;
     },
     setProfileImagePath(state, action) {
       state.profileImagePath = action.payload;
     },
+    setNeedRegister(state, action) {
+      state.needRegister = action.payload;
+    }
   },
 });
 
@@ -42,8 +47,9 @@ export const {
   setUserGender,
   setUserDesc,
   setSocialId,
-  setToken,
+  setSocialType,
   setProfileImagePath,
+  setNeedRegister,
 } = userSlice.actions;
 
 export default userSlice.reducer;

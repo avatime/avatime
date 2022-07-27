@@ -4,32 +4,39 @@ import { UserInfoRes } from "./response/userInfoRes";
 import { ProfileRes } from "./response/profileRes";
 import { UserModifyReq } from "./request/userModifyReq";
 import { RegisterReq } from "./request/registerReq";
-import { LoginKakaoReq } from "./request/loginKakaoReq";
-import { loginInfoKakaoRes } from "./response/loginInfoKakaoRes";
+import { UserReq } from "./request/userReq";
+import axios from "axios";
 
-interface ProfileApi {
+const BASE_URL: string = "http://localhost:8080/api/v1";
+
+interface ProfileAllApi {
   receive: () => Promise<Array<ProfileRes>>;
 }
 
-const profileApi: ProfileApi = {
+const profileAllApi: ProfileAllApi = {
   receive: function (): Promise<ProfileRes[]> {
     return new Promise((resolve) => {
       setTimeout(() => {
         resolve([
           {
             profilePath: "https://jira.ssafy.com/secure/useravatar?avatarId=10334",
+            name: "tmp",
           },
           {
             profilePath: "https://jira.ssafy.com/secure/useravatar?avatarId=10347",
+            name: "tmp",
           },
           {
             profilePath: "https://jira.ssafy.com/secure/useravatar?avatarId=10341",
+            name: "tmp",
           },
           {
             profilePath: "https://jira.ssafy.com/secure/useravatar?avatarId=10505",
+            name: "tmp",
           },
           {
             profilePath: "https://jira.ssafy.com/secure/useravatar?avatarId=10351",
+            name: "tmp",
           },
         ]);
       }, 500);
@@ -73,30 +80,6 @@ const userInfoApi: UserInfoApi = {
   },
 };
 
-interface LoginKakaoApi {
-  loginkakao(): Promise<loginInfoKakaoRes>;
-}
-
-const loginKakaoApi: LoginKakaoApi = {
-  loginkakao: function (): Promise<loginInfoKakaoRes> {
-    const REST_API_KEY: string = "6300198dbbef93aac1c88f68eeb4525a";
-    const REDIRECT_URI: string = "http://localhost:3000/api/v1/auth/kakao";
-    // /oauth/authorize?client_id=${REST_API_KEY}&redirect_uri=${REDIRECT_URI}&response_type=code
-
-    return new Promise((resolve) => {
-      setTimeout(() => {
-        resolve({
-          social_id: "ssafy@ssafy.com",
-          gender: "F",
-          social_type: "kakao",
-          token: "123456789",
-        });
-        console.log("kakao login api 호출");
-      }, 1000);
-    });
-  },
-};
-
 interface RegisterApi {
   register(registerReq: RegisterReq): Promise<SuccessRes>;
 }
@@ -131,29 +114,47 @@ const userModifyApi: UserModifyApi = {
   },
 };
 
+// 구현 완료
+
 interface NameCheckApi {
   checkName(userInfoReq: UserInfoReq): Promise<SuccessRes>;
 }
 
 const nameCheckApi: NameCheckApi = {
-  checkName: function (userInfoReq: UserInfoReq): Promise<SuccessRes> {
-    return new Promise((resolve) => {
-      setTimeout(() => {
-        resolve({
-          success: true,
-        });
-        console.log("nameCheckApi 호출");
-      }, 500);
-    });
+  checkName: async function (userInfoReq: UserInfoReq): Promise<SuccessRes> {
+    return (await axios.get(`${BASE_URL}/user/check/${userInfoReq.name}`)).data;
   },
 };
 
+// interface ProfileApi {
+//   getProfile(userReq: UserReq): Promise<ProfileRes>;
+// }
+
+// const profileApi: ProfileApi = {
+//   getProfile: async function (userReq: UserReq): Promise<ProfileRes> {
+//     return (await axios.get(`${BASE_URL}/user/profile/${userReq.id}`)).data;
+//   },
+// };
+
+const kakaoLogin = (code: string): any => {
+  return function () {
+    return axios.get(`http://localhost:8080/api/v1/auth/kakao?code=${code}`);
+  };
+};
+
+const naverLogin = (code: string, state: string): any => {
+  return function () {
+    return axios.get(`http://localhost:8080/api/v1/auth/naver?code=${code}&state=${state}`);
+  };
+};
+
 export {
-  profileApi,
+  profileAllApi,
   userDeleteApi,
   userInfoApi,
-  loginKakaoApi,
   registerApi,
   userModifyApi,
   nameCheckApi,
+  kakaoLogin,
+  naverLogin,
 };

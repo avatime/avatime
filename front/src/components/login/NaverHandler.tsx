@@ -11,18 +11,20 @@ import {
   setProfileImagePath,
 } from "../../stores/slices/userSlice";
 import { useQuery } from "react-query";
-import { kakaoLogin } from "../../apis/userApi";
 import { Backdrop, CircularProgress } from "@mui/material";
 import { useNavigate } from "react-router";
+import { naverLogin } from "../../apis/userApi";
 
 interface Iprops {}
 
-export const KakaoHandler: FC<Iprops> = (props) => {
+export const NaverHandler: FC<Iprops> = (props) => {
   const dispatch = useDispatch();
   let code = new URL(window.location.href).searchParams.get("code");
+  let state = new URL(window.location.href).searchParams.get("state");
   const navigate = useNavigate();
 
-  useQuery("login", kakaoLogin(code as string), {
+  // const {data} = useQuery("key", () -> {api.request()},);
+  useQuery("login", naverLogin(code as string, state as string), {
     onSuccess: (res: any) => {
       const datas = res.data;
       if (datas.statusCode === 201) {
@@ -50,8 +52,6 @@ export const KakaoHandler: FC<Iprops> = (props) => {
     },
     onError: (err) => console.log(err),
   });
-
-  // 인가코드
 
   return (
     <Backdrop open={true}>
