@@ -6,6 +6,7 @@ import java.util.Date;
 
 import javax.persistence.Column;
 import javax.persistence.Entity;
+import javax.persistence.OneToMany;
 import javax.persistence.PrePersist;
 import javax.persistence.Temporal;
 import javax.persistence.TemporalType;
@@ -48,6 +49,8 @@ public class WaitingRoom extends BaseEntity {
     @Column(updatable = false, columnDefinition = "TIMESTAMP DEFAULT CURRENT_TIMESTAMP")
     private Date createdTime;
     
+	@OneToMany()
+	
     @PrePersist
     protected void onCreate() {
     	createdTime = Timestamp.valueOf(LocalDateTime.now());

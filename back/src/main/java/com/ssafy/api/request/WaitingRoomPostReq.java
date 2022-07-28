@@ -8,9 +8,9 @@ import lombok.Setter;
 @Setter
 @ApiModel("WaitingRoomCreatePostRequest")
 public class WaitingRoomPostReq {
-	private Long user_id;
+	private Long userId;
 	private String name;
-	private int head_count;
+	private int headCount;
 	private int age;
-	private int sido_id;
+	private int sidoId;
 }

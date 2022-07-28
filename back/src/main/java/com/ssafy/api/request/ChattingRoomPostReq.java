@@ -8,5 +8,5 @@ import lombok.Getter;
 @Setter
 @ApiModel("ChattingRoomCreatePostRequest")
 public class ChattingRoomPostReq {
-	private Long room_id;
+	private Long roomId;
 }

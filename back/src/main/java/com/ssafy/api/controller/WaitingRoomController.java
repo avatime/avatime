@@ -2,12 +2,12 @@ package com.ssafy.api.controller;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Map;
 
-import org.apache.commons.collections4.map.HashedMap;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.messaging.handler.annotation.MessageMapping;
+import org.springframework.messaging.simp.SimpMessageSendingOperations;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PatchMapping;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -15,7 +15,6 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
-import com.ssafy.api.request.ChattingRoomPostReq;
 import com.ssafy.api.request.WaitingRoomPostReq;
 import com.ssafy.api.response.WaitingRoomRes;
 import com.ssafy.api.service.AgeService;
@@ -31,12 +30,16 @@ import com.ssafy.db.entity.WaitingRoom;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
 import io.swagger.annotations.ApiParam;
+import lombok.RequiredArgsConstructor;
 
 @Api(value = "미팅방 API", tags = { "waiting" })
 @RestController
+@RequiredArgsConstructor
 @RequestMapping("/api/v1/waiting")
 public class WaitingRoomController {
 
+	private final SimpMessageSendingOperations sendingOperations;
+	
 	@Autowired
 	SidoService sidoService;
 
@@ -52,10 +55,9 @@ public class WaitingRoomController {
 	@Autowired
 	AgeService ageService;
 
-//	@MessageMapping("/topic/showList")
-	@GetMapping("")
+	@MessageMapping("/showList")
 	@ApiOperation(value = "대기방 목록 조회", notes = "대기방 전부 보여줌.")
-	public ResponseEntity<List<WaitingRoomRes>> waitingRoom() {
+	public void waitingRoom() {
 		List<WaitingRoom> waitingRoom = waitingRoomService.findAll();
 		// cnt_man, cnt_woman 쿼리 미작성
 		List<WaitingRoomRes> waitingRoomList = new ArrayList<>();
@@ -69,7 +71,7 @@ public class WaitingRoomController {
 					.build();
 			waitingRoomList.add(w);
 		}
-		return new ResponseEntity<List<WaitingRoomRes>>(waitingRoomList, HttpStatus.OK);
+		sendingOperations.convertAndSend("/topic/showList", waitingRoomList);
 	}
 
 	@GetMapping("/sido")
@@ -83,13 +85,9 @@ public class WaitingRoomController {
 	@ApiOperation(value = "대기방 생성", notes = "대기방을 생성합니다.")
 	public ResponseEntity<ChattingRoom> create(
 			@RequestBody @ApiParam(value = "대기방 생성시 정보", required = true) WaitingRoomPostReq value) {
-		Map<String, Long> userRelation = new HashedMap<>();
 		WaitingRoom waitingRoom = waitingRoomService.save(value);
-		userRelation.put("user_id", value.getUser_id());
-		waitingRoomUserRelationService.save(userRelation, waitingRoom);
-		ChattingRoomPostReq chatValue = new ChattingRoomPostReq();
-		chatValue.setRoom_id(waitingRoom.getId());
-		ChattingRoom chattingRoom = chattingRoomService.saveByWaitingRoom(chatValue);
+		waitingRoomUserRelationService.save(value.getUserId(), waitingRoom);
+		ChattingRoom chattingRoom = chattingRoomService.saveByWaitingRoom(waitingRoom.getId());
 		return new ResponseEntity<ChattingRoom>(chattingRoom, HttpStatus.OK);
 	}
 
@@ -100,4 +98,7 @@ public class WaitingRoomController {
 		// 아직 안함
 		return null;
 	}
+	
+	
+	
 }

@@ -4,7 +4,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import com.ssafy.api.request.ChattingRoomPostReq;
 import com.ssafy.db.entity.ChattingRoom;
 import com.ssafy.db.repository.ChattingRoomRepository;
 
@@ -15,9 +14,9 @@ public class ChattingRoomServiceImpl implements ChattingRoomService{
 	
 	@Override
 	@Transactional
-	public ChattingRoom saveByWaitingRoom(ChattingRoomPostReq value) {
+	public ChattingRoom saveByWaitingRoom(Long roomId) {
 		ChattingRoom chattingRoom = ChattingRoom.ByWaitingRoomBuilder()
-				.roomId(value.getRoom_id()).build();
+				.roomId(roomId).build();
 		return chattingRoomRepository.save(chattingRoom);
 	}
 }
