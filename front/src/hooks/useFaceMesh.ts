@@ -32,38 +32,42 @@ export const useFaceMeshModel = (): any => {
 export const useFaceMask = (
   model: any,
   videoElement: HTMLVideoElement | null,
-  canvasElement: HTMLCanvasElement | null
+  canvasElement: HTMLCanvasElement | null,
+  avatarPath: any
 ) => {
   const requestRef = useRef<number>(0);
   const [faceCanvas, setFaceCanvas] = useState<FaceCanvas>();
 
   const animate = useCallback(async () => {
-  
-    const predictions = await model.estimateFaces(videoElement);
-    if (!predictions.length) {
+    try {
+      const predictions = await model.estimateFaces(videoElement);
+      if (!predictions.length) {
         requestRef.current = requestAnimationFrame(animate);
         return;
-    }
+      }
 
-    if (!faceCanvas) {
-      setFaceCanvas(
-        new FaceCanvas({
-          canvas: canvasElement,
-          textureFilePath: "",
-          w: videoElement!.clientWidth,
-          h: videoElement!.clientHeight,
-        })
+      if (!faceCanvas) {
+        setFaceCanvas(
+          new FaceCanvas({
+            canvas: canvasElement,
+            textureFilePath: avatarPath,
+            w: videoElement!.clientWidth,
+            h: videoElement!.clientHeight,
+          })
+        );
+        return;
+      }
+
+      const positionBufferData = predictions[0].scaledMesh.reduce(
+        (acc: any, pos: any) => acc.concat(pos),
+        []
       );
-      return;
+      faceCanvas!.render(positionBufferData);
+      requestRef.current = requestAnimationFrame(animate);
+    } catch (e) {
+      requestRef.current = requestAnimationFrame(animate);
     }
-
-    const positionBufferData = predictions[0].scaledMesh.reduce(
-      (acc: any, pos: any) => acc.concat(pos),
-      []
-    );
-    faceCanvas!.render(positionBufferData);
-    requestRef.current = requestAnimationFrame(animate);
-  }, [faceCanvas, model, videoElement, canvasElement]);
+  }, [faceCanvas, model, videoElement, canvasElement, avatarPath]);
 
   useEffect(() => {
     requestRef.current = requestAnimationFrame(animate);

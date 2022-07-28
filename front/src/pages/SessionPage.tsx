@@ -113,6 +113,7 @@ export const SessionPage: FC<IProps> = (props) => {
                     faceMeshModel={faceMeshModel}
                     streamManager={subscribers[0]}
                     name={"아무개"}
+                    avatarPath={""}
                   />
                 </Box>
                 <Box width="30%" height="30%" p={2} position="absolute" bottom="0" right="0">
@@ -120,6 +121,7 @@ export const SessionPage: FC<IProps> = (props) => {
                     faceMeshModel={faceMeshModel}
                     streamManager={publisher}
                     name={"나나나나"}
+                    avatarPath={""}
                   />
                 </Box>
               </>
@@ -137,6 +139,7 @@ export const SessionPage: FC<IProps> = (props) => {
                                 faceMeshModel={faceMeshModel}
                                 streamManager={it}
                                 name={"sdafasdf"}
+                                avatarPath={it === publisher ? `${process.env.PUBLIC_URL}/sampleMask2.jpg` : `${process.env.PUBLIC_URL}/sampleMask1.jpg`}
                               />
                             </Grid>
                           ))}

@@ -8,9 +8,10 @@ interface IProps {
   faceMeshModel: any;
   streamManager: any;
   name: string;
+  avatarPath: string;
 }
 
-export const VideoStream: FC<IProps> = ({ faceMeshModel, streamManager, name }) => {
+export const VideoStream: FC<IProps> = ({ faceMeshModel, streamManager, name, avatarPath }) => {
   const videoRef = useRef<HTMLVideoElement>(null);
   const canvasRef = useRef<HTMLCanvasElement>(null);
 
@@ -18,7 +19,7 @@ export const VideoStream: FC<IProps> = ({ faceMeshModel, streamManager, name }) 
     streamManager.addVideoElement(videoRef.current);
   });
 
-  useFaceMask(faceMeshModel, videoRef.current, canvasRef.current);
+  useFaceMask(faceMeshModel, videoRef.current, canvasRef.current, avatarPath);
 
   return (
     <Box
