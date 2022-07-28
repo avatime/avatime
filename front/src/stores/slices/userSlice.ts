@@ -1,19 +1,24 @@
 import { createSlice } from "@reduxjs/toolkit";
 
+const initialState = {
+  userId: undefined,
+  userName: "",
+  userGender: undefined,
+  userDesc: "",
+  socialId: undefined,
+  socialType: undefined,
+  profileImagePath: "https://jira.ssafy.com/secure/useravatar?avatarId=10334",
+  isLogin: false,
+};
+
 const userSlice = createSlice({
   name: "user",
-  initialState: {
-    userId: undefined,
-    userName: "",
-    userGender: undefined,
-    userDesc: "",
-    socialId: undefined,
-    socialType: undefined,
-    profileImagePath: "https://jira.ssafy.com/secure/useravatar?avatarId=10334",
-    needRegister : false,
-  },
+  initialState,
 
   reducers: {
+    reset(state) {
+      Object.assign(state, initialState);
+    },
     setUserId(state, action) {
       state.userId = action.payload;
     },
@@ -35,13 +40,14 @@ const userSlice = createSlice({
     setProfileImagePath(state, action) {
       state.profileImagePath = action.payload;
     },
-    setNeedRegister(state, action) {
-      state.needRegister = action.payload;
-    }
+    setIsLogin(state, action) {
+      state.isLogin = action.payload;
+    },
   },
 });
 
 export const {
+  reset,
   setUserId,
   setUserName,
   setUserGender,
@@ -49,7 +55,7 @@ export const {
   setSocialId,
   setSocialType,
   setProfileImagePath,
-  setNeedRegister,
+  setIsLogin,
 } = userSlice.actions;
 
 export default userSlice.reducer;

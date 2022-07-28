@@ -10,6 +10,10 @@ import { SessionPage } from './pages/SessionPage';
 import { WaitingPage } from "./pages/WaitingPage";
 import "./style.css";
 import { FinalPickResultPage } from './pages/FinalPickResultPage';
+import { KakaoHandler } from './components/login/KakaoHandler';
+import { NaverHandler } from './components/login/NaverHandler';
+import { LoginPage } from './pages/LoginPage';
+import { MyPage } from './pages/MyPage';
 
 function App() {
   return (
@@ -22,7 +26,11 @@ function App() {
               <Route path="/main" element={<MainPage />} />
               <Route path="/waiting" element={<WaitingPage />} />
               <Route path="/session" element={<SessionPage />} />
+              <Route path="/login" element={<LoginPage />} />
+              <Route path="/mypage" element={<MyPage />} />
               <Route path="/finalPickResult" element={<FinalPickResultPage />} />
+              <Route path="/kakao" element={<KakaoHandler />} />
+              <Route path="/naver" element={<NaverHandler />} />
             </Routes>
           </BrowserRouter>
         </PersistGate>

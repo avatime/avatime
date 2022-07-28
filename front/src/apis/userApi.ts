@@ -9,41 +9,6 @@ import axios from "axios";
 
 const BASE_URL: string = "http://localhost:8080/api/v1";
 
-interface ProfileAllApi {
-  receive: () => Promise<Array<ProfileRes>>;
-}
-
-const profileAllApi: ProfileAllApi = {
-  receive: function (): Promise<ProfileRes[]> {
-    return new Promise((resolve) => {
-      setTimeout(() => {
-        resolve([
-          {
-            profilePath: "https://jira.ssafy.com/secure/useravatar?avatarId=10334",
-            name: "tmp",
-          },
-          {
-            profilePath: "https://jira.ssafy.com/secure/useravatar?avatarId=10347",
-            name: "tmp",
-          },
-          {
-            profilePath: "https://jira.ssafy.com/secure/useravatar?avatarId=10341",
-            name: "tmp",
-          },
-          {
-            profilePath: "https://jira.ssafy.com/secure/useravatar?avatarId=10505",
-            name: "tmp",
-          },
-          {
-            profilePath: "https://jira.ssafy.com/secure/useravatar?avatarId=10351",
-            name: "tmp",
-          },
-        ]);
-      }, 500);
-    });
-  },
-};
-
 interface UserDeleteApi {
   deleteUser(userInfoReq: UserInfoReq): Promise<SuccessRes>;
 }
@@ -146,6 +111,16 @@ const naverLogin = (code: string, state: string): any => {
   return function () {
     return axios.get(`http://localhost:8080/api/v1/auth/naver?code=${code}&state=${state}`);
   };
+};
+
+interface ProfileAllApi {
+  receive: () => Promise<Array<ProfileRes>>;
+}
+
+const profileAllApi: ProfileAllApi = {
+  receive: async function (): Promise<ProfileRes[]> {
+    return (await (axios.get(`${BASE_URL}/user/profile`))).data;
+  },
 };
 
 export {

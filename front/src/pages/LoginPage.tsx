@@ -25,7 +25,7 @@ export const LoginPage: FC<IProps> = (props) => {
               width: "60vw",
               borderRadius: "10px",
             }}
-          >
+          > 
             <Logo />
             <SocialLogin />
           </Box>

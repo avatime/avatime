@@ -1,16 +1,24 @@
 import React, { FC } from "react";
-import Button from '@mui/material/Button';
+import logo from "../../assets/avartimeLogo.png";
+import { Box } from "@mui/material";
 import { Link } from "react-router-dom";
-import './style.css';
+import "../../style.css";
 
 interface IProps {}
 
+/**
+ * @author
+ * @function @Logo
+ **/
+
 export const Logo: FC<IProps> = (props) => {
   return (
-    <Button className="logo_div">
-      <Link to="/">
-        <img src="../../assets/logo_temp.png" alt="" />
-      </Link>
-    </Button>
+    <>
+      <Box display="flex" justifyContent="center" alignItems="center" marginBottom="2%">
+        <Link to="/">
+          <img src={logo} alt="로고" style={{ width: "70%", paddingTop: "2%" }} />
+        </Link>
+      </Box>
+    </>
   );
 };

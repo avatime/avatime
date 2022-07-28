@@ -7,8 +7,8 @@ import {
   setUserDesc,
   setSocialId,
   setSocialType,
-  setNeedRegister,
   setProfileImagePath,
+  setIsLogin,
 } from "../../stores/slices/userSlice";
 import { useQuery } from "react-query";
 import { Backdrop, CircularProgress } from "@mui/material";
@@ -31,9 +31,9 @@ export const NaverHandler: FC<Iprops> = (props) => {
         console.log(datas);
         dispatch(setUserGender(datas.gender));
         dispatch(setSocialId(datas.socialId));
-        dispatch(setSocialType(datas.docialType));
-        dispatch(setNeedRegister(true));
-        navigate("/login");
+        dispatch(setSocialType(datas.socialType));
+        dispatch(setIsLogin(false));
+        navigate("/mypage");
         alert("회원가입이 필요합니다.");
       } else if (res.data.statusCode === 200) {
         console.log(datas);
@@ -44,9 +44,9 @@ export const NaverHandler: FC<Iprops> = (props) => {
         dispatch(setProfileImagePath(datas.profileImagePath));
         dispatch(setSocialId(datas.socialId));
         dispatch(setSocialType(datas.socialType));
-        dispatch(setNeedRegister(false));
+        dispatch(setIsLogin(true));
         localStorage.setItem("token", datas.accessToken);
-        navigate("/");
+        navigate("/main");
         alert("로그인 성공");
       }
     },

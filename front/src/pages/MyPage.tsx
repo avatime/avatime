@@ -2,6 +2,8 @@ import React, { FC } from "react";
 import { Container } from "@mui/material";
 import CssBaseline from "@mui/material/CssBaseline";
 import Box from "@mui/material/Box";
+import { Logo } from "../components/login/Logo";
+import { ProfileArea } from "../components/login/ProfileArea";
 
 interface IProps {}
 
@@ -23,7 +25,10 @@ export const MyPage: FC<IProps> = (props) => {
               width: "60vw",  
               borderRadius: "7%",
             }}
-          ></Box>
+          >
+            <Logo />
+            <ProfileArea />
+          </Box>
         </Box>
       </Container>
     </React.Fragment>
