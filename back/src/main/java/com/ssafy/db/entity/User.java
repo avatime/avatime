@@ -36,7 +36,7 @@ public class User extends BaseEntity{
     @Column(columnDefinition = "TEXT")
     private String description;
 	
-    @Column(nullable = false, columnDefinition = "INT UNSIGNED")
+    @Column(updatable = false, nullable = false)
     private String profileImagePath;
 	
     @Column(updatable = false, nullable = false)

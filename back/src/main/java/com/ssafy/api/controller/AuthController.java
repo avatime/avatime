@@ -136,7 +136,7 @@ public class AuthController {
 		if (user == null) {
 			
 			UserRegisterPostRes registerInfo = new UserRegisterPostRes();
-			registerInfo.setGender(userInfo.getAsJsonObject().get("gender").toString());
+			registerInfo.setGender(userInfo.getAsJsonObject().get("gender").toString().replaceAll("\"", ""));
 			registerInfo.setSocialId(userInfo.getAsJsonObject().get("email").toString().replaceAll("\"", ""));
 			registerInfo.setSocialType(socialType);
 	
@@ -174,7 +174,7 @@ public class AuthController {
  			return ResponseEntity.status(201).body(UserRegisterPostRes.of(204, "E-mail과 성별에 동의해주세요."));
  		}
  		
-		String socialId = userInfo.getAsJsonObject().get("email").toString().replaceAll("\"", "");;
+		String socialId = userInfo.getAsJsonObject().get("email").toString().replaceAll("\"", "");
 		
 		// socialId(email)와 socialType을 통해 DB에 있는지 체크
 		User user = userService.getUserBySocialIdAndSocialType(socialId, socialType);

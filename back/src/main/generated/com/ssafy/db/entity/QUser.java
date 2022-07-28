@@ -32,7 +32,7 @@ public class QUser extends EntityPathBase<User> {
 
     public final StringPath name = createString("name");
 
-    public final NumberPath<Long> profileId = createNumber("profileId", Long.class);
+    public final StringPath profileImagePath = createString("profileImagePath");
 
     public final StringPath socialId = createString("socialId");
 
