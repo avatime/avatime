@@ -33,5 +33,6 @@ public class MeetingRoomUserRelation  extends BaseEntity {
     @Column(name="pick_user_id",columnDefinition = "INT UNSIGNED")
     private Long pickUserId;
     
+    @Column
     private boolean matched;
 }

@@ -1,6 +1,7 @@
-package com.ssafy.api.dto;
+package com.ssafy.api.response;
 
 import lombok.AllArgsConstructor;
+import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 import lombok.ToString;
@@ -9,14 +10,11 @@ import lombok.ToString;
 @ToString
 @AllArgsConstructor
 @NoArgsConstructor
-public class ChatMessage {
-	public enum MessageType {
-		ENTER, TALK, LEAVE
-	}
-
-	private MessageType type;
-	private Long chatRoomId;
+@Builder
+public class ChattingMessageRes {
+	private String type;
+	private Long userId;
 	private String userName;
 	private String message;
-	private String profileURL;
+	private String createdTime;
 }

@@ -24,7 +24,7 @@ public class ChatService {
 
     private Map<Long, ChatRoom> chatRooms;
     private Long no = 0L;
-    private ChattingRoomRepository chattingRoomRepository;
+    final private ChattingRoomRepository chattingRoomRepository;
 
     @PostConstruct
     //의존관게 주입완료되면 실행되는 코드

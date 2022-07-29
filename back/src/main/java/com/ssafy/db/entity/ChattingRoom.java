@@ -3,25 +3,23 @@ package com.ssafy.db.entity;
 import java.sql.Timestamp;
 import java.time.LocalDateTime;
 import java.util.Date;
-import java.util.HashSet;
-import java.util.Set;
 
 import javax.annotation.Nonnull;
 import javax.persistence.Column;
 import javax.persistence.Entity;
-import javax.persistence.JoinColumn;
-import javax.persistence.ManyToOne;
 import javax.persistence.PrePersist;
 import javax.persistence.Temporal;
 import javax.persistence.TemporalType;
 
 import org.hibernate.annotations.DynamicInsert;
 import org.hibernate.annotations.DynamicUpdate;
-import org.springframework.web.socket.WebSocketSession;
 
+import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
+import lombok.NoArgsConstructor;
 import lombok.Setter;
+import lombok.ToString;
 
 /**
  * 채팅방 모델 정의.
@@ -30,6 +28,9 @@ import lombok.Setter;
 @Entity
 @Getter
 @Setter
+@NoArgsConstructor
+@AllArgsConstructor
+@ToString
 public class ChattingRoom extends BaseEntity {
 
 	@Column(name = "room_id", nullable = false, columnDefinition = "INT UNSIGNED")
@@ -55,6 +56,7 @@ public class ChattingRoom extends BaseEntity {
     
     @Builder(builderClassName = "ByMeettingRoomBuilder", builderMethodName = "ByMeettingRoomBuilder")
     public ChattingRoom(@Nonnull Long roomId, int type) {
+    	this.roomId = roomId;
     	this.type = type;
     }
 }
