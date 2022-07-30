@@ -7,7 +7,6 @@ import com.querydsl.core.types.dsl.*;
 import com.querydsl.core.types.PathMetadata;
 import javax.annotation.Generated;
 import com.querydsl.core.types.Path;
-import com.querydsl.core.types.dsl.PathInits;
 
 
 /**
@@ -18,40 +17,29 @@ public class QChattingRoom extends EntityPathBase<ChattingRoom> {
 
     private static final long serialVersionUID = -207600381L;
 
-    private static final PathInits INITS = PathInits.DIRECT2;
-
     public static final QChattingRoom chattingRoom = new QChattingRoom("chattingRoom");
 
     public final QBaseEntity _super = new QBaseEntity(this);
 
-    public final DateTimePath<java.util.Date> created_time = createDateTime("created_time", java.util.Date.class);
+    public final DateTimePath<java.util.Date> createdTime = createDateTime("createdTime", java.util.Date.class);
 
     //inherited
     public final NumberPath<Long> id = _super.id;
 
-    public final StringPath type = createString("type");
+    public final NumberPath<Long> roomId = createNumber("roomId", Long.class);
 
-    public final QWaitingRoom waitingRoom;
+    public final NumberPath<Integer> type = createNumber("type", Integer.class);
 
     public QChattingRoom(String variable) {
-        this(ChattingRoom.class, forVariable(variable), INITS);
+        super(ChattingRoom.class, forVariable(variable));
     }
 
     public QChattingRoom(Path<? extends ChattingRoom> path) {
-        this(path.getType(), path.getMetadata(), PathInits.getFor(path.getMetadata(), INITS));
+        super(path.getType(), path.getMetadata());
     }
 
     public QChattingRoom(PathMetadata metadata) {
-        this(metadata, PathInits.getFor(metadata, INITS));
-    }
-
-    public QChattingRoom(PathMetadata metadata, PathInits inits) {
-        this(ChattingRoom.class, metadata, inits);
-    }
-
-    public QChattingRoom(Class<? extends ChattingRoom> type, PathMetadata metadata, PathInits inits) {
-        super(type, metadata, inits);
-        this.waitingRoom = inits.isInitialized("waitingRoom") ? new QWaitingRoom(forProperty("waitingRoom")) : null;
+        super(ChattingRoom.class, metadata);
     }
 
 }

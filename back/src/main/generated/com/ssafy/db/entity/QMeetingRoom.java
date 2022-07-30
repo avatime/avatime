@@ -21,14 +21,16 @@ public class QMeetingRoom extends EntityPathBase<MeetingRoom> {
 
     public final QBaseEntity _super = new QBaseEntity(this);
 
-    public final DateTimePath<java.util.Date> created_time = createDateTime("created_time", java.util.Date.class);
+    public final DateTimePath<java.util.Date> createdTime = createDateTime("createdTime", java.util.Date.class);
 
     //inherited
     public final NumberPath<Long> id = _super.id;
 
-    public final NumberPath<Long> main_session_id = createNumber("main_session_id", Long.class);
+    public final NumberPath<Long> mainSessionId = createNumber("mainSessionId", Long.class);
 
-    public final StringPath type = createString("type");
+    public final NumberPath<Integer> status = createNumber("status", Integer.class);
+
+    public final NumberPath<Integer> type = createNumber("type", Integer.class);
 
     public QMeetingRoom(String variable) {
         super(MeetingRoom.class, forVariable(variable));

@@ -26,14 +26,16 @@ public class QChattingMessage extends EntityPathBase<ChattingMessage> {
 
     public final QChattingRoom chattingRoom;
 
-    public final DateTimePath<java.util.Date> created_time = createDateTime("created_time", java.util.Date.class);
+    public final StringPath content = createString("content");
+
+    public final DateTimePath<java.util.Date> createdTime = createDateTime("createdTime", java.util.Date.class);
 
     //inherited
     public final NumberPath<Long> id = _super.id;
 
-    public final StringPath message = createString("message");
+    public final StringPath type = createString("type");
 
-    public final NumberPath<Long> user_id = createNumber("user_id", Long.class);
+    public final NumberPath<Long> userId = createNumber("userId", Long.class);
 
     public QChattingMessage(String variable) {
         this(ChattingMessage.class, forVariable(variable), INITS);
@@ -53,7 +55,7 @@ public class QChattingMessage extends EntityPathBase<ChattingMessage> {
 
     public QChattingMessage(Class<? extends ChattingMessage> type, PathMetadata metadata, PathInits inits) {
         super(type, metadata, inits);
-        this.chattingRoom = inits.isInitialized("chattingRoom") ? new QChattingRoom(forProperty("chattingRoom"), inits.get("chattingRoom")) : null;
+        this.chattingRoom = inits.isInitialized("chattingRoom") ? new QChattingRoom(forProperty("chattingRoom")) : null;
     }
 
 }
