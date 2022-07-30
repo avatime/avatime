@@ -7,6 +7,6 @@ import com.ssafy.db.entity.ChattingRoom;
 
 public interface ChattingMessageService {
 
-	public List<ChattingMessage> findByChattingRoomId(Long chattingRoomId) throws Exception;
+	public List<ChattingMessage> findAllByChattingRoom(ChattingRoom chattingRoom) throws Exception;
 	public String findUserName(ChattingRoom chattingRoom, Long userId);
 }

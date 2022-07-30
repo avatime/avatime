@@ -12,7 +12,7 @@ public class ChattingMessagePostReq {
 		ENTER, TALK, LEAVE
 	}
 
-	private MessageType type;
+	private MessageType chat_type;
 	private Long chattingroom_id;
 	private Long user_id;
 	private String message;

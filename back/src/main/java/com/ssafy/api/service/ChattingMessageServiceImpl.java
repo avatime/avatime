@@ -11,17 +11,20 @@ import com.ssafy.db.repository.ChattingMessageRepository;
 import com.ssafy.db.repository.MeetingRoomUserRelationRepository;
 import com.ssafy.db.repository.UserRepository;
 
+import lombok.RequiredArgsConstructor;
+
 @Service("ChattingMessageService")
+@RequiredArgsConstructor
 public class ChattingMessageServiceImpl implements ChattingMessageService {
 
-	private ChattingMessageRepository chattingMessageRepository;
-	private UserRepository userRepository;	
-	private MeetingRoomUserRelationRepository meetingRoomUserRelation;
-	private AvatarRepository avatarRepository;
+	private final ChattingMessageRepository chattingMessageRepository;
+	private final UserRepository userRepository;	
+	private final MeetingRoomUserRelationRepository meetingRoomUserRelation;
+	private final AvatarRepository avatarRepository;
 	@Override
-	public List<ChattingMessage> findByChattingRoomId(Long chattingRoomId) throws Exception {
+	public List<ChattingMessage> findAllByChattingRoom(ChattingRoom chattingRoom) throws Exception {
 		// TODO Auto-generated method stub
-		return chattingMessageRepository.findAllByChattingRoomId(chattingRoomId).get();
+		return chattingMessageRepository.findByChattingRoomId(chattingRoom.getId());
 	}
 	@Override
 	public String findUserName(ChattingRoom chattingRoom, Long userId) {

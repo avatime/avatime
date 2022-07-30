@@ -3,10 +3,12 @@ package com.ssafy.db.entity;
 import java.sql.Timestamp;
 import java.time.LocalDateTime;
 import java.util.Date;
+import java.util.List;
 
 import javax.annotation.Nonnull;
 import javax.persistence.Column;
 import javax.persistence.Entity;
+import javax.persistence.OneToMany;
 import javax.persistence.PrePersist;
 import javax.persistence.Temporal;
 import javax.persistence.TemporalType;
@@ -43,10 +45,13 @@ public class ChattingRoom extends BaseEntity {
     @Column(name="created_time", updatable = false, columnDefinition = "TIMESTAMP DEFAULT CURRENT_TIMESTAMP")
     private Date createdTime;
     	
-    @PrePersist
-    protected void onCreate() {
-    	createdTime = Timestamp.valueOf(LocalDateTime.now());
-    }
+//    @PrePersist
+//    protected void onCreate() {
+//    	createdTime = Timestamp.valueOf(LocalDateTime.now());
+//    }
+    
+    @OneToMany(mappedBy="chattingRoom")
+    List<ChattingMessage> messages;
     
     @Builder(builderClassName = "ByWaitingRoomBuilder", builderMethodName = "ByWaitingRoomBuilder")
     public ChattingRoom(@Nonnull Long roomId) {
