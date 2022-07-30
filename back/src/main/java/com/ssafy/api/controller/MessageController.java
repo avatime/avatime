@@ -1,8 +1,10 @@
 package com.ssafy.api.controller;
 
 import java.util.ArrayList;
+import java.util.Iterator;
 import java.util.List;
 
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.messaging.handler.annotation.MessageMapping;
 import org.springframework.messaging.simp.SimpMessageSendingOperations;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -27,8 +29,11 @@ public class MessageController {
 
     private final SimpMessageSendingOperations sendingOperations;
 
+    @Autowired
     private final ChatService chattingRoomService;
+    @Autowired
     private final ChattingMessageService chattingMessageService;
+    @Autowired
     private final ChattingMessageRepository chattingMessageRepository;
     
     @PostMapping("/send")
@@ -61,10 +66,14 @@ public class MessageController {
     	sendingOperations.convertAndSend("/topic/chat/room/"+message.getChattingRoom().getId(), list);
     }
     
+    // 테스트용 코드
     @MessageMapping("/chat/message")
     public void enter(ChatMessage message) {
         if (ChatMessage.MessageType.ENTER.equals(message.getType())) {
             message.setMessage(message.getUserName()+"님이 입장하였습니다.");
+        }
+        if (ChatMessage.MessageType.LEAVE.equals(message.getType())) {
+            message.setMessage(message.getUserName()+"님이 퇴장하였습니다.");
         }
         ChattingMessage chat = ChattingMessage.builder()
         		.type(message.getType().toString())
