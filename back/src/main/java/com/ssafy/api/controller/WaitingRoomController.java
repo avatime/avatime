@@ -20,12 +20,14 @@ import com.ssafy.api.response.WaitingRoomRes;
 import com.ssafy.api.service.AgeService;
 import com.ssafy.api.service.ChattingRoomService;
 import com.ssafy.api.service.SidoService;
+import com.ssafy.api.service.UserService;
 import com.ssafy.api.service.WaitingRoomService;
 import com.ssafy.api.service.WaitingRoomUserRelationService;
 import com.ssafy.db.entity.Age;
 import com.ssafy.db.entity.ChattingRoom;
 import com.ssafy.db.entity.MeetingRoom;
 import com.ssafy.db.entity.Sido;
+import com.ssafy.db.entity.User;
 import com.ssafy.db.entity.WaitingRoom;
 
 import io.swagger.annotations.Api;
@@ -43,7 +45,10 @@ public class WaitingRoomController {
 	
 	@Autowired
 	SidoService sidoService;
-
+	
+	@Autowired
+	UserService userService;
+	
 	@Autowired
 	WaitingRoomService waitingRoomService;
 
@@ -73,7 +78,7 @@ public class WaitingRoomController {
 					.build();
 			waitingRoomList.add(w);
 		}
-		sendingOperations.convertAndSend("/topic/showList", waitingRoomList);
+		sendingOperations.convertAndSend("/topic/getList", waitingRoomList);
 	}
 
 	@GetMapping("/sido")
@@ -96,7 +101,9 @@ public class WaitingRoomController {
 	public ResponseEntity<ChattingRoom> create(
 			@RequestBody @ApiParam(value = "대기방 생성시 정보", required = true) WaitingRoomPostReq value) {
 		WaitingRoom waitingRoom = waitingRoomService.save(value);
-		waitingRoomUserRelationService.save(value.getUserId(), waitingRoom);
+		User user = userService.getUserByUserId(value.getUserId());
+		waitingRoomUserRelationService.save(user, waitingRoom);
+		// 방장 user 의 type 을 가진 waitingroomuserrelation 만들어야댐
 		ChattingRoom chattingRoom = chattingRoomService.saveByWaitingRoom(waitingRoom.getId());
 		return new ResponseEntity<ChattingRoom>(chattingRoom, HttpStatus.OK);
 	}
@@ -108,7 +115,6 @@ public class WaitingRoomController {
 //		WaitingRoom waitingRoom = waitingRoomService.find
 		return null;
 	}
-	
 	
 	
 }

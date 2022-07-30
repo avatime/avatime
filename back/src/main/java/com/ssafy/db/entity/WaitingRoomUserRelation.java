@@ -26,13 +26,13 @@ public class WaitingRoomUserRelation extends BaseEntity {
 	@ManyToOne
 	private WaitingRoom waitingRoom;
 	
-    @Column(updatable = false, nullable = false, columnDefinition = "INT UNSIGNED")
-	private Long userId;
+    @ManyToOne
+	private User user;
 	
     @Builder
-    public WaitingRoomUserRelation(Long userId, WaitingRoom waitingRoom) {
+    public WaitingRoomUserRelation(User user, WaitingRoom waitingRoom) {
     	this.type = 0;
-    	this.userId = userId;
+    	this.user = user;
     	this.waitingRoom = waitingRoom;
     }
 }

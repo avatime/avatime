@@ -4,6 +4,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import com.ssafy.db.entity.User;
 import com.ssafy.db.entity.WaitingRoom;
 import com.ssafy.db.entity.WaitingRoomUserRelation;
 import com.ssafy.db.repository.WaitingRoomRepository;
@@ -19,10 +20,10 @@ public class WaitingRoomUserRelationServiceImpl implements WaitingRoomUserRelati
 	
 	@Override
 	@Transactional
-	public WaitingRoomUserRelation save(Long userId, WaitingRoom waitingRoom) {
+	public WaitingRoomUserRelation save(User user, WaitingRoom waitingRoom) {
 		WaitingRoomUserRelation waitingRoomUserRelation = WaitingRoomUserRelation.builder()
 				.waitingRoom(waitingRoom)
-				.userId(userId).build();
+				.user(user).build();
 		return waitingRoomUserRelationRepository.save(waitingRoomUserRelation);
 	}
 }
