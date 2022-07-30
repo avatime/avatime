@@ -26,7 +26,7 @@ public class ChattingMessageServiceImpl implements ChattingMessageService {
 	@Override
 	public String findUserName(ChattingRoom chattingRoom, Long userId) {
 		// TODO Auto-generated method stub
-		if(chattingRoom.getType() == 0) return userRepository.findById(userId).get().getName();
+		if(chattingRoom.getType() == 2) return userRepository.findById(userId).get().getName();
 		else return avatarRepository.findById(meetingRoomUserRelation.findByMeetingRoomIdAndUserId(chattingRoom.getRoomId(), userId).get().getAvatarId()).get().getName();
 	}
 }
