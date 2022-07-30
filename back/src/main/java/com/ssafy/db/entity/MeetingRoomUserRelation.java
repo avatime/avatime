@@ -2,12 +2,12 @@ package com.ssafy.db.entity;
 
 import javax.persistence.Column;
 import javax.persistence.Entity;
-import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
 
 import org.hibernate.annotations.DynamicInsert;
 import org.hibernate.annotations.DynamicUpdate;
 
+import lombok.Builder;
 import lombok.Getter;
 import lombok.Setter;
 
@@ -21,8 +21,7 @@ import lombok.Setter;
 public class MeetingRoomUserRelation  extends BaseEntity {
 
 	@ManyToOne
-	@JoinColumn(insertable = false, updatable=false)
-	private MeetingRoom meetingRoomId;
+	private MeetingRoom meetingRoom;
 	
     @Column(updatable = false, nullable = false, columnDefinition = "INT UNSIGNED")
 	private Long userId;
@@ -34,4 +33,12 @@ public class MeetingRoomUserRelation  extends BaseEntity {
     private Long pickUserId;
     
     private boolean matched;
+    
+    @Builder
+    public MeetingRoomUserRelation(MeetingRoom meetingRoom, Long userId) {
+    	this.meetingRoom = meetingRoom;
+    	this.userId = userId;
+    	this.avatarId = null;
+    	this.pickUserId = null;
+    }
 }

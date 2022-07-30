@@ -1,5 +1,7 @@
 package com.ssafy.api.request;
 
+import com.fasterxml.jackson.annotation.JsonProperty;
+
 import io.swagger.annotations.ApiModel;
 import lombok.Getter;
 import lombok.Setter;
@@ -12,7 +14,12 @@ import lombok.Setter;
 @ApiModel("FinalChoiceUserRequest")
 public class FinalChoiceUserReq {
 
-	Long meetingroom_id;
-	Long user_id;
-	Long pick_user_id;
+	@JsonProperty("meeting_room_id")
+	Long meetingRoomId;
+	
+	@JsonProperty("user_id")
+	Long userId;
+	
+	@JsonProperty("pick_user_id")
+	Long pickUserId;
 }

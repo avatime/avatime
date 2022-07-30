@@ -31,4 +31,10 @@ public class WaitingRoomServiceImpl implements WaitingRoomService{
 				.sido_id(value.getSidoId()).build();
 		return waitingRoomRepository.save(waitingRoom);
 	}
+	
+	@Override
+	public WaitingRoom findById(Long waitingRoomId) {
+		WaitingRoom waitingroom = waitingRoomRepository.findById(waitingRoomId).get();
+		return null;
+	}	
 }

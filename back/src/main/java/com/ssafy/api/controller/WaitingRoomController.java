@@ -22,6 +22,7 @@ import com.ssafy.api.service.ChattingRoomService;
 import com.ssafy.api.service.SidoService;
 import com.ssafy.api.service.WaitingRoomService;
 import com.ssafy.api.service.WaitingRoomUserRelationService;
+import com.ssafy.db.entity.Age;
 import com.ssafy.db.entity.ChattingRoom;
 import com.ssafy.db.entity.MeetingRoom;
 import com.ssafy.db.entity.Sido;
@@ -55,8 +56,9 @@ public class WaitingRoomController {
 	@Autowired
 	AgeService ageService;
 
-	@MessageMapping("/showList")
-	@ApiOperation(value = "대기방 목록 조회", notes = "대기방 전부 보여줌.")
+	
+	
+	// 대기방 목록 갱신
 	public void waitingRoom() {
 		List<WaitingRoom> waitingRoom = waitingRoomService.findAll();
 		// cnt_man, cnt_woman 쿼리 미작성
@@ -81,6 +83,14 @@ public class WaitingRoomController {
 		return new ResponseEntity<List<Sido>>(sido, HttpStatus.OK);
 	}
 
+	@GetMapping("/age")
+	@ApiOperation(value = "연령범주검색")
+	public ResponseEntity<List<Age>> age() {
+		List<Age> age = ageService.findAll();
+		return new ResponseEntity<List<Age>>(age, HttpStatus.OK);
+	}
+	
+	
 	@PostMapping("/create")
 	@ApiOperation(value = "대기방 생성", notes = "대기방을 생성합니다.")
 	public ResponseEntity<ChattingRoom> create(
@@ -95,7 +105,7 @@ public class WaitingRoomController {
 	@ApiOperation(value = "대기방이 미팅방으로 변경", notes = "미팅방을 생성합니다.")
 	public ResponseEntity<MeetingRoom> start(
 			@RequestBody @ApiParam(value = "미팅방을 만드려는 대기방 id", required = true) long waitingRoomId) {
-		// 아직 안함
+//		WaitingRoom waitingRoom = waitingRoomService.find
 		return null;
 	}
 	
