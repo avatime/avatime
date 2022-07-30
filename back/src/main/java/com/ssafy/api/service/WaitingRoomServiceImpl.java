@@ -27,8 +27,8 @@ public class WaitingRoomServiceImpl implements WaitingRoomService{
 		WaitingRoom waitingRoom = WaitingRoom.builder()
 				.name(value.getName())
 				.headCount(value.getHeadCount())
-				.age(value.getAge())
-				.sido_id(value.getSidoId()).build();
+				.ageId(value.getAgeId())
+				.sidoId(value.getSidoId()).build();
 		return waitingRoomRepository.save(waitingRoom);
 	}
 	

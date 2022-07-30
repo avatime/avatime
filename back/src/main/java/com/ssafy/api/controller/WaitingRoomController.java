@@ -64,6 +64,7 @@ public class WaitingRoomController {
 	
 	
 	// 대기방 목록 갱신
+	@MessageMapping("/getList")
 	public void waitingRoom() {
 		List<WaitingRoom> waitingRoom = waitingRoomService.findAll();
 		// cnt_man, cnt_woman 쿼리 미작성
@@ -74,7 +75,7 @@ public class WaitingRoomController {
 					.headCount(wr.getHeadCount())
 					.status(wr.getStatus())
 					.sido(sidoService.findById(wr.getSidoId()).get().getName())
-					.age(ageService.findById(wr.getAge()).get().getName())
+					.age(ageService.findById(wr.getAgeId()).get().getName())
 					.build();
 			waitingRoomList.add(w);
 		}
@@ -103,7 +104,6 @@ public class WaitingRoomController {
 		WaitingRoom waitingRoom = waitingRoomService.save(value);
 		User user = userService.getUserByUserId(value.getUserId());
 		waitingRoomUserRelationService.save(user, waitingRoom);
-		// 방장 user 의 type 을 가진 waitingroomuserrelation 만들어야댐
 		ChattingRoom chattingRoom = chattingRoomService.saveByWaitingRoom(waitingRoom.getId());
 		return new ResponseEntity<ChattingRoom>(chattingRoom, HttpStatus.OK);
 	}

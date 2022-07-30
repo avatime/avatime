@@ -42,7 +42,7 @@ public class WaitingRoom extends BaseEntity {
 	private int status;
 	
 	@Column(nullable = false)
-	private long age;
+	private long ageId;
 	
 	@Column(nullable = false)
 	private long sidoId;
@@ -60,11 +60,11 @@ public class WaitingRoom extends BaseEntity {
     }
 
     @Builder
-    public WaitingRoom(String name, int headCount, long age, long sido_id) {
+    public WaitingRoom(String name, int headCount, long ageId, long sidoId) {
     	this.name = name;
     	this.headCount = headCount;
-    	this.age = age;
+    	this.ageId = ageId;
     	this.status = 0;
-    	this.sidoId = sido_id;
+    	this.sidoId = sidoId;
     }
 }

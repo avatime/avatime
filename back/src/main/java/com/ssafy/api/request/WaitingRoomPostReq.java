@@ -18,7 +18,8 @@ public class WaitingRoomPostReq {
 	@JsonProperty("head_count")
 	private int headCount;
 	
-	private int age;
+	@JsonProperty("age_id")
+	private int ageId;
 	
 	@JsonProperty("sido_id")
 	private int sidoId;
