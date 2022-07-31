@@ -15,12 +15,12 @@ import lombok.Setter;
 public class AvatarStatus {
 	private Long id;
 	private String name;
-	private String image_path;
+	private String imagePath;
 	private boolean selected;
 	
 	public AvatarStatus(Avatar avatar) {
 		this.id = avatar.getId();
 		this.name = avatar.getName();
-		this.image_path = avatar.getImage_path();
+		this.imagePath = avatar.getImagePath();
 	}
 }

@@ -15,6 +15,7 @@ import javax.persistence.TemporalType;
 import org.hibernate.annotations.DynamicInsert;
 import org.hibernate.annotations.DynamicUpdate;
 
+import lombok.Builder;
 import lombok.Getter;
 import lombok.Setter;
 
@@ -25,17 +26,19 @@ import lombok.Setter;
 @Entity
 @Getter
 @Setter
+@Builder
 public class ChattingMessage extends BaseEntity {
 
 	@ManyToOne
-	@JoinColumn(name = "chat_room_id", insertable = false, updatable=false)
 	private ChattingRoom chattingRoom;
 	
 	@Column(updatable = false, nullable = false, length=255)
 	private String content;
 	
-	@Column(updatable = false, nullable = false, columnDefinition = "INT UNSIGNED")
-	private Long userId;
+	@ManyToOne
+	private User user;
+	
+	private String type;
 		
 	@Temporal(TemporalType.TIMESTAMP)
 	@Column(updatable = false, columnDefinition = "TIMESTAMP DEFAULT CURRENT_TIMESTAMP")

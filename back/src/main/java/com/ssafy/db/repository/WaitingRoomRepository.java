@@ -9,5 +9,5 @@ import com.ssafy.db.entity.WaitingRoom;
 
 public interface WaitingRoomRepository extends JpaRepository<WaitingRoom, Long>{
 	Optional<WaitingRoom> findById(Long waitingRoomId);
-	List<WaitingRoom> findAllOrderByCreatedTimeDesc();
+//	List<WaitingRoom> findAllOrderByCreatedTimeDesc();
 }
