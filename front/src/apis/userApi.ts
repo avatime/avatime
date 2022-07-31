@@ -87,7 +87,7 @@ interface NameCheckApi {
 
 const nameCheckApi: NameCheckApi = {
   checkName: async function (userInfoReq: UserInfoReq): Promise<SuccessRes> {
-    return (await axios.get(`${BASE_URL}/user/check/${userInfoReq.name}`)).data;
+    return (await axios.get(`${BASE_URL}/auth/check/${userInfoReq.name}`)).data;
   },
 };
 

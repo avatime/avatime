@@ -1,13 +1,16 @@
-import React, { FC } from "react";
-import { Box, Button, Typography, Modal, TextField, MenuItem, Avatar } from "@mui/material";
+import React, { FC, useState } from "react";
+import { Box, Stack, Grid, Button, Typography, Modal, TextField, MenuItem, Avatar, IconButton } from "@mui/material";
+import CheckIcon from '@mui/icons-material/Check';
+import RefreshIcon from '@mui/icons-material/Refresh';
 import { useSelector, useDispatch } from "react-redux";
+import { nameCheckApi } from "../../apis/userApi";
 
 const style = {
   position: "absolute" as "absolute",
   top: "50%",
   left: "50%",
   transform: "translate(-50%, -50%)",
-  width: 300,
+  width: 800,
   height: 400,
   bgcolor: "background.paper",
   border: "2px solid #000",
@@ -76,7 +79,6 @@ interface IProps {}
  **/
 
 export const ProfileArea: FC<IProps> = (props) => {
-    const profileImagePath = useSelector((state: any) => state.user.profileImagePath);
   const [value, setValue] = React.useState("");
   const [open, setOpen] = React.useState(false);
   const [count, setCount] = React.useState("");
@@ -95,17 +97,49 @@ export const ProfileArea: FC<IProps> = (props) => {
     setSido(event.target.value);
   };
 
+  const userGender = useSelector((state: any) => state.user.userGender);
+  const userName = useSelector((state: any) => state.user.userName);
+  const userDesc = useSelector((state: any) => state.user.userDesc);
+  const profileImagePath = useSelector((state: any) => state.user.profileImagePath);
+
+  const [name, setName] = useState(userName);
+  const [desc, setDesc] = useState(userDesc);
+  const [check, setCheck] = useState(true);
+  const [image, setImage] = useState(profileImagePath);
+
   const handleNameChange = (event: React.ChangeEvent<HTMLInputElement>) => {
-    setValue(event.target.value);
+    setName(event.target.value);
+    nameCheckApi.checkName({ name }).then((res) => {
+      setCheck(res.success);
+    });
+    if (check === true) {
+      //
+    } else {
+    }
+  };
+
+  const modifyInfo = () => {
+
+  }
+
+  const refreshForm = () => {
+    setName(userName);
+    setDesc(userDesc);
+  }
+
+  const handleDescChange = (event: React.ChangeEvent<HTMLInputElement>) => {
+    setDesc(event.target.value);
   };
 
   return (
+    <>
+    <Stack direction="row" spacing={0} display="flex" justifyContent="center">
     <Box display="flex" justifyContent="center" alignItems="center">
-      <Button onClick={handleOpen} startIcon={<Avatar src={profileImagePath} />} >
-      </Button>
-      {/* <IconButton  aria-label="makenewroom" disabled color="primary">
-          <AddCircleOutlineIcon onClick={handleOpen} style={{position:"absolute", bottom:0}}/>
-        </IconButton> */}
+      <IconButton onClick={handleOpen}>
+      <Avatar src={profileImagePath} sx={{ width: 80, height: 80 }} style={{
+          display:"flex", justifyContent:"center", alignItems:"center" 
+        }} />
+        </IconButton>
       <Modal
         open={open}
         onClose={handleClose}
@@ -114,10 +148,10 @@ export const ProfileArea: FC<IProps> = (props) => {
       >
         <Box sx={style}>
           <Typography id="modal-modal-title" variant="h6" component="h2" textAlign="center">
-            새로운 방 만들기
+            프로필 사진 바꾸기
           </Typography>
           <Typography id="modal-modal-description" sx={{ mt: 2 }}>
-            <Box
+            {/* <Box
               component="form"
               sx={{
                 "& .MuiTextField-root": { m: 1, width: "25ch" },
@@ -184,10 +218,54 @@ export const ProfileArea: FC<IProps> = (props) => {
               <Button onClick={handleClose} style={{ position: "absolute", right: 5, bottom: 10 }}>
                 확인
               </Button>
-            </Box>
+            </Box> */}
           </Typography>
         </Box>
       </Modal>
     </Box>
+    <Box style={{display : "absolute"}}>
+    <IconButton onClick={modifyInfo}>
+            <CheckIcon />
+        </IconButton>
+        <IconButton onClick={refreshForm}>
+            <RefreshIcon />
+        </IconButton>
+            </Box>
+    </Stack>
+    <Grid
+        display="flex"
+        justifyContent="center"
+        alignItems="center"
+        marginTop="6vh"
+        marginBottom="10vh"
+      >
+        <TextField
+          id="inputName"
+          label="닉네임"
+          type="string"
+          value={name}
+          placeholder="닉네임을 입력해주세요."
+          autoFocus
+          onChange={handleNameChange}
+        />
+      </Grid>
+      <Grid display="flex" justifyContent="center" alignItems="center">
+        <TextField
+          id="inputDesc"
+          label="자기소개"
+          type="string"
+          value={desc}
+          placeholder="자기소개를 입력해주세요."
+          minRows={4}
+          maxRows={6}
+          multiline
+          onChange={handleDescChange}
+          sx={{
+            height: "20vh",
+            width: "30vw",
+          }}
+        />
+      </Grid>
+    </>
   );
 };

@@ -9,6 +9,7 @@ interface IProps {}
 
 export const LoginPage: FC<IProps> = (props) => {
   return (
+    <div className="mainback">
     <React.Fragment>
       <CssBaseline />
       <Container maxWidth="sm" sx={{ height: "100vh" }}>
@@ -20,7 +21,7 @@ export const LoginPage: FC<IProps> = (props) => {
         >
           <Box
             sx={{
-              bgcolor: "#cfe8fc",
+              bgcolor: "#FFFFFF",
               height: "90vh",
               width: "60vw",
               borderRadius: "10px",
@@ -32,5 +33,6 @@ export const LoginPage: FC<IProps> = (props) => {
         </Box>
       </Container>
     </React.Fragment>
+    </div>
   );
 };

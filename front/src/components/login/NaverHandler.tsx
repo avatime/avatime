@@ -23,7 +23,8 @@ export const NaverHandler: FC<Iprops> = (props) => {
   let state = new URL(window.location.href).searchParams.get("state");
   const navigate = useNavigate();
 
-  // const {data} = useQuery("key", () -> {api.request()},);
+  // const {data} = useQuery("key", 함수이름(), {onSuccess: (res: any) => {
+  //console.log(data)}},);
   useQuery("login", naverLogin(code as string, state as string), {
     onSuccess: (res: any) => {
       const datas = res.data;

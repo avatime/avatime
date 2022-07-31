@@ -1,5 +1,5 @@
 export interface UserModifyReq {
+    profileImagePath : string;
     name: string;
-    profile_id : number;
     description: string;
 }

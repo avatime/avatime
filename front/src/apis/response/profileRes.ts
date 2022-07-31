@@ -1,4 +1,4 @@
 export interface ProfileRes {
-    profilePath: string;
+    profile_path: string;
     name: string;
 }

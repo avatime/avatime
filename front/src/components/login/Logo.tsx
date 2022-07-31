@@ -13,12 +13,12 @@ interface IProps {}
 
 export const Logo: FC<IProps> = (props) => {
   return (
-    <>
-      <Box display="flex" justifyContent="center" alignItems="center" marginBottom="2%">
-        <Link to="/">
-          <img src={logo} alt="로고" style={{ width: "70%", paddingTop: "2%" }} />
+      <Box marginTop="5vh" marginBottom="3vh">
+        <Link to="/" style={{
+          display:"flex", justifyContent:"center", alignItems:"center" 
+        }}>
+          <img src={logo} alt="로고" style={{ width: "70%" }} />
         </Link>
       </Box>
-    </>
   );
 };
