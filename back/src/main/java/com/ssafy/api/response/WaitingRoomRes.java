@@ -17,6 +17,12 @@ public class WaitingRoomRes {
 	
 	private int status;
 	
+	@JsonProperty("cnt_man")
+	private int cntMan;
+	
+	@JsonProperty("cnt_woman")
+	private int cntWoman;
+	
 	private String age;
 	
 	private String sido;

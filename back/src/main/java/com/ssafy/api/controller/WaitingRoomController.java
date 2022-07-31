@@ -6,8 +6,9 @@ import java.util.List;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.messaging.handler.annotation.DestinationVariable;
 import org.springframework.messaging.handler.annotation.MessageMapping;
-import org.springframework.messaging.simp.SimpMessageSendingOperations;
+import org.springframework.messaging.handler.annotation.SendTo;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PatchMapping;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -17,6 +18,7 @@ import org.springframework.web.bind.annotation.RestController;
 
 import com.ssafy.api.request.WaitingRoomPostReq;
 import com.ssafy.api.response.WaitingRoomRes;
+import com.ssafy.api.response.WaitingUserRes;
 import com.ssafy.api.service.AgeService;
 import com.ssafy.api.service.ChattingRoomService;
 import com.ssafy.api.service.SidoService;
@@ -29,6 +31,7 @@ import com.ssafy.db.entity.MeetingRoom;
 import com.ssafy.db.entity.Sido;
 import com.ssafy.db.entity.User;
 import com.ssafy.db.entity.WaitingRoom;
+import com.ssafy.db.entity.WaitingRoomUserRelation;
 
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
@@ -40,32 +43,31 @@ import lombok.RequiredArgsConstructor;
 @RequiredArgsConstructor
 @RequestMapping("/api/v1/waiting")
 public class WaitingRoomController {
-
-	private final SimpMessageSendingOperations sendingOperations;
 	
 	@Autowired
-	SidoService sidoService;
+	private final SidoService sidoService;
 	
 	@Autowired
-	UserService userService;
+	private final UserService userService;
 	
 	@Autowired
-	WaitingRoomService waitingRoomService;
+	private final WaitingRoomService waitingRoomService;
 
 	@Autowired
-	WaitingRoomUserRelationService waitingRoomUserRelationService;
+	private final WaitingRoomUserRelationService waitingRoomUserRelationService;
 
 	@Autowired
-	ChattingRoomService chattingRoomService;
+	private final ChattingRoomService chattingRoomService;
 	
 	@Autowired
-	AgeService ageService;
+	private final AgeService ageService;
 
 	
 	
 	// 대기방 목록 갱신
 	@MessageMapping("/getList")
-	public void waitingRoom() {
+	@SendTo("/topic/getList")
+	public List<WaitingRoomRes> waitingRoom() {
 		List<WaitingRoom> waitingRoom = waitingRoomService.findAll();
 		// cnt_man, cnt_woman 쿼리 미작성
 		List<WaitingRoomRes> waitingRoomList = new ArrayList<>();
@@ -74,12 +76,30 @@ public class WaitingRoomController {
 					.name(wr.getName())
 					.headCount(wr.getHeadCount())
 					.status(wr.getStatus())
+//					.cntMan()
 					.sido(sidoService.findById(wr.getSidoId()).get().getName())
 					.age(ageService.findById(wr.getAgeId()).get().getName())
 					.build();
 			waitingRoomList.add(w);
 		}
-		sendingOperations.convertAndSend("/topic/getList", waitingRoomList);
+		return waitingRoomList;
+	}
+	
+	@MessageMapping("/waitingUser/{wrId}")
+	@SendTo("/topic/waitingUser/{wrId}")
+	public List<WaitingUserRes> waitingUser(@DestinationVariable Long wrId) {
+		List<WaitingRoomUserRelation> wrur = waitingRoomUserRelationService.findByWaitingRoomIdAndType(wrId);
+		List<WaitingUserRes> wu = new ArrayList<>();
+		for(WaitingRoomUserRelation wr : wrur) {
+			User user = wr.getUser();
+			WaitingUserRes wur = WaitingUserRes.builder()
+					.id(user.getId())
+					.name(user.getName())
+					.gender(user.getGender())
+					.profileImgPath(user.getProfileImagePath()).build();
+			wu.add(wur);
+		}
+		return wu;
 	}
 
 	@GetMapping("/sido")
@@ -105,6 +125,7 @@ public class WaitingRoomController {
 		User user = userService.getUserByUserId(value.getUserId());
 		waitingRoomUserRelationService.save(user, waitingRoom);
 		ChattingRoom chattingRoom = chattingRoomService.saveByWaitingRoom(waitingRoom.getId());
+		waitingRoom();
 		return new ResponseEntity<ChattingRoom>(chattingRoom, HttpStatus.OK);
 	}
 

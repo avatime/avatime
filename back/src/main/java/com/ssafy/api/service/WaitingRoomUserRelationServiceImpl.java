@@ -1,5 +1,7 @@
 package com.ssafy.api.service;
 
+import java.util.List;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -25,5 +27,11 @@ public class WaitingRoomUserRelationServiceImpl implements WaitingRoomUserRelati
 				.waitingRoom(waitingRoom)
 				.user(user).build();
 		return waitingRoomUserRelationRepository.save(waitingRoomUserRelation);
+	}
+	
+	@Override
+	public List<WaitingRoomUserRelation> findByWaitingRoomIdAndType(Long wrId) {
+		int type = 2;
+		return waitingRoomUserRelationRepository.findByWaitingRoomIdAndType(wrId, type);
 	}
 }

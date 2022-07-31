@@ -23,8 +23,8 @@ public class MeetingRoomUserRelation  extends BaseEntity {
 	@ManyToOne
 	private MeetingRoom meetingRoom;
 	
-    @Column(updatable = false, nullable = false, columnDefinition = "INT UNSIGNED")
-	private Long userId;
+    @ManyToOne
+	private User user;
 	
     @Column(columnDefinition = "INT UNSIGNED")
 	private Long avatarId;
@@ -35,9 +35,9 @@ public class MeetingRoomUserRelation  extends BaseEntity {
     private boolean matched;
     
     @Builder
-    public MeetingRoomUserRelation(MeetingRoom meetingRoom, Long userId) {
+    public MeetingRoomUserRelation(MeetingRoom meetingRoom, User user) {
     	this.meetingRoom = meetingRoom;
-    	this.userId = userId;
+    	this.user = user;
     	this.avatarId = null;
     	this.pickUserId = null;
     }
