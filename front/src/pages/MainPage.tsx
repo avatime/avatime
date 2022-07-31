@@ -1,18 +1,17 @@
-import React, { FC } from "react";
+import React, { FC, useState } from "react";
 import Box from "@mui/material/Box";
 import Button from "@mui/material/Button";
 import Typography from "@mui/material/Typography";
 import Modal from "@mui/material/Modal";
 import TextField from "@mui/material/TextField";
 import MenuItem from "@mui/material/MenuItem";
-import { IconButton, Paper } from "@mui/material";
-import AddCircleOutlineIcon from "@mui/icons-material/AddCircleOutline";
 import "../style.css";
-import { MainSearchBar } from "../components/main/MainSearchBar";
 import { WaitingRoomList } from "../components/main/WaitingRoomList";
 import { MainHeader } from "../components/main/MainHeader";
+import { Add } from "@mui/icons-material";
+import { useQuery } from "react-query";
 
-//import { MainHeader } from '../components/main/MainHeader'
+import { ageApi, makeNewRoomApi, sidoApi } from "../apis/waitingRoomApi";
 
 const style = {
   position: "absolute" as "absolute",
@@ -26,95 +25,100 @@ const style = {
   boxShadow: 24,
   p: 4,
   borderRadius: "10px",
+  display: "flex",
+  flexDirection: "column",
 };
 
 const counts = [
   {
-    value: "2:2",
+    value: "2",
     label: "2:2",
   },
   {
-    value: "3:3",
+    value: "3",
     label: "3:3",
   },
   {
-    value: "4:4",
+    value: "4",
     label: "4:4",
-  },
-];
-
-const ages = [
-  {
-    value: "20",
-    label: "20대",
-  },
-  {
-    value: "30",
-    label: "30대",
-  },
-  {
-    value: "40",
-    label: "40대",
-  },
-  {
-    value: "50",
-    label: "50대이상",
-  },
-];
-const sidos = [
-  {
-    value: "seoul",
-    label: "서울특별시",
-  },
-  {
-    value: "busan",
-    label: "부산광역시",
-  },
-  {
-    value: "",
-    label: "40대",
-  },
-  {
-    value: "50",
-    label: "50대이상",
   },
 ];
 
 interface IProps {}
 
 export const MainPage: FC<IProps> = (props) => {
-  const [value, setValue] = React.useState("");
-  const [open, setOpen] = React.useState(false);
-  const [count, setCount] = React.useState("");
-  const [age, setAge] = React.useState("");
-  const [sido, setSido] = React.useState("");
+  const [ageId, setAgeId] = useState(0);
+  const [sidoId, setSidoId] = useState(0);
+  const [name, setName] = useState("");
+  const [headCounts, setHeadCounts] = useState(0);
+  const [open, setOpen] = useState(false);
+
   const handleOpen = () => setOpen(true);
-  const handleClose = () => setOpen(false);
+  const handleClose = () => {
+    setName("");
+    setHeadCounts(0);
+    setAgeId(0);
+    setSidoId(0);
+    setOpen(false);
+  };
+
+  const { data: age } = useQuery("waiting/getAge", () => ageApi.receive());
+  const { data: sido } = useQuery("waiting/getSido", () => sidoApi.receive());
+
   const handleCountChange = (event: React.ChangeEvent<HTMLInputElement>) => {
-    setCount(event.target.value);
+    setHeadCounts(Number(event.target.value));
   };
   const handleAgeChange = (event: React.ChangeEvent<HTMLInputElement>) => {
-    setAge(event.target.value);
+    setAgeId(Number(event.target.value));
   };
   const handleSidoChange = (event: React.ChangeEvent<HTMLInputElement>) => {
-    setSido(event.target.value);
+    setSidoId(Number(event.target.value));
   };
 
   const handleNameChange = (event: React.ChangeEvent<HTMLInputElement>) => {
-    setValue(event.target.value);
+    setName(event.target.value);
   };
+
+  const setRoomData = () => {
+    if (!isNotNullAgeId || !isNotNullHeadCounts || !isNotNullSidoId || !isNotNullName) {
+      alert("빈칸을 모두 채워주세요!");
+    } else {
+      makeNewRoomApi.makeNewRoom({
+        name,
+        head_count: headCounts,
+        user_id: 0,
+        age_id: ageId,
+        sido_id: sidoId,
+      });
+
+      handleClose();
+    }
+  };
+
+  const isNotNullName = name.length >= 1;
+  const isNotNullAgeId = String(ageId).length >= 1;
+  const isNotNullSidoId = String(sidoId).length >= 1;
+  const isNotNullHeadCounts = String(headCounts).length >= 1;
 
   return (
     <div className="mainback">
       <MainHeader />
-      <MainSearchBar />
-      <WaitingRoomList />
-      <Button onClick={handleOpen} style={{ position: "absolute", bottom: "10%", right: "10%" }}>
-        새로운 방 만들기
-      </Button>
-      {/* <IconButton  aria-label="makenewroom" disabled color="primary">
-          <AddCircleOutlineIcon onClick={handleOpen} style={{position:"absolute", bottom:0}}/>
-        </IconButton> */}
+      <Box px={3}>
+        <Box p={1} />
+        <WaitingRoomList />
+        <Box p={1} />
+
+        <Button
+          variant="contained"
+          aria-label="makenewroom"
+          sx={{ float: "right" }}
+          onClick={handleOpen}
+          startIcon={<Add />}
+        >
+          새로운 방 만들기
+        </Button>
+      </Box>
+
       <Modal
         open={open}
         onClose={handleClose}
@@ -130,6 +134,9 @@ export const MainPage: FC<IProps> = (props) => {
               component="form"
               sx={{
                 "& .MuiTextField-root": { m: 1, width: "25ch" },
+                display: "flex",
+                flexDirection: "column",
+                alignItems: "center",
               }}
               noValidate
               autoComplete="off"
@@ -139,18 +146,16 @@ export const MainPage: FC<IProps> = (props) => {
                 label="방 제목"
                 multiline
                 maxRows={4}
-                value={value}
+                value={name}
                 onChange={handleNameChange}
-                style={{ position: "relative", top: 30, right: -30 }}
               />
 
               <TextField
                 id="outlined-select-currency"
                 select
                 label="인원수"
-                value={count}
+                value={headCounts}
                 onChange={handleCountChange}
-                style={{ position: "relative", top: 30, right: -30 }}
               >
                 {counts.map((option) => (
                   <MenuItem key={option.value} value={option.value}>
@@ -163,13 +168,12 @@ export const MainPage: FC<IProps> = (props) => {
                 id="outlined-select-currency"
                 select
                 label="연령대"
-                value={age}
+                value={ageId}
                 onChange={handleAgeChange}
-                style={{ position: "relative", top: 30, right: -30 }}
               >
-                {ages.map((option) => (
-                  <MenuItem key={option.value} value={option.value}>
-                    {option.label}
+                {age?.map((option) => (
+                  <MenuItem key={option.id} value={option.id}>
+                    {option.name}
                   </MenuItem>
                 ))}
               </TextField>
@@ -178,21 +182,20 @@ export const MainPage: FC<IProps> = (props) => {
                 id="outlined-select-currency"
                 select
                 label="지역"
-                value={sido}
+                value={sidoId}
                 onChange={handleSidoChange}
-                style={{ position: "relative", top: 30, right: -30 }}
               >
-                {sidos.map((option) => (
-                  <MenuItem key={option.value} value={option.value}>
-                    {option.label}
+                {sido?.map((option) => (
+                  <MenuItem key={option.id} value={option.id}>
+                    {option.name}
                   </MenuItem>
                 ))}
               </TextField>
 
-              <Button style={{ position: "absolute", right: 55, bottom: 10 }}>취소</Button>
-              <Button onClick={handleClose} style={{ position: "absolute", right: 5, bottom: 10 }}>
-                확인
-              </Button>
+              <Box>
+                <Button onClick={handleClose}>취소</Button>
+                <Button onClick={setRoomData}>확인</Button>
+              </Box>
             </Box>
           </Typography>
         </Box>

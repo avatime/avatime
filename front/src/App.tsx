@@ -7,6 +7,7 @@ import { Provider } from "react-redux";
 import { PersistGate } from "redux-persist/integration/react";
 import { persistStore } from "redux-persist";
 import { SessionPage } from './pages/SessionPage';
+import { WaitingPage } from "./pages/WaitingPage";
 import "./style.css";
 import { FinalPickResultPage } from './pages/FinalPickResultPage';
 
@@ -19,6 +20,7 @@ function App() {
             <Routes>
               <Route path="/" element={<TestPage />} />
               <Route path="/main" element={<MainPage />} />
+              <Route path="/waiting" element={<WaitingPage />} />
               <Route path="/session" element={<SessionPage />} />
               <Route path="/finalPickResult" element={<FinalPickResultPage />} />
             </Routes>

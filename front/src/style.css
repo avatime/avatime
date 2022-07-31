@@ -11,11 +11,3 @@
   overflow: hidden;
 }
 
-input:focus,
-input:active,
-button:focus,
-button:active,
-menuitem:focus{
-  outline: none;
-  box-shadow: none;
-}

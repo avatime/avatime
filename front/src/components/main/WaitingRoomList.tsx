@@ -1,4 +1,4 @@
-import React, { FC } from "react";
+import React, { FC, useCallback, useEffect, useState } from "react";
 import Paper from "@mui/material/Paper";
 import Table from "@mui/material/Table";
 import TableBody from "@mui/material/TableBody";
@@ -6,7 +6,20 @@ import TableCell from "@mui/material/TableCell";
 import TableContainer from "@mui/material/TableContainer";
 import TableHead from "@mui/material/TableHead";
 import TableRow from "@mui/material/TableRow";
-import TableSortLabel from "@mui/material/TableSortLabel";
+import SearchIcon from "@mui/icons-material/Search";
+import { WaitingRoomInfoRes } from "../../apis/response/waitingRoomRes";
+import * as Stomp from "stompjs";
+import SockJS from "sockjs-client";
+import {
+  Button,
+  IconButton,
+  InputBase,
+  Stack,
+  ToggleButton,
+  ToggleButtonGroup,
+} from "@mui/material";
+import { Construction } from "@mui/icons-material";
+
 interface IProps {}
 
 /**
@@ -15,7 +28,7 @@ interface IProps {}
  **/
 
 interface Column {
-  id: "name" | "head_count_boy" | "head_count_girl" | "age" | "sido_name" | "status";
+  id: "name" | "cnt_man" | "cnt_woman" | "age" | "sido" | "status";
   label: string;
   minWidth?: number;
   align?: "right";
@@ -25,13 +38,13 @@ interface Column {
 const columns: Column[] = [
   { id: "name", label: "방제목", minWidth: 170 },
   {
-    id: "head_count_boy",
+    id: "cnt_man",
     label: "남자",
     minWidth: 50,
     align: "right",
   },
   {
-    id: "head_count_girl",
+    id: "cnt_woman",
     label: "여자",
     minWidth: 50,
     align: "right",
@@ -43,7 +56,7 @@ const columns: Column[] = [
     align: "right",
   },
   {
-    id: "sido_name",
+    id: "sido",
     label: "지역",
     minWidth: 170,
     align: "right",
@@ -57,111 +70,98 @@ const columns: Column[] = [
   },
 ];
 
-interface waitingRoom {
-  name: string;
-  head_count: number;
-  head_count_boy: number;
-  head_count_girl: number;
-
-  age: String;
-  sido_name: String;
-  status: number;
-}
-
-function createWaitingRoom(
-  name: string,
-  head_count: number,
-  head_count_boy: number,
-  head_count_girl: number,
-  age: String,
-  sido_name: String,
-
-  status: number
-): waitingRoom {
-  return { name, head_count, head_count_boy, head_count_girl, sido_name, age, status };
-}
-
-// //정렬
-// function descendingComparator<T>(a: T, b: T, orderBy: keyof T) {
-//   if (b[orderBy] < a[orderBy]) {
-//     return -1;
-//   }
-//   if (b[orderBy] > a[orderBy]) {
-//     return 1;
-//   }
-//   return 0;
-// }
-
-// type Order = "asc" | "desc";
-
-// function getComparator<Key extends keyof any>(
-//   order: Order,
-//   orderBy: Key
-// ): (a: { [key in Key]: number | string }, b: { [key in Key]: number | string }) => number {
-//   return order === "desc"
-//     ? (a, b) => descendingComparator(a, b, orderBy)
-//     : (a, b) => -descendingComparator(a, b, orderBy);
-// }
-
-// // This method is created for cross-browser compatibility, if you don't
-// // need to support IE11, you can use Array.prototype.sort() directly
-// function stableSort<T>(array: readonly T[], comparator: (a: T, b: T) => number) {
-//   const stabilizedThis = array.map((el, index) => [el, index] as [T, number]);
-//   stabilizedThis.sort((a, b) => {
-//     const order = comparator(a[0], b[0]);
-//     if (order !== 0) {
-//       return order;
-//     }
-//     return a[1] - b[1];
-//   });
-//   return stabilizedThis.map((el) => el[0]);
-// }
-// interface EnhancedTableProps {
-//   numSelected: number;
-//   onRequestSort: (event: React.MouseEvent<unknown>, property: keyof waitingRoom) => void;
-//   onSelectAllClick: (event: React.ChangeEvent<HTMLInputElement>) => void;
-//   order: Order;
-//   orderBy: string;
-//   rowCount: number;
-// }
-
-// function EnhancedTableHead(props: EnhancedTableProps) {
-//   const {  order, orderBy, numSelected, rowCount, onRequestSort } =
-//     props;
-//   const createSortHandler =
-//     (property: keyof waitingRoom) => (event: React.MouseEvent<unknown>) => {
-//       onRequestSort(event, property);
-//     };
-//   }
-
-const rows = [
-  createWaitingRoom("방1", 3, 2, 1, "20대", "서울특별시", 0),
-  createWaitingRoom("방 제목 2", 4, 2, 1, "20대", "부산광역시", 0),
-  createWaitingRoom("방 3", 2, 2, 2, "30대", "대구광역시", 1),
-  createWaitingRoom("방 제목 4", 3, 3, 3, "30대", "인천광역시", 1),
-  createWaitingRoom("방 5", 4, 1, 1, "40대", "경상도", 0),
-  createWaitingRoom("방 제목 6", 2, 1, 2, "50대 이상", "경상도", 0),
-  createWaitingRoom("방 7", 4, 2, 2, "20대", "서울특별시", 0),
-  createWaitingRoom("방 제목 8", 3, 2, 1, "20대", "경기도", 0),
-  createWaitingRoom("방 9", 3, 3, 3, "30대", "경기도", 1),
-  createWaitingRoom("방 제목 9", 4, 4, 4, "40대", "경기도", 1),
-  createWaitingRoom("방 10", 2, 2, 2, "50대 이상", "서울특별시", 1),
-  createWaitingRoom("방 제목 11", 3, 2, 1, "20대", "전라도", 0),
-  createWaitingRoom("방 12", 3, 2, 1, "30대", "대전광역시", 0),
-  createWaitingRoom("방 제목 13", 3, 2, 1, "40대", "제주도", 0),
-  createWaitingRoom("방 14", 3, 2, 1, "50대 이상", "강원도", 0),
-  createWaitingRoom("방 제목 15", 3, 2, 1, "20대", "강원도", 0),
-];
-
 export const WaitingRoomList: FC<IProps> = (props) => {
+  //소켓 통신----------------------------------------------
+  const [originData, setOriginData] = useState<WaitingRoomInfoRes[]>([]);
+  const [data, setData] = useState<WaitingRoomInfoRes[]>([]);
+  const [stompClient, setStompClient] = useState<any>();
+
+  //필터-------------------------------------------------------------------------------
+
+  const [selected, setSelected] = useState(false);
+  const handleChangeStatus = (
+    event: React.MouseEvent<HTMLElement>,
+    newRoom: WaitingRoomInfoRes[]
+  ) => {
+    setSelected((prev) => !prev);
+  };
+
+  //방제목으로 검색-----------------------------------------------------------------
+
+  const [keyword, setKeyword] = useState("");
+
+  const searchByName = (event: React.ChangeEvent<HTMLInputElement>) => {
+    setKeyword(event.target.value);
+  };
+
+  useEffect(() => {
+    if (stompClient) {
+      return;
+    }
+    const socket = new SockJS("http://localhost:8080/ws/ava");
+    const client = Stomp.over(socket);
+    client.connect({}, function (frame) {
+      console.log("소켓 연결 성공", frame);
+
+      client.subscribe("/topic/getList", function (response) {
+        console.log(response.body);
+        setOriginData(JSON.parse(response.body));
+      });
+      client.send("/app/getList", {}, "aaa");
+    });
+
+    setStompClient(client);
+  }, [stompClient]);
+
+  useEffect(() => {
+    setData(
+      originData
+        .filter((room) => (selected ? room.status === 0 : true))
+        .filter((room) => room.name.includes(keyword))
+    );
+  }, [keyword, originData, selected])
+
+ 
+  //------------------------------------------------------------------------------------------
   return (
     <div>
-      {" "}
-      <Paper
-        sx={{ width: "80%", overflow: "hidden", position: "absolute", right: "10%", bottom: "20%" }}
-      >
-        <TableContainer sx={{ maxHeight: 440 }}>
-          <Table stickyHeader aria-label="sticky table">
+      <Stack direction="row">
+        <ToggleButton
+          selected={selected}
+          color="primary"
+          onClick={handleChangeStatus}
+          sx={{ marginRight: "auto", padding: "0", marginBottom: "1%" }}
+          value="status"
+        >
+          참여가능한 방만 보기
+        </ToggleButton>
+        <Paper
+          sx={{
+            p: "2px 4px",
+            display: "flex",
+            alignItems: "center",
+            width: 400,
+            right: "10%",
+            top: "12%",
+            marginLeft: "auto",
+            marginBottom: "1%",
+          }}
+        >
+          <InputBase
+            sx={{ ml: 1, flex: 1 }}
+            placeholder="방제목으로 검색해보세요"
+            value={keyword}
+            onChange={searchByName}
+          />
+
+          <IconButton sx={{ p: "10px" }} aria-label="search">
+            <SearchIcon />
+          </IconButton>
+        </Paper>
+      </Stack>
+      <Paper sx={{ overflow: "hidden" }}>
+        <TableContainer sx={{ maxHeight: "50%" }}>
+          <Table stickyHeader aria-label="sticky table" style={{ border: "5px ridge" }}>
             <TableHead>
               <TableRow>
                 {columns.map((column) => (
@@ -172,9 +172,9 @@ export const WaitingRoomList: FC<IProps> = (props) => {
               </TableRow>
             </TableHead>
             <TableBody>
-              {rows.map((row) => {
+              {data?.map((row, idx) => {
                 return (
-                  <TableRow key={row.name}>
+                  <TableRow key={idx}>
                     {columns.map((column) => {
                       const value = row[column.id];
                       return (
