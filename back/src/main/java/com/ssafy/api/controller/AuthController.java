@@ -30,6 +30,7 @@ import com.google.gson.JsonParser;
 import com.ssafy.api.request.UserLoginPostReq;
 import com.ssafy.api.request.UserRegisterPostReq;
 import com.ssafy.api.response.UserLoginPostRes;
+import com.ssafy.api.response.UserRegisterPostRes;
 import com.ssafy.api.service.UserService;
 import com.ssafy.common.model.response.BaseResponseBody;
 import com.ssafy.common.util.JwtTokenUtil;
@@ -66,7 +67,6 @@ public class AuthController {
 	
 	
 	
-	
 	public ResponseEntity<?> login(@RequestBody @ApiParam(value="로그인 정보", required = true) UserLoginPostReq loginInfo) {
 		String socialId = loginInfo.getSocialId();
 		int socialType = loginInfo.getSocialType();
@@ -81,11 +81,11 @@ public class AuthController {
 				return ResponseEntity.status(409).body(BaseResponseBody.of(409, "성별 제공 항목에 동의하셔야합니다."));
 			}
 			loginInfo.setToken(JwtTokenUtil.getToken(user.getName()));
-			return ResponseEntity.status(200).body(UserLoginPostRes.of(200, "Success", loginInfo.toString()));
+			return ResponseEntity.status(200).body(UserLoginPostRes.of(200, "Success", user, loginInfo.toString()));
 //			return ResponseEntity.ok(UserLoginPostRes.of(200, "Success", JwtTokenUtil.getToken(user.getName())));
 		}
 		// 존재하지 않는 유저라면 회원가입 진행
-		return ResponseEntity.status(204).body(UserLoginPostRes.of(204, "Unknown User", loginInfo.toString()));
+		return ResponseEntity.status(204).body(UserLoginPostRes.of(204, "Unknown User", user, loginInfo.toString()));
 	}
 	
 	@PostMapping("/register")
@@ -99,14 +99,11 @@ public class AuthController {
 	public ResponseEntity<? extends BaseResponseBody> register(
 			@RequestBody @ApiParam(value="회원가입 정보", required = true) UserRegisterPostReq registerInfo) {
 		
-		
-		
 		//임의로 리턴된 User 인스턴스. 현재 코드는 회원 가입 성공 여부만 판단하기 때문에 굳이 Insert 된 유저 정보를 응답하지 않음.
 		User user = userService.createUser(registerInfo);
 	
-		
 		// 여기서 토큰 발행
-		return ResponseEntity.ok(UserLoginPostRes.of(200, "Success", JwtTokenUtil.getToken(user.getName())));
+		return ResponseEntity.ok(UserLoginPostRes.of(200, "Success", user, JwtTokenUtil.getToken(user.getName())));
 	}
 	
 	
@@ -122,33 +119,39 @@ public class AuthController {
 		
 		// 사용자 정보 가져오기
 		ResponseEntity<String> response = userService.requestProfile(userService.generateProfileRequest(accessToken));
-		// 경고 무시
+		
+		// Json으로 파싱
 		@SuppressWarnings("deprecation")
 		JsonParser parser = new JsonParser();
 		@SuppressWarnings("deprecation")
 		JsonElement element = parser.parse(response.getBody());
 		JsonElement userInfo = element.getAsJsonObject().get("response");
-		String socialId = userInfo.getAsJsonObject().get("email").toString();
+		String socialId = userInfo.getAsJsonObject().get("email").toString().replaceAll("\"", "");
+		
 		
 		// socialId(email)와 socialType을 통해 DB에 있는지 체크
 		User user = userService.getUserBySocialIdAndSocialType(socialId, socialType);
-		System.out.println("element: "+ element);
+		
 		// 회원 등록 진행
 		if (user == null) {
 			
-			UserRegisterPostReq registerInfo = new UserRegisterPostReq();
-			registerInfo.setGender(userInfo.getAsJsonObject().get("gender").toString());
-			registerInfo.setSocialId(userInfo.getAsJsonObject().get("email").toString());
+			UserRegisterPostRes registerInfo = new UserRegisterPostRes();
+			registerInfo.setGender(userInfo.getAsJsonObject().get("gender").toString().replaceAll("\"", ""));
+			registerInfo.setSocialId(userInfo.getAsJsonObject().get("email").toString().replaceAll("\"", ""));
 			registerInfo.setSocialType(socialType);
-			System.out.println("Unknown User");
-			return ResponseEntity.status(204).body(UserRegisterPostReq.of(204, "Unknown User", registerInfo));	
-		}else {
-			return ResponseEntity.ok(UserLoginPostRes.of(200, "Success", JwtTokenUtil.getToken(user.getName())));
+	
+			return ResponseEntity.status(201).body(UserRegisterPostRes.of(201, "Unknown User", registerInfo));	
+		}
+		
+		else {
+			return ResponseEntity.ok(UserLoginPostRes.of(200, "Success", user, JwtTokenUtil.getToken(user.getName())));
 		}
 	}
 	
 	@GetMapping("/kakao")
 	public ResponseEntity<?> kakaoCallback(@RequestParam String code) throws Exception {
+		System.out.println("code: "+ code);
+		
 		// 카카오 소셜 타입 2
 		int socialType = 2;
 		
@@ -158,35 +161,44 @@ public class AuthController {
 		// 사용자 정보 가져오기
         String response = userService.createKakaoUser(access_Token);
         
-        // 경고 무시
+        // Json으로 파싱
  		@SuppressWarnings("deprecation")
  		JsonParser parser = new JsonParser();
  		@SuppressWarnings("deprecation")
  		JsonElement element = parser.parse(response);
  		JsonElement userInfo = element.getAsJsonObject().get("kakao_account");
+ 		System.out.println("element: " + element);
  		
  		// socialId랑 성별에 동의하지 않았으면 리턴
  		if (userInfo.getAsJsonObject().get("email_needs_agreement").getAsBoolean() || userInfo.getAsJsonObject().get("gender_needs_agreement").getAsBoolean()) {
- 			System.out.println("여기 나오냐?");
- 			return ResponseEntity.status(204).body(UserRegisterPostReq.of(204, "E-mail과 성별에 동의해주세요."));
+ 			return ResponseEntity.status(201).body(UserRegisterPostRes.of(204, "E-mail과 성별에 동의해주세요."));
  		}
  		
-		String socialId = userInfo.getAsJsonObject().get("email").toString();
+		String socialId = userInfo.getAsJsonObject().get("email").toString().replaceAll("\"", "");
 		
 		// socialId(email)와 socialType을 통해 DB에 있는지 체크
 		User user = userService.getUserBySocialIdAndSocialType(socialId, socialType);
+		
 		// 회원 등록 진행
 		if (user == null) {
+		
+			UserRegisterPostRes registerInfo = new UserRegisterPostRes();
+			registerInfo.setGender(userInfo.getAsJsonObject().get("gender").toString().replaceAll("\"", ""));
+			if (registerInfo.getGender().contains("male")) {
+				registerInfo.setGender("M");
+			}else if(registerInfo.getGender().contains("female")) {
+				registerInfo.setGender("F");
+			}
 			
-			UserRegisterPostReq registerInfo = new UserRegisterPostReq();
-			registerInfo.setGender(userInfo.getAsJsonObject().get("gender").toString());
-			registerInfo.setSocialId(userInfo.getAsJsonObject().get("email").toString());
+			registerInfo.setSocialId(userInfo.getAsJsonObject().get("email").toString().replaceAll("\"", ""));
 			registerInfo.setSocialType(socialType);
-			
-			return ResponseEntity.status(204).body(UserRegisterPostReq.of(204, "Unknown User", registerInfo));	
-		}else {
+
+			return ResponseEntity.status(201).body(UserRegisterPostRes.of(201, "Unknown User", registerInfo));	
+		}
+		
+		else {
 			System.out.println("user: " + user.getName());
-			return ResponseEntity.ok(UserLoginPostRes.of(200, "Success", JwtTokenUtil.getToken(user.getName())));
+			return ResponseEntity.ok(UserLoginPostRes.of(200, "Success", user, JwtTokenUtil.getToken(user.getName())));
 		}
 	}
 	

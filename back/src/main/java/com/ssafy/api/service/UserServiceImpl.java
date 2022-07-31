@@ -58,7 +58,7 @@ public class UserServiceImpl implements UserService {
 		user.setSocialId(userRegisterInfo.getSocialId());
 		user.setSocialType(userRegisterInfo.getSocialType());
 		user.setName(userRegisterInfo.getName());
-		user.setProfileId(userRegisterInfo.getProfileId());
+		user.setProfileImagePath(userRegisterInfo.getProfileImagePath());
 		user.setDescription(userRegisterInfo.getDescription());
 		user.setGender(userRegisterInfo.getGender());
 		
@@ -114,7 +114,7 @@ public class UserServiceImpl implements UserService {
 		}
 		User newUserInfo = user.get();
 		newUserInfo.setName(updateInfo.getName());
-		newUserInfo.setProfileId(updateInfo.getProfileId());
+		newUserInfo.setProfileImagePath(updateInfo.getProfileImagePath());
 		newUserInfo.setDescription(updateInfo.getDescription());
 		
 		return userRepository.save(newUserInfo);
@@ -147,11 +147,11 @@ public class UserServiceImpl implements UserService {
             StringBuilder sb = new StringBuilder();
             sb.append("grant_type=authorization_code");
             sb.append("&client_id=6300198dbbef93aac1c88f68eeb4525a"); // TODO REST_API_KEY 입력
-            sb.append("&redirect_uri=http://localhost:8080/api/v1/auth/kakao"); // TODO 인가코드 받은 redirect_uri 입력
+            sb.append("&redirect_uri=http://localhost:8080/kakao"); // TODO 인가코드 받은 redirect_uri 입력
             sb.append("&code=" + code);
             bw.write(sb.toString());
             bw.flush();
-
+            
             //결과 코드가 200이라면 성공
             int responseCode = conn.getResponseCode();
             System.out.println("responseCode : " + responseCode);
@@ -217,6 +217,8 @@ public class UserServiceImpl implements UserService {
         return result;
     }
 	
+	
+	// naver 유저정보 가져오기
 	@Override
 	public ResponseEntity<String> requestProfile(HttpEntity request) {
         RestTemplate restTemplate = new RestTemplate();
@@ -236,14 +238,15 @@ public class UserServiceImpl implements UserService {
         return new HttpEntity<>(headers);
     }
 	
+	// 네이버 토큰 내보내기
 	@Override
 	public String extractAccessToken(String accessTokenResponse) {
 		JsonParser parser = new JsonParser();
 		JsonElement element = parser.parse(accessTokenResponse);
-		
 		return element.getAsJsonObject().get("access_token").getAsString();
 	}
 	
+	// 네이버 토큰 받기
 	@Override
 	public ResponseEntity<String> requestAccessToken(HttpEntity request){
 		RestTemplate restTemplate = new RestTemplate();
@@ -255,6 +258,7 @@ public class UserServiceImpl implements UserService {
 				);
 	}
 	
+	// 네이버 코드 받기
 	@Override
 	public HttpEntity<MultiValueMap<String, String>> generateAuthCodeRequest(String code, String state) {
 		HttpHeaders headers = new HttpHeaders();
@@ -264,7 +268,7 @@ public class UserServiceImpl implements UserService {
 		params.add("grant_type", "authorization_code");
 		params.add("client_id", "UZzm3q6_v7QsL_RHeEgn");
 		params.add("client_secret", "6Zwhqfzb61");
-		params.add("redirect_uri", "http://localhost:8080/api/v1/auth/naver");
+		params.add("state", state);
 		params.add("code", code);
 
 		return new HttpEntity<>(params, headers);

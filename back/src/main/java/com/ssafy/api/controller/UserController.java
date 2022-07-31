@@ -88,12 +88,22 @@ public class UserController {
 	// 프로필 사진 목록 조회
 	@GetMapping("/profile")
 	@ApiOperation(value = "프로필 이미지 목록 조회", notes = "서버 내 모든 프로필 이미지 제공")
-	public ResponseEntity<List<Profile>> profile(){
-		List<Profile> profileList = profileService.getProfile();
+	public ResponseEntity<List<Profile>> profileAll(){
+		List<Profile> profileList = profileService.getProfileAll();
 		return new ResponseEntity<List<Profile>>(profileList, HttpStatus.OK);
 	
 	}
 	
+	// 프로필 단일 사진 조회
+	@GetMapping("/profile/{profileId}")
+	public ResponseEntity<?> profile(@PathVariable Long profileId){
+		Profile profile = profileService.getProfile(profileId);
+		if (profile != null) {
+			return ResponseEntity.status(200).body(profile);
+		}else {
+			return ResponseEntity.status(404).body(null);
+		}
+	}
 	// 유저 정보 조회
 	@GetMapping("/{userId}")
 	public ResponseEntity<?> getUserInfo(@PathVariable Long userId){

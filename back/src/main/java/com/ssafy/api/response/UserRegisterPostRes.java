@@ -1,5 +1,6 @@
-package com.ssafy.api.request;
+package com.ssafy.api.response;
 
+import com.ssafy.api.request.UserRegisterPostReq;
 import com.ssafy.common.model.response.BaseResponseBody;
 
 import io.swagger.annotations.ApiModel;
@@ -8,25 +9,21 @@ import lombok.Getter;
 import lombok.Setter;
 import lombok.ToString;
 
-/**
- * 유저 회원가입 API ([POST] /api/v1/users) 요청에 필요한 리퀘스트 바디 정의.
- */
 @Getter
 @Setter
 @ApiModel("UserRegisterPostRequest")
 @ToString
-public class UserRegisterPostReq extends BaseResponseBody {
-	@ApiModelProperty(name="유저 ID", example="ssafy_web")
+public class UserRegisterPostRes extends BaseResponseBody{
+	Long userId;
 	String socialId;
-	@ApiModelProperty(name="유저 Password", example="your_password")
 	int socialType;
 	String gender;
 	String name;
 	String profileImagePath;
 	String description;
 	
-	public static UserRegisterPostReq of(Integer statusCode, String message, UserRegisterPostReq registerInfo) {
-		UserRegisterPostReq res = new UserRegisterPostReq();
+	public static UserRegisterPostRes of(Integer statusCode, String message, UserRegisterPostRes registerInfo) {
+		UserRegisterPostRes res = new UserRegisterPostRes();
 		res.setStatusCode(statusCode);
 		res.setMessage(message);
 		res.setSocialId(registerInfo.getSocialId());
