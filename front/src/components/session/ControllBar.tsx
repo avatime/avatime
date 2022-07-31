@@ -10,6 +10,7 @@ import ExitToAppIcon from "@mui/icons-material/ExitToApp";
 import PeopleIcon from "@mui/icons-material/People";
 import { Clock } from "./Clock";
 import { FinalPickModal } from "./modal/FinalPickModal";
+import { useNavigate } from 'react-router';
 
 type Type = "master" | "normal";
 interface IProps {
@@ -38,7 +39,13 @@ export const ControllBar: FC<IProps> = ({ type }) => {
     }
   };
 
-  const onClickExit = () => {};
+  const navigate = useNavigate();
+  const onClickExit = () => {
+    // eslint-disable-next-line no-restricted-globals
+    if (confirm("정말 나가시겠습니까?")) {
+      navigate("/");
+    }
+  };
 
   return (
     <ControllBarPresenter

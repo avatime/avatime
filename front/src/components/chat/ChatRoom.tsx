@@ -20,6 +20,7 @@ import { grey } from "@mui/material/colors";
 import SendIcon from "@mui/icons-material/Send";
 import SockJS from "sockjs-client";
 import * as Stomp from "stompjs";
+import { useSelector } from "react-redux";
 
 type ChatType = "all" | "gender";
 
@@ -38,25 +39,38 @@ export const ChatRoom: FC<IProps> = ({
   maxHeight,
   chattingRoomId,
 }) => {
-  const [stompClient, setStompClient] = useState<any>();
   const [chatList, setChatList] = useState<ChatMessageRes[]>([]);
+  const userId = useSelector((state: any) => state.user.userId);
 
   useEffect(() => {
-    if (stompClient) {
+    if (!userId) {
       return;
     }
+
     const socket = new SockJS("http://localhost:8080/ws/ava");
     const client = Stomp.over(socket);
-    client.connect({}, function (frame) {
-      console.log("소켓 연결 성공", frame);
-
+    client.connect({}, () => {
       client.subscribe(`/topic/chatting/receive/${chattingRoomId}`, (res) => {
         setChatList(JSON.parse(res.body));
       });
+
+      chatApi.sendMessage({
+        chattingroom_id: chattingRoomId,
+        type: "ENTER",
+        user_id: userId,
+        message: "ENTER",
+      });
     });
 
-    setStompClient(client);
-  }, [chattingRoomId, stompClient]);
+    return () => {
+      chatApi.sendMessage({
+        chattingroom_id: chattingRoomId,
+        type: "LEAVE",
+        user_id: userId,
+        message: "LEAVE",
+      });
+    };
+  }, [chattingRoomId, userId]);
 
   const chatBodyRef = useScrollToBottomRef();
   const chatInputRef = useScrollToBottomRef();
@@ -79,11 +93,10 @@ export const ChatRoom: FC<IProps> = ({
       return;
     }
 
-    console.log("sendMessage!!");
     chatApi.sendMessage({
-      chattingroom_id: 1,
+      chattingroom_id: chattingRoomId,
       type: "TALK",
-      user_id: 1,
+      user_id: userId,
       message,
     });
     setMessage("");
@@ -91,6 +104,7 @@ export const ChatRoom: FC<IProps> = ({
 
   return (
     <ChatRoomPresenter
+      userId={userId}
       title={chatType === "all" ? "전체 채팅" : "성별 채팅"}
       chatList={chatList}
       isOpened={isOpened}
@@ -108,6 +122,7 @@ export const ChatRoom: FC<IProps> = ({
 };
 
 interface IPresenterProps {
+  userId: number;
   title: string;
   chatList: Array<ChatMessageRes>;
   isOpened: boolean;
@@ -135,6 +150,7 @@ const Accordion = styled((props: AccordionProps) => (
 }));
 
 const ChatRoomPresenter: FC<IPresenterProps> = ({
+  userId,
   title,
   chatList,
   isOpened,
@@ -171,15 +187,15 @@ const ChatRoomPresenter: FC<IPresenterProps> = ({
           <ChatBlock
             key={idx}
             chatMessageRes={it}
-            order={it.name === "나" ? "right" : "left"}
+            order={it.user_id === userId ? "right" : "left"}
             showName={
               idx === 0 ||
-              chatList[idx - 1].name !== it.name ||
+              chatList[idx - 1].user_id !== it.user_id ||
               chatList[idx - 1].created_time !== it.created_time
             }
             showTime={
               idx === chatList.length - 1 ||
-              chatList[idx + 1].name !== it.name ||
+              chatList[idx + 1].user_id !== it.user_id ||
               chatList[idx + 1].created_time !== it.created_time
             }
           />
