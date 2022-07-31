@@ -7,16 +7,13 @@ import lombok.Getter;
 import lombok.Setter;
 
 /**
- * 프로필 모델 정의.
+ * 지역 모델 정의.
  */
 @Entity
 @Getter
 @Setter
-public class Profile extends BaseEntity {
+public class Age extends BaseEntity {
 
-	@Column(updatable = false, nullable = false)
-	private String imagePath;
-	
 	@Column(updatable = false, nullable = false)
 	private String name;
 }

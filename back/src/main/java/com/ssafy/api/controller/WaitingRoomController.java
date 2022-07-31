@@ -1,12 +1,14 @@
 package com.ssafy.api.controller;
 
+import java.util.ArrayList;
 import java.util.List;
-import java.util.Map;
 
-import org.apache.commons.collections4.map.HashedMap;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.messaging.handler.annotation.DestinationVariable;
+import org.springframework.messaging.handler.annotation.MessageMapping;
+import org.springframework.messaging.handler.annotation.SendTo;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PatchMapping;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -14,71 +16,126 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
-import com.ssafy.api.request.ChattingRoomPostReq;
 import com.ssafy.api.request.WaitingRoomPostReq;
+import com.ssafy.api.response.WaitingRoomRes;
+import com.ssafy.api.response.WaitingUserRes;
+import com.ssafy.api.service.AgeService;
 import com.ssafy.api.service.ChattingRoomService;
 import com.ssafy.api.service.SidoService;
+import com.ssafy.api.service.UserService;
 import com.ssafy.api.service.WaitingRoomService;
 import com.ssafy.api.service.WaitingRoomUserRelationService;
+import com.ssafy.db.entity.Age;
 import com.ssafy.db.entity.ChattingRoom;
 import com.ssafy.db.entity.MeetingRoom;
 import com.ssafy.db.entity.Sido;
 import com.ssafy.db.entity.User;
 import com.ssafy.db.entity.WaitingRoom;
+import com.ssafy.db.entity.WaitingRoomUserRelation;
 
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
 import io.swagger.annotations.ApiParam;
+import lombok.RequiredArgsConstructor;
 
-@Api(value = "미팅방 API", tags = {"waiting"})
+@Api(value = "미팅방 API", tags = { "waiting" })
 @RestController
+@RequiredArgsConstructor
 @RequestMapping("/api/v1/waiting")
 public class WaitingRoomController {
 	
 	@Autowired
-	SidoService sidoService;
+	private final SidoService sidoService;
 	
 	@Autowired
-	WaitingRoomService waitingRoomService;
+	private final UserService userService;
 	
 	@Autowired
-	WaitingRoomUserRelationService waitingRoomUserRelationService;
+	private final WaitingRoomService waitingRoomService;
+
+	@Autowired
+	private final WaitingRoomUserRelationService waitingRoomUserRelationService;
+
+	@Autowired
+	private final ChattingRoomService chattingRoomService;
 	
 	@Autowired
-	ChattingRoomService chattingRoomService;
+	private final AgeService ageService;
+
 	
 	
-	@GetMapping("")
-	@ApiOperation(value = "대기방 목록 조회", notes = "대기방 전부 보여줌.")
-	public ResponseEntity<List<WaitingRoom>> waitingRoom() {
+	// 대기방 목록 갱신
+	@MessageMapping("/getList")
+	@SendTo("/topic/getList")
+	public List<WaitingRoomRes> waitingRoom() {
 		List<WaitingRoom> waitingRoom = waitingRoomService.findAll();
-		return new ResponseEntity<List<WaitingRoom>>(waitingRoom, HttpStatus.OK);
+		// cnt_man, cnt_woman 쿼리 미작성
+		List<WaitingRoomRes> waitingRoomList = new ArrayList<>();
+		for (WaitingRoom wr : waitingRoom) {
+			WaitingRoomRes w = WaitingRoomRes.builder()
+					.name(wr.getName())
+					.headCount(wr.getHeadCount())
+					.status(wr.getStatus())
+//					.cntMan()
+					.sido(sidoService.findById(wr.getSidoId()).get().getName())
+					.age(ageService.findById(wr.getAgeId()).get().getName())
+					.build();
+			waitingRoomList.add(w);
+		}
+		return waitingRoomList;
 	}
 	
+	@MessageMapping("/waitingUser/{wrId}")
+	@SendTo("/topic/waitingUser/{wrId}")
+	public List<WaitingUserRes> waitingUser(@DestinationVariable Long wrId) {
+		List<WaitingRoomUserRelation> wrur = waitingRoomUserRelationService.findByWaitingRoomIdAndType(wrId);
+		List<WaitingUserRes> wu = new ArrayList<>();
+		for(WaitingRoomUserRelation wr : wrur) {
+			User user = wr.getUser();
+			WaitingUserRes wur = WaitingUserRes.builder()
+					.id(user.getId())
+					.name(user.getName())
+					.gender(user.getGender())
+					.profileImgPath(user.getProfileImagePath()).build();
+			wu.add(wur);
+		}
+		return wu;
+	}
+
 	@GetMapping("/sido")
 	@ApiOperation(value = "지역검색", notes = "지역목록 보여줌.")
 	public ResponseEntity<List<Sido>> sido() {
-		 List<Sido> sido = sidoService.findAll();
+		List<Sido> sido = sidoService.findAll();
 		return new ResponseEntity<List<Sido>>(sido, HttpStatus.OK);
-		
 	}
+
+	@GetMapping("/age")
+	@ApiOperation(value = "연령범주검색")
+	public ResponseEntity<List<Age>> age() {
+		List<Age> age = ageService.findAll();
+		return new ResponseEntity<List<Age>>(age, HttpStatus.OK);
+	}
+	
 	
 	@PostMapping("/create")
 	@ApiOperation(value = "대기방 생성", notes = "대기방을 생성합니다.")
-	public ResponseEntity<ChattingRoom> create(@RequestBody @ApiParam(value="대기방 생성시 정보", required = true) WaitingRoomPostReq value) {
-		Map<String, Long> userRelation = new HashedMap<>();
+	public ResponseEntity<ChattingRoom> create(
+			@RequestBody @ApiParam(value = "대기방 생성시 정보", required = true) WaitingRoomPostReq value) {
 		WaitingRoom waitingRoom = waitingRoomService.save(value);
-		userRelation.put("user_id", value.getUser_id());
-		waitingRoomUserRelationService.save(userRelation, waitingRoom);
-		ChattingRoomPostReq chatValue = new ChattingRoomPostReq();
-		chatValue.setRoom_id(waitingRoom.getId());
-		ChattingRoom chattingRoom = chattingRoomService.saveByWaitingRoom(chatValue);
+		User user = userService.getUserByUserId(value.getUserId());
+		waitingRoomUserRelationService.save(user, waitingRoom);
+		ChattingRoom chattingRoom = chattingRoomService.saveByWaitingRoom(waitingRoom.getId());
+		waitingRoom();
 		return new ResponseEntity<ChattingRoom>(chattingRoom, HttpStatus.OK);
 	}
-	
+
 	@PatchMapping("/start")
 	@ApiOperation(value = "대기방이 미팅방으로 변경", notes = "미팅방을 생성합니다.")
-	public ResponseEntity<MeetingRoom> start(@RequestBody @ApiParam(value="미팅방을 만드려는 대기방 id", required = true) long waitingRoomId) {
+	public ResponseEntity<MeetingRoom> start(
+			@RequestBody @ApiParam(value = "미팅방을 만드려는 대기방 id", required = true) long waitingRoomId) {
+//		WaitingRoom waitingRoom = waitingRoomService.find
 		return null;
 	}
+	
+	
 }

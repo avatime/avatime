@@ -82,9 +82,9 @@ public class MeetingController {
         @ApiResponse(code = 500, message = "서버 오류", response = BaseResponseBody.class)
     })
 	public ResponseEntity<?> choiceAvatar(@RequestBody @ApiParam(value="유저 아이디와 아바타 아이디", required = true) UserSelectAvatarReq userSelectAvatar) {
-		Long meetingRoomId = userSelectAvatar.getMeetingroom_id();
-		Long userId = userSelectAvatar.getUser_id();
-		Long avatarId = userSelectAvatar.getAvatar_id();
+		Long meetingRoomId = userSelectAvatar.getMeetingRoomId();
+		Long userId = userSelectAvatar.getUserId();
+		Long avatarId = userSelectAvatar.getAvatarId();
 		try {
 			if(meetingRoomService.isSelectedAvatar(meetingRoomId, avatarId)) return ResponseEntity.status(409).body("");
 			else meetingRoomService.choiceAvatar(meetingRoomId, userId, avatarId);
@@ -167,9 +167,9 @@ public class MeetingController {
         @ApiResponse(code = 500, message = "서버 오류", response = BaseResponseBody.class)
     })
 	public ResponseEntity<?> finalChoice(@RequestBody @ApiParam(value="최종 선택을 결정한 유저 정보", required = true) FinalChoiceUserReq finalChoiceUserReq) {
-		Long meetingRoomId = finalChoiceUserReq.getMeetingroom_id();
-		Long userId = finalChoiceUserReq.getUser_id();
-		Long pickedUserId = finalChoiceUserReq.getPick_user_id();
+		Long meetingRoomId = finalChoiceUserReq.getMeetingRoomId();
+		Long userId = finalChoiceUserReq.getUserId();
+		Long pickedUserId = finalChoiceUserReq.getPickUserId();
 		try {
 			meetingRoomService.finalChoice(meetingRoomId, userId, pickedUserId);
 		} catch(Exception e) {
@@ -221,7 +221,7 @@ public class MeetingController {
 						.gender(user.getGender())
 						.avatar_id(avatar.getId())
 						.avatar_name(avatar.getName())
-						.avatar_image_path(avatar.getImage_path())
+						.avatar_image_path(avatar.getImagePath())
 						.pick_user_id(m.getPickUserId())
 						.build();
 				list.add(res);

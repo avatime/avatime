@@ -1,6 +1,9 @@
 package com.ssafy.api.request;
 
 import lombok.Setter;
+
+import com.fasterxml.jackson.annotation.JsonProperty;
+
 import io.swagger.annotations.ApiModel;
 import lombok.Getter;
 
@@ -8,5 +11,6 @@ import lombok.Getter;
 @Setter
 @ApiModel("ChattingRoomCreatePostRequest")
 public class ChattingRoomPostReq {
-	private Long room_id;
+	@JsonProperty("room_id")
+	private Long roomId;
 }

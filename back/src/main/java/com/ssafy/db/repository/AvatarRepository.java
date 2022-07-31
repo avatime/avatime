@@ -8,6 +8,5 @@ import org.springframework.stereotype.Repository;
 
 import com.ssafy.db.entity.Avatar;
 
-@Repository
 public interface AvatarRepository extends JpaRepository<Avatar, Long> {
 }

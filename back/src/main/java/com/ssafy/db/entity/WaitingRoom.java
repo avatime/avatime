@@ -6,12 +6,15 @@ import java.util.Date;
 
 import javax.persistence.Column;
 import javax.persistence.Entity;
+import javax.persistence.OneToMany;
 import javax.persistence.PrePersist;
 import javax.persistence.Temporal;
 import javax.persistence.TemporalType;
 
 import org.hibernate.annotations.DynamicInsert;
 import org.hibernate.annotations.DynamicUpdate;
+
+import com.fasterxml.jackson.annotation.JsonProperty;
 
 import lombok.AccessLevel;
 import lombok.Builder;
@@ -33,31 +36,35 @@ public class WaitingRoom extends BaseEntity {
 	private String name;
 	
 	@Column(nullable = false)
-	private int head_count;
+	private int headCount;
 	
 	@Column(nullable = false, columnDefinition = "TINYINT DEFAULT 0")
 	private int status;
 	
-	private int age;
+	@Column(nullable = false)
+	private long ageId;
 	
 	@Column(nullable = false)
-	private int sido_id;
+	private long sidoId;
 	
 	@Temporal(TemporalType.TIMESTAMP)
     @Column(updatable = false, columnDefinition = "TIMESTAMP DEFAULT CURRENT_TIMESTAMP")
-    private Date created_time;
+	@JsonProperty("created_time")
+    private Date createdTime;
     
+	@OneToMany()
+	
     @PrePersist
     protected void onCreate() {
-    	created_time = Timestamp.valueOf(LocalDateTime.now());
+    	createdTime = Timestamp.valueOf(LocalDateTime.now());
     }
-    
+
     @Builder
-    public WaitingRoom(String name, int head_count, int age, int sido_id) {
+    public WaitingRoom(String name, int headCount, long ageId, long sidoId) {
     	this.name = name;
-    	this.head_count = head_count;
-    	this.age = age;
+    	this.headCount = headCount;
+    	this.ageId = ageId;
     	this.status = 0;
-    	this.sido_id = sido_id;
+    	this.sidoId = sidoId;
     }
 }

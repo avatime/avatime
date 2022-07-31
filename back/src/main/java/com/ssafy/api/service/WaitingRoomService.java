@@ -7,5 +7,6 @@ import com.ssafy.db.entity.WaitingRoom;
 
 public interface WaitingRoomService {
 	List<WaitingRoom> findAll();
+	WaitingRoom findById(Long waitingRoomId);
 	public WaitingRoom save(WaitingRoomPostReq value);
 }

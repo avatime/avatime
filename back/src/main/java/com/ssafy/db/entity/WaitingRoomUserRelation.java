@@ -2,7 +2,6 @@ package com.ssafy.db.entity;
 
 import javax.persistence.Column;
 import javax.persistence.Entity;
-import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
 
 import org.hibernate.annotations.DynamicInsert;
@@ -25,16 +24,15 @@ public class WaitingRoomUserRelation extends BaseEntity {
 	private int type;
 	
 	@ManyToOne
-	@JoinColumn(name = "waiting_room_id", insertable = false, updatable=false)
 	private WaitingRoom waitingRoom;
 	
-    @Column(updatable = false, nullable = false, columnDefinition = "INT UNSIGNED")
-	private Long user_id;
+    @ManyToOne
+	private User user;
 	
     @Builder
-    public WaitingRoomUserRelation(WaitingRoom waitingRoom, long user_id) {
+    public WaitingRoomUserRelation(User user, WaitingRoom waitingRoom) {
     	this.type = 0;
+    	this.user = user;
     	this.waitingRoom = waitingRoom;
-    	this.user_id = user_id;
     }
 }
