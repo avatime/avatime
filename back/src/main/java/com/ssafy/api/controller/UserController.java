@@ -117,10 +117,10 @@ public class UserController {
 	}
 	
 	// 유저 정보 수정
-	@PatchMapping("/{userId}")
-	public ResponseEntity<?> modifyUserInfo(@PathVariable Long userId, UserUpdatePostReq updateInfo){
-		userService.updateUserInfo(userId, updateInfo);
-		if (userService.getUserByUserId(userId) != null) {
+	@PatchMapping("/{user_id}")
+	public ResponseEntity<?> modifyUserInfo(@PathVariable Long user_id, UserUpdatePostReq updateInfo){
+		userService.updateUserInfo(user_id, updateInfo);
+		if (userService.getUserByUserId(user_id) != null) {
 			return ResponseEntity.status(200).body(BaseResponseBody.of(200, "성공적으로 변경했습니다."));
 		}else {
 			return ResponseEntity.status(409).body(BaseResponseBody.of(409, "존재하지 않는 회원입니다."));

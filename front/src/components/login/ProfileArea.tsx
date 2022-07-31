@@ -1,9 +1,20 @@
 import React, { FC, useState } from "react";
-import { Box, Stack, Grid, Button, Typography, Modal, TextField, MenuItem, Avatar, IconButton } from "@mui/material";
-import CheckIcon from '@mui/icons-material/Check';
-import RefreshIcon from '@mui/icons-material/Refresh';
+import {
+  Box,
+  Stack,
+  Grid,
+  Button,
+  Typography,
+  Modal,
+  TextField,
+  MenuItem,
+  Avatar,
+  IconButton,
+} from "@mui/material";
+import CheckIcon from "@mui/icons-material/Check";
+import RefreshIcon from "@mui/icons-material/Refresh";
 import { useSelector, useDispatch } from "react-redux";
-import { nameCheckApi } from "../../apis/userApi";
+import { userModifyApi, nameCheckApi } from "../../apis/userApi";
 
 const style = {
   position: "absolute" as "absolute",
@@ -97,15 +108,18 @@ export const ProfileArea: FC<IProps> = (props) => {
     setSido(event.target.value);
   };
 
+  const socialId = useSelector((state: any) => state.user.socialId);
+  const socialType = useSelector((state: any) => state.user.socialType);
   const userGender = useSelector((state: any) => state.user.userGender);
+  const userId = useSelector((state: any) => state.user.userId);
   const userName = useSelector((state: any) => state.user.userName);
   const userDesc = useSelector((state: any) => state.user.userDesc);
   const profileImagePath = useSelector((state: any) => state.user.profileImagePath);
 
   const [name, setName] = useState(userName);
   const [desc, setDesc] = useState(userDesc);
-  const [check, setCheck] = useState(true);
   const [image, setImage] = useState(profileImagePath);
+  const [check, setCheck] = useState(true);
 
   const handleNameChange = (event: React.ChangeEvent<HTMLInputElement>) => {
     setName(event.target.value);
@@ -118,14 +132,23 @@ export const ProfileArea: FC<IProps> = (props) => {
     }
   };
 
-  const modifyInfo = () => {
-
-  }
+  const confirmInfo = () => {
+    userModifyApi
+      .modifyUser({
+        user_id: userId,
+        profile_image_path: image,
+        name: name,
+        description: desc,
+      })
+      .then((res) => {
+        console.log(res);
+      });
+  };
 
   const refreshForm = () => {
     setName(userName);
     setDesc(userDesc);
-  }
+  };
 
   const handleDescChange = (event: React.ChangeEvent<HTMLInputElement>) => {
     setDesc(event.target.value);
@@ -133,25 +156,31 @@ export const ProfileArea: FC<IProps> = (props) => {
 
   return (
     <>
-    <Stack direction="row" spacing={0} display="flex" justifyContent="center">
-    <Box display="flex" justifyContent="center" alignItems="center">
-      <IconButton onClick={handleOpen}>
-      <Avatar src={profileImagePath} sx={{ width: 80, height: 80 }} style={{
-          display:"flex", justifyContent:"center", alignItems:"center" 
-        }} />
-        </IconButton>
-      <Modal
-        open={open}
-        onClose={handleClose}
-        aria-labelledby="modal-modal-title"
-        aria-describedby="modal-modal-description"
-      >
-        <Box sx={style}>
-          <Typography id="modal-modal-title" variant="h6" component="h2" textAlign="center">
-            프로필 사진 바꾸기
-          </Typography>
-          <Typography id="modal-modal-description" sx={{ mt: 2 }}>
-            {/* <Box
+      <Stack direction="row" spacing={0} display="flex" justifyContent="center">
+        <Box display="flex" justifyContent="center" alignItems="center">
+          <IconButton onClick={handleOpen}>
+            <Avatar
+              src={profileImagePath}
+              sx={{ width: 80, height: 80 }}
+              style={{
+                display: "flex",
+                justifyContent: "center",
+                alignItems: "center",
+              }}
+            />
+          </IconButton>
+          <Modal
+            open={open}
+            onClose={handleClose}
+            aria-labelledby="modal-modal-title"
+            aria-describedby="modal-modal-description"
+          >
+            <Box sx={style}>
+              <Typography id="modal-modal-title" variant="h6" component="h2" textAlign="center">
+                프로필 사진 바꾸기
+              </Typography>
+              <Typography id="modal-modal-description" sx={{ mt: 2 }}>
+                {/* <Box
               component="form"
               sx={{
                 "& .MuiTextField-root": { m: 1, width: "25ch" },
@@ -219,20 +248,20 @@ export const ProfileArea: FC<IProps> = (props) => {
                 확인
               </Button>
             </Box> */}
-          </Typography>
-        </Box>
-      </Modal>
-    </Box>
-    <Box style={{display : "absolute"}}>
-    <IconButton onClick={modifyInfo}>
-            <CheckIcon />
-        </IconButton>
-        <IconButton onClick={refreshForm}>
-            <RefreshIcon />
-        </IconButton>
+              </Typography>
             </Box>
-    </Stack>
-    <Grid
+          </Modal>
+        </Box>
+        <Box style={{ display: "absolute" }}>
+          <IconButton onClick={confirmInfo}>
+            <CheckIcon />
+          </IconButton>
+          <IconButton onClick={refreshForm}>
+            <RefreshIcon />
+          </IconButton>
+        </Box>
+      </Stack>
+      <Grid
         display="flex"
         justifyContent="center"
         alignItems="center"

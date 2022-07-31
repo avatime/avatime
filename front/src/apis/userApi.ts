@@ -38,7 +38,7 @@ const userInfoApi: UserInfoApi = {
           name: "홍길동",
           gender: "M",
           description: "자기소개 예시입니다.",
-          profile_id: 5,
+          profile_image_path: "temp",
         });
       }, 500);
     });
@@ -57,23 +57,6 @@ const registerApi: RegisterApi = {
           success: true,
         });
         alert("회원가입이 완료되었습니다.");
-      }, 500);
-    });
-  },
-};
-
-interface UserModifyApi {
-  modifyUser(userModifyReq: UserModifyReq): Promise<SuccessRes>;
-}
-
-const userModifyApi: UserModifyApi = {
-  modifyUser: function (userModifyReq: UserModifyReq): Promise<SuccessRes> {
-    return new Promise((resolve) => {
-      setTimeout(() => {
-        resolve({
-          success: true,
-        });
-        alert("회원 정보 수정이 완료되었습니다.");
       }, 500);
     });
   },
@@ -119,7 +102,17 @@ interface ProfileAllApi {
 
 const profileAllApi: ProfileAllApi = {
   receive: async function (): Promise<ProfileRes[]> {
-    return (await (axios.get(`${BASE_URL}/user/profile`))).data;
+    return (await axios.get(`${BASE_URL}/user/profile`)).data;
+  },
+};
+
+interface UserModifyApi {
+  modifyUser(userModifyReq: UserModifyReq): Promise<SuccessRes>;
+}
+
+const userModifyApi: UserModifyApi = {
+  modifyUser: async function (userModifyReq: UserModifyReq): Promise<SuccessRes> {
+    return (await axios.patch(`${BASE_URL}/user/${userModifyReq.user_id}`, userModifyReq)).data;
   },
 };
 

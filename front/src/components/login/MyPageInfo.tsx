@@ -22,6 +22,7 @@ export const MyPageInfo: FC<IProps> = (props) => {
     if (check === true) {
       //
     } else {
+      //
     }
   };
 

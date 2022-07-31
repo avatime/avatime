@@ -1,8 +1,8 @@
 export interface RegisterReq {
     social_id : string;
+    social_type : number;
     gender : string;
     name : string;
-    profile_id : number;
+    profile_image_path : string;
     description : string;
-    social_type : string;
 }
