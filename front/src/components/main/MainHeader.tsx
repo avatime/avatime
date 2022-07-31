@@ -6,6 +6,8 @@ import { Link } from "react-router-dom";
 import Tooltip from "@mui/material/Tooltip";
 import "../../style.css";
 import { padding } from "@mui/system";
+import { useSelector } from 'react-redux';
+
 interface IProps {}
 
 /**
@@ -16,6 +18,8 @@ interface IProps {}
 export const MainHeader: FC<IProps> = (props) => {
   const [anchorElUser, setAnchorElUser] = React.useState<null | HTMLElement>(null);
   const open = Boolean(anchorElUser);
+  const profileImagePath = useSelector((state: any) => state.user.profileImagePath);
+
   const handleOpenUserMenu = (event: React.MouseEvent<HTMLElement>) => {
     setAnchorElUser(event.currentTarget);
   };
@@ -35,8 +39,8 @@ export const MainHeader: FC<IProps> = (props) => {
               style={{ marginLeft: "27%", marginRight: "3%" }}
               >
             <Avatar
-              alt="example"
-              src="../../assets/profileEx.jpg"
+              alt="프로필 사진"
+              src={profileImagePath}
               sx={{ width: 56, height: 56 }}
               aria-controls={open ? "composition-menu" : undefined}
               aria-expanded={open ? "true" : undefined}
