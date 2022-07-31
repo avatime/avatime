@@ -21,6 +21,6 @@ public class AvatarStatus {
 	public AvatarStatus(Avatar avatar) {
 		this.id = avatar.getId();
 		this.name = avatar.getName();
-		this.image_path = avatar.getImage_path();
+		this.image_path = avatar.getImagePath();
 	}
 }
