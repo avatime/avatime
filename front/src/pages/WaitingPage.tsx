@@ -4,9 +4,9 @@ import { Box, Grid } from "@mui/material";
 import { grey } from "@mui/material/colors";
 import { MainHeader } from "../components/main/MainHeader";
 
-import Button from '@mui/material/Button';
-import DeleteIcon from '@mui/icons-material/Delete';
-import SendIcon from '@mui/icons-material/Send';
+import Button from "@mui/material/Button";
+import DeleteIcon from "@mui/icons-material/Delete";
+import SendIcon from "@mui/icons-material/Send";
 interface IProps {}
 
 export const WaitingPage: FC<IProps> = (props) => {
@@ -31,19 +31,17 @@ export const WaitingPage: FC<IProps> = (props) => {
                 setOpened((prev) => [!prev[0], prev[1]]);
               }}
               maxHeight={"70%"}
+              chattingRoomId={1}
             />
           </Box>
           <Button variant="outlined" startIcon={<DeleteIcon />}>
-        Delete
-      </Button>
-      <Button variant="contained" endIcon={<SendIcon />}>
-        Send
-      </Button>
+            Delete
+          </Button>
+          <Button variant="contained" endIcon={<SendIcon />}>
+            Send
+          </Button>
         </Grid>
-        
       </Grid>
-
-      
     </div>
   );
 };
