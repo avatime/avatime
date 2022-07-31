@@ -148,6 +148,7 @@ export const SessionPage: FC<IProps> = (props) => {
               setOpened((prev) => [!prev[0], prev[1]]);
             }}
             maxHeight={opened[0] && cntOpened === 1 ? "100%" : "50%"}
+            chattingRoomId={1}
           />
           <ChatRoom
             chatType="gender"
@@ -156,6 +157,7 @@ export const SessionPage: FC<IProps> = (props) => {
               setOpened((prev) => [prev[0], !prev[1]]);
             }}
             maxHeight={opened[1] && cntOpened === 1 ? "100%" : "50%"}
+            chattingRoomId={1}
           />
         </Box>
       </Grid>

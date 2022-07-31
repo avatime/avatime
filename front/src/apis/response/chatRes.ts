@@ -1,6 +1,6 @@
-export interface ChatRes {
-    profilePath: string;
+export interface ChatMessageRes {
+    user_id: string;
     name: string;
     message: string;
-    time: string;
+    created_time: string;
 }

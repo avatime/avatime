@@ -7,11 +7,9 @@ import {
   TextField,
   Typography,
 } from "@mui/material";
-import React, { FC, Suspense, useState } from "react";
-import { ErrorBoundary } from "react-error-boundary";
-import { useQuery } from "react-query";
+import React, { FC, useEffect, useState } from "react";
 import chatApi from "../../apis/chatApi";
-import { ChatRes } from "../../apis/response/chatRes";
+import { ChatMessageRes } from "../../apis/response/chatRes";
 import { ChatBlock } from "./ChatBlock";
 import "./style.css";
 import ExpandMoreIcon from "@mui/icons-material/ExpandMore";
@@ -20,6 +18,8 @@ import { styled } from "@mui/material/styles";
 import useScrollToBottomRef from "../../hooks/useScrollToBottomRef";
 import { grey } from "@mui/material/colors";
 import SendIcon from "@mui/icons-material/Send";
+import SockJS from "sockjs-client";
+import * as Stomp from "stompjs";
 
 type ChatType = "all" | "gender";
 
@@ -28,19 +28,38 @@ interface IProps {
   isOpened: boolean;
   onClickHeader: () => void | null;
   maxHeight: string;
+  chattingRoomId: number;
 }
 
-export const ChatRoom: FC<IProps> = ({ chatType, isOpened, onClickHeader, maxHeight }) => {
-  const title = chatType === "all" ? "전체 채팅" : "성별 채팅";
+export const ChatRoom: FC<IProps> = ({
+  chatType,
+  isOpened,
+  onClickHeader,
+  maxHeight,
+  chattingRoomId,
+}) => {
+  const [stompClient, setStompClient] = useState<any>();
+  const [chatList, setChatList] = useState<ChatMessageRes[]>([]);
 
-  const { data } = useQuery<any, Array<ChatRes>>("session/allChat", () => chatApi.receive(), {
-    suspense: true,
-  });
+  useEffect(() => {
+    if (stompClient) {
+      return;
+    }
+    const socket = new SockJS("http://localhost:8080/ws/ava");
+    const client = Stomp.over(socket);
+    client.connect({}, function (frame) {
+      console.log("소켓 연결 성공", frame);
+
+      client.subscribe(`/topic/chatting/receive/${chattingRoomId}`, (res) => {
+        setChatList(JSON.parse(res.body));
+      });
+    });
+
+    setStompClient(client);
+  }, [chattingRoomId, stompClient]);
 
   const chatBodyRef = useScrollToBottomRef();
   const chatInputRef = useScrollToBottomRef();
-
-  const [inputMessage, setInputMessage] = useState("");
 
   const onKeyUp = (e: any) => {
     if (e.key === "Enter" && !e.shiftKey) {
@@ -54,47 +73,50 @@ export const ChatRoom: FC<IProps> = ({ chatType, isOpened, onClickHeader, maxHei
     }
   };
 
+  const [message, setMessage] = useState("");
   const sendMessage = () => {
-    if (!inputMessage) {
+    if (!message) {
       return;
     }
 
     console.log("sendMessage!!");
-    setInputMessage("");
+    chatApi.sendMessage({
+      chattingroom_id: 1,
+      type: "TALK",
+      user_id: 1,
+      message,
+    });
+    setMessage("");
   };
 
   return (
-    <Suspense fallback={<h1>로딩중</h1>}>
-      <ErrorBoundary fallback={<h1>에러에러</h1>}>
-        <ChatRoomPresenter
-          title={title}
-          chatList={data}
-          isOpened={isOpened}
-          onClickHeader={onClickHeader}
-          maxHeight={maxHeight}
-          chatBodyRef={chatBodyRef}
-          chatInputRef={chatInputRef}
-          inputMessage={inputMessage}
-          onChangeInputMessage={(s: string) => setInputMessage(s)}
-          onKeyUp={onKeyUp}
-          onKeyDown={onKeyDown}
-          sendMessage={sendMessage}
-        />
-      </ErrorBoundary>
-    </Suspense>
+    <ChatRoomPresenter
+      title={chatType === "all" ? "전체 채팅" : "성별 채팅"}
+      chatList={chatList}
+      isOpened={isOpened}
+      onClickHeader={onClickHeader}
+      maxHeight={maxHeight}
+      chatBodyRef={chatBodyRef}
+      chatInputRef={chatInputRef}
+      message={message}
+      onChangeMessage={(s: string) => setMessage(s)}
+      onKeyUp={onKeyUp}
+      onKeyDown={onKeyDown}
+      sendMessage={sendMessage}
+    />
   );
 };
 
 interface IPresenterProps {
   title: string;
-  chatList: Array<ChatRes>;
+  chatList: Array<ChatMessageRes>;
   isOpened: boolean;
   onClickHeader: () => void | null;
   maxHeight: string;
   chatBodyRef: any;
   chatInputRef: any;
-  inputMessage: string;
-  onChangeInputMessage: (s: string) => void;
+  message: string;
+  onChangeMessage: (s: string) => void;
   onKeyUp: (e: any) => void;
   onKeyDown: (e: any) => void;
   sendMessage: () => void;
@@ -120,8 +142,8 @@ const ChatRoomPresenter: FC<IPresenterProps> = ({
   maxHeight,
   chatBodyRef,
   chatInputRef,
-  inputMessage,
-  onChangeInputMessage,
+  message,
+  onChangeMessage,
   onKeyUp,
   onKeyDown,
   sendMessage,
@@ -148,15 +170,17 @@ const ChatRoomPresenter: FC<IPresenterProps> = ({
         {chatList.map((it, idx) => (
           <ChatBlock
             key={idx}
-            chatRes={it}
+            chatMessageRes={it}
             order={it.name === "나" ? "right" : "left"}
             showName={
-              idx === 0 || chatList[idx - 1].name !== it.name || chatList[idx - 1].time !== it.time
+              idx === 0 ||
+              chatList[idx - 1].name !== it.name ||
+              chatList[idx - 1].created_time !== it.created_time
             }
             showTime={
               idx === chatList.length - 1 ||
               chatList[idx + 1].name !== it.name ||
-              chatList[idx + 1].time !== it.time
+              chatList[idx + 1].created_time !== it.created_time
             }
           />
         ))}
@@ -174,12 +198,12 @@ const ChatRoomPresenter: FC<IPresenterProps> = ({
             fullWidth={true}
             rows={2}
             placeholder="여기 채팅 메시지를 입력하세요."
-            value={inputMessage}
-            onChange={(e: any) => onChangeInputMessage(e.target.value)}
+            value={message}
+            onChange={(e: any) => onChangeMessage(e.target.value)}
             onKeyUp={onKeyUp}
             onKeyDown={onKeyDown}
           />
-          <Button variant="contained" onClick={sendMessage} disabled={!inputMessage}>
+          <Button variant="contained" onClick={sendMessage} disabled={!message}>
             <SendIcon />
           </Button>
         </Stack>
