@@ -24,7 +24,7 @@ public class ChattingMessageServiceImpl implements ChattingMessageService {
 	@Override
 	public List<ChattingMessage> findAllByChattingRoom(ChattingRoom chattingRoom) throws Exception {
 		// TODO Auto-generated method stub
-		return chattingMessageRepository.findByChattingRoomId(chattingRoom.getId());
+		return chattingMessageRepository.findByChattingRoom_Id(chattingRoom.getId()).get() ;
 	}
 	@Override
 	public String findUserName(ChattingRoom chattingRoom, Long userId) {

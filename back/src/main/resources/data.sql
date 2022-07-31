@@ -19,7 +19,11 @@ insert into avatar (image_path, name) values ("강아지.png", "강아지");
 insert into avatar (image_path, name) values ("고양이.png", "고양이");
 insert into avatar (image_path, name) values ("기린.png", "기린");
 
+insert into user (description, gender, name, profile_id, social_id, social_type) values ("testing3", "F", "채윤선", 1, "ssafy3@naver.com", 1);
 insert into user (description, gender, name, profile_id, social_id, social_type) values ("testing", "M", "김싸피", 1, "ssafy@naver.com", 1);
-insert into user (description, gender, name, profile_id, social_id, social_type) values ("testing2", "M", "김싸피2", 1, "ssafy2@naver.com", 1);
-insert into user (description, gender, name, profile_id, social_id, social_type) values ("testing3", "M", "김싸피3", 1, "ssafy3@naver.com", 1);
+insert into user (description, gender, name, profile_id, social_id, social_type) values ("testing2", "M", "이삼성", 1, "ssafy2@naver.com", 1);
 
+insert into chatting_room (room_id, type) values (1, 2);
+insert into chatting_room (room_id, type) values (1, 0);
+insert into chatting_room (room_id, type) values (1, 1);
+insert into chatting_room (room_id, type) values (1, 1);

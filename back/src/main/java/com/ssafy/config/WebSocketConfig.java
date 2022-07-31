@@ -11,7 +11,7 @@ import lombok.RequiredArgsConstructor;
 @Configuration
 @EnableWebSocketMessageBroker
 @RequiredArgsConstructor
-public class ChatConfig implements WebSocketMessageBrokerConfigurer {
+public class WebSocketConfig implements WebSocketMessageBrokerConfigurer {
 
     @Override
     public void registerStompEndpoints(StompEndpointRegistry registry) {

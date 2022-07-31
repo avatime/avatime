@@ -15,5 +15,5 @@ public interface ChattingMessageRepository extends JpaRepository<ChattingMessage
 	@Query(value = "select * from chatting_message cm where cm.chatting_room_id = :id", nativeQuery = true)
 	List<ChattingMessage> findByChattingRoomId(@Param(value="id") Long chattingRoomId);
 	
-	List<ChattingMessage> findByChattingRoom_Id(Long chattingRoomId);
+	Optional<List<ChattingMessage>> findByChattingRoom_Id(Long chattingRoomId);
 }

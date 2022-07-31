@@ -1,7 +1,6 @@
 package com.ssafy.api.controller;
 
 import java.util.ArrayList;
-import java.util.Iterator;
 import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -17,7 +16,9 @@ import com.ssafy.api.request.ChattingMessagePostReq;
 import com.ssafy.api.response.ChattingMessageRes;
 import com.ssafy.api.service.ChatService;
 import com.ssafy.api.service.ChattingMessageService;
+import com.ssafy.api.service.UserService;
 import com.ssafy.db.entity.ChattingMessage;
+import com.ssafy.db.entity.User;
 import com.ssafy.db.repository.ChattingMessageRepository;
 
 import lombok.RequiredArgsConstructor;
@@ -35,6 +36,8 @@ public class MessageController {
     private final ChattingMessageService chattingMessageService;
     @Autowired
     private final ChattingMessageRepository chattingMessageRepository;
+    @Autowired
+    private final UserService userService;
     
     @PostMapping("/send")
     public void sendMessage(@RequestBody ChattingMessagePostReq messageReq) throws Exception {
@@ -46,33 +49,36 @@ public class MessageController {
 //    		messageReq.setMessage(chattingMessageService.findUserName(chattingRoomService.findByChatId(messageReq.getChattingroom_id()), messageReq.getUser_id())+"님이 퇴장하였습니다.");
 //        }
 //    	ChattingMessage message = ChattingMessage.builder()
-//    			.userId(messageReq.getUser_id())
+//    			.user(userService.getUserByUserId(messageReq.getUser_id()))
 //    			.content(messageReq.getMessage())
 //    			.chattingRoom(chattingRoomService.findByChatId(messageReq.getChattingroom_id()))
 //    			.build();
 //    	message = chattingMessageRepository.save(message);
-//    	;
-//    	List<ChattingMessage> messages = chattingMessageService.findByChattingRoomId(message.getChattingRoom().getId());
+//    	
+//    	List<ChattingMessage> messages = chattingMessageService.findAllByChattingRoom(message.getChattingRoom());
 //    	List<ChattingMessageRes> list = new ArrayList<>();
 //    	for(ChattingMessage m : messages) {
 //    		ChattingMessageRes chat = ChattingMessageRes.builder()
-//    				.type(m.getType())
-//        			.userId(m.getUserId())
-//        			.userName(chattingMessageService.findUserName(message.getChattingRoom(), m.getUserId()))
+//    				.chat_type(m.getType())
+//        			.userId(m.getUser().getId())
+//        			.userName(chattingMessageService.findUserName(message.getChattingRoom(), m.getUser().getId()))
 //        			.message(m.getContent())
 //        			.createdTime(m.getCreatedTime().toString())
 //        			.build();
 //    		list.add(chat);
 //    	}
     	
+    	// 테스트용 코드
+    	User userNow = userService.getUserByUserId(messageReq.getUser_id());
     	if (ChattingMessagePostReq.MessageType.ENTER.equals(messageReq.getChat_type())) {
-    		messageReq.setMessage("김싸피님이 입장하였습니다.");
+    		messageReq.setMessage(userNow.getName() + "님이 입장하였습니다.");
     	} 
     	else if (ChattingMessagePostReq.MessageType.LEAVE.equals(messageReq.getChat_type())) {
-    		messageReq.setMessage("김싸피님이 퇴장하였습니다.");        
+    		messageReq.setMessage(userNow.getName() + "님이 퇴장하였습니다.");        
     		}
     	ChattingMessage message = ChattingMessage.builder()
-    			.userId(messageReq.getUser_id())
+    			.user(userNow)
+    			.type(messageReq.getChat_type().toString())
     			.content(messageReq.getMessage())
     			.chattingRoom(chattingRoomService.findByChatId(messageReq.getChattingroom_id()))
     			.build();
@@ -81,16 +87,17 @@ public class MessageController {
     	List<ChattingMessage> messages = chattingMessageService.findAllByChattingRoom(message.getChattingRoom());
     	List<ChattingMessageRes> list = new ArrayList<>();
     	for(ChattingMessage m : messages) {
+    		System.out.println(m.getUser().getId() +": "+ m.getContent());
     		ChattingMessageRes chat = ChattingMessageRes.builder()
-    				.type(m.getType())
-        			.userId(m.getUserId())
-        			.userName("김싸피")
+    				.chat_type(m.getType())
+        			.user_id(m.getUser().getId())
+        			.name(m.getUser().getName())
         			.message(m.getContent())
-        			.createdTime(m.getCreatedTime().toString())
+        			.created_time(m.getCreatedTime().toString())
         			.build();
     		list.add(chat);
     	}
-    	sendingOperations.convertAndSend("/topic/chat/room/"+message.getChattingRoom().getId(), list);
+    	sendingOperations.convertAndSend("/topic/chatting/receive/"+message.getChattingRoom().getId(), list);
     }
     
     // 테스트용 코드
@@ -104,12 +111,12 @@ public class MessageController {
         }
         ChattingMessage chat = ChattingMessage.builder()
         		.type(message.getType().toString())
-        		.userId(222222L)
+        		.user(userService.getUserByUserId(1L))
         		.chattingRoom(chattingRoomService.findByChatId(message.getChatRoomId()))
         		.content(message.getMessage())
         		.build();
         chattingMessageRepository.save(chat);
         
-        sendingOperations.convertAndSend("/topic/chat/room/"+message.getChatRoomId(),message);
+        sendingOperations.convertAndSend("/topic/chatting/receive/"+message.getChatRoomId(),message);
     }
 }

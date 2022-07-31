@@ -21,11 +21,12 @@ import lombok.Setter;
 public class MeetingRoomUserRelation  extends BaseEntity {
 
 	@ManyToOne
-	@JoinColumn(name = "session_id", insertable = false, updatable=false)
-	private MeetingRoom meetingRoomId;
+//	@JoinColumn(name = "session_id", insertable = false, updatable=false)
+	private MeetingRoom meetingRoom;
 	
-    @Column(name="user_id", updatable = false, nullable = false, columnDefinition = "INT UNSIGNED")
-	private Long userId;
+	@ManyToOne
+//    @Column(name="user_id", updatable = false, nullable = false, columnDefinition = "INT UNSIGNED")
+	private User user;
 	
     @Column(name = "avatar_id",columnDefinition = "INT UNSIGNED")
 	private Long avatarId;

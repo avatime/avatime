@@ -35,7 +35,7 @@ public class QChattingMessage extends EntityPathBase<ChattingMessage> {
 
     public final StringPath type = createString("type");
 
-    public final NumberPath<Long> userId = createNumber("userId", Long.class);
+    public final QUser user;
 
     public QChattingMessage(String variable) {
         this(ChattingMessage.class, forVariable(variable), INITS);
@@ -56,6 +56,7 @@ public class QChattingMessage extends EntityPathBase<ChattingMessage> {
     public QChattingMessage(Class<? extends ChattingMessage> type, PathMetadata metadata, PathInits inits) {
         super(type, metadata, inits);
         this.chattingRoom = inits.isInitialized("chattingRoom") ? new QChattingRoom(forProperty("chattingRoom")) : null;
+        this.user = inits.isInitialized("user") ? new QUser(forProperty("user")) : null;
     }
 
 }

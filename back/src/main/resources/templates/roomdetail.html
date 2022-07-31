@@ -79,7 +79,7 @@
         // pub/sub event
         ws.connect({}, function(frame) {
         	console.log("Stomp Connection")
-            ws.subscribe("/topic/chat/room/"+vm.$data.roomId, function(message) {
+            ws.subscribe("/topic/chatting/receive/"+vm.$data.roomId, function(message) {
                 var recv = JSON.parse(message.body);
                 vm.recvMessage(recv);
             });

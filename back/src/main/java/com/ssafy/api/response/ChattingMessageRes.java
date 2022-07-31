@@ -12,9 +12,9 @@ import lombok.ToString;
 @NoArgsConstructor
 @Builder
 public class ChattingMessageRes {
-	private String type;
-	private Long userId;
-	private String userName;
+	private String chat_type;
+	private Long user_id;
+	private String name;
 	private String message;
-	private String createdTime;
+	private String created_time;
 }
