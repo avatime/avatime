@@ -21,6 +21,7 @@ import SendIcon from "@mui/icons-material/Send";
 import SockJS from "sockjs-client";
 import * as Stomp from "stompjs";
 import { useSelector } from "react-redux";
+import { formatDate } from "../../utils/day";
 
 type ChatType = "all" | "gender";
 
@@ -56,7 +57,7 @@ export const ChatRoom: FC<IProps> = ({
 
       chatApi.sendMessage({
         chattingroom_id: chattingRoomId,
-        type: "ENTER",
+        chat_type: "ENTER",
         user_id: userId,
         message: "ENTER",
       });
@@ -65,7 +66,7 @@ export const ChatRoom: FC<IProps> = ({
     return () => {
       chatApi.sendMessage({
         chattingroom_id: chattingRoomId,
-        type: "LEAVE",
+        chat_type: "LEAVE",
         user_id: userId,
         message: "LEAVE",
       });
@@ -95,7 +96,7 @@ export const ChatRoom: FC<IProps> = ({
 
     chatApi.sendMessage({
       chattingroom_id: chattingRoomId,
-      type: "TALK",
+      chat_type: "TALK",
       user_id: userId,
       message,
     });
@@ -183,23 +184,27 @@ const ChatRoomPresenter: FC<IPresenterProps> = ({
       </AccordionSummary>
 
       <List ref={chatBodyRef} sx={{ flexGrow: "1", bgcolor: grey[50], overflow: "auto" }}>
-        {chatList.map((it, idx) => (
-          <ChatBlock
-            key={idx}
-            chatMessageRes={it}
-            order={it.user_id === userId ? "right" : "left"}
-            showName={
-              idx === 0 ||
-              chatList[idx - 1].user_id !== it.user_id ||
-              chatList[idx - 1].created_time !== it.created_time
-            }
-            showTime={
-              idx === chatList.length - 1 ||
-              chatList[idx + 1].user_id !== it.user_id ||
-              chatList[idx + 1].created_time !== it.created_time
-            }
-          />
-        ))}
+        {chatList.map((it, idx) => {
+          const formatedTime = formatDate(it.created_time, "A h:mm");
+          return (
+            <ChatBlock
+              key={idx}
+              chatMessageRes={it}
+              order={it.user_id === userId ? "right" : "left"}
+              showName={
+                idx === 0 ||
+                chatList[idx - 1].user_id !== it.user_id ||
+                chatList[idx - 1].created_time !== it.created_time
+              }
+              showTime={
+                idx === chatList.length - 1 ||
+                chatList[idx + 1].user_id !== it.user_id ||
+                formatDate(chatList[idx + 1].created_time, "A h:mm") !== formatedTime
+              }
+              formatedTime={formatedTime}
+            />
+          );
+        })}
       </List>
 
       <CardContent

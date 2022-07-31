@@ -47,9 +47,6 @@ export const SessionPage: FC<IProps> = (props) => {
   const [publisher, setPublisher] = useState<any>();
 
   useEffect(() => {
-    console.log(
-      "useEffectuseEffectuseEffectuseEffectuseEffectuseEffectuseEffectuseEffectuseEffectuseEffectuseEffectuseEffectuseEffect"
-    );
     const openVidu = new OpenVidu();
     const session = openVidu.initSession();
 
