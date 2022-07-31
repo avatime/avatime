@@ -23,10 +23,6 @@ public class QWaitingRoom extends EntityPathBase<WaitingRoom> {
 
     public final NumberPath<Integer> age = createNumber("age", Integer.class);
 
-    public final NumberPath<Integer> cnt_man = createNumber("cnt_man", Integer.class);
-
-    public final NumberPath<Integer> cnt_woman = createNumber("cnt_woman", Integer.class);
-
     public final DateTimePath<java.util.Date> created_time = createDateTime("created_time", java.util.Date.class);
 
     public final NumberPath<Integer> head_count = createNumber("head_count", Integer.class);
@@ -38,7 +34,7 @@ public class QWaitingRoom extends EntityPathBase<WaitingRoom> {
 
     public final NumberPath<Integer> sido_id = createNumber("sido_id", Integer.class);
 
-    public final BooleanPath status = createBoolean("status");
+    public final NumberPath<Integer> status = createNumber("status", Integer.class);
 
     public QWaitingRoom(String variable) {
         super(WaitingRoom.class, forVariable(variable));

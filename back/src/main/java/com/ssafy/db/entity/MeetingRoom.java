@@ -26,7 +26,7 @@ import lombok.Setter;
 @Setter
 public class MeetingRoom  extends BaseEntity {
 
-	@Column(updatable = false, nullable = false, length = 1, columnDefinition = "TINYINT(1)")
+	@Column(nullable = false, length = 1, columnDefinition = "TINYINT(1)")
 	private int type;
 	
     @Column(name = "main_session_id", columnDefinition = "INT UNSIGNED")

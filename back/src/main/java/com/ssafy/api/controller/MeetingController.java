@@ -6,6 +6,7 @@ import java.util.List;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.messaging.handler.annotation.MessageMapping;
+import org.springframework.messaging.simp.SimpMessageSendingOperations;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PatchMapping;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -16,13 +17,14 @@ import com.ssafy.api.request.FinalChoiceUserReq;
 import com.ssafy.api.request.MeetingRoomPostReq;
 import com.ssafy.api.request.UserSelectAvatarReq;
 import com.ssafy.api.response.FinalChoiceRes;
+import com.ssafy.api.response.entity.AvatarStatus;
 import com.ssafy.api.response.entity.Result;
+import com.ssafy.api.service.AvatarService;
 import com.ssafy.api.service.MeetingRoomService;
 import com.ssafy.common.model.response.BaseResponseBody;
 import com.ssafy.db.entity.Avatar;
 import com.ssafy.db.entity.MeetingRoomUserRelation;
 import com.ssafy.db.entity.User;
-import com.ssafy.db.repository.AvatarRepository;
 import com.ssafy.db.repository.UserRepository;
 
 import io.swagger.annotations.Api;
@@ -38,6 +40,7 @@ import io.swagger.annotations.ApiResponses;
 @RestController
 @RequestMapping("/api/v1/meeting")
 public class MeetingController {
+	SimpMessageSendingOperations sendingOperations;	
 	
 	@Autowired
 	MeetingRoomService meetingRoomService;
@@ -47,8 +50,8 @@ public class MeetingController {
 	UserRepository userRepository;
 	
 	@Autowired
-//	AvatarService avatarService;
-	AvatarRepository avatarRepository;
+	AvatarService avatarService;
+//	AvatarRepository avatarRepository;
 
 	/*
 	@PostMapping()
@@ -88,6 +91,15 @@ public class MeetingController {
 		} catch(Exception e) {
 			return ResponseEntity.status(500).body("");
 		}
+		
+		List<Avatar> avatarList = avatarService.findAll();
+		List<AvatarStatus> list = new ArrayList<>();
+		
+		for(Avatar ava : avatarList) {
+			AvatarStatus avasta = new AvatarStatus(ava);
+		}
+		
+    	sendingOperations.convertAndSend("/topic/meeting/avatar/"+meetingRoomId, list);
 		return ResponseEntity.status(200).body("");
 	}
 	
@@ -98,7 +110,7 @@ public class MeetingController {
         @ApiResponse(code = 500, message = "서버 오류", response = BaseResponseBody.class)
     })
 	public ResponseEntity<?> selcetAvatarMeetingRoom(@RequestBody @ApiParam(value="미팅방 정보", required = true) MeetingRoomPostReq meetingRoomPostReq) {
-		String type = meetingRoomPostReq.getType();
+		int type = meetingRoomPostReq.getType();
 		Long mainSessionId = meetingRoomPostReq.getMainSessionId();
 		
 		try {
@@ -117,7 +129,7 @@ public class MeetingController {
         @ApiResponse(code = 500, message = "서버 오류", response = BaseResponseBody.class)
     })
 	public ResponseEntity<?> avatarTimer(@RequestBody @ApiParam(value="미팅방 정보", required = true) MeetingRoomPostReq meetingRoomPostReq) {
-		String type = meetingRoomPostReq.getType();
+		int type = meetingRoomPostReq.getType();
 		Long mainSessionId = meetingRoomPostReq.getMainSessionId();
 		
 		try {
@@ -136,7 +148,7 @@ public class MeetingController {
         @ApiResponse(code = 500, message = "서버 오류", response = BaseResponseBody.class)
     })
 	public ResponseEntity<?> meetingRoomInfo(@RequestBody @ApiParam(value="미팅방 정보", required = true) MeetingRoomPostReq meetingRoomPostReq) {
-		String type = meetingRoomPostReq.getType();
+		int type = meetingRoomPostReq.getType();
 		Long mainSessionId = meetingRoomPostReq.getMainSessionId();
 		
 		try {
@@ -174,7 +186,7 @@ public class MeetingController {
         @ApiResponse(code = 500, message = "서버 오류", response = BaseResponseBody.class)
     })
 	public ResponseEntity<?> finalChoiceTimer(@RequestBody @ApiParam(value="미팅방 정보", required = true) MeetingRoomPostReq meetingRoomPostReq) {
-		String type = meetingRoomPostReq.getType();
+		int type = meetingRoomPostReq.getType();
 		Long mainSessionId = meetingRoomPostReq.getMainSessionId();
 		
 		try {
@@ -202,7 +214,7 @@ public class MeetingController {
 			for(MeetingRoomUserRelation m : meetingRoomUserlist) {
 				if(m.isMatched()) matched = true;
 				User user = userRepository.findById(m.getId()).get();
-				Avatar avatar = avatarRepository.findById(m.getAvatarId()).get();
+				Avatar avatar = avatarService.findById(m.getAvatarId());
 				Result res = Result.builder()
 						.id(user.getId())
 						.name(user.getName())

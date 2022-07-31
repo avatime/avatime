@@ -24,14 +24,18 @@ public class QMeetingRoomUserRelation extends EntityPathBase<MeetingRoomUserRela
 
     public final QBaseEntity _super = new QBaseEntity(this);
 
-    public final NumberPath<Long> avatar_id = createNumber("avatar_id", Long.class);
+    public final NumberPath<Long> avatarId = createNumber("avatarId", Long.class);
 
     //inherited
     public final NumberPath<Long> id = _super.id;
 
+    public final BooleanPath matched = createBoolean("matched");
+
     public final QMeetingRoom meetingRoom;
 
-    public final NumberPath<Long> user_id = createNumber("user_id", Long.class);
+    public final NumberPath<Long> pickUserId = createNumber("pickUserId", Long.class);
+
+    public final QUser user;
 
     public QMeetingRoomUserRelation(String variable) {
         this(MeetingRoomUserRelation.class, forVariable(variable), INITS);
@@ -52,6 +56,7 @@ public class QMeetingRoomUserRelation extends EntityPathBase<MeetingRoomUserRela
     public QMeetingRoomUserRelation(Class<? extends MeetingRoomUserRelation> type, PathMetadata metadata, PathInits inits) {
         super(type, metadata, inits);
         this.meetingRoom = inits.isInitialized("meetingRoom") ? new QMeetingRoom(forProperty("meetingRoom")) : null;
+        this.user = inits.isInitialized("user") ? new QUser(forProperty("user")) : null;
     }
 
 }
