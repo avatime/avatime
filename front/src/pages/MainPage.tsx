@@ -80,7 +80,7 @@ export const MainPage: FC<IProps> = (props) => {
   };
 
   const setRoomData = () => {
-    if (!isNotNullAgeId || !isNotNullHeadCounts || !isNotNullSidoId || !isNotNullName) {
+    if (!ageId || !headCounts || !sidoId || !name.length) {
       alert("빈칸을 모두 채워주세요!");
     } else {
       makeNewRoomApi.makeNewRoom({
@@ -94,11 +94,6 @@ export const MainPage: FC<IProps> = (props) => {
       handleClose();
     }
   };
-
-  const isNotNullName = name.length >= 1;
-  const isNotNullAgeId = String(ageId).length >= 1;
-  const isNotNullSidoId = String(sidoId).length >= 1;
-  const isNotNullHeadCounts = String(headCounts).length >= 1;
 
   return (
     <div className="mainback">
