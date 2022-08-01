@@ -2,6 +2,7 @@ package com.ssafy.api.service;
 
 import java.util.List;
 
+import com.ssafy.db.entity.MeetingRoom;
 import com.ssafy.db.entity.MeetingRoomUserRelation;
 
 /**
@@ -9,9 +10,10 @@ import com.ssafy.db.entity.MeetingRoomUserRelation;
  */
 public interface MeetingRoomService {
 	// 미팅방 만드는 함수
-	void createMeetingRoom(int type, Long mainSessionId) throws Exception;
-	boolean isSelectedAvatar(Long meetingRoomId, Long avatarId) throws Exception;
-	void choiceAvatar(Long meetingRoomId, Long userId, Long avatarId) throws Exception;
-	void finalChoice(Long meetingRoomId, Long userId, Long pickUserId) throws Exception;
-	List<MeetingRoomUserRelation> finalChoiceResult(Long meetingRoomId) throws Exception;
+	public MeetingRoom createMeetingRoomSession(int type, Long mainSessionId) throws Exception;
+	public boolean isSelectedAvatar(Long meetingRoomId, Long avatarId) throws Exception;
+	public void choiceAvatar(Long meetingRoomId, Long userId, Long avatarId) throws Exception;
+	public void finalChoice(Long meetingRoomId, Long userId, Long pickUserId) throws Exception;
+	public List<MeetingRoomUserRelation> finalChoiceResult(Long meetingRoomId) throws Exception;
+	public Long createMeetingRoom(Long waitingRoomId) throws Exception;
 }
