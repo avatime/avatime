@@ -7,11 +7,19 @@ interface IProps {}
 export const SocialLogin: FC<IProps> = (props) => {
   return (
     <div className="social_login">
-      <a href={KAKAO_AUTH_URL}>
-        <div className="kakao_btn"></div>
+      <a id="kakao-login-btn" href={KAKAO_AUTH_URL} style={{ marginBottom: "5vh" }}>
+        <img
+          src="//k.kakaocdn.net/14/dn/btqCn0WEmI3/nijroPfbpCa4at5EIsjyf0/o.jpg"
+          height="60"
+          alt="카카오로그인"
+        />
       </a>
-      <a href={NAVER_AUTH_URL}>
-        <div className="naver_btn"></div>
+      <a id="naver-login-btn" href={NAVER_AUTH_URL}>
+        <img
+          src="https://static.nid.naver.com/oauth/big_g.PNG?version=js-2.0.1"
+          height="60"
+          alt="네이버로그인"
+        />
       </a>
     </div>
   );

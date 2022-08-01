@@ -1,4 +1,4 @@
-import React, { FC, useState } from "react";
+import React, { FC, useState, useEffect } from "react";
 import {
   Box,
   Stack,
@@ -14,7 +14,7 @@ import {
 import CheckIcon from "@mui/icons-material/Check";
 import RefreshIcon from "@mui/icons-material/Refresh";
 import { useSelector, useDispatch } from "react-redux";
-import { userModifyApi, nameCheckApi } from "../../apis/userApi";
+import { registerApi, userModifyApi, nameCheckApi } from "../../apis/userApi";
 
 const style = {
   position: "absolute" as "absolute",
@@ -115,43 +115,117 @@ export const ProfileArea: FC<IProps> = (props) => {
   const userName = useSelector((state: any) => state.user.userName);
   const userDesc = useSelector((state: any) => state.user.userDesc);
   const profileImagePath = useSelector((state: any) => state.user.profileImagePath);
+  const isLogin = useSelector((state: any) => state.user.isLogin);
 
   const [name, setName] = useState(userName);
   const [desc, setDesc] = useState(userDesc);
   const [image, setImage] = useState(profileImagePath);
-  const [check, setCheck] = useState(true);
+  const [nameCheck, setNameCheck] = useState(true);
+  const [nameText, setNameText] = useState("");
+  const [overlap, setOverlap] = useState(true);
+  const [nameSatis, setNameSatis] = useState(true);
+  const [descText, setDescText] = useState("");
+  const [overContents, setOverContents] = useState(true);
+  const [descSatis, setDescSatis] = useState(true);
+  
+
+  useEffect(() => {
+    if (nameCheck === true) {
+      // 생성가능
+      setNameText(" ");
+      setOverlap(false);
+    } else if (name === userName) {
+      setNameText("현재 이름과 같습니다.");
+      setOverlap(true);
+    } else {
+      // 생성불가능
+      setNameText("중복된 이름입니다.");
+      setOverlap(true);
+    }
+}, [nameCheck]);
+
+  useEffect(() => {
+    if(nameSatis) {
+      setNameText(" ");
+      setOverlap(false);
+    } else {
+      setNameText("이름을 2-10자 이내로 지어주세요.");
+      setOverlap(true);
+    }
+  }, [nameSatis]);
+
+  useEffect(() => {
+    if(descSatis) {
+      setDescText(desc.length+"/255");
+      setOverContents(false);
+    } else {
+      setDescText("자기소개를 255자 이내로 작성해주세요.");
+      setOverContents(true);
+    }
+  }, [descSatis, desc]);
 
   const handleNameChange = (event: React.ChangeEvent<HTMLInputElement>) => {
     setName(event.target.value);
-    nameCheckApi.checkName({ name }).then((res) => {
-      setCheck(res.success);
-    });
-    if (check === true) {
-      //
+    if (event.target.value.trim().length < 2 || event.target.value.trim().length > 10) {
+      setNameSatis(false);
     } else {
+      setNameSatis(true);
+      nameCheckApi.checkName({ name: event.target.value }).then((res) => {
+        setNameCheck(res);
+      });
     }
   };
 
+  const handleDescChange = (event: React.ChangeEvent<HTMLInputElement>) => {
+    if (event.target.value.trim().length > 255) {
+      setDescSatis(false);
+    } else {
+      setDescSatis(true);
+    }
+    setDesc(event.target.value);
+  };
+
   const confirmInfo = () => {
-    userModifyApi
-      .modifyUser({
-        user_id: userId,
-        profile_image_path: image,
-        name: name,
-        description: desc,
-      })
-      .then((res) => {
-        console.log(res);
-      });
+    // 만족했는지 조건 추가
+    isLogin
+      ? userModifyApi
+          .modifyUser({
+            user_id: userId,
+            profile_image_path: image,
+            name: name,
+            description: desc,
+          })
+          .then((res) => {
+            console.log(res);
+            alert("회원수정 완료!");
+          }).catch(function (err) {
+            console.log(err);
+            alert("오류발생!");
+          })
+      : registerApi
+          .register({
+            social_id: socialId,
+            social_type: socialType,
+            gender: userGender,
+            name: name,
+            profile_image_path: image,
+            description: desc,
+          })
+          .then((res) => {
+            console.log(res);
+            alert("회원가입 완료!");
+          }).catch(function (err) {
+            console.log(err);
+            alert("오류발생!");
+          });
   };
 
   const refreshForm = () => {
     setName(userName);
     setDesc(userDesc);
-  };
-
-  const handleDescChange = (event: React.ChangeEvent<HTMLInputElement>) => {
-    setDesc(event.target.value);
+    setNameCheck(true);
+    setNameSatis(true);
+    setDescSatis(true);
   };
 
   return (
@@ -266,7 +340,7 @@ export const ProfileArea: FC<IProps> = (props) => {
         justifyContent="center"
         alignItems="center"
         marginTop="6vh"
-        marginBottom="10vh"
+        marginBottom="6vh"
       >
         <TextField
           id="inputName"
@@ -276,6 +350,11 @@ export const ProfileArea: FC<IProps> = (props) => {
           placeholder="닉네임을 입력해주세요."
           autoFocus
           onChange={handleNameChange}
+          helperText={nameText}
+          error={overlap}
+          sx={{
+            width: "15vw",
+          }}
         />
       </Grid>
       <Grid display="flex" justifyContent="center" alignItems="center">
@@ -289,6 +368,8 @@ export const ProfileArea: FC<IProps> = (props) => {
           maxRows={6}
           multiline
           onChange={handleDescChange}
+          helperText={descText}
+          error={overContents}
           sx={{
             height: "20vh",
             width: "30vw",
