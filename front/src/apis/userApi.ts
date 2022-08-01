@@ -4,7 +4,10 @@ import { UserInfoRes } from "./response/userInfoRes";
 import { ProfileRes } from "./response/profileRes";
 import { UserModifyReq } from "./request/userModifyReq";
 import { RegisterReq } from "./request/registerReq";
-import { axiosInstance } from './axiosInstance';
+import { UserReq } from "./request/userReq";
+import axios from "axios";
+
+const BASE_URL: string = "http://localhost:8080/api/v1";
 
 interface UserDeleteApi {
   deleteUser(userInfoReq: UserInfoReq): Promise<SuccessRes>;
@@ -42,32 +45,15 @@ const userInfoApi: UserInfoApi = {
   },
 };
 
-interface RegisterApi {
-  register(registerReq: RegisterReq): Promise<SuccessRes>;
-}
-
-const registerApi: RegisterApi = {
-  register: function (registerReq: RegisterReq): Promise<SuccessRes> {
-    return new Promise((resolve) => {
-      setTimeout(() => {
-        resolve({
-          success: true,
-        });
-        alert("회원가입이 완료되었습니다.");
-      }, 500);
-    });
-  },
-};
-
 // 구현 완료
 
 interface NameCheckApi {
-  checkName(userInfoReq: UserInfoReq): Promise<SuccessRes>;
+  checkName(userInfoReq: UserInfoReq): Promise<boolean>;
 }
 
 const nameCheckApi: NameCheckApi = {
-  checkName: async function (userInfoReq: UserInfoReq): Promise<SuccessRes> {
-    return (await axiosInstance.get(`/auth/check/${userInfoReq.name}`)).data;
+  checkName: async function (userInfoReq: UserInfoReq): Promise<boolean> {
+    return (await axios.get(`${BASE_URL}/auth/check/${userInfoReq.name}`)).data;
   },
 };
 
@@ -83,13 +69,13 @@ const nameCheckApi: NameCheckApi = {
 
 const kakaoLogin = (code: string): any => {
   return function () {
-    return axiosInstance.get(`/auth/kakao?code=${code}`);
+    return axios.get(`http://localhost:8080/api/v1/auth/kakao?code=${code}`);
   };
 };
 
 const naverLogin = (code: string, state: string): any => {
   return function () {
-    return axiosInstance.get(`/auth/naver?code=${code}&state=${state}`);
+    return axios.get(`http://localhost:8080/api/v1/auth/naver?code=${code}&state=${state}`);
   };
 };
 
@@ -99,7 +85,7 @@ interface ProfileAllApi {
 
 const profileAllApi: ProfileAllApi = {
   receive: async function (): Promise<ProfileRes[]> {
-    return (await axiosInstance.get(`/user/profile`)).data;
+    return (await axios.get(`${BASE_URL}/user/profile`)).data;
   },
 };
 
@@ -109,7 +95,17 @@ interface UserModifyApi {
 
 const userModifyApi: UserModifyApi = {
   modifyUser: async function (userModifyReq: UserModifyReq): Promise<SuccessRes> {
-    return (await axiosInstance.patch(`/user/${userModifyReq.user_id}`, userModifyReq)).data;
+    return (await axios.patch(`${BASE_URL}/user/${userModifyReq.user_id}`, userModifyReq)).data;
+  },
+};
+
+interface RegisterApi {
+  register(registerReq: RegisterReq): Promise<SuccessRes>;
+}
+
+const registerApi: RegisterApi = {
+  register: async function (registerReq: RegisterReq): Promise<SuccessRes> {
+    return (await axios.post(`${BASE_URL}/auth/register`, registerReq)).data;
   },
 };
 
