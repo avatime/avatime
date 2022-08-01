@@ -17,7 +17,7 @@ export const MyPageInfo: FC<IProps> = (props) => {
   const handleNameChange = (event: React.ChangeEvent<HTMLInputElement>) => {
     setName(event.target.value);
     nameCheckApi.checkName({ name }).then((res) => {
-      setCheck(res.success);
+      setCheck(res);
     });
     if (check === true) {
       //
