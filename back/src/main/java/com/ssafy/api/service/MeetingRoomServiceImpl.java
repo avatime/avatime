@@ -103,4 +103,16 @@ public class MeetingRoomServiceImpl implements MeetingRoomService {
 		return meetingRoomId;
 	}
 
+	@Override
+	public void timer() throws Exception {
+		// TODO Auto-generated method stub
+		
+	}
+
+	@Override
+	public int userNumber(Long meetingRoomId) throws Exception {
+		// TODO Auto-generated method stub
+		return 0;
+	}
+
 }
