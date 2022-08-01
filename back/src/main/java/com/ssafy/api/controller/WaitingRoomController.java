@@ -8,7 +8,6 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.messaging.handler.annotation.DestinationVariable;
 import org.springframework.messaging.handler.annotation.MessageMapping;
-import org.springframework.messaging.handler.annotation.SendTo;
 import org.springframework.messaging.simp.SimpMessageSendingOperations;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PatchMapping;
@@ -22,6 +21,7 @@ import com.ssafy.api.response.WaitingRoomRes;
 import com.ssafy.api.response.WaitingUserRes;
 import com.ssafy.api.service.AgeService;
 import com.ssafy.api.service.ChattingRoomService;
+import com.ssafy.api.service.GenderService;
 import com.ssafy.api.service.MeetingRoomService;
 import com.ssafy.api.service.SidoService;
 import com.ssafy.api.service.UserService;
@@ -34,6 +34,7 @@ import com.ssafy.db.entity.Sido;
 import com.ssafy.db.entity.User;
 import com.ssafy.db.entity.WaitingRoom;
 import com.ssafy.db.entity.WaitingRoomUserRelation;
+import com.ssafy.db.entity.Gender;
 
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
@@ -66,6 +67,9 @@ public class WaitingRoomController {
 	
 	@Autowired
 	private final AgeService ageService;
+	
+	@Autowired
+	private final GenderService genderService;
 
 	private final SimpMessageSendingOperations simp;
 	
@@ -76,11 +80,13 @@ public class WaitingRoomController {
 		// cnt_man, cnt_woman 쿼리 미작성
 		List<WaitingRoomRes> waitingRoomList = new ArrayList<>();
 		for (WaitingRoom wr : waitingRoom) {
+			Gender gender = genderService.findById(wr.getId()).get();
 			WaitingRoomRes w = WaitingRoomRes.builder()
 					.name(wr.getName())
 					.headCount(wr.getHeadCount())
 					.status(wr.getStatus())
-//					.cntMan()
+					.cntMan(gender.getM())
+					.cntWoman(gender.getF())
 					.sido(sidoService.findById(wr.getSidoId()).get().getName())
 					.age(ageService.findById(wr.getAgeId()).get().getName())
 					.build();
