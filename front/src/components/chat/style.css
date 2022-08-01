@@ -1,0 +1,77 @@
+.chat__bubble__left {
+  position: relative;
+  background: #1E293B;
+  border-radius: 0.4em;
+  padding: 10px;
+}
+
+.chat__bubble__arrow__left:after {
+  content: "";
+  position: absolute;
+  left: 0;
+  top: 50%;
+  width: 0;
+  height: 0;
+  border: 5px solid transparent;
+  border-right-color: #1E293B;
+  border-left: 0;
+  margin-top: -5px;
+  margin-left: -5px;
+}
+
+.chat__bubble__right {
+  position: relative;
+  background: #D97706;
+  border-radius: 0.4em;
+  padding: 10px;
+}
+
+.chat__bubble__arrow__right:after {
+  content: '';
+	position: absolute;
+	right: 0;
+	top: 50%;
+	width: 0;
+	height: 0;
+	border: 5px solid transparent;
+	border-left-color: #D97706;
+	border-right: 0;
+	margin-top: -5px;
+	margin-right: -5px;
+}
+
+.chat__input {
+  background: white;
+}
+
+.chat__input__textarea {
+  overflow: hidden;
+}
+
+.MuiCollapse-root {
+  display: flex;
+  flex-direction: column;
+  flex-grow: 1;
+  max-height: 100%;
+}
+
+.MuiCollapse-wrapper {
+  display: flex;
+  flex-direction: column;
+  flex-grow: 1;
+  max-height: 100%;
+}
+
+.MuiCollapse-wrapperInner {
+  display: flex;
+  flex-direction: column;
+  flex-grow: 1;
+  max-height: 100%;
+}
+
+.MuiAccordion-region {
+  display: flex;
+  flex-direction: column;
+  flex-grow: 1;
+  max-height: 100%;
+}

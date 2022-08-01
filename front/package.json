@@ -8,6 +8,9 @@
     "@mui/icons-material": "^5.8.4",
     "@mui/material": "^5.9.0",
     "@reduxjs/toolkit": "^1.8.3",
+    "@tensorflow-models/facemesh": "^0.0.5",
+    "@tensorflow/tfjs": "^3.19.0",
+    "@tensorflow/tfjs-backend-wasm": "^3.19.0",
     "@testing-library/jest-dom": "^5.16.4",
     "@testing-library/react": "^13.3.0",
     "@testing-library/user-event": "^13.5.0",
@@ -16,12 +19,27 @@
     "@types/node": "^16.11.45",
     "@types/react": "^18.0.15",
     "@types/react-dom": "^18.0.6",
+    "@types/sockjs-client": "^1.5.1",
+    "@types/stompjs": "^2.3.5",
+    "@types/three": "^0.142.0",
     "axios": "^0.27.2",
+    "dayjs": "^1.11.3",
+    "http-proxy-middleware": "^2.0.6",
+    "net": "^1.0.2",
+    "openvidu-browser": "^2.22.0",
     "react": "^18.2.0",
     "react-dom": "^18.2.0",
+    "react-error-boundary": "^3.1.4",
+    "react-query": "^3.39.2",
+    "react-redux": "^8.0.2",
     "react-router": "^6.3.0",
     "react-router-dom": "^6.3.0",
     "react-scripts": "5.0.1",
+    "react-xarrows": "^2.0.2",
+    "redux-persist": "^6.0.0",
+    "sockjs-client": "^1.6.1",
+    "stompjs": "^2.3.3",
+    "three": "^0.142.0",
     "typescript": "^4.7.4",
     "web-vitals": "^2.1.4"
   },
@@ -51,6 +69,8 @@
   },
   "devDependencies": {
     "@types/react-router": "^5.1.18",
-    "@types/react-router-dom": "^5.3.3"
+    "@types/react-router-dom": "^5.3.3",
+    "@types/redux-persist": "^4.3.1",
+    "eslint-plugin-react-hooks": "^4.6.0"
   }
 }
