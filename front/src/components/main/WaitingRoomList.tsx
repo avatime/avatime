@@ -33,7 +33,7 @@ interface Column {
   label: string;
   minWidth?: number;
   align?: "right";
-  format?: (value: number) => string;
+  format?: (obj: any) => string;
 }
 
 const columns: Column[] = [
@@ -43,12 +43,14 @@ const columns: Column[] = [
     label: "남자",
     minWidth: 50,
     align: "right",
+    format: (obj) => `${obj.cnt_man} / ${obj.head_count/2}`,
   },
   {
     id: "cnt_woman",
     label: "여자",
     minWidth: 50,
     align: "right",
+    format: (obj) => `${obj.cnt_woman} / ${obj.head_count/2}`,
   },
   {
     id: "age",
@@ -120,9 +122,8 @@ export const WaitingRoomList: FC<IProps> = (props) => {
         .filter((room) => (selected ? room.status === 0 : true))
         .filter((room) => room.name.includes(keyword))
     );
-  }, [keyword, originData, selected])
+  }, [keyword, originData, selected]);
 
- 
   //------------------------------------------------------------------------------------------
   return (
     <div>
@@ -173,22 +174,15 @@ export const WaitingRoomList: FC<IProps> = (props) => {
               </TableRow>
             </TableHead>
             <TableBody>
-              {data?.map((row, idx) => {
-                return (
-                  <TableRow key={idx}>
-                    {columns.map((column) => {
-                      const value = row[column.id];
-                      return (
-                        <TableCell key={column.id} align={column.align}>
-                          {column.format && typeof value === "number"
-                            ? column.format(value)
-                            : value}
-                        </TableCell>
-                      );
-                    })}
-                  </TableRow>
-                );
-              })}
+              {data?.map((row, idx) => (
+                <TableRow key={idx}>
+                  {columns.map((column) => (
+                    <TableCell key={column.id} align={column.align}>
+                      {column.format ? column.format(row) : row[column.id]}
+                    </TableCell>
+                  ))}
+                </TableRow>
+              ))}
             </TableBody>
           </Table>
         </TableContainer>
