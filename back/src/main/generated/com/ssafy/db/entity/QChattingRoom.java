@@ -7,7 +7,6 @@ import com.querydsl.core.types.dsl.*;
 import com.querydsl.core.types.PathMetadata;
 import javax.annotation.Generated;
 import com.querydsl.core.types.Path;
-import com.querydsl.core.types.dsl.PathInits;
 
 
 /**
@@ -22,14 +21,12 @@ public class QChattingRoom extends EntityPathBase<ChattingRoom> {
 
     public final QBaseEntity _super = new QBaseEntity(this);
 
-    public final DateTimePath<java.util.Date> createdTime = createDateTime("createdTime", java.util.Date.class);
+    public final DateTimePath<java.util.Date> created_time = createDateTime("created_time", java.util.Date.class);
 
     //inherited
     public final NumberPath<Long> id = _super.id;
 
-    public final ListPath<ChattingMessage, QChattingMessage> messages = this.<ChattingMessage, QChattingMessage>createList("messages", ChattingMessage.class, QChattingMessage.class, PathInits.DIRECT2);
-
-    public final NumberPath<Long> roomId = createNumber("roomId", Long.class);
+    public final NumberPath<Long> room_id = createNumber("room_id", Long.class);
 
     public final NumberPath<Integer> type = createNumber("type", Integer.class);
 

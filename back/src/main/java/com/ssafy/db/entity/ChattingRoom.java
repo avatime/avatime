@@ -3,12 +3,10 @@ package com.ssafy.db.entity;
 import java.sql.Timestamp;
 import java.time.LocalDateTime;
 import java.util.Date;
-import java.util.List;
 
 import javax.annotation.Nonnull;
 import javax.persistence.Column;
 import javax.persistence.Entity;
-import javax.persistence.OneToMany;
 import javax.persistence.PrePersist;
 import javax.persistence.Temporal;
 import javax.persistence.TemporalType;
@@ -16,12 +14,9 @@ import javax.persistence.TemporalType;
 import org.hibernate.annotations.DynamicInsert;
 import org.hibernate.annotations.DynamicUpdate;
 
-import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
-import lombok.NoArgsConstructor;
 import lombok.Setter;
-import lombok.ToString;
 
 /**
  * 채팅방 모델 정의.
@@ -30,38 +25,26 @@ import lombok.ToString;
 @Entity
 @Getter
 @Setter
-@NoArgsConstructor
-@AllArgsConstructor
-@ToString
 public class ChattingRoom extends BaseEntity {
 
-	@Column(name = "room_id", nullable = false, columnDefinition = "INT UNSIGNED")
-	private Long roomId;
+	@Column(nullable = false, columnDefinition = "INT UNSIGNED")
+	private Long room_id;
 	
     @Column(updatable = false, nullable = false, columnDefinition = "TINYINT(1)")
 	private int type;
 	
 	@Temporal(TemporalType.TIMESTAMP)
-    @Column(name="created_time", updatable = false, columnDefinition = "TIMESTAMP DEFAULT CURRENT_TIMESTAMP")
-    private Date createdTime;
-    	
-//    @PrePersist
-//    protected void onCreate() {
-//    	createdTime = Timestamp.valueOf(LocalDateTime.now());
-//    }
+    @Column(updatable = false, columnDefinition = "TIMESTAMP DEFAULT CURRENT_TIMESTAMP")
+    private Date created_time;
     
-    @OneToMany(mappedBy="chattingRoom")
-    List<ChattingMessage> messages;
-    
-    @Builder(builderClassName = "ByWaitingRoomBuilder", builderMethodName = "ByWaitingRoomBuilder")
-    public ChattingRoom(@Nonnull Long roomId) {
-    	this.roomId = roomId;
-    	this.type = 2;
+    @PrePersist
+    protected void onCreate() {
+    	created_time = Timestamp.valueOf(LocalDateTime.now());
     }
     
-    @Builder(builderClassName = "ByMeettingRoomBuilder", builderMethodName = "ByMeettingRoomBuilder")
-    public ChattingRoom(@Nonnull Long roomId, int type) {
-    	this.roomId = roomId;
-    	this.type = type;
+    @Builder(builderClassName = "ByWaitingRoomBuilder", builderMethodName = "ByWaitingRoomBuilder")
+    public ChattingRoom(@Nonnull Long room_id) {
+    	this.room_id = room_id;
+    	this.type = 2;
     }
 }
