@@ -30,7 +30,7 @@ function App() {
               <Route path="/login" element={<LoginPage />} />
               <Route path="/mypage" element={<MyPage />} />
               <Route path="/finalPickResult" element={<FinalPickResultPage />} />
-              <Route path="/pickAvatar" element={<PickAvatarPage total={100} current={99} />} />
+              <Route path="/pickAvatar" element={<PickAvatarPage/>} />
               <Route path="/kakao" element={<KakaoHandler />} />
               <Route path="/naver" element={<NaverHandler />} />
             </Routes>
