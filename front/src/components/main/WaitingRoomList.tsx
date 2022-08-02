@@ -128,7 +128,7 @@ export const WaitingRoomList: FC<IProps> = (props) => {
             return false;
           }
 
-          return (userGender === "M" ? room.cnt_max : room.cnt_woman) !== room.head_count / 2;
+          return (userGender === "M" ? room.cnt_man : room.cnt_woman) !== room.head_count / 2;
         })
         .filter((room) => room.name.includes(keyword))
     );
