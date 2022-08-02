@@ -8,7 +8,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.messaging.handler.annotation.DestinationVariable;
 import org.springframework.messaging.handler.annotation.MessageMapping;
-import org.springframework.messaging.handler.annotation.SendTo;
+import org.springframework.messaging.simp.SimpMessageSendingOperations;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PatchMapping;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -21,6 +21,8 @@ import com.ssafy.api.response.WaitingRoomRes;
 import com.ssafy.api.response.WaitingUserRes;
 import com.ssafy.api.service.AgeService;
 import com.ssafy.api.service.ChattingRoomService;
+import com.ssafy.api.service.GenderService;
+import com.ssafy.api.service.MeetingRoomService;
 import com.ssafy.api.service.SidoService;
 import com.ssafy.api.service.UserService;
 import com.ssafy.api.service.WaitingRoomService;
@@ -32,6 +34,7 @@ import com.ssafy.db.entity.Sido;
 import com.ssafy.db.entity.User;
 import com.ssafy.db.entity.WaitingRoom;
 import com.ssafy.db.entity.WaitingRoomUserRelation;
+import com.ssafy.db.entity.Gender;
 
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
@@ -60,34 +63,40 @@ public class WaitingRoomController {
 	private final ChattingRoomService chattingRoomService;
 	
 	@Autowired
-	private final AgeService ageService;
-
+	private final MeetingRoomService meetingRoomService;
 	
+	@Autowired
+	private final AgeService ageService;
+	
+	@Autowired
+	private final GenderService genderService;
+
+	private final SimpMessageSendingOperations simp;
 	
 	// 대기방 목록 갱신
 	@MessageMapping("/getList")
-	@SendTo("/topic/getList")
-	public List<WaitingRoomRes> waitingRoom() {
+	public void waitingRoom() {
 		List<WaitingRoom> waitingRoom = waitingRoomService.findAll();
 		// cnt_man, cnt_woman 쿼리 미작성
 		List<WaitingRoomRes> waitingRoomList = new ArrayList<>();
 		for (WaitingRoom wr : waitingRoom) {
+			Gender gender = genderService.findById(wr.getId()).get();
 			WaitingRoomRes w = WaitingRoomRes.builder()
 					.name(wr.getName())
 					.headCount(wr.getHeadCount())
 					.status(wr.getStatus())
-//					.cntMan()
+					.cntMan(gender.getM())
+					.cntWoman(gender.getF())
 					.sido(sidoService.findById(wr.getSidoId()).get().getName())
 					.age(ageService.findById(wr.getAgeId()).get().getName())
 					.build();
 			waitingRoomList.add(w);
 		}
-		return waitingRoomList;
+		simp.convertAndSend("/topic/getList", waitingRoomList);
 	}
 	
 	@MessageMapping("/waitingUser/{wrId}")
-	@SendTo("/topic/waitingUser/{wrId}")
-	public List<WaitingUserRes> waitingUser(@DestinationVariable Long wrId) {
+	public void waitingUser(@DestinationVariable Long wrId) {
 		List<WaitingRoomUserRelation> wrur = waitingRoomUserRelationService.findByWaitingRoomIdAndType(wrId);
 		List<WaitingUserRes> wu = new ArrayList<>();
 		for(WaitingRoomUserRelation wr : wrur) {
@@ -99,7 +108,7 @@ public class WaitingRoomController {
 					.profileImgPath(user.getProfileImagePath()).build();
 			wu.add(wur);
 		}
-		return wu;
+		simp.convertAndSend("/topic/waitingUser/" + wrId, wu);
 	}
 
 	@GetMapping("/sido")
@@ -130,10 +139,14 @@ public class WaitingRoomController {
 	}
 
 	@PatchMapping("/start")
-	@ApiOperation(value = "대기방이 미팅방으로 변경", notes = "미팅방을 생성합니다.")
-	public ResponseEntity<MeetingRoom> start(
+	@ApiOperation(value = "대기방이 미팅방으로 변경됨", notes = "미팅방을 생성합니다.")
+	public Long start(
 			@RequestBody @ApiParam(value = "미팅방을 만드려는 대기방 id", required = true) long waitingRoomId) {
-//		WaitingRoom waitingRoom = waitingRoomService.find
+		WaitingRoom waitingRoom = waitingRoomService.findById(waitingRoomId).get();
+		int status = 1;
+		waitingRoom.setStatus(status);
+		waitingRoom();
+//		return meetingRoomService.createMeetingRoom(waitingRoomId);
 		return null;
 	}
 	
