@@ -2,6 +2,7 @@ package com.ssafy.db.entity;
 
 import javax.persistence.Column;
 import javax.persistence.Entity;
+import javax.persistence.Id;
 
 import org.hibernate.annotations.Immutable;
 import org.hibernate.annotations.Subselect;
@@ -19,19 +20,20 @@ import lombok.Setter;
 			"count(*) as total from waiting_room_user_relation w " +
 			"left join user u on w.user_id = u.id " +
 			"where w.type < 2 " +
-			"group by w.waiting_room_id;")
-@Synchronize({"waiting_room_user_relation w", "user"})
-public class Gender extends BaseEntity{
+			"group by w.waiting_room_id")
+@Synchronize({"waiting_room_user_relation", "user"})
+public class Gender {
 	
-	@Column(nullable = false)
+	@Id
+	@Column
 	private Long waitingRoomId;
 	
-	@Column(nullable = false)
+	@Column
 	private Long F;
 	
-	@Column(nullable = false)
+	@Column
 	private Long M;
 	
-	@Column(nullable = false)
+	@Column
 	private Long Total;
 }

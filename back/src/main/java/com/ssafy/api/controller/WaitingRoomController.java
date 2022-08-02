@@ -139,7 +139,7 @@ public class WaitingRoomController {
 	}
 
 	@PatchMapping("/start")
-	@ApiOperation(value = "대기방이 미팅방으로 변경", notes = "미팅방을 생성합니다.")
+	@ApiOperation(value = "대기방이 미팅방으로 변경됨", notes = "미팅방을 생성합니다.")
 	public Long start(
 			@RequestBody @ApiParam(value = "미팅방을 만드려는 대기방 id", required = true) long waitingRoomId) {
 		WaitingRoom waitingRoom = waitingRoomService.findById(waitingRoomId).get();
