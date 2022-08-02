@@ -16,6 +16,7 @@ import org.springframework.web.bind.annotation.RestController;
 import com.ssafy.api.request.FinalChoiceUserReq;
 import com.ssafy.api.request.MeetingRoomPostReq;
 import com.ssafy.api.request.UserSelectAvatarReq;
+import com.ssafy.api.response.AvatarChoiceRes;
 import com.ssafy.api.response.FinalChoiceRes;
 import com.ssafy.api.response.entity.AvatarStatus;
 import com.ssafy.api.response.entity.Result;
@@ -23,6 +24,7 @@ import com.ssafy.api.service.AvatarService;
 import com.ssafy.api.service.MeetingRoomService;
 import com.ssafy.common.model.response.BaseResponseBody;
 import com.ssafy.db.entity.Avatar;
+import com.ssafy.db.entity.MeetingRoom;
 import com.ssafy.db.entity.MeetingRoomUserRelation;
 import com.ssafy.db.entity.User;
 import com.ssafy.db.repository.UserRepository;
@@ -88,22 +90,29 @@ public class MeetingController {
 		try {
 			if(meetingRoomService.isSelectedAvatar(meetingRoomId, avatarId)) return ResponseEntity.status(409).body("");
 			else meetingRoomService.choiceAvatar(meetingRoomId, userId, avatarId);
+			
+			AvatarChoiceRes avatarChoiceRes = new AvatarChoiceRes();
+			List<Avatar> avatarList = avatarService.findAll();
+			List<AvatarStatus> list = new ArrayList<>();
+			
+			for(Avatar ava : avatarList) {
+				AvatarStatus avasta = new AvatarStatus(ava);
+				if(meetingRoomService.isSelectedAvatar(meetingRoomId, avatarId)) avasta.setSelected(true);
+				else avasta.setSelected(false);
+				list.add(avasta);
+			}
+			
+			avatarChoiceRes.setStatus(list.size() == 1 ? 1 : 0);
+			
+	    	sendingOperations.convertAndSend("/topic/meeting/avatar/"+meetingRoomId, list);
 		} catch(Exception e) {
 			return ResponseEntity.status(500).body("");
 		}
 		
-		List<Avatar> avatarList = avatarService.findAll();
-		List<AvatarStatus> list = new ArrayList<>();
-		
-		for(Avatar ava : avatarList) {
-			AvatarStatus avasta = new AvatarStatus(ava);
-		}
-		
-    	sendingOperations.convertAndSend("/topic/meeting/avatar/"+meetingRoomId, list);
 		return ResponseEntity.status(200).body("");
 	}
 	
-	@MessageMapping()
+	@MessageMapping("meeting/avatar")
 	@ApiOperation(value = "아바타 선택 화면 정보", notes = "<strong>미팅방 생성</strong>") 
     @ApiResponses({
         @ApiResponse(code = 200, message = "성공", response = BaseResponseBody.class),
@@ -114,7 +123,7 @@ public class MeetingController {
 		Long mainSessionId = meetingRoomPostReq.getMainSessionId();
 		
 		try {
-			meetingRoomService.createMeetingRoom(type, mainSessionId);
+			MeetingRoom meetingRoom = meetingRoomService.createMeetingRoomSession(type, mainSessionId);
 		} catch (Exception e) {
 			// TODO Auto-generated catch block
 			return ResponseEntity.status(500).body("");
@@ -133,7 +142,6 @@ public class MeetingController {
 		Long mainSessionId = meetingRoomPostReq.getMainSessionId();
 		
 		try {
-			meetingRoomService.createMeetingRoom(type, mainSessionId);
 		} catch (Exception e) {
 			// TODO Auto-generated catch block
 			return ResponseEntity.status(500).body("");
@@ -152,7 +160,6 @@ public class MeetingController {
 		Long mainSessionId = meetingRoomPostReq.getMainSessionId();
 		
 		try {
-			meetingRoomService.createMeetingRoom(type, mainSessionId);
 		} catch (Exception e) {
 			// TODO Auto-generated catch block
 			return ResponseEntity.status(500).body("");
@@ -190,7 +197,6 @@ public class MeetingController {
 		Long mainSessionId = meetingRoomPostReq.getMainSessionId();
 		
 		try {
-			meetingRoomService.createMeetingRoom(type, mainSessionId);
 		} catch (Exception e) {
 			// TODO Auto-generated catch block
 			return ResponseEntity.status(500).body("");
