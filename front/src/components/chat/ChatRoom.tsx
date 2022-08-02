@@ -29,9 +29,10 @@ type ChatType = "all" | "gender";
 interface IProps {
   chatType: ChatType;
   isOpened: boolean;
-  onClickHeader: () => void | null;
+  onClickHeader?: () => void;
   maxHeight: string;
   chattingRoomId: number;
+  foldable?: boolean;
 }
 
 export const ChatRoom: FC<IProps> = ({
@@ -40,6 +41,7 @@ export const ChatRoom: FC<IProps> = ({
   onClickHeader,
   maxHeight,
   chattingRoomId,
+  foldable = true,
 }) => {
   const [chatList, setChatList] = useState<ChatMessageRes[]>([]);
   const userId = useSelector((state: any) => state.user.userId);
@@ -119,6 +121,7 @@ export const ChatRoom: FC<IProps> = ({
       onKeyUp={onKeyUp}
       onKeyDown={onKeyDown}
       sendMessage={sendMessage}
+      foldable={foldable}
     />
   );
 };
@@ -128,7 +131,7 @@ interface IPresenterProps {
   title: string;
   chatList: Array<ChatMessageRes>;
   isOpened: boolean;
-  onClickHeader: () => void | null;
+  onClickHeader?: () => void;
   maxHeight: string;
   chatBodyRef: any;
   chatInputRef: any;
@@ -137,6 +140,7 @@ interface IPresenterProps {
   onKeyUp: (e: any) => void;
   onKeyDown: (e: any) => void;
   sendMessage: () => void;
+  foldable: boolean;
 }
 
 const Accordion = styled((props: AccordionProps) => (
@@ -165,11 +169,12 @@ const ChatRoomPresenter: FC<IPresenterProps> = ({
   onKeyUp,
   onKeyDown,
   sendMessage,
+  foldable
 }) => {
   return (
     <Accordion
       className="chat"
-      expanded={isOpened}
+      expanded={!foldable || isOpened}
       onChange={onClickHeader}
       sx={{
         flexGrow: isOpened ? 1 : 0,
@@ -180,7 +185,7 @@ const ChatRoomPresenter: FC<IPresenterProps> = ({
         bgcolor: grey[50],
       }}
     >
-      <AccordionSummary expandIcon={<ExpandMoreIcon />}>
+      <AccordionSummary expandIcon={foldable && <ExpandMoreIcon />}>
         <Typography align="inherit">{title}</Typography>
       </AccordionSummary>
 

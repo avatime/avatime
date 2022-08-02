@@ -10,17 +10,15 @@ export interface WaitingRoomInfoRes {
   created_time: string;
   status: number;
 }
-export interface WaitingUserListRes {
-  userList: Array<WaitingUser>;
-}
 
 export interface WaitingUser {
-  userId: number;
-  userName: string;
-  avatarId: number;
-  avatarName: string;
-  avatarImagePath: string;
+  id: number;
+  type: number;
+  name: string;
+  gender: string;
+  profile_img_path: string;
 }
+
 export interface WaitingRoomEnterRes {
   name: string; //=username
   type: number;
