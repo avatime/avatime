@@ -22,6 +22,7 @@ import SockJS from "sockjs-client";
 import * as Stomp from "stompjs";
 import { useSelector } from "react-redux";
 import { formatDate } from "../../utils/day";
+import { WS_BASE_URL } from '../../apis/axiosInstance';
 
 type ChatType = "all" | "gender";
 
@@ -48,7 +49,7 @@ export const ChatRoom: FC<IProps> = ({
       return;
     }
 
-    const socket = new SockJS("http://localhost:8080/ws/ava");
+    const socket = new SockJS(WS_BASE_URL);
     const client = Stomp.over(socket);
     client.connect({}, () => {
       client.subscribe(`/topic/chatting/receive/${chattingRoomId}`, (res) => {

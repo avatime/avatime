@@ -1,16 +1,12 @@
 
 import { SuccessRes } from "./response/successRes";
-
 import { WaitingRoomEnterReq, WaitingRoomMakeReq } from "./request/waitingRoomReq ";
-
-import axios from "axios";
 import { AgeRes, SidoRes } from "./response/waitingRoomRes";
+import { axiosInstance } from './axiosInstance';
 //나이어린순으로 정렬
 //지역 가나다 순으로 정렬
 //gender -> req 변경
 
-
-const BASE_URL: string = "http://localhost:8080/api/v1";
 
 //sido 목록 가져오기 ----------------------------------
 interface SidoApi {
@@ -18,7 +14,7 @@ interface SidoApi {
 }
 const sidoApi: SidoApi = {
   receive: async function (): Promise<SidoRes[]> {
-    return  (await axios.get(`${BASE_URL}/waiting/sido`)).data;
+    return  (await axiosInstance.get(`/waiting/sido`)).data;
   },
 }
 
@@ -30,7 +26,7 @@ interface AgeApi {
 }
 const ageApi: AgeApi = {
   receive: async function (): Promise<AgeRes[]> {
-    return  (await axios.get(`${BASE_URL}/waiting/age`)).data;
+    return  (await axiosInstance.get(`/waiting/age`)).data;
   },
 }
 
@@ -46,7 +42,7 @@ interface MakeNewRoomApi {
 const makeNewRoomApi: MakeNewRoomApi = {
  
   makeNewRoom: async function (waitingRoomMakeReq: WaitingRoomMakeReq): Promise<SuccessRes> {
-    return (await axios.post(`${BASE_URL}/waiting/create`, waitingRoomMakeReq)).data;
+    return (await axiosInstance.post(`/waiting/create`, waitingRoomMakeReq)).data;
   },
 };
 

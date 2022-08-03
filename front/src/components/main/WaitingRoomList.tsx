@@ -19,6 +19,7 @@ import {
   ToggleButtonGroup,
 } from "@mui/material";
 import { Construction } from "@mui/icons-material";
+import { WS_BASE_URL } from '../../apis/axiosInstance';
 
 interface IProps {}
 
@@ -98,7 +99,7 @@ export const WaitingRoomList: FC<IProps> = (props) => {
     if (stompClient) {
       return;
     }
-    const socket = new SockJS("http://localhost:8080/ws/ava");
+    const socket = new SockJS(WS_BASE_URL);
     const client = Stomp.over(socket);
     client.connect({}, function (frame) {
       console.log("소켓 연결 성공", frame);
