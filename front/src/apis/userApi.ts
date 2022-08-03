@@ -7,9 +7,7 @@ import { RegisterReq } from "./request/registerReq";
 import { UserReq } from "./request/userReq";
 import { RegisterRes } from "./response/registerRes";
 import { UserModifyRes } from "./response/userModifyRes";
-import axios from "axios";
-
-const BASE_URL: string = "http://localhost:8080/api/v1";
+import { axiosInstance } from './axiosInstance';
 
 interface UserDeleteApi {
   deleteUser(userInfoReq: UserInfoReq): Promise<SuccessRes>;
@@ -55,7 +53,7 @@ interface NameCheckApi {
 
 const nameCheckApi: NameCheckApi = {
   checkName: async function (userInfoReq: UserInfoReq): Promise<boolean> {
-    return (await axios.get(`${BASE_URL}/auth/check/${userInfoReq.name}`)).data;
+    return (await axiosInstance.get(`/auth/check/${userInfoReq.name}`)).data;
   },
 };
 
@@ -71,13 +69,13 @@ const nameCheckApi: NameCheckApi = {
 
 const kakaoLogin = (code: string): any => {
   return function () {
-    return axios.get(`http://i7a309.p.ssafy.io/api/v1/auth/kakao?code=${code}`);
+    return axiosInstance.get(`/auth/kakao?code=${code}`);
   };
 };
 
 const naverLogin = (code: string, state: string): any => {
   return function () {
-    return axios.get(`http://i7a309.p.ssafy.io/api/v1/auth/naver?code=${code}&state=${state}`);
+    return axiosInstance.get(`/auth/naver?code=${code}&state=${state}`);
   };
 };
 
@@ -87,7 +85,7 @@ interface ProfileAllApi {
 
 const profileAllApi: ProfileAllApi = {
   receive: async function (): Promise<ProfileRes[]> {
-    return (await axios.get(`${BASE_URL}/user/profile`)).data;
+    return (await axiosInstance.get(`/user/profile`)).data;
   },
 };
 
@@ -97,7 +95,7 @@ interface UserModifyApi {
 
 const userModifyApi: UserModifyApi = {
   modifyUser: async function (userModifyReq: UserModifyReq): Promise<UserModifyRes> {
-    return (await axios.patch(`${BASE_URL}/user/${userModifyReq.user_id}`, userModifyReq)).data;
+    return (await axiosInstance.patch(`/user/${userModifyReq.user_id}`, userModifyReq)).data;
   },
 };
 
@@ -107,7 +105,7 @@ interface RegisterApi {
 
 const registerApi: RegisterApi = {
   register: async function (registerReq: RegisterReq): Promise<RegisterRes> {
-    return (await axios.post(`${BASE_URL}/auth/register`, registerReq)).data;
+    return (await axiosInstance.post(`/auth/register`, registerReq)).data;
   },
 };
 
