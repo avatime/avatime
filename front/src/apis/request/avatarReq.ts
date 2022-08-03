@@ -3,3 +3,4 @@ export interface SelectAvatarReq {
     user_id: number,
     avatar_id: number,
 }
+

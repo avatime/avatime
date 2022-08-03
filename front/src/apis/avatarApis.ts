@@ -1,5 +1,5 @@
 import axios from "axios";
-import { SelectAvatarReq } from "./request/avatarPickReq";
+import { SelectAvatarReq } from "./request/avatarReq";
 import { SuccessRes } from "./response/successRes";
 
 const BASE_URL: string = "http://localhost:8080/api/v1";
