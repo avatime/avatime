@@ -1,5 +1,5 @@
 import { ChatMessageReq } from "./request/chatReq";
-import axios from "axios";
+import { axiosInstance } from './axiosInstance';
 
 interface ChatApi {
   sendMessage: (chatMessageReq: ChatMessageReq) => Promise<void>;
@@ -7,7 +7,7 @@ interface ChatApi {
 
 const chatApi: ChatApi = {
   sendMessage: async function (chatMessageReq: ChatMessageReq): Promise<void> {
-    await axios.post("http://localhost:8080/api/v1/chatting/send", chatMessageReq);
+    await axiosInstance.post("/chatting/send", chatMessageReq);
   },
 };
 
