@@ -9,6 +9,7 @@ import org.hibernate.annotations.DynamicUpdate;
 
 import lombok.Builder;
 import lombok.Getter;
+import lombok.NoArgsConstructor;
 import lombok.Setter;
 
 /**
@@ -18,6 +19,7 @@ import lombok.Setter;
 @Entity
 @Getter
 @Setter
+@NoArgsConstructor
 public class MeetingRoomUserRelation  extends BaseEntity {
 
 	@ManyToOne
@@ -32,6 +34,7 @@ public class MeetingRoomUserRelation  extends BaseEntity {
     @Column(columnDefinition = "INT UNSIGNED")
     private Long pickUserId;
     
+    @Column(columnDefinition = "BOOLEAN DEFAULT FALSE")
     private boolean matched;
     
     @Builder

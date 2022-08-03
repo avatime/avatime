@@ -27,6 +27,9 @@ public class MeetingRoomServiceImpl implements MeetingRoomService {
 	@Autowired
 	WaitingRoomUserRelationRepository waitingRoomUserRelationRepository;
 	
+	@Autowired
+	ChattingRoomService chattingRoomService;
+	
 	@Override
 	public MeetingRoom createMeetingRoomSession(int type, Long mainSessionId) throws Exception {
 		// TODO Auto-generated method stub
@@ -36,12 +39,13 @@ public class MeetingRoomServiceImpl implements MeetingRoomService {
 			meetingRoom.setType(type);
 			if(type == 0) {
 				mainSessionId = meetingRoomRepository.save(meetingRoom).getId();
+				chattingRoomService.createRoomInMeetingRoom(mainSessionId);
 			}
 			else if(type == 1) {
 				
 			}
 			meetingRoom.setMainSessionId(mainSessionId);
-			meetingRoomRepository.save(meetingRoom);
+//			meetingRoomRepository.save(meetingRoom);
 		} catch (Exception e) {
 		}
 		
@@ -61,7 +65,7 @@ public class MeetingRoomServiceImpl implements MeetingRoomService {
 		// TODO Auto-generated method stub
 		MeetingRoomUserRelation meetingRoomUser = meetingRoomUserRelationRepository.findByMeetingRoomIdAndUserId(meetingRoomId, userId).get();
 		meetingRoomUser.setPickUserId(pickUserId);
-		MeetingRoomUserRelation pickedUserInfo = meetingRoomUserRelationRepository.findByMeetingRoomIdAndUserId(meetingRoomId, userId).get();
+		MeetingRoomUserRelation pickedUserInfo = meetingRoomUserRelationRepository.findByMeetingRoomIdAndUserId(meetingRoomId, pickUserId).get();
 		if(pickedUserInfo.getPickUserId() == userId) {
 			meetingRoomUser.setMatched(true);
 			pickedUserInfo.setMatched(true);
@@ -112,7 +116,8 @@ public class MeetingRoomServiceImpl implements MeetingRoomService {
 	@Override
 	public int userNumber(Long meetingRoomId) throws Exception {
 		// TODO Auto-generated method stub
-		return 0;
+		return meetingRoomUserRelationRepository.countByMeetingRoomId(meetingRoomId);
 	}
+
 
 }

@@ -19,4 +19,15 @@ public class ChattingRoomServiceImpl implements ChattingRoomService{
 				.roomId(roomId).build();
 		return chattingRoomRepository.save(chattingRoom);
 	}
+	
+	// 전체 채팅, 성별 채팅 생성
+    public ChattingRoom createRoomInMeetingRoom(Long roomId) {
+        ChattingRoom chattingRoom1 = ChattingRoom.ByMeettingRoomBuilder().roomId(roomId).type(0).build();
+        chattingRoomRepository.save(chattingRoom1);
+        ChattingRoom womenChatting = ChattingRoom.ByMeettingRoomBuilder().roomId(roomId).type(1).build();
+        chattingRoomRepository.save(womenChatting);
+        ChattingRoom menChatting = ChattingRoom.ByMeettingRoomBuilder().roomId(roomId).type(1).build();
+        chattingRoomRepository.save(menChatting);
+    	return chattingRoom1;
+    }
 }

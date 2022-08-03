@@ -141,13 +141,13 @@ public class WaitingRoomController {
 	@PatchMapping("/start")
 	@ApiOperation(value = "대기방이 미팅방으로 변경됨", notes = "미팅방을 생성합니다.")
 	public Long start(
-			@RequestBody @ApiParam(value = "미팅방을 만드려는 대기방 id", required = true) long waitingRoomId) {
+			@RequestBody @ApiParam(value = "미팅방을 만드려는 대기방 id", required = true) long waitingRoomId) throws Exception {
 		WaitingRoom waitingRoom = waitingRoomService.findById(waitingRoomId).get();
 		int status = 1;
 		waitingRoom.setStatus(status);
 		waitingRoom();
-//		return meetingRoomService.createMeetingRoom(waitingRoomId);
-		return null;
+		return meetingRoomService.createMeetingRoom(waitingRoomId);
+//		return null;
 	}
 	
 	

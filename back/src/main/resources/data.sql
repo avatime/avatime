@@ -30,6 +30,9 @@ insert into avatar (image_path, name) values ("사자.png", "사자");
 insert into avatar (image_path, name) values ("강아지.png", "강아지");
 insert into avatar (image_path, name) values ("고양이.png", "고양이");
 insert into avatar (image_path, name) values ("기린.png", "기린");
+insert into avatar (image_path, name) values ("코끼리.png", "코끼리");
+insert into avatar (image_path, name) values ("나무늘보.png", "나무늘보");
+insert into avatar (image_path, name) values ("불가사리.png", "불가사리");
 
 insert into user (description, gender, name, profile_image_path, social_id, social_type) values ("testing3", "F", "채윤선", "ts.png", "ssafy3@naver.com", 1);
 insert into user (description, gender, name, profile_image_path, social_id, social_type) values ("testing", "M", "정건우", "sf.png", "ssafy@naver.com", 1);
@@ -385,10 +388,10 @@ insert into waiting_room_user_relation(type, user_id, waiting_room_id) values (2
 insert into waiting_room_user_relation(type, user_id, waiting_room_id) values (2, 195, 8);
 insert into waiting_room_user_relation(type, user_id, waiting_room_id) values (2, 124, 7);
 
-insert into chatting_room (room_id, type) values (1, 2);
-insert into chatting_room (room_id, type) values (1, 0);
-insert into chatting_room (room_id, type) values (1, 1);
-insert into chatting_room (room_id, type) values (1, 1);
+insert into chatting_room (room_id, type) values (0, 2);
+insert into chatting_room (room_id, type) values (0, 0);
+insert into chatting_room (room_id, type) values (0, 1);
+insert into chatting_room (room_id, type) values (0, 1);
 
 insert into waiting_room_user_relation(type, waiting_room_id, user_id) values (0, 5, 25);
 insert into waiting_room_user_relation(type, waiting_room_id, user_id) values (0, 6, 29);
