@@ -23,6 +23,7 @@ public class UserRegisterPostReq extends BaseResponseBody {
 	@ApiModelProperty(name="유저 Password", example="your_password")
 	@JsonProperty("social_type")
 	int socialType;
+	
 	String gender;
 	
 	String name;
