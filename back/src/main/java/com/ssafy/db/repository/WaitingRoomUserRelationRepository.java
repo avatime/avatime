@@ -10,4 +10,5 @@ import com.ssafy.db.entity.WaitingRoomUserRelation;
 public interface WaitingRoomUserRelationRepository extends JpaRepository<WaitingRoomUserRelation, Long>{
 	List<WaitingRoomUserRelation> findByWaitingRoomIdAndType(Long wrId, int type);
 	Optional<List<WaitingRoomUserRelation>> findByWaitingRoomId(Long wrId);
+	Optional<WaitingRoomUserRelation> findByWaitingRoomIdAndUserId(Long wrId, Long userId);
 }
