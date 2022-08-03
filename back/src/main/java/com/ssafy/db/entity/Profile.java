@@ -3,6 +3,8 @@ package com.ssafy.db.entity;
 import javax.persistence.Column;
 import javax.persistence.Entity;
 
+import com.fasterxml.jackson.annotation.JsonProperty;
+
 import lombok.Getter;
 import lombok.Setter;
 
@@ -14,8 +16,9 @@ import lombok.Setter;
 @Setter
 public class Profile extends BaseEntity {
 
+	@JsonProperty("image_path")
 	@Column(updatable = false, nullable = false)
-	private String image_path;
+	private String imagePath;
 	
 	@Column(updatable = false, nullable = false)
 	private String name;

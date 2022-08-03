@@ -31,7 +31,7 @@ insert into avatar (image_path, name) values ("강아지.png", "강아지");
 insert into avatar (image_path, name) values ("고양이.png", "고양이");
 insert into avatar (image_path, name) values ("기린.png", "기린");
 
-insert into user (description, gender, name, profile_image_path, social_id, social_type) values ("testing3", "F", "채윤선", "ts.png", "ssafy3@naver.com", 1);
+insert into user (description, gender, name, profile_image_path, social_id, social_type) values ("testing3", "F", "채윤선", "https://jira.ssafy.com/secure/useravatar?avatarId=10508", "5524137@naver.com", 1);
 insert into user (description, gender, name, profile_image_path, social_id, social_type) values ("testing", "M", "정건우", "https://jira.ssafy.com/secure/useravatar?avatarId=10341", "abcxj123@naver.com", 1);
 insert into user (description, gender, name, profile_image_path, social_id, social_type) values ("testing2", "M", "이주영", "ss.png", "ssafy2@naver.com", 1);
 insert into user (description, gender, name, profile_image_path, social_id, social_type) values ("testing3", "F", "이지나", "ts.png", "ssafy3@naver.com", 1);

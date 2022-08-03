@@ -24,7 +24,7 @@ public class QAvatar extends EntityPathBase<Avatar> {
     //inherited
     public final NumberPath<Long> id = _super.id;
 
-    public final StringPath image_path = createString("image_path");
+    public final StringPath imagePath = createString("imagePath");
 
     public final StringPath name = createString("name");
 

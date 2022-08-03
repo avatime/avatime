@@ -16,6 +16,17 @@ import RefreshIcon from "@mui/icons-material/Refresh";
 import { useSelector, useDispatch } from "react-redux";
 import { registerApi, userModifyApi, nameCheckApi, profileAllApi } from "../../apis/userApi";
 import { ProfileRes } from "../../apis/response/profileRes";
+import {
+  setUserId,
+  setUserName,
+  setUserGender,
+  setUserDesc,
+  setSocialId,
+  setSocialType,
+  setProfileImagePath,
+  setIsLogin,
+} from "../../stores/slices/userSlice";
+import { useNavigate } from "react-router";
 
 const style = {
   position: "absolute" as "absolute",
@@ -34,6 +45,9 @@ const style = {
 interface IProps {}
 
 export const ProfileArea: FC<IProps> = (props) => {
+  const dispatch = useDispatch();
+  const navigate = useNavigate();
+
   const [open, setOpen] = React.useState(false);
 
   const handleOpen = () => setOpen(true);
@@ -57,6 +71,7 @@ export const ProfileArea: FC<IProps> = (props) => {
   const [nameSatis, setNameSatis] = useState(true);
   const [descText, setDescText] = useState("");
   const [overContents, setOverContents] = useState(true);
+  const [descSatis, setDescSatis] = useState(true);
   const [profileImages, setProfileImages] = useState<ProfileRes[]>([]);
 
   useEffect(() => {
@@ -66,7 +81,7 @@ export const ProfileArea: FC<IProps> = (props) => {
   }, []);
 
   useEffect(() => {
-    if (nameCheck === true) {
+    if (nameCheck) {
       // 생성가능
       setNameText(" ");
       setOverlap(false);
@@ -91,18 +106,18 @@ export const ProfileArea: FC<IProps> = (props) => {
   }, [nameSatis]);
 
   useEffect(() => {
-    if (desc.trim().length <= 255) {
+    if (descSatis) {
       setDescText(desc.length + "/255");
       setOverContents(false);
     } else {
       setDescText("자기소개를 255자 이내로 작성해주세요.");
       setOverContents(true);
     }
-  }, [desc]);
+  }, [descSatis, desc]);
 
   useEffect(() => {
     console.log(profileImages);
-  }, [profileImages])
+  }, [profileImages]);
 
   const handleNameChange = (event: React.ChangeEvent<HTMLInputElement>) => {
     setName(event.target.value);
@@ -117,44 +132,63 @@ export const ProfileArea: FC<IProps> = (props) => {
   };
 
   const handleDescChange = (event: React.ChangeEvent<HTMLInputElement>) => {
+    if (event.target.value.trim().length > 255) {
+      setDescSatis(false);
+    } else {
+      setDescSatis(true);
+    }
     setDesc(event.target.value);
   };
 
   const confirmInfo = () => {
     // 만족했는지 조건 추가
-    isLogin
-      ? userModifyApi
-          .modifyUser({
-            user_id: userId,
-            profile_image_path: image,
-            name: name,
-            description: desc,
-          })
-          .then((res) => {
-            console.log(res);
-            alert("회원수정 완료!");
-          })
-          .catch(function (err) {
-            console.log(err);
-            alert("오류발생!");
-          })
-      : registerApi
-          .register({
-            social_id: socialId,
-            social_type: socialType,
-            gender: userGender,
-            name: name,
-            profile_image_path: image,
-            description: desc,
-          })
-          .then((res) => {
-            console.log(res);
-            alert("회원가입 완료!");
-          })
-          .catch(function (err) {
-            console.log(err);
-            alert("오류발생!");
-          });
+    if (!nameCheck || !nameSatis || !descSatis) {
+      alert("잘못된 항목이 있습니다.");
+    } else {
+      isLogin
+        ? userModifyApi
+            .modifyUser({
+              user_id: userId,
+              profile_image_path: image,
+              name: name,
+              description: desc,
+            })
+            .then((res) => {
+              console.log(res);
+              alert("회원수정 완료!");
+            })
+            .catch(function (err) {
+              console.log(err);
+              alert("오류발생!");
+            })
+        : registerApi
+            .register({
+              social_id: socialId,
+              social_type: socialType,
+              gender: userGender,
+              name: name,
+              profile_image_path: image,
+              description: desc,
+            })
+            .then((res) => {
+              console.log(res);
+              alert("회원가입 완료!");
+              dispatch(setUserId(res.user_id));
+              dispatch(setUserName(res.name));
+              dispatch(setUserGender(res.gender));
+              dispatch(setUserDesc(res.description));
+              dispatch(setProfileImagePath(res.profile_image_path));
+              dispatch(setSocialId(res.social_id));
+              dispatch(setSocialType(res.social_type));
+              dispatch(setIsLogin(true));
+              localStorage.setItem("token", res.accessToken);
+              navigate("/main");
+            })
+            .catch(function (err) {
+              console.log(err);
+              alert("오류발생!");
+            });
+    }
   };
 
   const refreshForm = () => {
@@ -162,12 +196,10 @@ export const ProfileArea: FC<IProps> = (props) => {
     setDesc(userDesc);
     setNameCheck(true);
     setNameSatis(true);
-    setDescText(desc.length + "/255");
-    setOverContents(false);
+    setDescSatis(true);
   };
 
   const getProfile = (path: string) => {
-    alert("프로필 사진을 변경했습니다.");
     setImage(path);
     handleClose();
   };
@@ -197,19 +229,19 @@ export const ProfileArea: FC<IProps> = (props) => {
               <Typography id="modal-modal-title" variant="h6" component="h2" textAlign="center">
                 프로필 사진 바꾸기
               </Typography>
-              <Typography
-                id="modal-modal-description"
-                textAlign="center"
-              ></Typography>
+              <Typography id="modal-modal-description" textAlign="center"></Typography>
               <Box>
                 {profileImages?.map((ProfileRes, idx) => {
                   return (
-                    <IconButton key={idx} onClick={() => getProfile(ProfileRes.image_path)}>
+                    <IconButton
+                      key={idx}
+                      onClick={() => getProfile(ProfileRes.image_path)}
+                      sx={{ margin: 3 }}
+                    >
                       <Avatar
                         src={ProfileRes.image_path}
                         sx={{ width: 80, height: 80 }}
                         style={{
-                          margin: 23,
                           display: "flex",
                           justifyContent: "center",
                           alignItems: "center",
@@ -249,7 +281,7 @@ export const ProfileArea: FC<IProps> = (props) => {
           helperText={nameText}
           error={overlap}
           sx={{
-            width: "15vw",
+            width: "18vw",
           }}
         />
       </Grid>
