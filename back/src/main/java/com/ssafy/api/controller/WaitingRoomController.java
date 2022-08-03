@@ -1,6 +1,7 @@
 package com.ssafy.api.controller;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -16,6 +17,7 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
+import com.ssafy.api.request.StatePostReq;
 import com.ssafy.api.request.WaitingRoomPostReq;
 import com.ssafy.api.response.WaitingRoomRes;
 import com.ssafy.api.response.WaitingUserRes;
@@ -29,7 +31,6 @@ import com.ssafy.api.service.WaitingRoomService;
 import com.ssafy.api.service.WaitingRoomUserRelationService;
 import com.ssafy.db.entity.Age;
 import com.ssafy.db.entity.ChattingRoom;
-import com.ssafy.db.entity.MeetingRoom;
 import com.ssafy.db.entity.Sido;
 import com.ssafy.db.entity.User;
 import com.ssafy.db.entity.WaitingRoom;
@@ -146,9 +147,61 @@ public class WaitingRoomController {
 		int status = 1;
 		waitingRoom.setStatus(status);
 		waitingRoom();
+<<<<<<< HEAD
 		return meetingRoomService.createMeetingRoom(waitingRoomId);
 //		return null;
+=======
+		// 이 때 접수처에 있는 잉여유저들 일괄 거절처리 해야함
+		return meetingRoomService.createMeetingRoom(waitingRoomId);
 	}
 	
+	@PostMapping("/state")
+	@ApiOperation(value = "이용자가 타입을 변경하려는 요청", notes = "0: 방장, 1: 참가(수락), 2: 입장 신청 3: 신청 취소 4: 거절 5: 나가기")
+	public ResponseEntity<?> state(@RequestBody @ApiParam(value = "유저의 타입 변경", required = true) StatePostReq value) {
+		WaitingRoomUserRelation userState = waitingRoomUserRelationService.findBystate(value.getRoomId(), value.getUserId()).get();
+		User user = userState.getUser();
+		if(value.getType() == 1) { // 입장 가능한지 조사
+			WaitingRoom room = userState.getWaitingRoom();
+			Gender gender = genderService.findById(value.getRoomId()).get();
+			if (user.getGender() == "M") {
+				if (gender.getM() < room.getHeadCount() / 2) {
+					userState.setType(value.getType());
+					waitingRoom();
+					result(value.getUserId(), true);
+					return ResponseEntity.status(200).body(chattingRoomService.findByRoomIdAndType(value.getRoomId()).get().getId());
+				}
+				else {
+					result(value.getUserId(), false);
+					return ResponseEntity.status(409).body("");
+				}
+			}
+			else {
+				if (gender.getF() < room.getHeadCount() / 2) {
+					userState.setType(value.getType());
+					waitingRoom();
+					result(value.getUserId(), true);
+					return ResponseEntity.status(200).body(chattingRoomService.findByRoomIdAndType(value.getRoomId()).get().getId());
+				}
+				else {
+					result(value.getUserId(), false);
+					return ResponseEntity.status(409).body("");
+				}
+			}
+		}
+		else if(value.getType() == 4) {
+			userState.setType(value.getType());
+			result(user.getId(), false);
+		}
+		else {
+			userState.setType(value.getType());
+		}
+		return null;
+>>>>>>> 8c18386 (feat(waitingstate): 접수처 구현)
+	}
 	
+	public void result(Long userId, Boolean x) {
+		HashMap<String, Boolean> success = new HashMap<>();
+		success.put("success", x);
+		simp.convertAndSend("enter/result/" + userId, success);
+	}
 }
