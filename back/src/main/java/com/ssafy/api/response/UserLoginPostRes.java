@@ -1,5 +1,6 @@
 package com.ssafy.api.response;
 
+import com.fasterxml.jackson.annotation.JsonProperty;
 import com.ssafy.common.model.response.BaseResponseBody;
 import com.ssafy.db.entity.User;
 
@@ -17,13 +18,21 @@ import lombok.Setter;
 public class UserLoginPostRes extends BaseResponseBody{
 	@ApiModelProperty(name="JWT 인증 토큰", example="eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzUxMiJ9.eyJzdWIiOiJ0ZXN...")
 	String accessToken;
-	
+	@JsonProperty("user_id")
 	Long userId;
+	
+	@JsonProperty("social_id")
 	String socialId;
+	
 	String gender;
 	String name;
+	
+	@JsonProperty("profile_image_path")
 	String profileImagePath;
+	
 	String description;
+	
+	@JsonProperty("social_type")
 	int socialType;
 	
 	public static UserLoginPostRes of(Integer statusCode, String message, User user, String accessToken) {

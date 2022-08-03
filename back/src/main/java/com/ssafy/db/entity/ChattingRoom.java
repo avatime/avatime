@@ -16,7 +16,6 @@ import org.hibernate.annotations.DynamicUpdate;
 
 import lombok.Builder;
 import lombok.Getter;
-import lombok.NoArgsConstructor;
 import lombok.Setter;
 
 /**
@@ -26,38 +25,32 @@ import lombok.Setter;
 @Entity
 @Getter
 @Setter
-@NoArgsConstructor
 public class ChattingRoom extends BaseEntity {
 
-	@Column(nullable = false, columnDefinition = "INT UNSIGNED")
-	private Long roomId;
-	
+    @Column(nullable = false, columnDefinition = "INT UNSIGNED")
+    private Long roomId;
+    
     @Column(updatable = false, nullable = false, columnDefinition = "TINYINT(1)")
-	private int type;
-	
-	@Temporal(TemporalType.TIMESTAMP)
+    private int type;
+    
+    @Temporal(TemporalType.TIMESTAMP)
     @Column(updatable = false, columnDefinition = "TIMESTAMP DEFAULT CURRENT_TIMESTAMP")
     private Date createdTime;
     
     @PrePersist
     protected void onCreate() {
-    	createdTime = Timestamp.valueOf(LocalDateTime.now());
+        createdTime = Timestamp.valueOf(LocalDateTime.now());
     }
     
     @Builder(builderClassName = "ByWaitingRoomBuilder", builderMethodName = "ByWaitingRoomBuilder")
     public ChattingRoom(@Nonnull Long roomId) {
-    	this.roomId = roomId;
-    	this.type = 2;
+        this.roomId = roomId;
+        this.type = 2;
     }
     
     @Builder(builderClassName = "ByMeettingRoomBuilder", builderMethodName = "ByMeettingRoomBuilder")
     public ChattingRoom(@Nonnull Long roomId, int type) {
-<<<<<<< HEAD
-    	this.roomId = roomId;
-    	this.type = type;
-=======
         this.roomId = roomId;
         this.type = type;
->>>>>>> 8c18386 (feat(waitingstate): 접수처 구현)
     }
 }
