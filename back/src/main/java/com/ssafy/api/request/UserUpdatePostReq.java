@@ -13,6 +13,9 @@ public class UserUpdatePostReq {
 
 	Long id;
 	
+	@JsonProperty("user_id")
+	long userId;
+	
 	String name;
 	
 	@JsonProperty("profile_image_path")

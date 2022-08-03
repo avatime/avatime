@@ -31,20 +31,22 @@ export const NaverHandler: FC<Iprops> = (props) => {
       if (datas.statusCode === 201) {
         console.log(datas);
         dispatch(setUserGender(datas.gender));
-        dispatch(setSocialId(datas.socialId));
-        dispatch(setSocialType(datas.socialType));
+        console.log(datas.social_id);
+        dispatch(setSocialId(datas.social_id));
+        console.log(datas.social_type);
+        dispatch(setSocialType(datas.social_type));
         dispatch(setIsLogin(false));
         navigate("/mypage");
         alert("회원가입이 필요합니다.");
       } else if (res.data.statusCode === 200) {
         console.log(datas);
-        dispatch(setUserId(datas.userId));
+        dispatch(setUserId(datas.user_id));
         dispatch(setUserName(datas.name));
         dispatch(setUserGender(datas.gender));
         dispatch(setUserDesc(datas.description));
-        dispatch(setProfileImagePath(datas.profileImagePath));
-        dispatch(setSocialId(datas.socialId));
-        dispatch(setSocialType(datas.socialType));
+        dispatch(setProfileImagePath(datas.profile_image_path));
+        dispatch(setSocialId(datas.social_id));
+        dispatch(setSocialType(datas.social_type));
         dispatch(setIsLogin(true));
         localStorage.setItem("token", datas.accessToken);
         navigate("/main");

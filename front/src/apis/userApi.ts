@@ -5,9 +5,10 @@ import { ProfileRes } from "./response/profileRes";
 import { UserModifyReq } from "./request/userModifyReq";
 import { RegisterReq } from "./request/registerReq";
 import { UserReq } from "./request/userReq";
+import { RegisterRes } from "./response/registerRes";
 import axios from "axios";
 
-const BASE_URL: string = "http://localhost:8080/api/v1";
+const BASE_URL: string = "http://i7a309.p.ssafy.io/api/v1";
 
 interface UserDeleteApi {
   deleteUser(userInfoReq: UserInfoReq): Promise<SuccessRes>;
@@ -69,13 +70,13 @@ const nameCheckApi: NameCheckApi = {
 
 const kakaoLogin = (code: string): any => {
   return function () {
-    return axios.get(`http://localhost:8080/api/v1/auth/kakao?code=${code}`);
+    return axios.get(`http://i7a309.p.ssafy.io/api/v1/auth/kakao?code=${code}`);
   };
 };
 
 const naverLogin = (code: string, state: string): any => {
   return function () {
-    return axios.get(`http://localhost:8080/api/v1/auth/naver?code=${code}&state=${state}`);
+    return axios.get(`http://i7a309.p.ssafy.io/api/v1/auth/naver?code=${code}&state=${state}`);
   };
 };
 
@@ -100,11 +101,11 @@ const userModifyApi: UserModifyApi = {
 };
 
 interface RegisterApi {
-  register(registerReq: RegisterReq): Promise<SuccessRes>;
+  register(registerReq: RegisterReq): Promise<RegisterRes>;
 }
 
 const registerApi: RegisterApi = {
-  register: async function (registerReq: RegisterReq): Promise<SuccessRes> {
+  register: async function (registerReq: RegisterReq): Promise<RegisterRes> {
     return (await axios.post(`${BASE_URL}/auth/register`, registerReq)).data;
   },
 };
