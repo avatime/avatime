@@ -1,8 +1,11 @@
 package com.ssafy.api.service;
 
 import java.util.List;
+import java.util.Timer;
+import java.util.TimerTask;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.messaging.simp.SimpMessageSendingOperations;
 import org.springframework.stereotype.Service;
 
 import com.ssafy.db.entity.MeetingRoom;
@@ -27,6 +30,11 @@ public class MeetingRoomServiceImpl implements MeetingRoomService {
 	@Autowired
 	WaitingRoomUserRelationRepository waitingRoomUserRelationRepository;
 	
+	@Autowired
+	ChattingRoomService chattingRoomService;
+	
+	SimpMessageSendingOperations sendingOperations;
+	
 	@Override
 	public MeetingRoom createMeetingRoomSession(int type, Long mainSessionId) throws Exception {
 		// TODO Auto-generated method stub
@@ -36,12 +44,13 @@ public class MeetingRoomServiceImpl implements MeetingRoomService {
 			meetingRoom.setType(type);
 			if(type == 0) {
 				mainSessionId = meetingRoomRepository.save(meetingRoom).getId();
+				chattingRoomService.createRoomInMeetingRoom(mainSessionId);
 			}
 			else if(type == 1) {
 				
 			}
 			meetingRoom.setMainSessionId(mainSessionId);
-			meetingRoomRepository.save(meetingRoom);
+//			meetingRoomRepository.save(meetingRoom);
 		} catch (Exception e) {
 		}
 		
@@ -61,7 +70,7 @@ public class MeetingRoomServiceImpl implements MeetingRoomService {
 		// TODO Auto-generated method stub
 		MeetingRoomUserRelation meetingRoomUser = meetingRoomUserRelationRepository.findByMeetingRoomIdAndUserId(meetingRoomId, userId).get();
 		meetingRoomUser.setPickUserId(pickUserId);
-		MeetingRoomUserRelation pickedUserInfo = meetingRoomUserRelationRepository.findByMeetingRoomIdAndUserId(meetingRoomId, userId).get();
+		MeetingRoomUserRelation pickedUserInfo = meetingRoomUserRelationRepository.findByMeetingRoomIdAndUserId(meetingRoomId, pickUserId).get();
 		if(pickedUserInfo.getPickUserId() == userId) {
 			meetingRoomUser.setMatched(true);
 			pickedUserInfo.setMatched(true);
@@ -103,16 +112,35 @@ public class MeetingRoomServiceImpl implements MeetingRoomService {
 		return meetingRoomId;
 	}
 
+	private int count;
 	@Override
-	public void timer() throws Exception {
+	public void timer(Long meetingRoomId, int time, String type) throws Exception {
 		// TODO Auto-generated method stub
+		count = time;
+		Timer timer = new Timer();
+		TimerTask task = new TimerTask() {
+			@Override
+			public void run() {
+				if(count > 0) {
+			    	try { sendingOperations.convertAndSend("topic/meeting/"+type+"/timer"+meetingRoomId, count);}
+			    	catch(Exception e) {}
+//					System.out.println("hi =>" + count);
+					count--;
+				} else {
+//					System.out.println("end");
+					timer.cancel();
+				}
+			}
+		};
 		
+		timer.schedule(task, 1000, 1000);
 	}
-
+	
 	@Override
 	public int userNumber(Long meetingRoomId) throws Exception {
 		// TODO Auto-generated method stub
-		return 0;
+		return meetingRoomUserRelationRepository.countByMeetingRoomId(meetingRoomId);
 	}
+
 
 }

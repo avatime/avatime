@@ -2,6 +2,8 @@ package com.ssafy.api.controller;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Timer;
+import java.util.TimerTask;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
@@ -9,6 +11,8 @@ import org.springframework.messaging.handler.annotation.MessageMapping;
 import org.springframework.messaging.simp.SimpMessageSendingOperations;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PatchMapping;
+import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
@@ -53,28 +57,6 @@ public class MeetingController {
 	
 	@Autowired
 	AvatarService avatarService;
-//	AvatarRepository avatarRepository;
-
-	/*
-	@PostMapping()
-	@ApiOperation(value = "미팅방 생성", notes = "<strong>미팅방 생성</strong>") 
-    @ApiResponses({
-        @ApiResponse(code = 200, message = "성공", response = BaseResponseBody.class),
-        @ApiResponse(code = 500, message = "서버 오류", response = BaseResponseBody.class)
-    })
-	public ResponseEntity<?> createMeetingRoom(@RequestBody @ApiParam(value="미팅방 정보", required = true) MeetingRoomPostReq meetingRoomPostReq) {
-		int type = meetingRoomPostReq.getType();
-		Long mainSessionId = meetingRoomPostReq.getMainSessionId();
-		
-		try {
-			meetingRoomService.createMeetingRoom(type, mainSessionId);
-		} catch (Exception e) {
-			// TODO Auto-generated catch block
-			return ResponseEntity.status(500).body("");
-		}
-		return ResponseEntity.status(200).body("");
-	} 
-	*/
 	
 	@PatchMapping("/pick/result/selectAvatar")
 	@ApiOperation(value = "아바타 선택", notes = "<strong>유저별 아바타 선택</strong>") 
@@ -87,6 +69,7 @@ public class MeetingController {
 		Long meetingRoomId = userSelectAvatar.getMeetingRoomId();
 		Long userId = userSelectAvatar.getUserId();
 		Long avatarId = userSelectAvatar.getAvatarId();
+		int num = 0;
 		try {
 			if(meetingRoomService.isSelectedAvatar(meetingRoomId, avatarId)) return ResponseEntity.status(409).body("");
 			else meetingRoomService.choiceAvatar(meetingRoomId, userId, avatarId);
@@ -97,19 +80,21 @@ public class MeetingController {
 			
 			for(Avatar ava : avatarList) {
 				AvatarStatus avasta = new AvatarStatus(ava);
-				if(meetingRoomService.isSelectedAvatar(meetingRoomId, avatarId)) avasta.setSelected(true);
+				if(meetingRoomService.isSelectedAvatar(meetingRoomId, ava.getId())) {
+					avasta.setSelected(true);
+					num++;
+				}
 				else avasta.setSelected(false);
 				list.add(avasta);
 			}
-			
-			avatarChoiceRes.setStatus(list.size() == 1 ? 1 : 0);
+			avatarChoiceRes.setStatus(num == meetingRoomService.userNumber(meetingRoomId) ? 1 : 0);
 			
 	    	sendingOperations.convertAndSend("/topic/meeting/avatar/"+meetingRoomId, list);
 		} catch(Exception e) {
 			return ResponseEntity.status(500).body("");
 		}
 		
-		return ResponseEntity.status(200).body("");
+		return ResponseEntity.status(201).body("");
 	}
 	
 	@MessageMapping("meeting/avatar")
@@ -185,37 +170,30 @@ public class MeetingController {
 		
 		return ResponseEntity.status(200).body("");
 	}
-	
-	@MessageMapping()
-	@ApiOperation(value = "최종 선택 타이머", notes = "<strong>미팅방 생성</strong>") 
+	 
+	@PostMapping("/pick/result")
+	@ApiOperation(value = "최종 선택 시작", notes = "<strong>meeting room id</strong>방에서 최종 선택 시작") 
     @ApiResponses({
         @ApiResponse(code = 200, message = "성공", response = BaseResponseBody.class),
         @ApiResponse(code = 500, message = "서버 오류", response = BaseResponseBody.class)
     })
-	public ResponseEntity<?> finalChoiceTimer(@RequestBody @ApiParam(value="미팅방 정보", required = true) MeetingRoomPostReq meetingRoomPostReq) {
-		int type = meetingRoomPostReq.getType();
-		Long mainSessionId = meetingRoomPostReq.getMainSessionId();
-		
-		try {
-		} catch (Exception e) {
-			// TODO Auto-generated catch block
-			return ResponseEntity.status(500).body("");
-		}
+	public ResponseEntity<?> finalPickStart(@RequestBody @ApiParam(value="미팅방 정보", required = true) Long meetingRoomId) throws Exception {
+		meetingRoomService.timer(meetingRoomId, 15, "pick");
 		return ResponseEntity.status(200).body("");
 	}
 	
-	@GetMapping("/pick/result/{meetingroom_id}")
+	@GetMapping("/pick/result/{meetingroomId}")
 	@ApiOperation(value = "최종 결과", notes = "<strong>meeting room id</strong>에 따른 미팅 최종 결과") 
     @ApiResponses({
         @ApiResponse(code = 200, message = "성공", response = BaseResponseBody.class),
         @ApiResponse(code = 500, message = "서버 오류", response = BaseResponseBody.class)
     })
-//	public ResponseEntity<?> finalMeetingResult(@ApiIgnore Authentication authentication, @RequestBody @ApiParam(value="미팅방 정보", required = true) Long meetingroom_id) {
-	public ResponseEntity<?> finalMeetingResult(@RequestBody @ApiParam(value="미팅방 정보", required = true) Long meetingroom_id) {
+	public ResponseEntity<?> finalMeetingResult(@PathVariable Long meetingroomId) {
 		FinalChoiceRes finalChoiceRes = new FinalChoiceRes();
 		List<Result> list = new ArrayList<>();
+		System.out.println(meetingroomId);
 		try {
-			List<MeetingRoomUserRelation> meetingRoomUserlist = meetingRoomService.finalChoiceResult(meetingroom_id);
+			List<MeetingRoomUserRelation> meetingRoomUserlist = meetingRoomService.finalChoiceResult(meetingroomId);
 			boolean matched = false;
 			for(MeetingRoomUserRelation m : meetingRoomUserlist) {
 				if(m.isMatched()) matched = true;
@@ -233,12 +211,11 @@ public class MeetingController {
 				list.add(res);
 			}
 			finalChoiceRes.setMatched(matched);
-			finalChoiceRes.setMeetingroom_id(meetingroom_id);
+			finalChoiceRes.setMeetingroom_id(meetingroomId);
 			finalChoiceRes.setResult_list(list);
 		} catch (Exception e) {
 			return ResponseEntity.status(500).body("");
 		}
-//		return ResponseEntity.status(200).body(finalChoiceRes);
 		return ResponseEntity.status(200).body(FinalChoiceRes.of(200, "최종 결과 불러오기 성공", finalChoiceRes));
 	}
 }

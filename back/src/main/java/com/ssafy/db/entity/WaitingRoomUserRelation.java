@@ -9,11 +9,13 @@ import org.hibernate.annotations.DynamicUpdate;
 
 import lombok.Builder;
 import lombok.Getter;
+import lombok.NoArgsConstructor;
 import lombok.Setter;
 
 /**
  * 미팅 대기 방에 참여한 유저 모델 정의.
  */
+@NoArgsConstructor
 @DynamicInsert @DynamicUpdate
 @Entity
 @Getter
