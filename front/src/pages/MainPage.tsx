@@ -1,4 +1,4 @@
-import React, { FC, useState } from "react";
+import React, { Children, FC, useState } from "react";
 import Box from "@mui/material/Box";
 import Button from "@mui/material/Button";
 import Typography from "@mui/material/Typography";
@@ -10,8 +10,11 @@ import { WaitingRoomList } from "../components/main/WaitingRoomList";
 import { MainHeader } from "../components/main/MainHeader";
 import { Add } from "@mui/icons-material";
 import { useQuery } from "react-query";
-
 import { ageApi, makeNewRoomApi, sidoApi } from "../apis/waitingRoomApi";
+import { ResultWaitingModal } from "../components/waitingRoom/ResultWaitingModal";
+import ava from "../assets/result_waiting_ava.gif";
+import ava2 from "../assets/result_waiting_ava2.gif";
+import CloseIcon from "@mui/icons-material/Close";
 
 const style = {
   position: "absolute" as "absolute",
@@ -52,6 +55,7 @@ export const MainPage: FC<IProps> = (props) => {
   const [name, setName] = useState("");
   const [headCounts, setHeadCounts] = useState(0);
   const [open, setOpen] = useState(false);
+  const [openWaiting, setopenWaiting] = useState(false);
 
   const handleOpen = () => setOpen(true);
   const handleClose = () => {
@@ -94,6 +98,11 @@ export const MainPage: FC<IProps> = (props) => {
       handleClose();
     }
   };
+
+  const rejectRoom = () => {
+    setopenWaiting(false);
+
+  }
 
   return (
     <div className="mainback">
@@ -195,6 +204,26 @@ export const MainPage: FC<IProps> = (props) => {
           </Typography>
         </Box>
       </Modal>
+      <ResultWaitingModal open={openWaiting} justifyContent={"center"}>
+        <>
+          <Box
+            display="flex"
+            flexDirection="column"
+            alignItems="center"
+            width="100%"
+            mb={4}
+            sx={{ marginTop: "10%" }}
+          >
+            <img src={ava2} alt="ava2" />
+            <Typography variant="h4">방장이 입장 심사 중 ~</Typography>
+          </Box>
+         
+            <Button size="large" color="error" onClick={rejectRoom}>
+            <CloseIcon/> 입장 대기 취소
+            </Button>
+         
+        </>
+      </ResultWaitingModal>
     </div>
   );
 };

@@ -10,6 +10,8 @@ import SearchIcon from "@mui/icons-material/Search";
 import { WaitingRoomInfoRes } from "../../apis/response/waitingRoomRes";
 import * as Stomp from "stompjs";
 import SockJS from "sockjs-client";
+import { useSelector } from "react-redux";
+
 import {
   Button,
   IconButton,
@@ -18,8 +20,8 @@ import {
   ToggleButton,
   ToggleButtonGroup,
 } from "@mui/material";
-import { Construction } from "@mui/icons-material";
 import { WS_BASE_URL } from '../../apis/axiosInstance';
+import { Construction, Filter } from "@mui/icons-material";
 
 interface IProps {}
 
@@ -33,7 +35,7 @@ interface Column {
   label: string;
   minWidth?: number;
   align?: "right";
-  format?: (value: number) => string;
+  format?: (obj: any) => string;
 }
 
 const columns: Column[] = [
@@ -43,12 +45,14 @@ const columns: Column[] = [
     label: "남자",
     minWidth: 50,
     align: "right",
+    format: (obj) => `${obj.cnt_man} / ${obj.head_count / 2}`,
   },
   {
     id: "cnt_woman",
     label: "여자",
     minWidth: 50,
     align: "right",
+    format: (obj) => `${obj.cnt_woman} / ${obj.head_count / 2}`,
   },
   {
     id: "age",
@@ -77,8 +81,8 @@ export const WaitingRoomList: FC<IProps> = (props) => {
   const [data, setData] = useState<WaitingRoomInfoRes[]>([]);
   const [stompClient, setStompClient] = useState<any>();
 
-  //필터-------------------------------------------------------------------------------
-
+  //방제목으로 검색 & 필터-----------------------------------------------------------------
+  const userGender = useSelector((state: any) => state.user.userGender);
   const [selected, setSelected] = useState(false);
   const handleChangeStatus = (
     event: React.MouseEvent<HTMLElement>,
@@ -86,8 +90,6 @@ export const WaitingRoomList: FC<IProps> = (props) => {
   ) => {
     setSelected((prev) => !prev);
   };
-
-  //방제목으로 검색-----------------------------------------------------------------
 
   const [keyword, setKeyword] = useState("");
 
@@ -117,12 +119,21 @@ export const WaitingRoomList: FC<IProps> = (props) => {
   useEffect(() => {
     setData(
       originData
-        .filter((room) => (selected ? room.status === 0 : true))
+        .filter((room) => {
+          if (!selected) {
+            return true;
+          }
+
+          if (room.status !== 0) {
+            return false;
+          }
+
+          return (userGender === "M" ? room.cnt_man : room.cnt_woman) !== room.head_count / 2;
+        })
         .filter((room) => room.name.includes(keyword))
     );
-  }, [keyword, originData, selected])
+  }, [keyword, originData, selected, userGender]);
 
- 
   //------------------------------------------------------------------------------------------
   return (
     <div>
@@ -173,22 +184,15 @@ export const WaitingRoomList: FC<IProps> = (props) => {
               </TableRow>
             </TableHead>
             <TableBody>
-              {data?.map((row, idx) => {
-                return (
-                  <TableRow key={idx}>
-                    {columns.map((column) => {
-                      const value = row[column.id];
-                      return (
-                        <TableCell key={column.id} align={column.align}>
-                          {column.format && typeof value === "number"
-                            ? column.format(value)
-                            : value}
-                        </TableCell>
-                      );
-                    })}
-                  </TableRow>
-                );
-              })}
+              {data?.map((row, idx) => (
+                <TableRow key={idx}>
+                  {columns.map((column) => (
+                    <TableCell key={column.id} align={column.align}>
+                      {column.format ? column.format(row) : row[column.id]}
+                    </TableCell>
+                  ))}
+                </TableRow>
+              ))}
             </TableBody>
           </Table>
         </TableContainer>
