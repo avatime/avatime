@@ -52,7 +52,12 @@ public class ChattingRoom extends BaseEntity {
     
     @Builder(builderClassName = "ByMeettingRoomBuilder", builderMethodName = "ByMeettingRoomBuilder")
     public ChattingRoom(@Nonnull Long roomId, int type) {
+<<<<<<< HEAD
     	this.roomId = roomId;
     	this.type = type;
+=======
+        this.roomId = roomId;
+        this.type = type;
+>>>>>>> 8c18386 (feat(waitingstate): 접수처 구현)
     }
 }
