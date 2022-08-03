@@ -22,7 +22,6 @@ public class ChattingRoomServiceImpl implements ChattingRoomService{
 		return chattingRoomRepository.save(chattingRoom);
 	}
 	
-<<<<<<< HEAD
 	// 전체 채팅, 성별 채팅 생성
     public ChattingRoom createRoomInMeetingRoom(Long roomId) {
         ChattingRoom chattingRoom1 = ChattingRoom.ByMeettingRoomBuilder().roomId(roomId).type(0).build();
@@ -33,11 +32,9 @@ public class ChattingRoomServiceImpl implements ChattingRoomService{
         chattingRoomRepository.save(menChatting);
     	return chattingRoom1;
     }
-=======
 	@Override
 	public Optional<ChattingRoom> findByRoomIdAndType(Long roomId) {
 		int type = 0;
 		return chattingRoomRepository.findByRoomIdAndType(roomId, type);
 	}
->>>>>>> 8c18386 (feat(waitingstate): 접수처 구현)
 }

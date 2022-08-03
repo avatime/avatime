@@ -147,10 +147,6 @@ public class WaitingRoomController {
 		int status = 1;
 		waitingRoom.setStatus(status);
 		waitingRoom();
-<<<<<<< HEAD
-		return meetingRoomService.createMeetingRoom(waitingRoomId);
-//		return null;
-=======
 		// 이 때 접수처에 있는 잉여유저들 일괄 거절처리 해야함
 		return meetingRoomService.createMeetingRoom(waitingRoomId);
 	}
@@ -196,7 +192,6 @@ public class WaitingRoomController {
 			userState.setType(value.getType());
 		}
 		return null;
->>>>>>> 8c18386 (feat(waitingstate): 접수처 구현)
 	}
 	
 	public void result(Long userId, Boolean x) {
