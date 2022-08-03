@@ -10,4 +10,5 @@ import com.ssafy.db.entity.ChattingRoom;
 public interface ChattingRoomRepository extends JpaRepository<ChattingRoom, Long>{
 	Optional<List<ChattingRoom>> findAllByRoomId(Long roomId);
 	Optional<ChattingRoom> findById(Long id);
+	Optional<ChattingRoom> findByRoomIdAndType(Long roomId, int type);
 }
