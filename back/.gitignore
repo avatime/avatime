@@ -40,3 +40,8 @@ out/
 
 ## api_key ##
 application-oauth.properties
+
+
+*.gz
+*.log
+generated/

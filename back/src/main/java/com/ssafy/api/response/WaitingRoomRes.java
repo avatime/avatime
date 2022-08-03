@@ -18,10 +18,10 @@ public class WaitingRoomRes {
 	private int status;
 	
 	@JsonProperty("cnt_man")
-	private int cntMan;
+	private Long cntMan;
 	
 	@JsonProperty("cnt_woman")
-	private int cntWoman;
+	private Long cntWoman;
 	
 	private String age;
 	

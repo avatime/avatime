@@ -109,13 +109,16 @@ public class AuthController {
 	
 	@GetMapping("/naver")
 	public ResponseEntity<?> naverCallback(@RequestParam String code, @RequestParam String state) throws Exception{
-		System.out.println(code);
+		System.out.println("code : "+code);
 		
 		// 네이버 소셜 타입 1
 		int socialType = 1;
 		
+		System.out.println("여긴되나?");
+		
 		// 토큰 가져오기
 		String accessToken = userService.extractAccessToken(userService.requestAccessToken(userService.generateAuthCodeRequest(code, state)).getBody());
+		
 		
 		// 사용자 정보 가져오기
 		ResponseEntity<String> response = userService.requestProfile(userService.generateProfileRequest(accessToken));
@@ -128,7 +131,7 @@ public class AuthController {
 		JsonElement userInfo = element.getAsJsonObject().get("response");
 		String socialId = userInfo.getAsJsonObject().get("email").toString().replaceAll("\"", "");
 		
-		
+		System.out.println("socialid : "+socialId+"soclaiType : "+socialType);
 		// socialId(email)와 socialType을 통해 DB에 있는지 체크
 		User user = userService.getUserBySocialIdAndSocialType(socialId, socialType);
 		
@@ -139,6 +142,7 @@ public class AuthController {
 			registerInfo.setGender(userInfo.getAsJsonObject().get("gender").toString().replaceAll("\"", ""));
 			registerInfo.setSocialId(userInfo.getAsJsonObject().get("email").toString().replaceAll("\"", ""));
 			registerInfo.setSocialType(socialType);
+			System.out.println("registerInfo : "+registerInfo);
 	
 			return ResponseEntity.status(201).body(UserRegisterPostRes.of(201, "Unknown User", registerInfo));	
 		}

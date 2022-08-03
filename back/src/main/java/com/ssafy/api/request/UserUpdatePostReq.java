@@ -11,6 +11,9 @@ import lombok.Setter;
 @ApiModel("UserUpdatePostReq")
 public class UserUpdatePostReq {
 	
+	@JsonProperty("user_id")
+	long userId;
+	
 	String name;
 	
 	@JsonProperty("profile_image_path")
