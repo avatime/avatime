@@ -10,6 +10,8 @@ import lombok.Setter;
 @Setter
 @ApiModel("UserUpdatePostReq")
 public class UserUpdatePostReq {
+	@JsonProperty("user_id")
+	Long userId;
 	
 	String name;
 	
