@@ -20,9 +20,9 @@ insert into waiting_room values ('0', '1', now(), '6', '파이썬 초보만', '1
 insert into waiting_room values ('0', '1', now(), '6', '오점뭐먹', '2', '0');
 insert into waiting_room values ('0', '2', now(), '6', 'Nullpointerexception', '3', '1');
 insert into waiting_room values ('0', '4', now(), '6', '이건 4번째 방', '2', '0');
-insert into waiting_room values ('0', '3', now(), '6', '집가고싶다', '2', '0');
+insert into waiting_room values ('0', '3', now(), '6', '집가고싶다', '2', '1');
 insert into waiting_room values ('0', '2', now(), '6', 'ⓕⓤⓒⓚ', '2', '0');
-insert into waiting_room values ('0', '2', now(), '6', '울산광역시', '2', '0');
+insert into waiting_room values ('0', '2', now(), '6', '울산광역시', '2', '1');
 insert into waiting_room values ('0', '3', now(), '6', '화났어?', '2', '0');
 
 insert into avatar (image_path, name) values ("호랑이.png", "호랑이");
@@ -34,8 +34,8 @@ insert into avatar (image_path, name) values ("코끼리.png", "코끼리");
 insert into avatar (image_path, name) values ("나무늘보.png", "나무늘보");
 insert into avatar (image_path, name) values ("불가사리.png", "불가사리");
 
-insert into user (description, gender, name, profile_image_path, social_id, social_type) values ("testing3", "F", "채윤선", "ts.png", "ssafy3@naver.com", 1);
-insert into user (description, gender, name, profile_image_path, social_id, social_type) values ("testing", "M", "정건우", "sf.png", "ssafy@naver.com", 1);
+insert into user (description, gender, name, profile_image_path, social_id, social_type) values ("testing3", "F", "채윤선", "https://jira.ssafy.com/secure/useravatar?avatarId=10508", "5524137@naver.com", 1);
+insert into user (description, gender, name, profile_image_path, social_id, social_type) values ("testing", "M", "정건우", "https://jira.ssafy.com/secure/useravatar?avatarId=10341", "abcxj123@naver.com", 1);
 insert into user (description, gender, name, profile_image_path, social_id, social_type) values ("testing2", "M", "이주영", "ss.png", "ssafy2@naver.com", 1);
 insert into user (description, gender, name, profile_image_path, social_id, social_type) values ("testing3", "F", "이지나", "ts.png", "ssafy3@naver.com", 1);
 insert into user (description, gender, name, profile_image_path, social_id, social_type) values ("testing", "M", "김찬영", "sf.png", "ssafy@naver.com", 1);
@@ -395,3 +395,14 @@ insert into chatting_room (room_id, type) values (0, 1);
 
 insert into waiting_room_user_relation(type, waiting_room_id, user_id) values (0, 5, 25);
 insert into waiting_room_user_relation(type, waiting_room_id, user_id) values (0, 6, 29);
+
+insert into profile(image_path, name) values ("https://jira.ssafy.com/secure/useravatar?avatarId=10334", "cow");
+insert into profile(image_path, name) values ("https://jira.ssafy.com/secure/useravatar?avatarId=10342", "man");
+insert into profile(image_path, name) values ("https://jira.ssafy.com/secure/useravatar?avatarId=10339", "woman");
+insert into profile(image_path, name) values ("https://jira.ssafy.com/secure/useravatar?avatarId=10341", "ghost");
+insert into profile(image_path, name) values ("https://jira.ssafy.com/secure/useravatar?avatarId=10351", "robot");
+insert into profile(image_path, name) values ("https://jira.ssafy.com/secure/useravatar?avatarId=10346", "boy");
+insert into profile(image_path, name) values ("https://jira.ssafy.com/secure/useravatar?avatarId=10508", "girl");
+insert into profile(image_path, name) values ("https://jira.ssafy.com/secure/useravatar?avatarId=10347", "man2");
+insert into profile(image_path, name) values ("https://jira.ssafy.com/secure/useravatar?avatarId=10501", "woman2");
+insert into profile(image_path, name) values ("https://jira.ssafy.com/secure/useravatar?avatarId=10349", "owl");

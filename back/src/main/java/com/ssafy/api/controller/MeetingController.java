@@ -10,9 +10,9 @@ import org.springframework.messaging.simp.SimpMessageSendingOperations;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PatchMapping;
 import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.ssafy.api.request.FinalChoiceUserReq;
@@ -92,7 +92,7 @@ public class MeetingController {
 			return ResponseEntity.status(500).body("");
 		}
 		
-		return ResponseEntity.status(200).body("");
+		return ResponseEntity.status(201).body("");
 	}
 	
 	@MessageMapping("meeting/avatar")
@@ -184,6 +184,17 @@ public class MeetingController {
 			// TODO Auto-generated catch block
 			return ResponseEntity.status(500).body("");
 		}
+		return ResponseEntity.status(200).body("");
+	}
+	
+	@PostMapping("/pick/result")
+	@ApiOperation(value = "최종 선택 시작", notes = "<strong>meeting room id</strong>방에서 최종 선택 시작") 
+    @ApiResponses({
+        @ApiResponse(code = 200, message = "성공", response = BaseResponseBody.class),
+        @ApiResponse(code = 500, message = "서버 오류", response = BaseResponseBody.class)
+    })
+	public ResponseEntity<?> finalPickStart(@RequestBody @ApiParam(value="미팅방 정보", required = true) Long meetingRoomId) {
+		
 		return ResponseEntity.status(200).body("");
 	}
 	
