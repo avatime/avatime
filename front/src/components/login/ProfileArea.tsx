@@ -56,7 +56,7 @@ export const ProfileArea: FC<IProps> = (props) => {
   const socialId = useSelector((state: any) => state.user.socialId);
   const socialType = useSelector((state: any) => state.user.socialType);
   const userGender = useSelector((state: any) => state.user.userGender);
-  const userId = useSelector((state: any) => state.user.userId);
+  const userId: number = useSelector((state: any) => state.user.userId);
   const userName = useSelector((state: any) => state.user.userName);
   const userDesc = useSelector((state: any) => state.user.userDesc);
   const profileImagePath = useSelector((state: any) => state.user.profileImagePath);
@@ -145,16 +145,21 @@ export const ProfileArea: FC<IProps> = (props) => {
     if (!nameCheck || !nameSatis || !descSatis) {
       alert("잘못된 항목이 있습니다.");
     } else {
+      console.log("user_id : "+userId);
+      console.log("name : "+name);
+      console.log("profile_image_path : "+image);
+      console.log("description : "+desc);
       isLogin
         ? userModifyApi
             .modifyUser({
               user_id: userId,
-              profile_image_path: image,
               name: name,
+              profile_image_path: image,
               description: desc,
             })
             .then((res) => {
-              console.log(res);
+              console.log(res.statusCode);
+              console.log(res.message);
               alert("회원수정 완료!");
             })
             .catch(function (err) {

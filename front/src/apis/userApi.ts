@@ -6,9 +6,10 @@ import { UserModifyReq } from "./request/userModifyReq";
 import { RegisterReq } from "./request/registerReq";
 import { UserReq } from "./request/userReq";
 import { RegisterRes } from "./response/registerRes";
+import { UserModifyRes } from "./response/userModifyRes";
 import axios from "axios";
 
-const BASE_URL: string = "http://i7a309.p.ssafy.io/api/v1";
+const BASE_URL: string = "http://localhost:8080/api/v1";
 
 interface UserDeleteApi {
   deleteUser(userInfoReq: UserInfoReq): Promise<SuccessRes>;
@@ -91,11 +92,11 @@ const profileAllApi: ProfileAllApi = {
 };
 
 interface UserModifyApi {
-  modifyUser(userModifyReq: UserModifyReq): Promise<SuccessRes>;
+  modifyUser(userModifyReq: UserModifyReq): Promise<UserModifyRes>;
 }
 
 const userModifyApi: UserModifyApi = {
-  modifyUser: async function (userModifyReq: UserModifyReq): Promise<SuccessRes> {
+  modifyUser: async function (userModifyReq: UserModifyReq): Promise<UserModifyRes> {
     return (await axios.patch(`${BASE_URL}/user/${userModifyReq.user_id}`, userModifyReq)).data;
   },
 };
