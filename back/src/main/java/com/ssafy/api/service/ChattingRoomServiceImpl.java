@@ -34,7 +34,7 @@ public class ChattingRoomServiceImpl implements ChattingRoomService{
     }
 	@Override
 	public Optional<ChattingRoom> findByRoomIdAndType(Long roomId) {
-		int type = 0;
+		int type = 2;
 		return chattingRoomRepository.findByRoomIdAndType(roomId, type);
 	}
 }
