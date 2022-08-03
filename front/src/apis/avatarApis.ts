@@ -1,8 +1,6 @@
-import axios from "axios";
 import { SelectAvatarReq } from "./request/avatarReq";
 import { SuccessRes } from "./response/successRes";
-
-const BASE_URL: string = "http://localhost:8080/api/v1";
+import { axiosInstance } from './axiosInstance';
 
 //아바타 선택------------------------------------------------------------------
 interface SelectAvatarApi {
@@ -11,7 +9,7 @@ interface SelectAvatarApi {
 
 const selectAvatarApi:SelectAvatarApi = {
     pickAvatar: async function (selectAvatarReq: SelectAvatarReq) : Promise<SuccessRes> {
-        return (await (await axios.patch(`${BASE_URL}/meeting/selectAvatar`, selectAvatarReq)).data);
+        return (await (await axiosInstance.patch(`/meeting/selectAvatar`, selectAvatarReq)).data);
     }
 }
 
