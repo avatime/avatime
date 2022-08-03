@@ -14,7 +14,8 @@ import {
 import CheckIcon from "@mui/icons-material/Check";
 import RefreshIcon from "@mui/icons-material/Refresh";
 import { useSelector, useDispatch } from "react-redux";
-import { registerApi, userModifyApi, nameCheckApi } from "../../apis/userApi";
+import { registerApi, userModifyApi, nameCheckApi, profileAllApi } from "../../apis/userApi";
+import { ProfileRes } from "../../apis/response/profileRes";
 
 const style = {
   position: "absolute" as "absolute",
@@ -30,83 +31,13 @@ const style = {
   borderRadius: "10px",
 };
 
-const counts = [
-  {
-    value: "2:2",
-    label: "2:2",
-  },
-  {
-    value: "3:3",
-    label: "3:3",
-  },
-  {
-    value: "4:4",
-    label: "4:4",
-  },
-];
-
-const ages = [
-  {
-    value: "20",
-    label: "20대",
-  },
-  {
-    value: "30",
-    label: "30대",
-  },
-  {
-    value: "40",
-    label: "40대",
-  },
-  {
-    value: "50",
-    label: "50대이상",
-  },
-];
-const sidos = [
-  {
-    value: "seoul",
-    label: "서울특별시",
-  },
-  {
-    value: "busan",
-    label: "부산광역시",
-  },
-  {
-    value: "",
-    label: "40대",
-  },
-  {
-    value: "50",
-    label: "50대이상",
-  },
-];
-
 interface IProps {}
 
-/**
- * @author
- * @function @ProfileArea
- **/
-
 export const ProfileArea: FC<IProps> = (props) => {
-  const [value, setValue] = React.useState("");
   const [open, setOpen] = React.useState(false);
-  const [count, setCount] = React.useState("");
-  const [age, setAge] = React.useState("");
-  const [sido, setSido] = React.useState("");
 
   const handleOpen = () => setOpen(true);
   const handleClose = () => setOpen(false);
-  const handleCountChange = (event: React.ChangeEvent<HTMLInputElement>) => {
-    setCount(event.target.value);
-  };
-  const handleAgeChange = (event: React.ChangeEvent<HTMLInputElement>) => {
-    setAge(event.target.value);
-  };
-  const handleSidoChange = (event: React.ChangeEvent<HTMLInputElement>) => {
-    setSido(event.target.value);
-  };
 
   const socialId = useSelector((state: any) => state.user.socialId);
   const socialType = useSelector((state: any) => state.user.socialType);
@@ -126,8 +57,13 @@ export const ProfileArea: FC<IProps> = (props) => {
   const [nameSatis, setNameSatis] = useState(true);
   const [descText, setDescText] = useState("");
   const [overContents, setOverContents] = useState(true);
-  const [descSatis, setDescSatis] = useState(true);
-  
+  const [profileImages, setProfileImages] = useState<ProfileRes[]>([]);
+
+  useEffect(() => {
+    profileAllApi.receive().then((res) => {
+      setProfileImages(res);
+    });
+  }, []);
 
   useEffect(() => {
     if (nameCheck === true) {
@@ -142,10 +78,10 @@ export const ProfileArea: FC<IProps> = (props) => {
       setNameText("중복된 이름입니다.");
       setOverlap(true);
     }
-}, [nameCheck]);
+  }, [nameCheck]);
 
   useEffect(() => {
-    if(nameSatis) {
+    if (nameSatis) {
       setNameText(" ");
       setOverlap(false);
     } else {
@@ -155,14 +91,18 @@ export const ProfileArea: FC<IProps> = (props) => {
   }, [nameSatis]);
 
   useEffect(() => {
-    if(descSatis) {
-      setDescText(desc.length+"/255");
+    if (desc.trim().length <= 255) {
+      setDescText(desc.length + "/255");
       setOverContents(false);
     } else {
       setDescText("자기소개를 255자 이내로 작성해주세요.");
       setOverContents(true);
     }
-  }, [descSatis, desc]);
+  }, [desc]);
+
+  useEffect(() => {
+    console.log(profileImages);
+  }, [profileImages])
 
   const handleNameChange = (event: React.ChangeEvent<HTMLInputElement>) => {
     setName(event.target.value);
@@ -177,11 +117,6 @@ export const ProfileArea: FC<IProps> = (props) => {
   };
 
   const handleDescChange = (event: React.ChangeEvent<HTMLInputElement>) => {
-    if (event.target.value.trim().length > 255) {
-      setDescSatis(false);
-    } else {
-      setDescSatis(true);
-    }
     setDesc(event.target.value);
   };
 
@@ -198,7 +133,8 @@ export const ProfileArea: FC<IProps> = (props) => {
           .then((res) => {
             console.log(res);
             alert("회원수정 완료!");
-          }).catch(function (err) {
+          })
+          .catch(function (err) {
             console.log(err);
             alert("오류발생!");
           })
@@ -214,7 +150,8 @@ export const ProfileArea: FC<IProps> = (props) => {
           .then((res) => {
             console.log(res);
             alert("회원가입 완료!");
-          }).catch(function (err) {
+          })
+          .catch(function (err) {
             console.log(err);
             alert("오류발생!");
           });
@@ -225,7 +162,14 @@ export const ProfileArea: FC<IProps> = (props) => {
     setDesc(userDesc);
     setNameCheck(true);
     setNameSatis(true);
-    setDescSatis(true);
+    setDescText(desc.length + "/255");
+    setOverContents(false);
+  };
+
+  const getProfile = (path: string) => {
+    alert("프로필 사진을 변경했습니다.");
+    setImage(path);
+    handleClose();
   };
 
   return (
@@ -234,7 +178,7 @@ export const ProfileArea: FC<IProps> = (props) => {
         <Box display="flex" justifyContent="center" alignItems="center">
           <IconButton onClick={handleOpen}>
             <Avatar
-              src={profileImagePath}
+              src={image}
               sx={{ width: 80, height: 80 }}
               style={{
                 display: "flex",
@@ -253,80 +197,32 @@ export const ProfileArea: FC<IProps> = (props) => {
               <Typography id="modal-modal-title" variant="h6" component="h2" textAlign="center">
                 프로필 사진 바꾸기
               </Typography>
-              <Typography id="modal-modal-description" sx={{ mt: 2 }}>
-                {/* <Box
-              component="form"
-              sx={{
-                "& .MuiTextField-root": { m: 1, width: "25ch" },
-              }}
-              noValidate
-              autoComplete="off"
-            >
-              <TextField
-                id="outlined-multiline-flexible"
-                label="방 제목"
-                multiline
-                maxRows={4}
-                value={value}
-                onChange={handleNameChange}
-                style={{ position: "relative", top: 30, right: -30 }}
-              />
-
-              <TextField
-                id="outlined-select-currency"
-                select
-                label="인원수"
-                value={count}
-                onChange={handleCountChange}
-                style={{ position: "relative", top: 30, right: -30 }}
-              >
-                {counts.map((option) => (
-                  <MenuItem key={option.value} value={option.value}>
-                    {option.label}
-                  </MenuItem>
-                ))}
-              </TextField>
-
-              <TextField
-                id="outlined-select-currency"
-                select
-                label="연령대"
-                value={age}
-                onChange={handleAgeChange}
-                style={{ position: "relative", top: 30, right: -30 }}
-              >
-                {ages.map((option) => (
-                  <MenuItem key={option.value} value={option.value}>
-                    {option.label}
-                  </MenuItem>
-                ))}
-              </TextField>
-
-              <TextField
-                id="outlined-select-currency"
-                select
-                label="지역"
-                value={sido}
-                onChange={handleSidoChange}
-                style={{ position: "relative", top: 30, right: -30 }}
-              >
-                {sidos.map((option) => (
-                  <MenuItem key={option.value} value={option.value}>
-                    {option.label}
-                  </MenuItem>
-                ))}
-              </TextField>
-
-              <Button style={{ position: "absolute", right: 55, bottom: 10 }}>취소</Button>
-              <Button onClick={handleClose} style={{ position: "absolute", right: 5, bottom: 10 }}>
-                확인
-              </Button>
-            </Box> */}
-              </Typography>
+              <Typography
+                id="modal-modal-description"
+                textAlign="center"
+              ></Typography>
+              <Box>
+                {profileImages?.map((ProfileRes, idx) => {
+                  return (
+                    <IconButton key={idx} onClick={() => getProfile(ProfileRes.image_path)}>
+                      <Avatar
+                        src={ProfileRes.image_path}
+                        sx={{ width: 80, height: 80 }}
+                        style={{
+                          margin: 23,
+                          display: "flex",
+                          justifyContent: "center",
+                          alignItems: "center",
+                        }}
+                      />
+                    </IconButton>
+                  );
+                })}
+              </Box>
             </Box>
           </Modal>
         </Box>
-        <Box style={{ display: "absolute" }}>
+        <Box>
           <IconButton onClick={confirmInfo}>
             <CheckIcon />
           </IconButton>

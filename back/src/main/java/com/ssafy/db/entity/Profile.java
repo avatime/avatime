@@ -15,7 +15,7 @@ import lombok.Setter;
 public class Profile extends BaseEntity {
 
 	@Column(updatable = false, nullable = false)
-	private String imagePath;
+	private String image_path;
 	
 	@Column(updatable = false, nullable = false)
 	private String name;
