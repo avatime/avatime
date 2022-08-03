@@ -2,6 +2,8 @@ package com.ssafy.api.controller;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Timer;
+import java.util.TimerTask;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
@@ -168,33 +170,15 @@ public class MeetingController {
 		
 		return ResponseEntity.status(200).body("");
 	}
-	
-	@MessageMapping()
-	@ApiOperation(value = "최종 선택 타이머", notes = "<strong>미팅방 생성</strong>") 
-    @ApiResponses({
-        @ApiResponse(code = 200, message = "성공", response = BaseResponseBody.class),
-        @ApiResponse(code = 500, message = "서버 오류", response = BaseResponseBody.class)
-    })
-	public ResponseEntity<?> finalChoiceTimer(@RequestBody @ApiParam(value="미팅방 정보", required = true) MeetingRoomPostReq meetingRoomPostReq) {
-		int type = meetingRoomPostReq.getType();
-		Long mainSessionId = meetingRoomPostReq.getMainSessionId();
-		
-		try {
-		} catch (Exception e) {
-			// TODO Auto-generated catch block
-			return ResponseEntity.status(500).body("");
-		}
-		return ResponseEntity.status(200).body("");
-	}
-	
+	 
 	@PostMapping("/pick/result")
 	@ApiOperation(value = "최종 선택 시작", notes = "<strong>meeting room id</strong>방에서 최종 선택 시작") 
     @ApiResponses({
         @ApiResponse(code = 200, message = "성공", response = BaseResponseBody.class),
         @ApiResponse(code = 500, message = "서버 오류", response = BaseResponseBody.class)
     })
-	public ResponseEntity<?> finalPickStart(@RequestBody @ApiParam(value="미팅방 정보", required = true) Long meetingRoomId) {
-		
+	public ResponseEntity<?> finalPickStart(@RequestBody @ApiParam(value="미팅방 정보", required = true) Long meetingRoomId) throws Exception {
+		meetingRoomService.timer(meetingRoomId, 15, "pick");
 		return ResponseEntity.status(200).body("");
 	}
 	

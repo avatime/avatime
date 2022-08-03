@@ -16,6 +16,6 @@ public interface MeetingRoomService {
 	public void finalChoice(Long meetingRoomId, Long userId, Long pickUserId) throws Exception;
 	public List<MeetingRoomUserRelation> finalChoiceResult(Long meetingRoomId) throws Exception;
 	public Long createMeetingRoom(Long waitingRoomId) throws Exception;
-	public void timer() throws Exception;
+	public void timer(Long meetingRoomId, int time, String type) throws Exception;
 	public int userNumber(Long meetingRoomId) throws Exception;
 }
