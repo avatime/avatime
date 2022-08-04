@@ -324,7 +324,7 @@ insert into user (description, gender, name, profile_image_path, social_id, soci
 insert into user (description, gender, name, profile_image_path, social_id, social_type) values ('Horizontal mission-critical service-desk', 'F', 'Angelina', 'http://dummyimage.com/149x100.png/cc0000/ffffff', 'ahasluck6w@usatoday.com', 2);
 insert into user (description, gender, name, profile_image_path, social_id, social_type) values ('Right-sized reciprocal encryption', 'M', 'Wendel', 'http://dummyimage.com/132x100.png/cc0000/ffffff', 'wmulhall6x@mtv.com', 2);
 
-insert into waiting_room_user_relation(type, waiting_room_id, user_id) values (0, 1, 1);
+insert into waiting_room_user_relation(type, waiting_room_id, user_id) values (0, 1, 280);
 insert into waiting_room_user_relation(type, waiting_room_id, user_id) values (1, 1, 2);
 insert into waiting_room_user_relation(type, waiting_room_id, user_id) values (1, 1, 3);
 insert into waiting_room_user_relation(type, waiting_room_id, user_id) values (1, 1, 4);

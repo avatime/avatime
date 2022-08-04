@@ -17,7 +17,7 @@ public interface UserService {
 	User getUserByUserName(String name);
 	User getUserByUserId(Long userId);
 	User getUserBySocialIdAndSocialType(String socialId, int socialType);
-	User updateUserInfo(Long userId, UserUpdatePostReq updateInfo);
+	User updateUserInfo(Long id, UserUpdatePostReq updateInfo);
 	void deleteUserInfo(Long userId);
 	public String getKaKaoAccessToken(String code);
 	public String createKakaoUser(String token) throws Exception;
