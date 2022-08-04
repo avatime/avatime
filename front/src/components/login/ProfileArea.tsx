@@ -7,15 +7,14 @@ import {
   Typography,
   Modal,
   TextField,
-  MenuItem,
   Avatar,
   IconButton,
 } from "@mui/material";
 import CheckIcon from "@mui/icons-material/Check";
 import RefreshIcon from "@mui/icons-material/Refresh";
 import { useSelector, useDispatch } from "react-redux";
-import { registerApi, userModifyApi, nameCheckApi, profileAllApi } from "../../apis/userApi";
-import { ProfileRes } from "../../apis/response/profileRes";
+import { registerApi, userModifyApi, nameCheckApi, profileAllApi,} from "../../apis/userApi";
+import { ProfileRes } from "../../apis/response/memberRes";
 import {
   setUserId,
   setUserName,
@@ -152,15 +151,19 @@ export const ProfileArea: FC<IProps> = (props) => {
       isLogin
         ? userModifyApi
             .modifyUser({
-              user_id: userId,
+              id: userId,
               name: name,
               profile_image_path: image,
-              description: desc,
+              description: desc
             })
             .then((res) => {
               console.log(res.statusCode);
               console.log(res.message);
               alert("회원수정 완료!");
+              dispatch(setProfileImagePath(image));
+              dispatch(setUserName(name));
+              dispatch(setUserDesc(desc));
+              navigate("/main"); 
             })
             .catch(function (err) {
               console.log(err);
