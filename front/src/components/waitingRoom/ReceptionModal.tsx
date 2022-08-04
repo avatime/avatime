@@ -2,6 +2,8 @@ import { Box, Modal, Typography, Backdrop, List, ListItem, Divider } from "@mui/
 import React, { FC } from "react";
 import { WaitingUser } from "../../apis/response/waitingRoomRes";
 import { CandidateUser } from "./CandidateUser";
+import { requestEnterRoomApi } from "../../apis/waitingRoomApi";
+import { useSelector } from "react-redux";
 
 interface IProps {
   open: boolean;
@@ -10,8 +12,21 @@ interface IProps {
 }
 
 export const ReceptionModal: FC<IProps> = ({ open, onClickClose, candidateList }) => {
-  const onClickAccept = () => {};
-  const onClickRefuse = () => {};
+  const roomId = useSelector((state: any) => state.waiting.roomId);
+  const onClickAccept = (userId: number) => {
+    requestEnterRoomApi.requestEnterRoom({
+      room_id: roomId,
+      user_id: userId,
+      type: 1,
+    });
+  };
+  const onClickRefuse = (userId: number) => {
+    requestEnterRoomApi.requestEnterRoom({
+      room_id: roomId,
+      user_id: userId,
+      type: 4,
+    });
+  };
 
   return (
     <Backdrop open={open}>
