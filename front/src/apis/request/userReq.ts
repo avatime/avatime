@@ -1,3 +1,3 @@
 export interface UserReq {
-  id: string;
+  userId: number;
 }
