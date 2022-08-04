@@ -1,5 +1,7 @@
 package com.ssafy.api.response;
 
+import java.util.Date;
+
 import com.fasterxml.jackson.annotation.JsonProperty;
 
 import lombok.Builder;
@@ -10,6 +12,9 @@ import lombok.Setter;
 @Getter
 @Setter
 public class WaitingRoomRes {
+	
+	private Long id;
+	
 	private String name;
 	
 	@JsonProperty("head_count")
@@ -26,4 +31,7 @@ public class WaitingRoomRes {
 	private String age;
 	
 	private String sido;
+	
+	@JsonProperty("created_time")
+	private Date createdTime;
 }

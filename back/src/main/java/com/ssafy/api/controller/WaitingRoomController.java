@@ -83,6 +83,7 @@ public class WaitingRoomController {
 		for (WaitingRoom wr : waitingRoom) {
 			Gender gender = genderService.findById(wr.getId()).get();
 			WaitingRoomRes w = WaitingRoomRes.builder()
+					.id(wr.getId())
 					.name(wr.getName())
 					.headCount(wr.getHeadCount())
 					.status(wr.getStatus())
@@ -90,6 +91,7 @@ public class WaitingRoomController {
 					.cntWoman(gender.getF())
 					.sido(sidoService.findById(wr.getSidoId()).get().getName())
 					.age(ageService.findById(wr.getAgeId()).get().getName())
+					.createdTime(wr.getCreatedTime())
 					.build();
 			waitingRoomList.add(w);
 		}
