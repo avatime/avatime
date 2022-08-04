@@ -1,16 +1,6 @@
 import React, { FC, useEffect, useState } from "react";
 import { ChatRoom } from "../components/chat/ChatRoom";
-import {
-  Avatar,
-  Badge,
-  BadgeProps,
-  Box,
-  Chip,
-  Grid,
-  IconButton,
-  styled,
-  Typography,
-} from "@mui/material";
+import { Badge, BadgeProps, Box, Grid, IconButton, styled, Typography } from "@mui/material";
 import { grey } from "@mui/material/colors";
 import { MainHeader } from "../components/main/MainHeader";
 import "../components/chat/style.css";
@@ -24,7 +14,8 @@ import SockJS from "sockjs-client";
 import * as Stomp from "stompjs";
 import { WaitingUser } from "../apis/response/waitingRoomRes";
 import { ReceptionModal } from "../components/waitingRoom/ReceptionModal";
-import { WaitingUserProfile } from '../components/waitingRoom/WaitingUserProfile';
+import { WaitingUserProfile } from "../components/waitingRoom/WaitingUserProfile";
+import { UserInfoModal } from "../components/waitingRoom/UserInfoModal";
 
 interface IProps {}
 
@@ -107,6 +98,16 @@ export const WaitingPage: FC<IProps> = (props) => {
     }
   };
 
+  const [openInfo, setOpenInfo] = useState<boolean>(false);
+  const [infoUserId, setInfoUserId] = useState<number>(-1);
+  const onOpenInfo = (userId: number) => {
+    setOpenInfo(true);
+    setInfoUserId(userId);
+  };
+  const onCloseInfo = () => {
+    setOpenInfo(false);
+  };
+
   return (
     <div className="mainback" style={{ display: "flex", flexDirection: "column" }}>
       <MainHeader hideSettings={true} />
@@ -121,7 +122,10 @@ export const WaitingPage: FC<IProps> = (props) => {
             <Grid container spacing={2} height="100%">
               {waitingUserList.map((it) => (
                 <Grid item xs={12 / (waitingState.headCount / 2)} key={it.id} height="50%">
-                  <WaitingUserProfile waitingUser={it}/>
+                  <WaitingUserProfile
+                    waitingUser={it}
+                    onClickAvatar={onOpenInfo}
+                  />
                 </Grid>
               ))}
             </Grid>
@@ -182,6 +186,7 @@ export const WaitingPage: FC<IProps> = (props) => {
         onClickClose={onClickReception}
         candidateList={candidateList}
       />
+      <UserInfoModal open={openInfo} onClose={onCloseInfo} userId={infoUserId} />
     </div>
   );
 };

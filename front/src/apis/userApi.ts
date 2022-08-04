@@ -4,7 +4,7 @@ import { UserInfoRes } from "./response/userInfoRes";
 import { ProfileRes } from "./response/profileRes";
 import { UserModifyReq } from "./request/userModifyReq";
 import { RegisterReq } from "./request/registerReq";
-import { UserReq } from "./request/userReq";
+import { UserReq } from './request/userReq';
 import { RegisterRes } from "./response/registerRes";
 import { UserModifyRes } from "./response/userModifyRes";
 import { axiosInstance } from './axiosInstance';
@@ -108,6 +108,16 @@ const registerApi: RegisterApi = {
     return (await axiosInstance.post(`/auth/register`, registerReq)).data;
   },
 };
+
+interface UserApi {
+  getUserInfo(userReq: UserReq): Promise<UserInfoRes>;
+}
+
+export const userApi: UserApi = {
+  getUserInfo: async function (userReq: UserReq): Promise<UserInfoRes> {
+    return (await axiosInstance.get(`/user/${userReq.userId}`)).data;
+  }
+}
 
 export {
   profileAllApi,
