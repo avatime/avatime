@@ -49,7 +49,7 @@ export const WaitingPage: FC<IProps> = (props) => {
         console.log(res);
         setWaitingUserList(JSON.parse(res.body));
       });
-      client.send("/app/waiting/info");
+      client.send(`/app/waiting/info/${waitingState.roomId}`);
 
       if (!waitingState.isMaster) {
         return;

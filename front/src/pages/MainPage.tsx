@@ -15,8 +15,16 @@ import { ResultWaitingModal } from "../components/waitingRoom/ResultWaitingModal
 import ava from "../assets/result_waiting_ava.gif";
 
 import { useDispatch, useSelector } from "react-redux";
-import { setAge, setHeadCount, setMaster, setRegion, setRoomName, setWaitingRoomId } from "../stores/slices/waitingSlice";
+import {
+  setAge,
+  setHeadCount,
+  setMaster,
+  setRegion,
+  setRoomName,
+  setWaitingRoomId,
+} from "../stores/slices/waitingSlice";
 import { AgeRes, SidoRes } from "../apis/response/waitingRoomRes";
+import { useNavigate } from "react-router";
 
 const style = {
   position: "absolute" as "absolute",
@@ -57,7 +65,6 @@ export const MainPage: FC<IProps> = (props) => {
   const [name, setName] = useState("");
   const [headCounts, setHeadCounts] = useState(0);
   const [open, setOpen] = useState(false);
- 
 
   const handleOpen = () => setOpen(true);
   const handleClose = () => {
@@ -85,32 +92,34 @@ export const MainPage: FC<IProps> = (props) => {
     setName(event.target.value);
   };
 
-  const userId = useSelector((state: any)=>state.user.userId);
+  const userId = useSelector((state: any) => state.user.userId);
   const dispatch = useDispatch();
-  
-  const setRoomData = () => {
+
+  const navigate = useNavigate();
+  const setRoomData = async () => {
     if (!ageId || !headCounts || !sidoId || !name.length) {
       alert("빈칸을 모두 채워주세요!");
     } else {
-      makeNewRoomApi.makeNewRoom({
+      const res = await makeNewRoomApi.makeNewRoom({
         name,
         head_count: headCounts,
         user_id: userId,
         age_id: ageId,
         sido_id: sidoId,
       });
+      console.log(res);
 
-      dispatch(setWaitingRoomId(0));
+      dispatch(setWaitingRoomId(res.waiting_room_id));
       dispatch(setRoomName(name));
-      dispatch(setAge((age?.find((i:AgeRes)=> i.id === ageId)?.name)));
-      dispatch(setRegion((sido?.find((i: SidoRes) => i.id === sidoId)?.name)));
+      dispatch(setAge(age?.find((i: AgeRes) => i.id === ageId)?.name));
+      dispatch(setRegion(sido?.find((i: SidoRes) => i.id === sidoId)?.name));
       dispatch(setMaster(true));
       dispatch(setHeadCount(headCounts));
 
       handleClose();
+      navigate("/waiting");
     }
   };
-
 
   return (
     <div className="mainback">
@@ -212,7 +221,6 @@ export const MainPage: FC<IProps> = (props) => {
           </Typography>
         </Box>
       </Modal>
-     
     </div>
   );
 };
