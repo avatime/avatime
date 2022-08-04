@@ -31,30 +31,9 @@ const StyledBadge = styled(Badge)<BadgeProps>(({ theme }) => ({
 export const WaitingPage: FC<IProps> = (props) => {
   const waitingState = useSelector((state: any) => state.waiting);
 
-  const [waitingUserList, setWaitingUserList] = useState<WaitingUser[]>([
-    {
-      id: 1,
-      type: 0,
-      name: "name",
-      gender: "F",
-      profile_img_path:
-        "https://w.namu.la/s/0c6301df01fc4f180ec65717bad3d0254258abf0be33299e55df7c261040f517518eb9008a1a2cd3d7b8b7777d70182c185bc891b1054dc57b11cc46fd29130a2a753ecb9c9d97808c741bf78325ddde5e063378f4c14bc13901c722f2a02ba5",
-    },
-    { id: 2, type: 1, name: "name", gender: "F", profile_img_path: "string;" },
-    { id: 3, type: 1, name: "name", gender: "M", profile_img_path: "string;" },
-    { id: 4, type: 1, name: "name", gender: "M", profile_img_path: "string;" },
-    { id: 5, type: 1, name: "name", gender: "M", profile_img_path: "string;" },
-    { id: 6, type: 1, name: "name", gender: "M", profile_img_path: "string;" },
-    { id: 7, type: 1, name: "name", gender: "F", profile_img_path: "string;" },
-    { id: 8, type: 1, name: "name", gender: "F", profile_img_path: "string;" },
-  ]);
+  const [waitingUserList, setWaitingUserList] = useState<WaitingUser[]>([]);
 
-  const [candidateList, setCandidateList] = useState<WaitingUser[]>([
-    { id: 1, type: 1, name: "name", gender: "F", profile_img_path: "string;" },
-    { id: 2, type: 1, name: "name", gender: "F", profile_img_path: "string;" },
-    { id: 3, type: 1, name: "name", gender: "F", profile_img_path: "string;" },
-    { id: 4, type: 1, name: "name", gender: "F", profile_img_path: "string;" },
-  ]);
+  const [candidateList, setCandidateList] = useState<WaitingUser[]>([]);
 
   useEffect(() => {
     if (waitingState?.roomId) {
@@ -122,10 +101,7 @@ export const WaitingPage: FC<IProps> = (props) => {
             <Grid container spacing={2} height="100%">
               {waitingUserList.map((it) => (
                 <Grid item xs={12 / (waitingState.headCount / 2)} key={it.id} height="50%">
-                  <WaitingUserProfile
-                    waitingUser={it}
-                    onClickAvatar={onOpenInfo}
-                  />
+                  <WaitingUserProfile waitingUser={it} onClickAvatar={onOpenInfo} />
                 </Grid>
               ))}
             </Grid>
