@@ -6,8 +6,8 @@ import CancelIcon from "@mui/icons-material/Cancel";
 
 interface IProps {
   waitingUser: WaitingUser;
-  onClickAccept: () => void;
-  onClickRefuse: () => void;
+  onClickAccept: (userId: number) => void;
+  onClickRefuse: (userId: number) => void;
 }
 
 export const CandidateUser: FC<IProps> = ({ waitingUser, onClickAccept, onClickRefuse }) => {
@@ -18,10 +18,10 @@ export const CandidateUser: FC<IProps> = ({ waitingUser, onClickAccept, onClickR
       <Typography variant="subtitle2" flex={1}>
         {waitingUser.name}
       </Typography>
-      <IconButton color="success" onClick={onClickAccept}>
+      <IconButton color="success" onClick={() => onClickAccept(waitingUser.id)}>
         <CheckCircleIcon />
       </IconButton>
-      <IconButton color="error" onClick={onClickRefuse}>
+      <IconButton color="error" onClick={() => onClickRefuse(waitingUser.id)}>
         <CancelIcon />
       </IconButton>
     </Box>

@@ -16,6 +16,7 @@ import { WaitingUser } from "../apis/response/waitingRoomRes";
 import { ReceptionModal } from "../components/waitingRoom/ReceptionModal";
 import { WaitingUserProfile } from "../components/waitingRoom/WaitingUserProfile";
 import { UserInfoModal } from "../components/waitingRoom/UserInfoModal";
+import { requestEnterRoomApi } from "../apis/waitingRoomApi";
 
 interface IProps {}
 
@@ -30,6 +31,7 @@ const StyledBadge = styled(Badge)<BadgeProps>(({ theme }) => ({
 
 export const WaitingPage: FC<IProps> = (props) => {
   const waitingState = useSelector((state: any) => state.waiting);
+  const userId = useSelector((state: any) => state.user.userId);
 
   const [waitingUserList, setWaitingUserList] = useState<WaitingUser[]>([]);
 
@@ -70,9 +72,14 @@ export const WaitingPage: FC<IProps> = (props) => {
   };
 
   const navigate = useNavigate();
-  const onClickExit = () => {
+  const onClickExit = async () => {
     // eslint-disable-next-line no-restricted-globals
     if (confirm("정말 나가시겠습니까?")) {
+      await requestEnterRoomApi.requestEnterRoom({
+        room_id: waitingState?.roomId,
+        user_id: userId,
+        type: 5,
+      });
       navigate("/");
     }
   };
