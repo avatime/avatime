@@ -36,7 +36,6 @@ import com.ssafy.db.entity.User;
 import com.ssafy.db.entity.WaitingRoom;
 import com.ssafy.db.entity.WaitingRoomUserRelation;
 import com.ssafy.db.repository.UserRepository;
-import com.ssafy.db.repository.WaitingRoomRepository;
 import com.ssafy.db.repository.WaitingRoomUserRelationRepository;
 import com.ssafy.db.entity.Gender;
 
@@ -172,13 +171,16 @@ public class WaitingRoomController {
 			if(value.getType() == 1) { // 입장 가능한지 조사
 				WaitingRoom room = userState.getWaitingRoom();
 				Gender gender = genderService.findById(value.getRoomId()).get();
+				HashMap<String, Long> response = new HashMap<>();
 				if (user.getGender() == "M") {
 					if (gender.getM() < room.getHeadCount() / 2) {
 						userState.setType(value.getType());
 						wrurRepository.saveAndFlush(userState);
 						waitingRoom();
 						result(value.getUserId(), true);
-						return ResponseEntity.status(200).body(chattingRoomService.findByRoomIdAndType(value.getRoomId()).get().getId());
+						response.put("chatting_room_id", chattingRoomService.findByRoomIdAndType(value.getRoomId()).get().getId());
+						response.put("waiting_room_id", value.getRoomId());
+						return ResponseEntity.status(200).body(response);
 					}
 					else {
 						result(value.getUserId(), false);
@@ -191,7 +193,9 @@ public class WaitingRoomController {
 						wrurRepository.saveAndFlush(userState);
 						waitingRoom();
 						result(value.getUserId(), true);
-						return ResponseEntity.status(200).body(chattingRoomService.findByRoomIdAndType(value.getRoomId()).get().getId());
+						response.put("chatting_room_id", chattingRoomService.findByRoomIdAndType(value.getRoomId()).get().getId());
+						response.put("waiting_room_id", value.getRoomId());
+						return ResponseEntity.status(200).body(response);
 					}
 					else {
 						result(value.getUserId(), false);
