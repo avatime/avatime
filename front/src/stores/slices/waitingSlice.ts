@@ -22,7 +22,7 @@ const waitingSlice = createSlice({
   name: "waiting",
   initialState,
   reducers: {
-    setRoomId(state, action) {
+    setWaitingRoomId(state, action) {
       state.roomId = action.payload;
     },
     setRoomName(state, action) {
@@ -34,9 +34,16 @@ const waitingSlice = createSlice({
     setRegion(state, action) {
       state.region = action.payload;
     },
+    setMaster(state, action) {
+      state.isMaster = action.payload;
+    },
+    setHeadCount(state, action) {
+      state.headCount = action.payload;
+    },
   },
 });
 
-export const { setRoomId, setRoomName, setAge, setRegion } = waitingSlice.actions;
+export const { setWaitingRoomId, setRoomName, setAge, setRegion, setMaster, setHeadCount } =
+  waitingSlice.actions;
 
 export default waitingSlice.reducer;

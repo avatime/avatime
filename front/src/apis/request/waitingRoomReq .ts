@@ -23,3 +23,9 @@ export interface AgeReq {
   id: number;
   name: string;
 }
+
+export interface RequestEnterRoomReq {
+  user_id: number;
+  room_id: number;
+  type: number;
+}
