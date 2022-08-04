@@ -273,5 +273,4 @@ public class UserServiceImpl implements UserService {
 
 		return new HttpEntity<>(params, headers);
 	}
-		
 }

@@ -1,5 +1,7 @@
 package com.ssafy.api.service;
 
+import java.util.Optional;
+
 import org.springframework.http.HttpEntity;
 import org.springframework.http.ResponseEntity;
 import org.springframework.util.MultiValueMap;
@@ -27,6 +29,5 @@ public interface UserService {
 	ResponseEntity<String> requestAccessToken(HttpEntity request);
 	HttpEntity<MultiValueMap<String, String>> generateAuthCodeRequest(String code, String state);
 	boolean checkNameDuplicate(String name);
-	
 
 }

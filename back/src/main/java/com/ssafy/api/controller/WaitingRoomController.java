@@ -35,6 +35,9 @@ import com.ssafy.db.entity.Sido;
 import com.ssafy.db.entity.User;
 import com.ssafy.db.entity.WaitingRoom;
 import com.ssafy.db.entity.WaitingRoomUserRelation;
+import com.ssafy.db.repository.UserRepository;
+import com.ssafy.db.repository.WaitingRoomRepository;
+import com.ssafy.db.repository.WaitingRoomUserRelationRepository;
 import com.ssafy.db.entity.Gender;
 
 import io.swagger.annotations.Api;
@@ -71,6 +74,12 @@ public class WaitingRoomController {
 	
 	@Autowired
 	private final GenderService genderService;
+	
+	@Autowired
+	private final WaitingRoomUserRelationRepository wrurRepository;
+	
+	@Autowired
+	private final UserRepository userRepository;
 
 	private final SimpMessageSendingOperations simp;
 	
@@ -135,7 +144,7 @@ public class WaitingRoomController {
 			@RequestBody @ApiParam(value = "대기방 생성시 정보", required = true) WaitingRoomPostReq value) {
 		WaitingRoom waitingRoom = waitingRoomService.save(value);
 		User user = userService.getUserByUserId(value.getUserId());
-		waitingRoomUserRelationService.save(user, waitingRoom);
+		waitingRoomUserRelationService.save(0, user, waitingRoom);
 		ChattingRoom chattingRoom = chattingRoomService.saveByWaitingRoom(waitingRoom.getId());
 		waitingRoom();
 		return new ResponseEntity<ChattingRoom>(chattingRoom, HttpStatus.OK);
@@ -154,44 +163,52 @@ public class WaitingRoomController {
 	}
 	
 	@PostMapping("/state")
-	@ApiOperation(value = "이용자가 타입을 변경하려는 요청", notes = "0: 방장, 1: 참가(수락), 2: 입장 신청 3: 신청 취소 4: 거절 5: 나가기")
+	@ApiOperation(value = "이용자의 타입을 변경하려는 요청", notes = "0: 방장, 1: 참가(수락), 2: 입장 신청 3: 신청 취소 4: 거절 5: 나가기")
 	public ResponseEntity<?> state(@RequestBody @ApiParam(value = "유저의 타입 변경", required = true) StatePostReq value) {
-		WaitingRoomUserRelation userState = waitingRoomUserRelationService.findBystate(value.getRoomId(), value.getUserId()).get();
-		User user = userState.getUser();
-		if(value.getType() == 1) { // 입장 가능한지 조사
-			WaitingRoom room = userState.getWaitingRoom();
-			Gender gender = genderService.findById(value.getRoomId()).get();
-			if (user.getGender() == "M") {
-				if (gender.getM() < room.getHeadCount() / 2) {
-					userState.setType(value.getType());
-					waitingRoom();
-					result(value.getUserId(), true);
-					return ResponseEntity.status(200).body(chattingRoomService.findByRoomIdAndType(value.getRoomId()).get().getId());
+		WaitingRoomUserRelation userState = waitingRoomUserRelationService.findBystate(value.getRoomId(), value.getUserId()).orElse(null);
+		if (userState != null) {
+			User user = userState.getUser();
+			
+			if(value.getType() == 1) { // 입장 가능한지 조사
+				WaitingRoom room = userState.getWaitingRoom();
+				Gender gender = genderService.findById(value.getRoomId()).get();
+				if (user.getGender() == "M") {
+					if (gender.getM() < room.getHeadCount() / 2) {
+						userState.setType(value.getType());
+						wrurRepository.saveAndFlush(userState);
+						waitingRoom();
+						result(value.getUserId(), true);
+						return ResponseEntity.status(200).body(chattingRoomService.findByRoomIdAndType(value.getRoomId()).get().getId());
+					}
+					else {
+						result(value.getUserId(), false);
+						return ResponseEntity.status(409).body("");
+					}
 				}
 				else {
-					result(value.getUserId(), false);
-					return ResponseEntity.status(409).body("");
+					if (gender.getF() < room.getHeadCount() / 2) {
+						userState.setType(value.getType());
+						wrurRepository.saveAndFlush(userState);
+						waitingRoom();
+						result(value.getUserId(), true);
+						return ResponseEntity.status(200).body(chattingRoomService.findByRoomIdAndType(value.getRoomId()).get().getId());
+					}
+					else {
+						result(value.getUserId(), false);
+						return ResponseEntity.status(409).body("");
+					}
 				}
+			}
+			else if(value.getType() == 4) {
+				userState.setType(value.getType());
+				result(user.getId(), false);
 			}
 			else {
-				if (gender.getF() < room.getHeadCount() / 2) {
-					userState.setType(value.getType());
-					waitingRoom();
-					result(value.getUserId(), true);
-					return ResponseEntity.status(200).body(chattingRoomService.findByRoomIdAndType(value.getRoomId()).get().getId());
-				}
-				else {
-					result(value.getUserId(), false);
-					return ResponseEntity.status(409).body("");
-				}
+				userState.setType(value.getType());
 			}
 		}
-		else if(value.getType() == 4) {
-			userState.setType(value.getType());
-			result(user.getId(), false);
-		}
 		else {
-			userState.setType(value.getType());
+			waitingRoomUserRelationService.save(value.getType(), userRepository.findById(value.getUserId()).get(), waitingRoomService.findById(value.getRoomId()).get());
 		}
 		return null;
 	}

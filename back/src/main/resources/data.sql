@@ -388,10 +388,21 @@ insert into waiting_room_user_relation(type, user_id, waiting_room_id) values (2
 insert into waiting_room_user_relation(type, user_id, waiting_room_id) values (2, 195, 8);
 insert into waiting_room_user_relation(type, user_id, waiting_room_id) values (2, 124, 7);
 
-insert into chatting_room (room_id, type) values (0, 2);
-insert into chatting_room (room_id, type) values (0, 0);
-insert into chatting_room (room_id, type) values (0, 1);
-insert into chatting_room (room_id, type) values (0, 1);
+insert into chatting_room (room_id, type) values (1, 2);
+insert into chatting_room (room_id, type) values (2, 2);
+insert into chatting_room (room_id, type) values (3, 2);
+insert into chatting_room (room_id, type) values (4, 2);
+insert into chatting_room (room_id, type) values (5, 2);
+insert into chatting_room (room_id, type) values (6, 2);
+insert into chatting_room (room_id, type) values (7, 2);
+insert into chatting_room (room_id, type) values (8, 2);
+
+insert into chatting_room (room_id, type) values (3, 0);
+insert into chatting_room (room_id, type) values (3, 1);
+insert into chatting_room (room_id, type) values (5, 0);
+insert into chatting_room (room_id, type) values (5, 1);
+insert into chatting_room (room_id, type) values (7, 0);
+insert into chatting_room (room_id, type) values (7, 1);
 
 insert into waiting_room_user_relation(type, waiting_room_id, user_id) values (0, 5, 25);
 insert into waiting_room_user_relation(type, waiting_room_id, user_id) values (0, 6, 29);
