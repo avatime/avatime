@@ -1,7 +1,7 @@
 
 import { SuccessRes } from "./response/successRes";
 import { RequestEnterRoomReq, WaitingRoomEnterReq, WaitingRoomMakeReq } from "./request/waitingRoomReq ";
-import { AgeRes, requestEnterRoomRes, SidoRes } from "./response/waitingRoomRes";
+import { AgeRes, RequestEnterRoomRes, SidoRes } from "./response/waitingRoomRes";
 import { axiosInstance } from './axiosInstance';
 import axios from "axios";
 //나이어린순으로 정렬
@@ -37,23 +37,23 @@ const ageApi: AgeApi = {
 //대기방 생성------------------------------------------------
 
 interface MakeNewRoomApi {
-  makeNewRoom(waitingRoomMakeReq: WaitingRoomMakeReq): Promise<SuccessRes>;
+  makeNewRoom(waitingRoomMakeReq: WaitingRoomMakeReq): Promise<RequestEnterRoomRes>;
 }
 
 const makeNewRoomApi: MakeNewRoomApi = {
  
-  makeNewRoom: async function (waitingRoomMakeReq: WaitingRoomMakeReq): Promise<SuccessRes> {
+  makeNewRoom: async function (waitingRoomMakeReq: WaitingRoomMakeReq): Promise<RequestEnterRoomRes> {
     return (await axiosInstance.post(`/waiting/create`, waitingRoomMakeReq)).data;
   },
 };
 
 //대기방 입장 신청-------------------------------------------------------------
 interface RequestEnterRoomApi {
-  requestEnterRoom(requestEnterRoomReq: RequestEnterRoomReq): Promise<requestEnterRoomRes>;
+  requestEnterRoom(requestEnterRoomReq: RequestEnterRoomReq): Promise<RequestEnterRoomRes>;
 }
 
 const requestEnterRoomApi : RequestEnterRoomApi = {
-  requestEnterRoom: async function  (requestEnterRoomReq: RequestEnterRoomReq): Promise<requestEnterRoomRes>{
+  requestEnterRoom: async function  (requestEnterRoomReq: RequestEnterRoomReq): Promise<RequestEnterRoomRes>{
     return (await axiosInstance.post(`/waiting/state`, requestEnterRoomReq)).data;
   },
 }
