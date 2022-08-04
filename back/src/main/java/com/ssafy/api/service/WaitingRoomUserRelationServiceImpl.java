@@ -23,8 +23,9 @@ public class WaitingRoomUserRelationServiceImpl implements WaitingRoomUserRelati
 	
 	@Override
 	@Transactional
-	public WaitingRoomUserRelation save(User user, WaitingRoom waitingRoom) {
+	public WaitingRoomUserRelation save(int type, User user, WaitingRoom waitingRoom) {
 		WaitingRoomUserRelation waitingRoomUserRelation = WaitingRoomUserRelation.builder()
+				.type(type)
 				.waitingRoom(waitingRoom)
 				.user(user).build();
 		return waitingRoomUserRelationRepository.save(waitingRoomUserRelation);
