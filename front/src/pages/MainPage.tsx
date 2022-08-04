@@ -13,8 +13,10 @@ import { useQuery } from "react-query";
 import { ageApi, makeNewRoomApi, sidoApi } from "../apis/waitingRoomApi";
 import { ResultWaitingModal } from "../components/waitingRoom/ResultWaitingModal";
 import ava from "../assets/result_waiting_ava.gif";
-import ava2 from "../assets/result_waiting_ava2.gif";
-import CloseIcon from "@mui/icons-material/Close";
+
+import { useDispatch, useSelector } from "react-redux";
+import { setAge, setHeadCount, setMaster, setRegion, setRoomName, setWaitingRoomId } from "../stores/slices/waitingSlice";
+import { AgeRes, SidoRes } from "../apis/response/waitingRoomRes";
 
 const style = {
   position: "absolute" as "absolute",
@@ -55,7 +57,7 @@ export const MainPage: FC<IProps> = (props) => {
   const [name, setName] = useState("");
   const [headCounts, setHeadCounts] = useState(0);
   const [open, setOpen] = useState(false);
-  const [openWaiting, setopenWaiting] = useState(false);
+ 
 
   const handleOpen = () => setOpen(true);
   const handleClose = () => {
@@ -83,6 +85,9 @@ export const MainPage: FC<IProps> = (props) => {
     setName(event.target.value);
   };
 
+  const userId = useSelector((state: any)=>state.user.userId);
+  const dispatch = useDispatch();
+  
   const setRoomData = () => {
     if (!ageId || !headCounts || !sidoId || !name.length) {
       alert("빈칸을 모두 채워주세요!");
@@ -90,19 +95,22 @@ export const MainPage: FC<IProps> = (props) => {
       makeNewRoomApi.makeNewRoom({
         name,
         head_count: headCounts,
-        user_id: 0,
+        user_id: userId,
         age_id: ageId,
         sido_id: sidoId,
       });
+
+      dispatch(setWaitingRoomId(0));
+      dispatch(setRoomName(name));
+      dispatch(setAge((age?.find((i:AgeRes)=> i.id === ageId)?.name)));
+      dispatch(setRegion((sido?.find((i: SidoRes) => i.id === sidoId)?.name)));
+      dispatch(setMaster(true));
+      dispatch(setHeadCount(headCounts));
 
       handleClose();
     }
   };
 
-  const rejectRoom = () => {
-    setopenWaiting(false);
-
-  }
 
   return (
     <div className="mainback">
@@ -204,26 +212,7 @@ export const MainPage: FC<IProps> = (props) => {
           </Typography>
         </Box>
       </Modal>
-      <ResultWaitingModal open={openWaiting} justifyContent={"center"}>
-        <>
-          <Box
-            display="flex"
-            flexDirection="column"
-            alignItems="center"
-            width="100%"
-            mb={4}
-            sx={{ marginTop: "10%" }}
-          >
-            <img src={ava2} alt="ava2" />
-            <Typography variant="h4">방장이 입장 심사 중 ~</Typography>
-          </Box>
-         
-            <Button size="large" color="error" onClick={rejectRoom}>
-            <CloseIcon/> 입장 대기 취소
-            </Button>
-         
-        </>
-      </ResultWaitingModal>
+     
     </div>
   );
 };
