@@ -53,8 +53,8 @@ export const MainHeader: FC<IProps> = ({ hideSettings = false }) => {
 
   return (
     <>
-      <Box display="flex" justifyContent="center" alignItems="center" marginBottom="2%">
-        <Link to="/main" style={{ display: "flex", justifyContent: "center" }}>
+      <Box display="flex" justifyContent="right" alignItems="center" marginBottom="2%">
+        <Link to="/main">
           <img src={logo} alt="로고" style={{ width: "70%", paddingTop: "2%" }} />
         </Link>
 
@@ -63,7 +63,7 @@ export const MainHeader: FC<IProps> = ({ hideSettings = false }) => {
             <Tooltip title="설정">
               <IconButton
                 onClick={handleOpenUserMenu}
-                style={{ position: "absolute", right: "3%" }}
+                style={{ marginLeft: "27%", marginRight: "3%" }}
               >
                 <Avatar
                   alt="프로필 사진"
