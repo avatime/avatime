@@ -139,14 +139,17 @@ public class WaitingRoomController {
 	
 	@PostMapping("/create")
 	@ApiOperation(value = "대기방 생성", notes = "대기방을 생성합니다.")
-	public ResponseEntity<ChattingRoom> create(
+	public ResponseEntity<HashMap<String, Long>> create(
 			@RequestBody @ApiParam(value = "대기방 생성시 정보", required = true) WaitingRoomPostReq value) {
 		WaitingRoom waitingRoom = waitingRoomService.save(value);
 		User user = userService.getUserByUserId(value.getUserId());
 		waitingRoomUserRelationService.save(0, user, waitingRoom);
 		ChattingRoom chattingRoom = chattingRoomService.saveByWaitingRoom(waitingRoom.getId());
 		waitingRoom();
-		return new ResponseEntity<ChattingRoom>(chattingRoom, HttpStatus.OK);
+		HashMap<String, Long> response = new HashMap<>();
+		response.put("chatting_room_id", chattingRoom.getId());
+		response.put("waiting_room_id", chattingRoom.getRoomId());
+		return new ResponseEntity<HashMap<String, Long>>(response, HttpStatus.OK);
 	}
 
 	@PatchMapping("/start")
