@@ -14,6 +14,8 @@ import javax.persistence.TemporalType;
 import org.hibernate.annotations.DynamicInsert;
 import org.hibernate.annotations.DynamicUpdate;
 
+import com.fasterxml.jackson.annotation.JsonProperty;
+
 import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -30,6 +32,7 @@ import lombok.Setter;
 public class ChattingRoom extends BaseEntity {
 
     @Column(nullable = false, columnDefinition = "INT UNSIGNED")
+    @JsonProperty("room_id")
     private Long roomId;
     
     @Column(updatable = false, nullable = false, columnDefinition = "TINYINT(1)")
@@ -37,6 +40,7 @@ public class ChattingRoom extends BaseEntity {
     
     @Temporal(TemporalType.TIMESTAMP)
     @Column(updatable = false, columnDefinition = "TIMESTAMP DEFAULT CURRENT_TIMESTAMP")
+    @JsonProperty("created_time")
     private Date createdTime;
     
     @PrePersist
