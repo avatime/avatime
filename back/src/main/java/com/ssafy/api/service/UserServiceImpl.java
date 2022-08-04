@@ -107,8 +107,8 @@ public class UserServiceImpl implements UserService {
 	
 	// 유저 정보 수정
 	@Override
-	public User updateUserInfo(Long userId, UserUpdatePostReq updateInfo) {
-		Optional<User> user = userRepository.findById(userId);
+	public User updateUserInfo(Long id, UserUpdatePostReq updateInfo) {
+		Optional<User> user = userRepository.findById(id);
 		if (!user.isPresent()) {
 			throw new EntityNotFoundException("존재하지 않는 회원입니다.");
 		}
