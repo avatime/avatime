@@ -10,18 +10,22 @@ import SearchIcon from "@mui/icons-material/Search";
 import { WaitingRoomInfoRes } from "../../apis/response/waitingRoomRes";
 import * as Stomp from "stompjs";
 import SockJS from "sockjs-client";
-import { useSelector } from "react-redux";
-
-import {
-  Button,
-  IconButton,
-  InputBase,
-  Stack,
-  ToggleButton,
-  ToggleButtonGroup,
-} from "@mui/material";
+import { useDispatch, useSelector } from "react-redux";
+import CloseIcon from "@mui/icons-material/Close";
+import ava2 from "../../assets/result_waiting_ava2.gif";
+import { Box, Button, IconButton, InputBase, Stack, ToggleButton, Typography } from "@mui/material";
 import { WS_BASE_URL } from "../../apis/axiosInstance";
-import { Construction, Filter } from "@mui/icons-material";
+import { requestEnterRoomApi } from "../../apis/waitingRoomApi";
+import { ResultWaitingModal } from "../waitingRoom/ResultWaitingModal";
+import {
+  setWaitingRoomId,
+  setRoomName,
+  setAge,
+  setRegion,
+  setMaster,
+  setHeadCount,
+} from "../../stores/slices/waitingSlice";
+import { useNavigate } from "react-router";
 
 interface IProps {}
 
@@ -76,6 +80,8 @@ const columns: Column[] = [
 ];
 
 export const WaitingRoomList: FC<IProps> = (props) => {
+  const userId = useSelector((state: any) => state.user.userId);
+
   //소켓 통신----------------------------------------------
   const [originData, setOriginData] = useState<WaitingRoomInfoRes[]>([]);
   const [data, setData] = useState<WaitingRoomInfoRes[]>([]);
@@ -92,6 +98,7 @@ export const WaitingRoomList: FC<IProps> = (props) => {
   };
 
   const [keyword, setKeyword] = useState("");
+  const navigate = useNavigate();
 
   const searchByName = (event: React.ChangeEvent<HTMLInputElement>) => {
     setKeyword(event.target.value);
@@ -111,10 +118,21 @@ export const WaitingRoomList: FC<IProps> = (props) => {
         setOriginData(JSON.parse(response.body));
       });
       client.send("/app/getList", {}, "aaa");
+
+      //대기방 입장신청 결과 소켓 통신
+      client.subscribe(`/enter/result/${userId}`, function (response: { body: string }) {
+        console.log(response.body);
+        if (JSON.parse(response.body).success) {
+          navigate("/waiting");
+          //웨이팅방입장!!!!!
+        } else {
+          setopenWaiting(false);
+        }
+      });
     });
 
     setStompClient(client);
-  }, [stompClient]);
+  }, [navigate, stompClient, userId]);
 
   useEffect(() => {
     setData(
@@ -133,6 +151,39 @@ export const WaitingRoomList: FC<IProps> = (props) => {
         .filter((room) => room.name.includes(keyword))
     );
   }, [keyword, originData, selected, userGender]);
+
+  const [roomId, setRoomId] = useState(0);
+
+  const [openWaiting, setopenWaiting] = useState(false);
+  const rejectRoom = () => {
+    setopenWaiting(false);
+
+    requestEnterRoomApi.requestEnterRoom({
+      user_id: userId,
+      room_id: roomId,
+      type: 3,
+    });
+    console.log(roomId);
+  };
+
+  const dispatch = useDispatch();
+  const enterRoom = (waitingRoomInfoRes: WaitingRoomInfoRes) => {
+    setRoomId(waitingRoomInfoRes.id);
+
+    requestEnterRoomApi.requestEnterRoom({
+      user_id: userId,
+      room_id: waitingRoomInfoRes.id,
+      type: 2,
+    });
+
+    setopenWaiting(true);
+    dispatch(setWaitingRoomId(waitingRoomInfoRes.id));
+    dispatch(setRoomName(waitingRoomInfoRes.name));
+    dispatch(setAge(waitingRoomInfoRes.age));
+    dispatch(setRegion(waitingRoomInfoRes.sido));
+    dispatch(setMaster(false));
+    dispatch(setHeadCount(waitingRoomInfoRes.head_count));
+  };
 
   //------------------------------------------------------------------------------------------
   return (
@@ -185,7 +236,7 @@ export const WaitingRoomList: FC<IProps> = (props) => {
             </TableHead>
             <TableBody>
               {data?.map((row, idx) => (
-                <TableRow key={idx}>
+                <TableRow hover onClick={() => enterRoom(row)} key={idx}>
                   {columns.map((column) => (
                     <TableCell key={column.id} align={column.align}>
                       {column.format ? column.format(row) : row[column.id]}
@@ -197,6 +248,26 @@ export const WaitingRoomList: FC<IProps> = (props) => {
           </Table>
         </TableContainer>
       </Paper>
+
+      <ResultWaitingModal open={openWaiting} justifyContent={"center"}>
+        <>
+          <Box
+            display="flex"
+            flexDirection="column"
+            alignItems="center"
+            width="100%"
+            mb={4}
+            sx={{ marginTop: "10%" }}
+          >
+            <img src={ava2} alt="ava2" />
+            <Typography variant="h4">방장이 입장 심사 중 ~</Typography>
+          </Box>
+
+          <Button size="large" color="error" onClick={rejectRoom}>
+            <CloseIcon /> 입장 대기 취소
+          </Button>
+        </>
+      </ResultWaitingModal>
     </div>
   );
 };
