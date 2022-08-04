@@ -3,7 +3,6 @@ import { Container } from "@mui/material";
 import CssBaseline from "@mui/material/CssBaseline";
 import Box from "@mui/material/Box";
 import { ProfileArea } from "../components/login/ProfileArea";
-import { MyPageInfo } from "../components/login/MyPageInfo";
 import "../style.css";
 import { Logo } from '../components/login/Logo';
 

@@ -1,14 +1,15 @@
-import { Avatar, Box, Typography } from "@mui/material";
-import { url } from "inspector";
+import { Avatar, Box, Typography, IconButton, useTheme } from '@mui/material';
 import React, { FC } from "react";
 import { WaitingUser } from "../../apis/response/waitingRoomRes";
 import Crown from "../../assets/crown.png";
 
 interface IProps {
   waitingUser: WaitingUser;
+  onClickAvatar: (userId: number) => void;
 }
 
-export const WaitingUserProfile: FC<IProps> = ({ waitingUser }) => {
+export const WaitingUserProfile: FC<IProps> = ({ waitingUser, onClickAvatar }) => {
+  const theme = useTheme();
   return (
     <Box
       borderRadius="10px"
@@ -19,7 +20,7 @@ export const WaitingUserProfile: FC<IProps> = ({ waitingUser }) => {
       justifyContent="center"
     >
       <Box
-        bgcolor={waitingUser.gender === "M" ? "blue" : "red"}
+        bgcolor={waitingUser.gender === "M" ? theme.palette.primary.light : theme.palette.error.light}
         left="20px"
         right="20px"
         top="20px"
@@ -27,29 +28,36 @@ export const WaitingUserProfile: FC<IProps> = ({ waitingUser }) => {
         position="absolute"
         borderRadius="50%"
       >
-        <Avatar
-          src={waitingUser.profile_img_path}
-          alt="profile"
+        <IconButton
+          onClick={() => onClickAvatar(waitingUser.id)}
           sx={{
             position: "absolute",
-            left: "25px",
-            right: "25px",
-            top: "25px",
-            bottom: "25px",
+            left: "10px",
+            right: "10px",
+            top: "10px",
+            bottom: "10px",
             width: "auto",
             height: "auto",
           }}
-        />
+        >
+          <Avatar
+            src={waitingUser.profile_img_path}
+            alt="profile"
+            sx={{
+              width: "100%",
+              height: "100%",
+            }}
+          />
+        </IconButton>
         {waitingUser.type === 0 && (
           <img
             src={Crown}
             alt="방장"
             style={{
-              width: "32px",
-              height: "32px",
+              width: "24px",
+              height: "24px",
               position: "absolute",
-              right: "5px",
-              top: "5px",
+              right: "0",
             }}
           />
         )}
