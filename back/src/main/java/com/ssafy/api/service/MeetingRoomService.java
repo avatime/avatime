@@ -18,4 +18,8 @@ public interface MeetingRoomService {
 	public Long createMeetingRoom(Long waitingRoomId) throws Exception;
 	public void timer(Long meetingRoomId, int time, String type) throws Exception;
 	public int userNumber(Long meetingRoomId) throws Exception;
+	public void sendMeetingRoomInfo(Long meetingRoomId);
+	public MeetingRoomUserRelation findUser(Long meetingRoomId, Long userId);
+	public void save(MeetingRoomUserRelation meetingRoomUserRelation);
+	public void MeetingRoomInfo(Long meetingRoomId);
 }

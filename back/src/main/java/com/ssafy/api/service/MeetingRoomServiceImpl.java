@@ -8,6 +8,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.messaging.simp.SimpMessageSendingOperations;
 import org.springframework.stereotype.Service;
 
+import com.ssafy.api.response.MeetingRoomInfoRes;
 import com.ssafy.db.entity.MeetingRoom;
 import com.ssafy.db.entity.MeetingRoomUserRelation;
 import com.ssafy.db.entity.WaitingRoomUserRelation;
@@ -84,7 +85,7 @@ public class MeetingRoomServiceImpl implements MeetingRoomService {
 	@Override
 	public List<MeetingRoomUserRelation> finalChoiceResult(Long meetingRoomId) throws Exception {
 		// TODO Auto-generated method stub
-		return meetingRoomUserRelationRepository.findAllByMeetingRoomId(meetingRoomId);
+		return meetingRoomUserRelationRepository.findAllByMeetingRoomIdAndLeftMeeting(meetingRoomId, false);
 	}
 
 	@Override
@@ -139,8 +140,36 @@ public class MeetingRoomServiceImpl implements MeetingRoomService {
 	@Override
 	public int userNumber(Long meetingRoomId) throws Exception {
 		// TODO Auto-generated method stub
-		return meetingRoomUserRelationRepository.countByMeetingRoomId(meetingRoomId);
+		return meetingRoomUserRelationRepository.countByMeetingRoomIdAndLeftMeeting(meetingRoomId, false);
 	}
 
+	@Override
+	public void sendMeetingRoomInfo(Long meetingRoomId) {
+		// TODO Auto-generated method stub
+		sendingOperations.convertAndSend("topic/meeting/"+meetingRoomId, 1);
+	}
+
+	@Override
+	public MeetingRoomUserRelation findUser(Long meetingRoomId, Long userId) {
+		// TODO Auto-generated method stub
+		return meetingRoomUserRelationRepository.findByMeetingRoomIdAndUserId(meetingRoomId, userId).get();
+	}
+
+	@Override
+	public void save(MeetingRoomUserRelation meetingRoomUserRelation) {
+		// TODO Auto-generated method stub
+		meetingRoomUserRelationRepository.save(meetingRoomUserRelation);
+	}
+
+	@Override
+	public void MeetingRoomInfo(Long meetingRoomId) {
+		// TODO Auto-generated method stub
+		MeetingRoomInfoRes meetingRoomInfo = new MeetingRoomInfoRes();
+		meetingRoomInfo.setCreated_time(meetingRoomRepository.findById(meetingRoomId).get().getCreatedTime().toString());
+		meetingRoomInfo.setChattingroom_id(chattingRoomService.findByRoomIdAndType(meetingRoomId, 0).getId());
+		List<MeetingRoomUserRelation> userList = meetingRoomUserRelationRepository.findAllByMeetingRoomIdAndLeftMeeting(meetingRoomId, false);
+		
+		sendingOperations.convertAndSend("topic/meeting/"+meetingRoomId, meetingRoomInfo);
+	}
 
 }
