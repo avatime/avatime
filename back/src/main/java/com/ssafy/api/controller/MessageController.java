@@ -50,6 +50,7 @@ public class MessageController {
         }
     	ChattingMessage message = ChattingMessage.builder()
     			.user(userService.getUserByUserId(messageReq.getUser_id()))
+                .type(messageReq.getChat_type().toString())
     			.content(messageReq.getMessage())
     			.chattingRoom(chattingRoomService.findByChatId(messageReq.getChattingroom_id()))
     			.build();

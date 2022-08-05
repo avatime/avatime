@@ -17,8 +17,10 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
+import com.ssafy.api.dto.ChatRoom;
 import com.ssafy.api.request.StatePostReq;
 import com.ssafy.api.request.WaitingRoomPostReq;
+import com.ssafy.api.request.WaitingRoomStartReq;
 import com.ssafy.api.response.WaitingRoomRes;
 import com.ssafy.api.response.WaitingUserRes;
 import com.ssafy.api.service.AgeService;
@@ -35,6 +37,8 @@ import com.ssafy.db.entity.Sido;
 import com.ssafy.db.entity.User;
 import com.ssafy.db.entity.WaitingRoom;
 import com.ssafy.db.entity.WaitingRoomUserRelation;
+import com.ssafy.db.repository.UserRepository;
+import com.ssafy.db.repository.WaitingRoomUserRelationRepository;
 import com.ssafy.db.entity.Gender;
 
 import io.swagger.annotations.Api;
@@ -71,6 +75,12 @@ public class WaitingRoomController {
 	
 	@Autowired
 	private final GenderService genderService;
+	
+	@Autowired
+	private final WaitingRoomUserRelationRepository wrurRepository;
+	
+	@Autowired
+	private final UserRepository userRepository;
 
 	private final SimpMessageSendingOperations simp;
 	
@@ -83,6 +93,7 @@ public class WaitingRoomController {
 		for (WaitingRoom wr : waitingRoom) {
 			Gender gender = genderService.findById(wr.getId()).get();
 			WaitingRoomRes w = WaitingRoomRes.builder()
+					.id(wr.getId())
 					.name(wr.getName())
 					.headCount(wr.getHeadCount())
 					.status(wr.getStatus())
@@ -90,14 +101,45 @@ public class WaitingRoomController {
 					.cntWoman(gender.getF())
 					.sido(sidoService.findById(wr.getSidoId()).get().getName())
 					.age(ageService.findById(wr.getAgeId()).get().getName())
+					.createdTime(wr.getCreatedTime())
 					.build();
 			waitingRoomList.add(w);
 		}
 		simp.convertAndSend("/topic/getList", waitingRoomList);
 	}
 	
-	@MessageMapping("/waitingUser/{wrId}")
-	public void waitingUser(@DestinationVariable Long wrId) {
+
+	@MessageMapping("/waiting/info/{wrId}")
+	public void info(@DestinationVariable Long wrId) {
+		info(wrId, -1L);
+	}
+	
+	public void info(Long wrId, Long meetingRoomId) {
+		WaitingRoom wr = waitingRoomService.findById(wrId).get();
+		HashMap<String, Object> map = new HashMap<>();
+		map.put("status", wr.getStatus());
+		List<Object> userList = new ArrayList<>();
+		List<WaitingRoomUserRelation> info = wrurRepository.findByWaitingRoomId(wrId).get();
+		for (WaitingRoomUserRelation wrur : info) {
+			if (wrur.getType() == 0 || wrur.getType() == 1 ) {
+				HashMap<String, Object> user = new HashMap<>();
+				user.put("id", wrur.getUser().getId());
+				user.put("type", wrur.getType());
+				user.put("name", wrur.getUser().getName());
+				user.put("gender", wrur.getUser().getGender());
+				user.put("profile_img_path", wrur.getUser().getProfileImagePath());
+				userList.add(user);
+			}
+		}
+		map.put("user_list", userList);
+		if (meetingRoomId != -1) {
+			map.put("meeting_room_id", meetingRoomId);
+		}
+		simp.convertAndSend("/topic/waiting/info/" + wrId, map);
+	}
+	
+	@MessageMapping("/reception/{wrId}")
+	public void reception(@DestinationVariable Long wrId) {
 		List<WaitingRoomUserRelation> wrur = waitingRoomUserRelationService.findByWaitingRoomIdAndType(wrId);
 		List<WaitingUserRes> wu = new ArrayList<>();
 		for(WaitingRoomUserRelation wr : wrur) {
@@ -109,7 +151,7 @@ public class WaitingRoomController {
 					.profileImgPath(user.getProfileImagePath()).build();
 			wu.add(wur);
 		}
-		simp.convertAndSend("/topic/waitingUser/" + wrId, wu);
+		simp.convertAndSend("/topic/reception/" + wrId, wu);
 	}
 
 	@GetMapping("/sido")
@@ -129,42 +171,56 @@ public class WaitingRoomController {
 	
 	@PostMapping("/create")
 	@ApiOperation(value = "대기방 생성", notes = "대기방을 생성합니다.")
-	public ResponseEntity<ChattingRoom> create(
+	public ResponseEntity<HashMap<String, Long>> create(
 			@RequestBody @ApiParam(value = "대기방 생성시 정보", required = true) WaitingRoomPostReq value) {
 		WaitingRoom waitingRoom = waitingRoomService.save(value);
 		User user = userService.getUserByUserId(value.getUserId());
-		waitingRoomUserRelationService.save(user, waitingRoom);
+		waitingRoomUserRelationService.save(0, user, waitingRoom);
 		ChattingRoom chattingRoom = chattingRoomService.saveByWaitingRoom(waitingRoom.getId());
 		waitingRoom();
-		return new ResponseEntity<ChattingRoom>(chattingRoom, HttpStatus.OK);
+		HashMap<String, Long> response = new HashMap<>();
+		response.put("chatting_room_id", chattingRoom.getId());
+		response.put("waiting_room_id", chattingRoom.getRoomId());
+		return new ResponseEntity<HashMap<String, Long>>(response, HttpStatus.OK);
 	}
 
 	@PatchMapping("/start")
 	@ApiOperation(value = "대기방이 미팅방으로 변경됨", notes = "미팅방을 생성합니다.")
-	public Long start(
-			@RequestBody @ApiParam(value = "미팅방을 만드려는 대기방 id", required = true) long waitingRoomId) throws Exception {
-		WaitingRoom waitingRoom = waitingRoomService.findById(waitingRoomId).get();
+	public ResponseEntity<?> start(
+			@RequestBody @ApiParam(value = "미팅방을 만드려는 대기방 id", required = true) WaitingRoomStartReq waitingRoomStartReq) throws Exception {
+		WaitingRoom waitingRoom = waitingRoomService.findById(waitingRoomStartReq.getWaitingRoomId()).get();
 		int status = 1;
 		waitingRoom.setStatus(status);
 		waitingRoom();
 		// 이 때 접수처에 있는 잉여유저들 일괄 거절처리 해야함
-		return meetingRoomService.createMeetingRoom(waitingRoomId);
+		
+		long meetingRoomId = meetingRoomService.createMeetingRoom(waitingRoomStartReq.getWaitingRoomId());
+		info(waitingRoomStartReq.getWaitingRoomId(), meetingRoomId);
+		return ResponseEntity.status(200).body("");
 	}
 	
 	@PostMapping("/state")
-	@ApiOperation(value = "이용자가 타입을 변경하려는 요청", notes = "0: 방장, 1: 참가(수락), 2: 입장 신청 3: 신청 취소 4: 거절 5: 나가기")
+	@ApiOperation(value = "이용자의 타입을 변경하려는 요청", notes = "0: 방장, 1: 참가(수락), 2: 입장 신청 3: 신청 취소 4: 거절 5: 나가기")
 	public ResponseEntity<?> state(@RequestBody @ApiParam(value = "유저의 타입 변경", required = true) StatePostReq value) {
-		WaitingRoomUserRelation userState = waitingRoomUserRelationService.findBystate(value.getRoomId(), value.getUserId()).get();
-		User user = userState.getUser();
-		if(value.getType() == 1) { // 입장 가능한지 조사
-			WaitingRoom room = userState.getWaitingRoom();
-			Gender gender = genderService.findById(value.getRoomId()).get();
-			if (user.getGender() == "M") {
-				if (gender.getM() < room.getHeadCount() / 2) {
+		WaitingRoomUserRelation userState = waitingRoomUserRelationService.findBystate(value.getRoomId(), value.getUserId()).orElse(null);
+		if (userState != null) {
+			User user = userState.getUser();
+			
+			if(value.getType() == 1) { // 입장 가능한지 조사
+				WaitingRoom room = userState.getWaitingRoom();
+				Gender gender = genderService.findById(value.getRoomId()).get();
+				HashMap<String, Long> response = new HashMap<>();
+				if ((user.getGender().equals("M") && gender.getM() < room.getHeadCount() / 2) || (user.getGender().equals("F") && gender.getF() < room.getHeadCount() / 2)) {
 					userState.setType(value.getType());
+					wrurRepository.saveAndFlush(userState);
 					waitingRoom();
-					result(value.getUserId(), true);
-					return ResponseEntity.status(200).body(chattingRoomService.findByRoomIdAndType(value.getRoomId(), 2).getId());
+					reception(value.getRoomId());
+					info(value.getRoomId());
+					ChattingRoom chattingRoom = chattingRoomService.findByRoomIdAndType(value.getRoomId(), 2);
+					result(value.getUserId(), true, chattingRoom.getId());
+					response.put("chatting_room_id", chattingRoom.getId());
+					response.put("waiting_room_id", value.getRoomId());
+					return ResponseEntity.status(200).body(response);
 				}
 				else {
 					result(value.getUserId(), false);
@@ -172,31 +228,39 @@ public class WaitingRoomController {
 				}
 			}
 			else {
-				if (gender.getF() < room.getHeadCount() / 2) {
-					userState.setType(value.getType());
-					waitingRoom();
-					result(value.getUserId(), true);
-					return ResponseEntity.status(200).body(chattingRoomService.findByRoomIdAndType(value.getRoomId(), 2).getId());
+				userState.setType(value.getType());
+				wrurRepository.saveAndFlush(userState);
+				if (value.getType() == 2 || value.getType() == 3 || value.getType() == 4) {
+					reception(value.getRoomId());
 				}
-				else {
-					result(value.getUserId(), false);
-					return ResponseEntity.status(409).body("");
+				
+				if (value.getType() == 0 || value.getType() == 5) {
+					waitingRoom();
+					info(value.getRoomId());
+				}
+				
+				if (value.getType() == 4) {
+					result(user.getId(), false);
 				}
 			}
 		}
-		else if(value.getType() == 4) {
-			userState.setType(value.getType());
-			result(user.getId(), false);
-		}
 		else {
-			userState.setType(value.getType());
+			waitingRoomUserRelationService.save(value.getType(), userRepository.findById(value.getUserId()).get(), waitingRoomService.findById(value.getRoomId()).get());
+            reception(value.getRoomId());
 		}
 		return null;
+	}
+	
+	public void result(Long userId, Boolean x, long chatRoomId) {
+		HashMap<String, Object> map = new HashMap<>();
+		map.put("success", x);
+		map.put("chatting_room_id", chatRoomId);
+		simp.convertAndSend("/topic/enter/result/" + userId, map);
 	}
 	
 	public void result(Long userId, Boolean x) {
 		HashMap<String, Boolean> success = new HashMap<>();
 		success.put("success", x);
-		simp.convertAndSend("enter/result/" + userId, success);
+		simp.convertAndSend("/topic/enter/result/" + userId, success);
 	}
 }
