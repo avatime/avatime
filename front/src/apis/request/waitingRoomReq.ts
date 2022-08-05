@@ -29,3 +29,7 @@ export interface RequestEnterRoomReq {
   room_id: number;
   type: number;
 }
+
+export interface StartPickAvatarReq {
+  waiting_room_id: number;
+}
