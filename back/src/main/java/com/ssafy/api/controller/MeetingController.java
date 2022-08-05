@@ -125,6 +125,7 @@ public class MeetingController {
     })
 	public ResponseEntity<?> finalPickStart(@RequestBody @ApiParam(value="미팅방 정보", required = true) Long meetingRoomId) throws Exception {
 		meetingRoomService.timer(meetingRoomId, 15, "pick");
+		meetingRoomService.sendMeetingRoomInfo(meetingRoomId);
 		return ResponseEntity.status(200).body("");
 	}
 	
@@ -170,5 +171,6 @@ public class MeetingController {
 		MeetingRoomUserRelation meetingRoomUser = meetingRoomService.findUser(leavingMeetingRoomReq.getMeetingRoomId(), leavingMeetingRoomReq.getUserId());
 		meetingRoomUser.setLeftMeeting(true);
 		meetingRoomService.save(meetingRoomUser);
+		meetingRoomService.sendMeetingRoomInfo(leavingMeetingRoomReq.getMeetingRoomId());
 	}
 }

@@ -21,5 +21,5 @@ public interface MeetingRoomService {
 	public void sendMeetingRoomInfo(Long meetingRoomId);
 	public MeetingRoomUserRelation findUser(Long meetingRoomId, Long userId);
 	public void save(MeetingRoomUserRelation meetingRoomUserRelation);
-	public void MeetingRoomInfo(Long meetingRoomId);
+	public MeetingRoom findById(Long meetingRoomId);
 }
