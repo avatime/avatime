@@ -180,6 +180,7 @@ export const WaitingRoomList: FC<IProps> = (props) => {
     setKeyword(event.target.value);
   };
 
+  const dispatch = useDispatch();
   useEffect(() => {
     if (!userId) {
       return;
@@ -200,8 +201,10 @@ export const WaitingRoomList: FC<IProps> = (props) => {
       //대기방 입장신청 결과 소켓 통신
       client.subscribe(`/topic/enter/result/${userId}`, function (response) {
         console.log(response.body);
-        if (JSON.parse(response.body).success) {
+        const res = JSON.parse(response.body);
+        if (res.success) {
           navigate("/waiting");
+          dispatch(setChatRoomId(res.chatting_room_id));
           //웨이팅방입장!!!!!
         } else {
           setopenWaiting(false);
@@ -212,7 +215,7 @@ export const WaitingRoomList: FC<IProps> = (props) => {
     return () => {
       client.disconnect(() => {});
     };
-  }, [navigate, userId]);
+  }, [dispatch, navigate, userId]);
 
   useEffect(() => {
     setData(
@@ -246,11 +249,10 @@ export const WaitingRoomList: FC<IProps> = (props) => {
     console.log(roomId);
   };
 
-  const dispatch = useDispatch();
   const enterRoom = async (waitingRoomInfoRes: WaitingRoomInfoRes) => {
     setRoomId(waitingRoomInfoRes.id);
 
-    const res = await requestEnterRoomApi.requestEnterRoom({
+    requestEnterRoomApi.requestEnterRoom({
       user_id: userId,
       room_id: waitingRoomInfoRes.id,
       type: 2,
@@ -263,7 +265,6 @@ export const WaitingRoomList: FC<IProps> = (props) => {
     dispatch(setSido(waitingRoomInfoRes.sido));
     dispatch(setMaster(false));
     dispatch(setHeadCount(waitingRoomInfoRes.head_count));
-    dispatch(setChatRoomId(res.chatting_room_id));
   };
 
   const setRoomData = async () => {
@@ -285,6 +286,7 @@ export const WaitingRoomList: FC<IProps> = (props) => {
       dispatch(setSido(sido?.find((i: SidoRes) => i.id === sidoId)?.name));
       dispatch(setMaster(true));
       dispatch(setHeadCount(headCounts));
+      dispatch(setChatRoomId(res.chatting_room_id));
 
       handleClose();
       navigate("/waiting");
@@ -329,7 +331,7 @@ export const WaitingRoomList: FC<IProps> = (props) => {
         </Paper>
       </Stack>
       <Paper sx={{ overflow: "hidden" }}>
-        <TableContainer sx={{maxHeight:"65vh"}}>
+        <TableContainer sx={{ maxHeight: "65vh" }}>
           <Table stickyHeader aria-label="sticky table" style={{ border: "5px ridge" }}>
             <TableHead>
               <TableRow>
@@ -353,103 +355,101 @@ export const WaitingRoomList: FC<IProps> = (props) => {
             </TableBody>
           </Table>
         </TableContainer>
-        </Paper>
-        <Box p={1} />
-        <Box sx={{ flex: 1 }}>
-          <Button
-            variant="contained"
-            aria-label="makenewroom"
-            sx={{ float: "right" }}
-            onClick={handleOpen}
-            startIcon={<Add />}
-          >
+      </Paper>
+      <Box p={1} />
+      <Box sx={{ flex: 1 }}>
+        <Button
+          variant="contained"
+          aria-label="makenewroom"
+          sx={{ float: "right" }}
+          onClick={handleOpen}
+          startIcon={<Add />}
+        >
+          새로운 방 만들기
+        </Button>
+      </Box>
+
+      <Modal
+        open={open}
+        onClose={handleClose}
+        aria-labelledby="modal-modal-title"
+        aria-describedby="modal-modal-description"
+      >
+        <Box sx={style}>
+          <Typography id="modal-modal-title" variant="h6" component="h2" textAlign="center">
             새로운 방 만들기
-          </Button>
-        </Box>
-      
-          <Modal
-            open={open}
-            onClose={handleClose}
-            aria-labelledby="modal-modal-title"
-            aria-describedby="modal-modal-description"
-          >
-            <Box sx={style}>
-              <Typography id="modal-modal-title" variant="h6" component="h2" textAlign="center">
-                새로운 방 만들기
-              </Typography>
-              <Typography id="modal-modal-description" sx={{ mt: 2 }}>
-                <Box
-                  component="form"
-                  sx={{
-                    "& .MuiTextField-root": { m: 1, width: "25ch" },
-                    display: "flex",
-                    flexDirection: "column",
-                    alignItems: "center",
-                  }}
-                  noValidate
-                  autoComplete="off"
-                >
-                  <TextField
-                    id="outlined-multiline-flexible"
-                    label="방 제목"
-                    multiline
-                    maxRows={4}
-                    value={name}
-                    onChange={handleNameChange}
-                  />
+          </Typography>
+          <Typography id="modal-modal-description" sx={{ mt: 2 }}>
+            <Box
+              component="form"
+              sx={{
+                "& .MuiTextField-root": { m: 1, width: "25ch" },
+                display: "flex",
+                flexDirection: "column",
+                alignItems: "center",
+              }}
+              noValidate
+              autoComplete="off"
+            >
+              <TextField
+                id="outlined-multiline-flexible"
+                label="방 제목"
+                multiline
+                maxRows={4}
+                value={name}
+                onChange={handleNameChange}
+              />
 
-                  <TextField
-                    id="outlined-select-currency"
-                    select
-                    label="인원수"
-                    value={headCounts}
-                    onChange={handleCountChange}
-                  >
-                    {counts.map((option) => (
-                      <MenuItem key={option.value} value={option.value}>
-                        {option.label}
-                      </MenuItem>
-                    ))}
-                  </TextField>
+              <TextField
+                id="outlined-select-currency"
+                select
+                label="인원수"
+                value={headCounts}
+                onChange={handleCountChange}
+              >
+                {counts.map((option) => (
+                  <MenuItem key={option.value} value={option.value}>
+                    {option.label}
+                  </MenuItem>
+                ))}
+              </TextField>
 
-                  <TextField
-                    id="outlined-select-currency"
-                    select
-                    label="연령대"
-                    value={ageId}
-                    onChange={handleAgeChange}
-                  >
-                    {age?.map((option) => (
-                      <MenuItem key={option.id} value={option.id}>
-                        {option.name}
-                      </MenuItem>
-                    ))}
-                  </TextField>
+              <TextField
+                id="outlined-select-currency"
+                select
+                label="연령대"
+                value={ageId}
+                onChange={handleAgeChange}
+              >
+                {age?.map((option) => (
+                  <MenuItem key={option.id} value={option.id}>
+                    {option.name}
+                  </MenuItem>
+                ))}
+              </TextField>
 
-                  <TextField
-                    id="outlined-select-currency"
-                    select
-                    label="지역"
-                    value={sidoId}
-                    onChange={handleSidoChange}
-                  >
-                    {sido?.map((option) => (
-                      <MenuItem key={option.id} value={option.id}>
-                        {option.name}
-                      </MenuItem>
-                    ))}
-                  </TextField>
+              <TextField
+                id="outlined-select-currency"
+                select
+                label="지역"
+                value={sidoId}
+                onChange={handleSidoChange}
+              >
+                {sido?.map((option) => (
+                  <MenuItem key={option.id} value={option.id}>
+                    {option.name}
+                  </MenuItem>
+                ))}
+              </TextField>
 
-                  <Box>
-                    <Button onClick={handleClose}>취소</Button>
-                    <Button onClick={setRoomData}>확인</Button>
-                  </Box>
-                </Box>
-              </Typography>
+              <Box>
+                <Button onClick={handleClose}>취소</Button>
+                <Button onClick={setRoomData}>확인</Button>
+              </Box>
             </Box>
-          </Modal>
-        
-      
+          </Typography>
+        </Box>
+      </Modal>
 
       <ResultWaitingModal open={openWaiting} justifyContent={"center"}>
         <>
