@@ -241,6 +241,7 @@ public class WaitingRoomController {
 			waitingRoomUserRelationService.save(value.getType(), userRepository.findById(value.getUserId()).get(), waitingRoomService.findById(value.getRoomId()).get());
 		}
 		info(value.getRoomId());
+		waitingUser(value.getRoomId());
 		return null;
 	}
 	
