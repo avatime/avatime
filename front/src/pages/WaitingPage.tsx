@@ -8,7 +8,7 @@ import Button from "@mui/material/Button";
 import PlayCircleOutlineIcon from "@mui/icons-material/PlayCircleOutline";
 import ExitToAppIcon from "@mui/icons-material/ExitToApp";
 import PeopleAltIcon from "@mui/icons-material/PeopleAlt";
-import { useSelector } from "react-redux";
+import { useSelector, useDispatch } from 'react-redux';
 import { useNavigate } from "react-router";
 import SockJS from "sockjs-client";
 import * as Stomp from "stompjs";
@@ -16,8 +16,9 @@ import { WaitingUser } from "../apis/response/waitingRoomRes";
 import { ReceptionModal } from "../components/waitingRoom/ReceptionModal";
 import { WaitingUserProfile } from "../components/waitingRoom/WaitingUserProfile";
 import { UserInfoModal } from "../components/waitingRoom/UserInfoModal";
-import { requestEnterRoomApi } from "../apis/waitingRoomApi";
+import { requestEnterRoomApi, waitingApi } from "../apis/waitingRoomApi";
 import { WS_BASE_URL } from "../apis/axiosInstance";
+import { setMeetingRoomId } from "../stores/slices/meetingSlice";
 
 interface IProps {}
 
@@ -38,6 +39,8 @@ export const WaitingPage: FC<IProps> = (props) => {
 
   const [candidateList, setCandidateList] = useState<WaitingUser[]>([]);
 
+  const navigate = useNavigate();
+  const dispatch = useDispatch();
   useEffect(() => {
     if (!waitingState?.roomId) {
       return;
@@ -46,8 +49,14 @@ export const WaitingPage: FC<IProps> = (props) => {
     const socket = new SockJS(WS_BASE_URL);
     const client = Stomp.over(socket);
     client.connect({}, () => {
-      client.subscribe(`/topic/waiting/info/${waitingState.roomId}`, (res) => {
-        setWaitingUserList(JSON.parse(res.body).user_list);
+      client.subscribe(`/topic/waiting/info/${waitingState.roomId}`, (response) => {
+        const res = JSON.parse(response.body);
+        console.log(res);
+        setWaitingUserList(res.user_list);
+        if (res.status) {
+          dispatch(setMeetingRoomId(res.meeting_room_id));
+          navigate("/pickAvatar");
+        }
       });
       client.send(`/app/waiting/info/${waitingState.roomId}`);
 
@@ -55,39 +64,39 @@ export const WaitingPage: FC<IProps> = (props) => {
         return;
       }
 
-      client.subscribe(`/topic/reception/${waitingState.roomId}`, (res) => {
-        console.log(res);
-        setCandidateList(JSON.parse(res.body));
+      client.subscribe(`/topic/reception/${waitingState.roomId}`, (response) => {
+        setCandidateList(JSON.parse(response.body));
       });
       client.send(`/app/reception/${waitingState.roomId}`);
-
     });
 
     return () => {
       client.disconnect(() => {
-        console.log("웹소켓 disconnect")
+        requestEnterRoomApi.requestEnterRoom({
+          room_id: waitingState?.roomId,
+          user_id: userId,
+          type: 5,
+        });
       });
     };
-  }, [waitingState]);
+  }, [dispatch, navigate, userId, waitingState]);
 
   const [openReception, setOpenReception] = useState(false);
   const onClickReception = () => {
-    if (candidateList.length === 0) {
-      return;
-    }
     setOpenReception((prev) => !prev);
   };
 
-  const navigate = useNavigate();
-  const onClickStart = () => {};
+  const onClickStart = () => {
+    // eslint-disable-next-line no-restricted-globals
+    if (confirm("정말 시작할건가요?")) {
+       waitingApi.startPickAvatar({
+        waiting_room_id: Number(waitingState.roomId),
+      });
+    }
+  };
   const onClickExit = async () => {
     // eslint-disable-next-line no-restricted-globals
-    if (confirm("정말 나가시겠습니까?")) {
-      await requestEnterRoomApi.requestEnterRoom({
-        room_id: waitingState?.roomId,
-        user_id: userId,
-        type: 5,
-      });
+    if (confirm("정말 나가실건가요?")) {
       navigate("/main");
     }
   };
@@ -118,7 +127,11 @@ export const WaitingPage: FC<IProps> = (props) => {
             <Grid container spacing={2} height="100%">
               {waitingUserList.map((it) => (
                 <Grid item xs={12 / (waitingState.headCount / 2)} key={it.id} height="50%">
-                  <WaitingUserProfile waitingUser={it} onClickAvatar={onOpenInfo} />
+                  <WaitingUserProfile
+                    waitingUser={it}
+                    onClickAvatar={onOpenInfo}
+                    me={userId === it.id}
+                  />
                 </Grid>
               ))}
             </Grid>
@@ -155,7 +168,7 @@ export const WaitingPage: FC<IProps> = (props) => {
                     startIcon={<PlayCircleOutlineIcon />}
                     sx={{ width: "100%" }}
                     onClick={onClickStart}
-                    disabled={waitingUserList.length !== waitingState.headCount}
+                    // disabled={waitingUserList.length !== waitingState.headCount}
                   >
                     시작
                   </Button>
