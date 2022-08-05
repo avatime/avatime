@@ -39,7 +39,7 @@ export const WaitingPage: FC<IProps> = (props) => {
   const [candidateList, setCandidateList] = useState<WaitingUser[]>([]);
 
   useEffect(() => {
-    if (waitingState?.roomId) {
+    if (!waitingState?.roomId) {
       return;
     }
 
@@ -47,8 +47,7 @@ export const WaitingPage: FC<IProps> = (props) => {
     const client = Stomp.over(socket);
     client.connect({}, () => {
       client.subscribe(`/topic/waiting/info/${waitingState.roomId}`, (res) => {
-        console.log(res);
-        setWaitingUserList(JSON.parse(res.body));
+        setWaitingUserList(JSON.parse(res.body).user_list);
       });
       client.send(`/app/waiting/info/${waitingState.roomId}`);
 
@@ -56,23 +55,31 @@ export const WaitingPage: FC<IProps> = (props) => {
         return;
       }
 
-      client.subscribe(`/topic/waitingUser/${waitingState.roomId}`, (res) => {
+      client.subscribe(`/topic/reception/${waitingState.roomId}`, (res) => {
         console.log(res);
         setCandidateList(JSON.parse(res.body));
       });
+      client.send(`/app/reception/${waitingState.roomId}`);
+
     });
 
     return () => {
-      client.disconnect(() => {});
+      client.disconnect(() => {
+        console.log("웹소켓 disconnect")
+      });
     };
   }, [waitingState]);
 
   const [openReception, setOpenReception] = useState(false);
   const onClickReception = () => {
+    if (candidateList.length === 0) {
+      return;
+    }
     setOpenReception((prev) => !prev);
   };
 
   const navigate = useNavigate();
+  const onClickStart = () => {};
   const onClickExit = async () => {
     // eslint-disable-next-line no-restricted-globals
     if (confirm("정말 나가시겠습니까?")) {
@@ -118,7 +125,7 @@ export const WaitingPage: FC<IProps> = (props) => {
           </Box>
         </Grid>
         <Grid item xs={3} sx={{ float: "left", display: "flex", flexDirection: "column" }}>
-          <Box flex={1} >
+          <Box flex={1}>
             <ChatRoom
               chatType="all"
               isOpened={true}
@@ -147,6 +154,8 @@ export const WaitingPage: FC<IProps> = (props) => {
                     variant="contained"
                     startIcon={<PlayCircleOutlineIcon />}
                     sx={{ width: "100%" }}
+                    onClick={onClickStart}
+                    disabled={waitingUserList.length !== waitingState.headCount}
                   >
                     시작
                   </Button>
