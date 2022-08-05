@@ -72,12 +72,11 @@ export const WaitingPage: FC<IProps> = (props) => {
 
     return () => {
       client.disconnect(() => {
-        console.log("웹소켓 disconnect");
-      });
-      requestEnterRoomApi.requestEnterRoom({
-        room_id: waitingState?.roomId,
-        user_id: userId,
-        type: 5,
+        requestEnterRoomApi.requestEnterRoom({
+          room_id: waitingState?.roomId,
+          user_id: userId,
+          type: 5,
+        });
       });
     };
   }, [dispatch, navigate, userId, waitingState]);
@@ -98,11 +97,6 @@ export const WaitingPage: FC<IProps> = (props) => {
   const onClickExit = async () => {
     // eslint-disable-next-line no-restricted-globals
     if (confirm("정말 나가실건가요?")) {
-      await requestEnterRoomApi.requestEnterRoom({
-        room_id: waitingState?.roomId,
-        user_id: userId,
-        type: 5,
-      });
       navigate("/main");
     }
   };

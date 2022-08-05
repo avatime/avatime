@@ -21,6 +21,12 @@ const meetingSlice = createSlice({
     setMeetingRoomId(state, action) {
       state.roomId = action.payload;
     },
+    setTotalChatRoomId(state, action) {
+      state.totalChatRoomId = action.payload;
+    },
+    setGenderChatRoomId(state, action) {
+      state.genderChatRoomId = action.payload;
+    },
     setUserList(state, action) {
       state.userList = action.payload;
     },
