@@ -106,6 +106,28 @@ public class WaitingRoomController {
 		simp.convertAndSend("/topic/getList", waitingRoomList);
 	}
 	
+	@MessageMapping("/info/{wrId}")
+	public void info(@DestinationVariable Long wrId) {
+		WaitingRoom wr = waitingRoomService.findById(wrId).get();
+		HashMap<String, Object> map = new HashMap<>();
+		map.put("status", wr.getStatus());
+		List<Object> userList = new ArrayList<>();
+		List<WaitingRoomUserRelation> info = wrurRepository.findByWaitingRoomId(wrId).get();
+		for (WaitingRoomUserRelation wrur : info) {
+			if (wrur.getType() == 0 || wrur.getType() == 1 ) {
+				HashMap<String, Object> user = new HashMap<>();
+				user.put("id", wrur.getUser().getId());
+				user.put("type", wrur.getType());
+				user.put("name", wrur.getUser().getName());
+				user.put("gender", wrur.getUser().getGender());
+				user.put("profile_img_path", wrur.getUser().getProfileImagePath());
+				userList.add(user);
+			}
+		}
+		map.put("user_list", userList);
+		simp.convertAndSend("info/" + wrId, map);
+	}
+	
 	@MessageMapping("/waitingUser/{wrId}")
 	public void waitingUser(@DestinationVariable Long wrId) {
 		List<WaitingRoomUserRelation> wrur = waitingRoomUserRelationService.findByWaitingRoomIdAndType(wrId);
@@ -160,6 +182,7 @@ public class WaitingRoomController {
 		int status = 1;
 		waitingRoom.setStatus(status);
 		waitingRoom();
+		info(waitingRoomId);
 		// 이 때 접수처에 있는 잉여유저들 일괄 거절처리 해야함
 		return meetingRoomService.createMeetingRoom(waitingRoomId);
 	}
@@ -217,6 +240,7 @@ public class WaitingRoomController {
 		else {
 			waitingRoomUserRelationService.save(value.getType(), userRepository.findById(value.getUserId()).get(), waitingRoomService.findById(value.getRoomId()).get());
 		}
+		info(value.getRoomId());
 		return null;
 	}
 	
