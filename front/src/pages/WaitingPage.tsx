@@ -17,6 +17,7 @@ import { ReceptionModal } from "../components/waitingRoom/ReceptionModal";
 import { WaitingUserProfile } from "../components/waitingRoom/WaitingUserProfile";
 import { UserInfoModal } from "../components/waitingRoom/UserInfoModal";
 import { requestEnterRoomApi } from "../apis/waitingRoomApi";
+import { WS_BASE_URL } from "../apis/axiosInstance";
 
 interface IProps {}
 
@@ -42,7 +43,7 @@ export const WaitingPage: FC<IProps> = (props) => {
       return;
     }
 
-    const socket = new SockJS("http://localhost:8080/ws/ava");
+    const socket = new SockJS(WS_BASE_URL);
     const client = Stomp.over(socket);
     client.connect({}, () => {
       client.subscribe(`/topic/waiting/info/${waitingState.roomId}`, (res) => {
@@ -80,7 +81,7 @@ export const WaitingPage: FC<IProps> = (props) => {
         user_id: userId,
         type: 5,
       });
-      navigate("/");
+      navigate("/main");
     }
   };
 
@@ -94,6 +95,8 @@ export const WaitingPage: FC<IProps> = (props) => {
     setOpenInfo(false);
   };
 
+  const chatRoomId = useSelector((state: any) => state.waiting.chatRoomId);
+
   return (
     <div className="mainback" style={{ display: "flex", flexDirection: "column" }}>
       <MainHeader hideSettings={true} />
@@ -101,7 +104,7 @@ export const WaitingPage: FC<IProps> = (props) => {
         <Grid item xs={9} sx={{ float: "left", display: "flex", flexDirection: "column" }}>
           <Box pl={1}>
             <Typography>
-              {waitingState.roomName} / {waitingState.region} / {waitingState.age}
+              {waitingState.roomName} / {waitingState.sido} / {waitingState.age}
             </Typography>
           </Box>
           <Box flex={1} borderRadius="10px" bgcolor={grey[200]} p={2}>
@@ -115,12 +118,12 @@ export const WaitingPage: FC<IProps> = (props) => {
           </Box>
         </Grid>
         <Grid item xs={3} sx={{ float: "left", display: "flex", flexDirection: "column" }}>
-          <Box display="flex" flexDirection="column" flex={1}>
+          <Box flex={1} >
             <ChatRoom
               chatType="all"
               isOpened={true}
               maxHeight="100%"
-              chattingRoomId={1}
+              chattingRoomId={chatRoomId}
               foldable={false}
             />
           </Box>
