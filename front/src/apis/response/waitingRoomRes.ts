@@ -35,6 +35,7 @@ export interface AgeRes {
   name: string;
 }
 
-export interface requestEnterRoomRes {
+export interface RequestEnterRoomRes {
   chatting_room_id: number;
+  waiting_room_id : number;
 }
