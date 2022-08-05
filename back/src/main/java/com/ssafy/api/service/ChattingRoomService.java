@@ -1,6 +1,6 @@
 package com.ssafy.api.service;
 
-import java.util.Optional;
+import java.util.List;
 
 import com.ssafy.db.entity.ChattingRoom;
 

@@ -17,17 +17,8 @@ public class MeetingRoomInfoRes extends BaseResponseBody {
 
 	String created_time;
 	Long chattingroom_id;
-	Long gender_chattingroom_id;
+	Long men_chattingroom_id;
+	Long women_chattingroom_id;
 	boolean last_pick_status;
 	List<StreamUser> stream_list;
-
-	public static FinalChoiceRes of(Integer statusCode, String message, FinalChoiceRes finalChoiceRes) {
-		FinalChoiceRes res = new FinalChoiceRes();
-		res.setMeetingroom_id(finalChoiceRes.meetingroom_id);
-		res.setMatched(finalChoiceRes.matched);
-		res.setResult_list(finalChoiceRes.result_list);
-		res.setStatusCode(statusCode);
-		res.setMessage(message);
-		return res;
-	}
 }
