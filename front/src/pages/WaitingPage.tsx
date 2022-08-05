@@ -72,9 +72,6 @@ export const WaitingPage: FC<IProps> = (props) => {
 
   const [openReception, setOpenReception] = useState(false);
   const onClickReception = () => {
-    if (candidateList.length === 0) {
-      return;
-    }
     setOpenReception((prev) => !prev);
   };
 
