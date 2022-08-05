@@ -19,6 +19,7 @@ import org.springframework.web.bind.annotation.RestController;
 
 import com.ssafy.api.request.StatePostReq;
 import com.ssafy.api.request.WaitingRoomPostReq;
+import com.ssafy.api.request.WaitingRoomStartReq;
 import com.ssafy.api.response.WaitingRoomRes;
 import com.ssafy.api.response.WaitingUserRes;
 import com.ssafy.api.service.AgeService;
@@ -106,8 +107,13 @@ public class WaitingRoomController {
 		simp.convertAndSend("/topic/getList", waitingRoomList);
 	}
 	
+
 	@MessageMapping("/waiting/info/{wrId}")
 	public void info(@DestinationVariable Long wrId) {
+		info(wrId, -1L);
+	}
+	
+	public void info(Long wrId, Long meetingRoomId) {
 		WaitingRoom wr = waitingRoomService.findById(wrId).get();
 		HashMap<String, Object> map = new HashMap<>();
 		map.put("status", wr.getStatus());
@@ -125,6 +131,9 @@ public class WaitingRoomController {
 			}
 		}
 		map.put("user_list", userList);
+		if (meetingRoomId != -1) {
+			map.put("meeting_room_id", meetingRoomId);
+		}
 		simp.convertAndSend("/topic/waiting/info/" + wrId, map);
 	}
 	
@@ -176,15 +185,17 @@ public class WaitingRoomController {
 
 	@PatchMapping("/start")
 	@ApiOperation(value = "대기방이 미팅방으로 변경됨", notes = "미팅방을 생성합니다.")
-	public Long start(
-			@RequestBody @ApiParam(value = "미팅방을 만드려는 대기방 id", required = true) long waitingRoomId) throws Exception {
-		WaitingRoom waitingRoom = waitingRoomService.findById(waitingRoomId).get();
+	public ResponseEntity<?> start(
+			@RequestBody @ApiParam(value = "미팅방을 만드려는 대기방 id", required = true) WaitingRoomStartReq waitingRoomStartReq) throws Exception {
+		WaitingRoom waitingRoom = waitingRoomService.findById(waitingRoomStartReq.getWaitingRoomId()).get();
 		int status = 1;
 		waitingRoom.setStatus(status);
 		waitingRoom();
-		info(waitingRoomId);
 		// 이 때 접수처에 있는 잉여유저들 일괄 거절처리 해야함
-		return meetingRoomService.createMeetingRoom(waitingRoomId);
+		
+		long meetingRoomId = meetingRoomService.createMeetingRoom(waitingRoomStartReq.getWaitingRoomId());
+		info(waitingRoomStartReq.getWaitingRoomId(), meetingRoomId);
+		return ResponseEntity.status(200).body("");
 	}
 	
 	@PostMapping("/state")
