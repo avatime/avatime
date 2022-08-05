@@ -198,7 +198,7 @@ public class WaitingRoomController {
 				WaitingRoom room = userState.getWaitingRoom();
 				Gender gender = genderService.findById(value.getRoomId()).get();
 				HashMap<String, Long> response = new HashMap<>();
-				if ((user.getGender() == "M" && gender.getM() < room.getHeadCount() / 2) || (user.getGender() == "F" && gender.getF() < room.getHeadCount() / 2)) {
+				if ((user.getGender().equals("M") && gender.getM() < room.getHeadCount() / 2) || (user.getGender().equals("F") && gender.getF() < room.getHeadCount() / 2)) {
 					userState.setType(value.getType());
 					wrurRepository.saveAndFlush(userState);
 					waitingRoom();
