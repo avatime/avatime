@@ -6,9 +6,10 @@ import Crown from "../../assets/crown.png";
 interface IProps {
   waitingUser: WaitingUser;
   onClickAvatar: (userId: number) => void;
+  me: boolean;
 }
 
-export const WaitingUserProfile: FC<IProps> = ({ waitingUser, onClickAvatar }) => {
+export const WaitingUserProfile: FC<IProps> = ({ waitingUser, onClickAvatar, me }) => {
   const theme = useTheme();
   return (
     <Box
@@ -18,6 +19,7 @@ export const WaitingUserProfile: FC<IProps> = ({ waitingUser, onClickAvatar }) =
       position="relative"
       display="flex"
       justifyContent="center"
+      border={me ? "solid 2px black" : ""}
     >
       <Box
         bgcolor={waitingUser.gender === "M" ? theme.palette.primary.light : theme.palette.error.light}
