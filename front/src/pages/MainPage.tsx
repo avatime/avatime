@@ -11,8 +11,7 @@ import { MainHeader } from "../components/main/MainHeader";
 import { Add } from "@mui/icons-material";
 import { useQuery } from "react-query";
 import { ageApi, makeNewRoomApi, sidoApi } from "../apis/waitingRoomApi";
-import { ResultWaitingModal } from "../components/waitingRoom/ResultWaitingModal";
-import ava from "../assets/result_waiting_ava.gif";
+
 
 import { useDispatch, useSelector } from "react-redux";
 import {
@@ -24,7 +23,7 @@ import {
   setWaitingRoomId,
 } from "../stores/slices/waitingSlice";
 import { AgeRes, SidoRes } from "../apis/response/waitingRoomRes";
-import { useNavigate } from "react-router";
+import { Stack } from "@mui/material";
 
 const style = {
   position: "absolute" as "absolute",
@@ -60,167 +59,16 @@ const counts = [
 interface IProps {}
 
 export const MainPage: FC<IProps> = (props) => {
-  const [ageId, setAgeId] = useState(0);
-  const [sidoId, setSidoId] = useState(0);
-  const [name, setName] = useState("");
-  const [headCounts, setHeadCounts] = useState(0);
-  const [open, setOpen] = useState(false);
 
-  const handleOpen = () => setOpen(true);
-  const handleClose = () => {
-    setName("");
-    setHeadCounts(0);
-    setAgeId(0);
-    setSidoId(0);
-    setOpen(false);
-  };
-
-  const { data: age } = useQuery("waiting/getAge", () => ageApi.receive());
-  const { data: sido } = useQuery("waiting/getSido", () => sidoApi.receive());
-
-  const handleCountChange = (event: React.ChangeEvent<HTMLInputElement>) => {
-    setHeadCounts(Number(event.target.value));
-  };
-  const handleAgeChange = (event: React.ChangeEvent<HTMLInputElement>) => {
-    setAgeId(Number(event.target.value));
-  };
-  const handleSidoChange = (event: React.ChangeEvent<HTMLInputElement>) => {
-    setSidoId(Number(event.target.value));
-  };
-
-  const handleNameChange = (event: React.ChangeEvent<HTMLInputElement>) => {
-    setName(event.target.value);
-  };
-
-  const userId = useSelector((state: any) => state.user.userId);
-  const dispatch = useDispatch();
-
-  const navigate = useNavigate();
-  const setRoomData = async () => {
-    if (!ageId || !headCounts || !sidoId || !name.length) {
-      alert("빈칸을 모두 채워주세요!");
-    } else {
-      const res = await makeNewRoomApi.makeNewRoom({
-        name,
-        head_count: headCounts,
-        user_id: userId,
-        age_id: ageId,
-        sido_id: sidoId,
-      });
-      console.log(res);
-
-      dispatch(setWaitingRoomId(res.waiting_room_id));
-      dispatch(setRoomName(name));
-      dispatch(setAge(age?.find((i: AgeRes) => i.id === ageId)?.name));
-      dispatch(setRegion(sido?.find((i: SidoRes) => i.id === sidoId)?.name));
-      dispatch(setMaster(true));
-      dispatch(setHeadCount(headCounts));
-
-      handleClose();
-      navigate("/waiting");
-    }
-  };
-
+ 
   return (
-    <div className="mainback">
+    <Stack className="mainback" direction="column" style={{display:"flex"}}>
       <MainHeader />
-      <Box px={3}>
+      <Box px={3} sx={{  flex: 1 }}>
         <Box p={1} />
         <WaitingRoomList />
-        <Box p={1} />
-
-        <Button
-          variant="contained"
-          aria-label="makenewroom"
-          sx={{ float: "right" }}
-          onClick={handleOpen}
-          startIcon={<Add />}
-        >
-          새로운 방 만들기
-        </Button>
+    
       </Box>
-
-      <Modal
-        open={open}
-        onClose={handleClose}
-        aria-labelledby="modal-modal-title"
-        aria-describedby="modal-modal-description"
-      >
-        <Box sx={style}>
-          <Typography id="modal-modal-title" variant="h6" component="h2" textAlign="center">
-            새로운 방 만들기
-          </Typography>
-          <Typography id="modal-modal-description" sx={{ mt: 2 }}>
-            <Box
-              component="form"
-              sx={{
-                "& .MuiTextField-root": { m: 1, width: "25ch" },
-                display: "flex",
-                flexDirection: "column",
-                alignItems: "center",
-              }}
-              noValidate
-              autoComplete="off"
-            >
-              <TextField
-                id="outlined-multiline-flexible"
-                label="방 제목"
-                multiline
-                maxRows={4}
-                value={name}
-                onChange={handleNameChange}
-              />
-
-              <TextField
-                id="outlined-select-currency"
-                select
-                label="인원수"
-                value={headCounts}
-                onChange={handleCountChange}
-              >
-                {counts.map((option) => (
-                  <MenuItem key={option.value} value={option.value}>
-                    {option.label}
-                  </MenuItem>
-                ))}
-              </TextField>
-
-              <TextField
-                id="outlined-select-currency"
-                select
-                label="연령대"
-                value={ageId}
-                onChange={handleAgeChange}
-              >
-                {age?.map((option) => (
-                  <MenuItem key={option.id} value={option.id}>
-                    {option.name}
-                  </MenuItem>
-                ))}
-              </TextField>
-
-              <TextField
-                id="outlined-select-currency"
-                select
-                label="지역"
-                value={sidoId}
-                onChange={handleSidoChange}
-              >
-                {sido?.map((option) => (
-                  <MenuItem key={option.id} value={option.id}>
-                    {option.name}
-                  </MenuItem>
-                ))}
-              </TextField>
-
-              <Box>
-                <Button onClick={handleClose}>취소</Button>
-                <Button onClick={setRoomData}>확인</Button>
-              </Box>
-            </Box>
-          </Typography>
-        </Box>
-      </Modal>
-    </div>
+    </Stack>
   );
 };
