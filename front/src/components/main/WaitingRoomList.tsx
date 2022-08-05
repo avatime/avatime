@@ -282,7 +282,7 @@ export const WaitingRoomList: FC<IProps> = (props) => {
       dispatch(setWaitingRoomId(res.waiting_room_id));
       dispatch(setRoomName(name));
       dispatch(setAge(age?.find((i: AgeRes) => i.id === ageId)?.name));
-      dispatch(setRegion(sido?.find((i: SidoRes) => i.id === sidoId)?.name));
+      dispatch(setSido(sido?.find((i: SidoRes) => i.id === sidoId)?.name));
       dispatch(setMaster(true));
       dispatch(setHeadCount(headCounts));
 
