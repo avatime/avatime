@@ -32,9 +32,10 @@ import {
   setWaitingRoomId,
   setRoomName,
   setAge,
-  setRegion,
+  setSido,
   setMaster,
   setHeadCount,
+  setChatRoomId,
 } from "../../stores/slices/waitingSlice";
 import { useNavigate } from "react-router";
 import { Add } from "@mui/icons-material";
@@ -161,7 +162,6 @@ export const WaitingRoomList: FC<IProps> = (props) => {
   //소켓 통신----------------------------------------------
   const [originData, setOriginData] = useState<WaitingRoomInfoRes[]>([]);
   const [data, setData] = useState<WaitingRoomInfoRes[]>([]);
-  const [stompClient, setStompClient] = useState<any>();
 
   //방제목으로 검색 & 필터-----------------------------------------------------------------
   const userGender = useSelector((state: any) => state.user.userGender);
@@ -181,9 +181,11 @@ export const WaitingRoomList: FC<IProps> = (props) => {
   };
 
   useEffect(() => {
-    if (stompClient) {
+    if (!userId) {
       return;
     }
+
+    console.log("asdasd")
     const socket = new SockJS(WS_BASE_URL);
     const client = Stomp.over(socket);
     client.connect({}, function (frame) {
@@ -196,7 +198,7 @@ export const WaitingRoomList: FC<IProps> = (props) => {
       client.send("/app/getList", {}, "aaa");
 
       //대기방 입장신청 결과 소켓 통신
-      client.subscribe(`/enter/result/${userId}`, function (response: { body: string }) {
+      client.subscribe(`/topic/enter/result/${userId}`, function (response) {
         console.log(response.body);
         if (JSON.parse(response.body).success) {
           navigate("/waiting");
@@ -207,8 +209,10 @@ export const WaitingRoomList: FC<IProps> = (props) => {
       });
     });
 
-    setStompClient(client);
-  }, [navigate, stompClient, userId]);
+    return () => {
+      client.disconnect(() => {});
+    };
+  }, [navigate, userId]);
 
   useEffect(() => {
     setData(
@@ -243,10 +247,10 @@ export const WaitingRoomList: FC<IProps> = (props) => {
   };
 
   const dispatch = useDispatch();
-  const enterRoom = (waitingRoomInfoRes: WaitingRoomInfoRes) => {
+  const enterRoom = async (waitingRoomInfoRes: WaitingRoomInfoRes) => {
     setRoomId(waitingRoomInfoRes.id);
 
-    requestEnterRoomApi.requestEnterRoom({
+    const res = await requestEnterRoomApi.requestEnterRoom({
       user_id: userId,
       room_id: waitingRoomInfoRes.id,
       type: 2,
@@ -256,9 +260,10 @@ export const WaitingRoomList: FC<IProps> = (props) => {
     dispatch(setWaitingRoomId(waitingRoomInfoRes.id));
     dispatch(setRoomName(waitingRoomInfoRes.name));
     dispatch(setAge(waitingRoomInfoRes.age));
-    dispatch(setRegion(waitingRoomInfoRes.sido));
+    dispatch(setSido(waitingRoomInfoRes.sido));
     dispatch(setMaster(false));
     dispatch(setHeadCount(waitingRoomInfoRes.head_count));
+    dispatch(setChatRoomId(res.chatting_room_id));
   };
 
   const setRoomData = async () => {
@@ -277,7 +282,7 @@ export const WaitingRoomList: FC<IProps> = (props) => {
       dispatch(setWaitingRoomId(res.waiting_room_id));
       dispatch(setRoomName(name));
       dispatch(setAge(age?.find((i: AgeRes) => i.id === ageId)?.name));
-      dispatch(setRegion(sido?.find((i: SidoRes) => i.id === sidoId)?.name));
+      dispatch(setSido(sido?.find((i: SidoRes) => i.id === sidoId)?.name));
       dispatch(setMaster(true));
       dispatch(setHeadCount(headCounts));
 
