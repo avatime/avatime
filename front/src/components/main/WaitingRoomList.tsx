@@ -7,15 +7,26 @@ import TableContainer from "@mui/material/TableContainer";
 import TableHead from "@mui/material/TableHead";
 import TableRow from "@mui/material/TableRow";
 import SearchIcon from "@mui/icons-material/Search";
-import { WaitingRoomInfoRes } from "../../apis/response/waitingRoomRes";
+import { AgeRes, SidoRes, WaitingRoomInfoRes } from "../../apis/response/waitingRoomRes";
 import * as Stomp from "stompjs";
 import SockJS from "sockjs-client";
 import { useDispatch, useSelector } from "react-redux";
 import CloseIcon from "@mui/icons-material/Close";
 import ava2 from "../../assets/result_waiting_ava2.gif";
-import { Box, Button, IconButton, InputBase, Stack, ToggleButton, Typography } from "@mui/material";
+import {
+  Box,
+  Button,
+  IconButton,
+  InputBase,
+  MenuItem,
+  Modal,
+  Stack,
+  TextField,
+  ToggleButton,
+  Typography,
+} from "@mui/material";
 import { WS_BASE_URL } from "../../apis/axiosInstance";
-import { requestEnterRoomApi } from "../../apis/waitingRoomApi";
+import { ageApi, makeNewRoomApi, requestEnterRoomApi, sidoApi } from "../../apis/waitingRoomApi";
 import { ResultWaitingModal } from "../waitingRoom/ResultWaitingModal";
 import {
   setWaitingRoomId,
@@ -26,6 +37,8 @@ import {
   setHeadCount,
 } from "../../stores/slices/waitingSlice";
 import { useNavigate } from "react-router";
+import { Add } from "@mui/icons-material";
+import { useQuery } from "react-query";
 
 interface IProps {}
 
@@ -79,7 +92,70 @@ const columns: Column[] = [
   },
 ];
 
+const style = {
+  position: "absolute" as "absolute",
+  top: "50%",
+  left: "50%",
+  transform: "translate(-50%, -50%)",
+  width: 300,
+  height: 400,
+  bgcolor: "background.paper",
+  border: "2px solid #000",
+  boxShadow: 24,
+  p: 4,
+  borderRadius: "10px",
+  display: "flex",
+  flexDirection: "column",
+};
+
+const counts = [
+  {
+    value: "4",
+    label: "2:2",
+  },
+  {
+    value: "6",
+    label: "3:3",
+  },
+  {
+    value: "8",
+    label: "4:4",
+  },
+];
+
 export const WaitingRoomList: FC<IProps> = (props) => {
+  const [ageId, setAgeId] = useState(0);
+  const [sidoId, setSidoId] = useState(0);
+  const [name, setName] = useState("");
+  const [headCounts, setHeadCounts] = useState(0);
+  const [open, setOpen] = useState(false);
+
+  const handleOpen = () => setOpen(true);
+  const handleClose = () => {
+    setName("");
+    setHeadCounts(0);
+    setAgeId(0);
+    setSidoId(0);
+    setOpen(false);
+  };
+
+  const { data: age } = useQuery("waiting/getAge", () => ageApi.receive());
+  const { data: sido } = useQuery("waiting/getSido", () => sidoApi.receive());
+
+  const handleCountChange = (event: React.ChangeEvent<HTMLInputElement>) => {
+    setHeadCounts(Number(event.target.value));
+  };
+  const handleAgeChange = (event: React.ChangeEvent<HTMLInputElement>) => {
+    setAgeId(Number(event.target.value));
+  };
+  const handleSidoChange = (event: React.ChangeEvent<HTMLInputElement>) => {
+    setSidoId(Number(event.target.value));
+  };
+
+  const handleNameChange = (event: React.ChangeEvent<HTMLInputElement>) => {
+    setName(event.target.value);
+  };
+
   const userId = useSelector((state: any) => state.user.userId);
 
   //소켓 통신----------------------------------------------
@@ -185,6 +261,31 @@ export const WaitingRoomList: FC<IProps> = (props) => {
     dispatch(setHeadCount(waitingRoomInfoRes.head_count));
   };
 
+  const setRoomData = async () => {
+    if (!ageId || !headCounts || !sidoId || !name.length) {
+      alert("빈칸을 모두 채워주세요!");
+    } else {
+      const res = await makeNewRoomApi.makeNewRoom({
+        name,
+        head_count: headCounts,
+        user_id: userId,
+        age_id: ageId,
+        sido_id: sidoId,
+      });
+      console.log(res);
+
+      dispatch(setWaitingRoomId(res.waiting_room_id));
+      dispatch(setRoomName(name));
+      dispatch(setAge(age?.find((i: AgeRes) => i.id === ageId)?.name));
+      dispatch(setRegion(sido?.find((i: SidoRes) => i.id === sidoId)?.name));
+      dispatch(setMaster(true));
+      dispatch(setHeadCount(headCounts));
+
+      handleClose();
+      navigate("/waiting");
+    }
+  };
+
   //------------------------------------------------------------------------------------------
   return (
     <div>
@@ -223,7 +324,7 @@ export const WaitingRoomList: FC<IProps> = (props) => {
         </Paper>
       </Stack>
       <Paper sx={{ overflow: "hidden" }}>
-        <TableContainer sx={{ maxHeight: "50%" }}>
+        <TableContainer sx={{maxHeight:"65vh"}}>
           <Table stickyHeader aria-label="sticky table" style={{ border: "5px ridge" }}>
             <TableHead>
               <TableRow>
@@ -247,7 +348,103 @@ export const WaitingRoomList: FC<IProps> = (props) => {
             </TableBody>
           </Table>
         </TableContainer>
-      </Paper>
+        </Paper>
+        <Box p={1} />
+        <Box sx={{ flex: 1 }}>
+          <Button
+            variant="contained"
+            aria-label="makenewroom"
+            sx={{ float: "right" }}
+            onClick={handleOpen}
+            startIcon={<Add />}
+          >
+            새로운 방 만들기
+          </Button>
+        </Box>
+      
+          <Modal
+            open={open}
+            onClose={handleClose}
+            aria-labelledby="modal-modal-title"
+            aria-describedby="modal-modal-description"
+          >
+            <Box sx={style}>
+              <Typography id="modal-modal-title" variant="h6" component="h2" textAlign="center">
+                새로운 방 만들기
+              </Typography>
+              <Typography id="modal-modal-description" sx={{ mt: 2 }}>
+                <Box
+                  component="form"
+                  sx={{
+                    "& .MuiTextField-root": { m: 1, width: "25ch" },
+                    display: "flex",
+                    flexDirection: "column",
+                    alignItems: "center",
+                  }}
+                  noValidate
+                  autoComplete="off"
+                >
+                  <TextField
+                    id="outlined-multiline-flexible"
+                    label="방 제목"
+                    multiline
+                    maxRows={4}
+                    value={name}
+                    onChange={handleNameChange}
+                  />
+
+                  <TextField
+                    id="outlined-select-currency"
+                    select
+                    label="인원수"
+                    value={headCounts}
+                    onChange={handleCountChange}
+                  >
+                    {counts.map((option) => (
+                      <MenuItem key={option.value} value={option.value}>
+                        {option.label}
+                      </MenuItem>
+                    ))}
+                  </TextField>
+
+                  <TextField
+                    id="outlined-select-currency"
+                    select
+                    label="연령대"
+                    value={ageId}
+                    onChange={handleAgeChange}
+                  >
+                    {age?.map((option) => (
+                      <MenuItem key={option.id} value={option.id}>
+                        {option.name}
+                      </MenuItem>
+                    ))}
+                  </TextField>
+
+                  <TextField
+                    id="outlined-select-currency"
+                    select
+                    label="지역"
+                    value={sidoId}
+                    onChange={handleSidoChange}
+                  >
+                    {sido?.map((option) => (
+                      <MenuItem key={option.id} value={option.id}>
+                        {option.name}
+                      </MenuItem>
+                    ))}
+                  </TextField>
+
+                  <Box>
+                    <Button onClick={handleClose}>취소</Button>
+                    <Button onClick={setRoomData}>확인</Button>
+                  </Box>
+                </Box>
+              </Typography>
+            </Box>
+          </Modal>
+        
+      
 
       <ResultWaitingModal open={openWaiting} justifyContent={"center"}>
         <>
