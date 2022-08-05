@@ -106,7 +106,7 @@ public class WaitingRoomController {
 		simp.convertAndSend("/topic/getList", waitingRoomList);
 	}
 	
-	@MessageMapping("/info/{wrId}")
+	@MessageMapping("/waiting/info/{wrId}")
 	public void info(@DestinationVariable Long wrId) {
 		WaitingRoom wr = waitingRoomService.findById(wrId).get();
 		HashMap<String, Object> map = new HashMap<>();
@@ -125,11 +125,11 @@ public class WaitingRoomController {
 			}
 		}
 		map.put("user_list", userList);
-		simp.convertAndSend("info/" + wrId, map);
+		simp.convertAndSend("/topic/waiting/info/" + wrId, map);
 	}
 	
-	@MessageMapping("/waitingUser/{wrId}")
-	public void waitingUser(@DestinationVariable Long wrId) {
+	@MessageMapping("/reception/{wrId}")
+	public void reception(@DestinationVariable Long wrId) {
 		List<WaitingRoomUserRelation> wrur = waitingRoomUserRelationService.findByWaitingRoomIdAndType(wrId);
 		List<WaitingUserRes> wu = new ArrayList<>();
 		for(WaitingRoomUserRelation wr : wrur) {
@@ -141,7 +141,7 @@ public class WaitingRoomController {
 					.profileImgPath(user.getProfileImagePath()).build();
 			wu.add(wur);
 		}
-		simp.convertAndSend("/topic/waitingUser/" + wrId, wu);
+		simp.convertAndSend("/topic/reception/" + wrId, wu);
 	}
 
 	@GetMapping("/sido")
@@ -198,51 +198,50 @@ public class WaitingRoomController {
 				WaitingRoom room = userState.getWaitingRoom();
 				Gender gender = genderService.findById(value.getRoomId()).get();
 				HashMap<String, Long> response = new HashMap<>();
-				if (user.getGender() == "M") {
-					if (gender.getM() < room.getHeadCount() / 2) {
-						userState.setType(value.getType());
-						wrurRepository.saveAndFlush(userState);
-						waitingRoom();
-						result(value.getUserId(), true);
-						response.put("chatting_room_id", chattingRoomService.findByRoomIdAndType(value.getRoomId()).get().getId());
-						response.put("waiting_room_id", value.getRoomId());
-						return ResponseEntity.status(200).body(response);
-					}
-					else {
-						result(value.getUserId(), false);
-						return ResponseEntity.status(409).body("");
-					}
+				if ((user.getGender() == "M" && gender.getM() < room.getHeadCount() / 2) || (user.getGender() == "F" && gender.getF() < room.getHeadCount() / 2)) {
+					userState.setType(value.getType());
+					wrurRepository.saveAndFlush(userState);
+					waitingRoom();
+					reception(value.getRoomId());
+					info(value.getRoomId());
+					result(value.getUserId(), true);
+					response.put("chatting_room_id", chattingRoomService.findByRoomIdAndType(value.getRoomId()).get().getId());
+					response.put("waiting_room_id", value.getRoomId());
+					return ResponseEntity.status(200).body(response);
 				}
 				else {
-					if (gender.getF() < room.getHeadCount() / 2) {
-						userState.setType(value.getType());
-						wrurRepository.saveAndFlush(userState);
-						waitingRoom();
-						result(value.getUserId(), true);
-						response.put("chatting_room_id", chattingRoomService.findByRoomIdAndType(value.getRoomId()).get().getId());
-						response.put("waiting_room_id", value.getRoomId());
-						return ResponseEntity.status(200).body(response);
-					}
-					else {
-						result(value.getUserId(), false);
-						return ResponseEntity.status(409).body("");
-					}
+					result(value.getUserId(), false);
+					return ResponseEntity.status(409).body("");
 				}
-			}
-			else if(value.getType() == 4) {
-				userState.setType(value.getType());
-				result(user.getId(), false);
 			}
 			else {
 				userState.setType(value.getType());
+				wrurRepository.saveAndFlush(userState);
+				if (value.getType() == 2 || value.getType() == 3 || value.getType() == 4) {
+					reception(value.getRoomId());
+				}
+				
+				if (value.getType() == 0 || value.getType() == 5) {
+					waitingRoom();
+					info(value.getRoomId());
+				}
+				
+				if (value.getType() == 4) {
+					result(user.getId(), false);
+				}
 			}
 		}
 		else {
 			waitingRoomUserRelationService.save(value.getType(), userRepository.findById(value.getUserId()).get(), waitingRoomService.findById(value.getRoomId()).get());
 		}
+<<<<<<< HEAD
 		info(value.getRoomId());
 		waitingUser(value.getRoomId());
 		return null;
+=======
+		
+        return null;
+>>>>>>> 1c260f54dbae90d626d30e4af08b9e17fb414489
 	}
 	
 	public void result(Long userId, Boolean x) {
