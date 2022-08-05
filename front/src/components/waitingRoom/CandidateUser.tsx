@@ -12,13 +12,13 @@ interface IProps {
 
 export const CandidateUser: FC<IProps> = ({ waitingUser, onClickAccept, onClickRefuse }) => {
   return (
-    <Box display="flex" flexDirection="row" alignItems="center" width="270px">
+    <Box display="flex" flexDirection="row" alignItems="center" width="100%">
       <Avatar />
       <Box p={1} />
       <Typography variant="subtitle2" flex={1}>
         {waitingUser.name}
       </Typography>
-      <IconButton color="success" onClick={() => onClickAccept(waitingUser.id)}>
+      <IconButton color="success" onClick={() => onClickAccept(waitingUser.id)} >
         <CheckCircleIcon />
       </IconButton>
       <IconButton color="error" onClick={() => onClickRefuse(waitingUser.id)}>

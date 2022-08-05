@@ -198,7 +198,7 @@ export const WaitingRoomList: FC<IProps> = (props) => {
       client.send("/app/getList", {}, "aaa");
 
       //대기방 입장신청 결과 소켓 통신
-      client.subscribe(`/enter/result/${userId}`, function (response) {
+      client.subscribe(`/topic/enter/result/${userId}`, function (response) {
         console.log(response.body);
         if (JSON.parse(response.body).success) {
           navigate("/waiting");
