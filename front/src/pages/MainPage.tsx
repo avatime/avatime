@@ -44,15 +44,15 @@ const style = {
 
 const counts = [
   {
-    value: "2",
+    value: "4",
     label: "2:2",
   },
   {
-    value: "3",
+    value: "6",
     label: "3:3",
   },
   {
-    value: "4",
+    value: "8",
     label: "4:4",
   },
 ];
