@@ -1,5 +1,6 @@
 package com.ssafy.api.service;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Timer;
 import java.util.TimerTask;
@@ -8,9 +9,13 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.messaging.simp.SimpMessageSendingOperations;
 import org.springframework.stereotype.Service;
 
+import com.ssafy.api.response.MeetingRoomInfoRes;
+import com.ssafy.api.response.entity.StreamUser;
+import com.ssafy.db.entity.ChattingRoom;
 import com.ssafy.db.entity.MeetingRoom;
 import com.ssafy.db.entity.MeetingRoomUserRelation;
 import com.ssafy.db.entity.WaitingRoomUserRelation;
+import com.ssafy.db.repository.ChattingRoomRepository;
 import com.ssafy.db.repository.MeetingRoomRepository;
 import com.ssafy.db.repository.MeetingRoomUserRelationRepository;
 import com.ssafy.db.repository.WaitingRoomUserRelationRepository;
@@ -31,7 +36,13 @@ public class MeetingRoomServiceImpl implements MeetingRoomService {
 	WaitingRoomUserRelationRepository waitingRoomUserRelationRepository;
 	
 	@Autowired
+	ChattingRoomRepository chattingRoomRepository;
+	
+	@Autowired
 	ChattingRoomService chattingRoomService;
+	
+	@Autowired
+	AvatarService avatarService;
 	
 	SimpMessageSendingOperations sendingOperations;
 	
@@ -84,7 +95,7 @@ public class MeetingRoomServiceImpl implements MeetingRoomService {
 	@Override
 	public List<MeetingRoomUserRelation> finalChoiceResult(Long meetingRoomId) throws Exception {
 		// TODO Auto-generated method stub
-		return meetingRoomUserRelationRepository.findAllByMeetingRoomId(meetingRoomId);
+		return meetingRoomUserRelationRepository.findAllByMeetingRoomIdAndLeftMeeting(meetingRoomId, false);
 	}
 
 	@Override
@@ -116,6 +127,11 @@ public class MeetingRoomServiceImpl implements MeetingRoomService {
 	@Override
 	public void timer(Long meetingRoomId, int time, String type) throws Exception {
 		// TODO Auto-generated method stub
+		if(type.equals("pick")) {
+			MeetingRoom meetingRoom = meetingRoomRepository.findById(meetingRoomId).get();
+			meetingRoom.setStatus(1);
+			meetingRoomRepository.save(meetingRoom);
+		}
 		count = time;
 		Timer timer = new Timer();
 		TimerTask task = new TimerTask() {
@@ -129,6 +145,7 @@ public class MeetingRoomServiceImpl implements MeetingRoomService {
 				} else {
 //					System.out.println("end");
 					timer.cancel();
+					if(type.equals("avatar")) sendMeetingRoomInfo(meetingRoomId);
 				}
 			}
 		};
@@ -139,8 +156,54 @@ public class MeetingRoomServiceImpl implements MeetingRoomService {
 	@Override
 	public int userNumber(Long meetingRoomId) throws Exception {
 		// TODO Auto-generated method stub
-		return meetingRoomUserRelationRepository.countByMeetingRoomId(meetingRoomId);
+		return meetingRoomUserRelationRepository.countByMeetingRoomIdAndLeftMeeting(meetingRoomId, false);
+	}
+	
+	@Override
+	public MeetingRoomUserRelation findUser(Long meetingRoomId, Long userId) {
+		// TODO Auto-generated method stub
+		return meetingRoomUserRelationRepository.findByMeetingRoomIdAndUserId(meetingRoomId, userId).get();
 	}
 
+	@Override
+	public void save(MeetingRoomUserRelation meetingRoomUserRelation) {
+		// TODO Auto-generated method stub
+		meetingRoomUserRelationRepository.save(meetingRoomUserRelation);
+	}
+	
+	@Override
+	public void sendMeetingRoomInfo(Long meetingRoomId) {
+		// TODO Auto-generated method stub
+		MeetingRoomInfoRes meetingRoomInfo = new MeetingRoomInfoRes();
+		meetingRoomInfo.setCreated_time(meetingRoomRepository.findById(meetingRoomId).get().getCreatedTime().toString());
+		meetingRoomInfo.setChattingroom_id(chattingRoomService.findByRoomIdAndType(meetingRoomId, 0).getId());
+		List<ChattingRoom> chatList = chattingRoomRepository.findAllByRoomId(meetingRoomId).get();
+		meetingRoomInfo.setMen_chattingroom_id(chatList.get(0).getId());
+		meetingRoomInfo.setWomen_chattingroom_id(chatList.get(1).getId());
+		meetingRoomInfo.setLast_pick_status(meetingRoomRepository.findById(meetingRoomId).get().getStatus() == 1);
+		List<MeetingRoomUserRelation> userList = meetingRoomUserRelationRepository.findAllByMeetingRoomIdAndLeftMeeting(meetingRoomId, false);
+		List<StreamUser> list = new ArrayList<>();
+		
+		for(MeetingRoomUserRelation user : userList) {
+			StreamUser su = StreamUser.builder()
+					.user_id(user.getUser().getId())
+					.user_name(user.getUser().getName())
+					.avatar_id(user.getAvatarId())
+					.avatar_name(avatarService.findById(user.getAvatarId()).getName())
+					.avatar_image_path(avatarService.findById(user.getAvatarId()).getImagePath())
+					.build();
+			list.add(su);
+		}
+		
+		meetingRoomInfo.setStream_list(list);
+		
+		sendingOperations.convertAndSend("topic/meeting/"+meetingRoomId, meetingRoomInfo);
+	}
+
+	@Override
+	public MeetingRoom findById(Long meetingRoomId) {
+		// TODO Auto-generated method stub
+		return meetingRoomRepository.findById(meetingRoomId).get();
+	}
 
 }

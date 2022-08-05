@@ -37,6 +37,9 @@ public class MeetingRoomUserRelation  extends BaseEntity {
     @Column(columnDefinition = "BOOLEAN DEFAULT FALSE")
     private boolean matched;
     
+    @Column(columnDefinition = "BOOLEAN DEFAULT FALSE")
+    private boolean leftMeeting;
+    
     @Builder
     public MeetingRoomUserRelation(MeetingRoom meetingRoom, User user) {
     	this.meetingRoom = meetingRoom;

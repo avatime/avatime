@@ -1,6 +1,6 @@
 package com.ssafy.api.service;
 
-import java.util.Optional;
+import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -33,8 +33,7 @@ public class ChattingRoomServiceImpl implements ChattingRoomService{
     	return chattingRoom1;
     }
 	@Override
-	public Optional<ChattingRoom> findByRoomIdAndType(Long roomId) {
-		int type = 2;
-		return chattingRoomRepository.findByRoomIdAndType(roomId, type);
+	public ChattingRoom findByRoomIdAndType(Long roomId, int type) {
+		return chattingRoomRepository.findByRoomIdAndType(roomId, type).get();
 	}
 }
