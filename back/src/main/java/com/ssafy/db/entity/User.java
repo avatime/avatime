@@ -37,7 +37,7 @@ public class User extends BaseEntity{
     private String description;
 	
     @JsonProperty("profile_image_path")
-    @Column(updatable = false, nullable = false)
+    @Column(nullable = false)
     private String profileImagePath;
 	
     @JsonProperty("social_type")
