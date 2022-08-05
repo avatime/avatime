@@ -1,5 +1,6 @@
 import {
   AccordionSummary,
+  Box,
   Button,
   CardContent,
   List,
@@ -22,7 +23,7 @@ import SockJS from "sockjs-client";
 import * as Stomp from "stompjs";
 import { useSelector } from "react-redux";
 import { formatDate } from "../../utils/day";
-import { WS_BASE_URL } from '../../apis/axiosInstance';
+import { WS_BASE_URL } from "../../apis/axiosInstance";
 
 type ChatType = "all" | "gender";
 
@@ -169,7 +170,7 @@ const ChatRoomPresenter: FC<IPresenterProps> = ({
   onKeyUp,
   onKeyDown,
   sendMessage,
-  foldable
+  foldable,
 }) => {
   return (
     <Accordion
@@ -180,38 +181,51 @@ const ChatRoomPresenter: FC<IPresenterProps> = ({
         flexGrow: isOpened ? 1 : 0,
         display: "flex",
         flexDirection: "column",
-        maxHeight: maxHeight,
         borderRadius: "10px",
         bgcolor: grey[50],
+        height: isOpened ? maxHeight : "auto",
       }}
     >
       <AccordionSummary expandIcon={foldable && <ExpandMoreIcon />}>
         <Typography align="inherit">{title}</Typography>
       </AccordionSummary>
 
-      <List ref={chatBodyRef} sx={{ flexGrow: "1", bgcolor: grey[50], overflow: "auto" }}>
-        {chatList.map((it, idx) => {
-          const formatedTime = formatDate(it.created_time, "A h:mm");
-          return (
-            <ChatBlock
-              key={idx}
-              chatMessageRes={it}
-              order={it.user_id === userId ? "right" : "left"}
-              showName={
-                idx === 0 ||
-                chatList[idx - 1].user_id !== it.user_id ||
-                chatList[idx - 1].created_time !== it.created_time
-              }
-              showTime={
-                idx === chatList.length - 1 ||
-                chatList[idx + 1].user_id !== it.user_id ||
-                formatDate(chatList[idx + 1].created_time, "A h:mm") !== formatedTime
-              }
-              formatedTime={formatedTime}
-            />
-          );
-        })}
-      </List>
+      <Box flex={1} position="relative">
+        <List
+          ref={chatBodyRef}
+          sx={{
+            bgcolor: grey[50],
+            overflow: "auto",
+            position: "absolute",
+            top: 0,
+            right: 0,
+            bottom: 0,
+            left: 0,
+          }}
+        >
+          {chatList.map((it, idx) => {
+            const formatedTime = formatDate(it.created_time, "A h:mm");
+            return (
+              <ChatBlock
+                key={idx}
+                chatMessageRes={it}
+                order={it.user_id === userId ? "right" : "left"}
+                showName={
+                  idx === 0 ||
+                  chatList[idx - 1].user_id !== it.user_id ||
+                  chatList[idx - 1].created_time !== it.created_time
+                }
+                showTime={
+                  idx === chatList.length - 1 ||
+                  chatList[idx + 1].user_id !== it.user_id ||
+                  formatDate(chatList[idx + 1].created_time, "A h:mm") !== formatedTime
+                }
+                formatedTime={formatedTime}
+              />
+            );
+          })}
+        </List>
+      </Box>
 
       <CardContent
         sx={{ borderBottomLeftRadius: "10px", borderBottomRightRadius: "10px", bgcolor: "#D9D9D9" }}

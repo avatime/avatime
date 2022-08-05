@@ -1,21 +1,23 @@
 import { createSlice } from "@reduxjs/toolkit";
 
 export interface WaitingState {
-  roomId: number;
-  roomName: string;
-  age: string;
-  region: string;
-  isMaster: boolean;
-  headCount: number;
+  roomId: number | undefined;
+  roomName: string | undefined;
+  age: string | undefined;
+  sido: string | undefined;
+  isMaster: boolean | undefined;
+  headCount: number | undefined;
+  chatRoomId: number | undefined;
 }
 
 const initialState: WaitingState = {
-  roomId: 1,
-  roomName: "파이썬 보초만",
-  age: "20대",
-  region: "경기도",
-  isMaster: true,
-  headCount: 8,
+  roomId: undefined,
+  roomName: undefined,
+  age: undefined,
+  sido: undefined,
+  isMaster: undefined,
+  headCount: undefined,
+  chatRoomId: undefined,
 };
 
 const waitingSlice = createSlice({
@@ -31,8 +33,8 @@ const waitingSlice = createSlice({
     setAge(state, action) {
       state.age = action.payload;
     },
-    setRegion(state, action) {
-      state.region = action.payload;
+    setSido(state, action) {
+      state.sido = action.payload;
     },
     setMaster(state, action) {
       state.isMaster = action.payload;
@@ -40,10 +42,20 @@ const waitingSlice = createSlice({
     setHeadCount(state, action) {
       state.headCount = action.payload;
     },
+    setChatRoomId(state, action) {
+      state.chatRoomId = action.payload;
+    },
   },
 });
 
-export const { setWaitingRoomId, setRoomName, setAge, setRegion, setMaster, setHeadCount } =
-  waitingSlice.actions;
+export const {
+  setWaitingRoomId,
+  setRoomName,
+  setAge,
+  setSido,
+  setMaster,
+  setHeadCount,
+  setChatRoomId,
+} = waitingSlice.actions;
 
 export default waitingSlice.reducer;
