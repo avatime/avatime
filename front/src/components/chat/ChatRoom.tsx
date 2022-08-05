@@ -213,7 +213,7 @@ const ChatRoomPresenter: FC<IPresenterProps> = ({
                 showName={
                   idx === 0 ||
                   chatList[idx - 1].user_id !== it.user_id ||
-                  chatList[idx - 1].created_time !== it.created_time
+                  formatDate(chatList[idx - 1].created_time, "A h:mm") !== formatedTime
                 }
                 showTime={
                   idx === chatList.length - 1 ||
