@@ -234,14 +234,7 @@ public class WaitingRoomController {
 		else {
 			waitingRoomUserRelationService.save(value.getType(), userRepository.findById(value.getUserId()).get(), waitingRoomService.findById(value.getRoomId()).get());
 		}
-<<<<<<< HEAD
-		info(value.getRoomId());
-		waitingUser(value.getRoomId());
 		return null;
-=======
-		
-        return null;
->>>>>>> 1c260f54dbae90d626d30e4af08b9e17fb414489
 	}
 	
 	public void result(Long userId, Boolean x) {
