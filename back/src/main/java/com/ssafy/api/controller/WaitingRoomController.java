@@ -204,7 +204,7 @@ public class WaitingRoomController {
 					waitingRoom();
 					reception(value.getRoomId());
 					info(value.getRoomId());
-					result(value.getUserId(), true);
+					result(value.getUserId(), true, chattingRoomService.findByRoomIdAndType(value.getRoomId()).get().getId());
 					response.put("chatting_room_id", chattingRoomService.findByRoomIdAndType(value.getRoomId()).get().getId());
 					response.put("waiting_room_id", value.getRoomId());
 					return ResponseEntity.status(200).body(response);
@@ -237,9 +237,16 @@ public class WaitingRoomController {
 		return null;
 	}
 	
+	public void result(Long userId, Boolean x, long chatRoomId) {
+		HashMap<String, Object> map = new HashMap<>();
+		map.put("success", x);
+		map.put("chatting_room_id", chatRoomId);
+		simp.convertAndSend("/topic/enter/result/" + userId, map);
+	}
+	
 	public void result(Long userId, Boolean x) {
 		HashMap<String, Boolean> success = new HashMap<>();
 		success.put("success", x);
-		simp.convertAndSend("enter/result/" + userId, success);
+		simp.convertAndSend("/topic/enter/result/" + userId, success);
 	}
 }
