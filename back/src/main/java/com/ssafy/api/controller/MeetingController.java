@@ -85,8 +85,8 @@ public class MeetingController {
 		return ResponseEntity.status(201).body("");
 	}
 	
-	@MessageMapping("/meeting/avatar")
-	public void sendAvatarInfo(Long meetingRoomId) throws Exception {
+	@MessageMapping("/meeting/avatar/{meetingRoomId}")
+	public void sendAvatarInfo(@DestinationVariable Long meetingRoomId) throws Exception {
 		int num = 0;
 		AvatarChoiceRes avatarChoiceRes = new AvatarChoiceRes();
 		List<Avatar> avatarList = avatarService.findAll();
