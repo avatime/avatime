@@ -7,6 +7,7 @@ import java.util.TimerTask;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
+import org.springframework.messaging.handler.annotation.DestinationVariable;
 import org.springframework.messaging.handler.annotation.MessageMapping;
 import org.springframework.messaging.simp.SimpMessageSendingOperations;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -70,32 +71,39 @@ public class MeetingController {
 		Long meetingRoomId = userSelectAvatar.getMeetingRoomId();
 		Long userId = userSelectAvatar.getUserId();
 		Long avatarId = userSelectAvatar.getAvatarId();
-		int num = 0;
+		
 		try {
 			if(meetingRoomService.isSelectedAvatar(meetingRoomId, avatarId)) return ResponseEntity.status(409).body("");
 			else meetingRoomService.choiceAvatar(meetingRoomId, userId, avatarId);
 			
-			AvatarChoiceRes avatarChoiceRes = new AvatarChoiceRes();
-			List<Avatar> avatarList = avatarService.findAll();
-			List<AvatarStatus> list = new ArrayList<>();
+			sendAvatarInfo(meetingRoomId);
 			
-			for(Avatar ava : avatarList) {
-				AvatarStatus avasta = new AvatarStatus(ava);
-				if(meetingRoomService.isSelectedAvatar(meetingRoomId, ava.getId())) {
-					avasta.setSelected(true);
-					num++;
-				}
-				else avasta.setSelected(false);
-				list.add(avasta);
-			}
-			avatarChoiceRes.setStatus(num == meetingRoomService.userNumber(meetingRoomId) ? 1 : 0);
-			
-	    	sendingOperations.convertAndSend("/topic/meeting/avatar/"+meetingRoomId, list);
 		} catch(Exception e) {
 			return ResponseEntity.status(500).body("");
 		}
 		
 		return ResponseEntity.status(201).body("");
+	}
+	
+	@MessageMapping("/meeting/ava")
+	public void sendAvatarInfo(Long meetingRoomId) throws Exception {
+		int num = 0;
+		AvatarChoiceRes avatarChoiceRes = new AvatarChoiceRes();
+		List<Avatar> avatarList = avatarService.findAll();
+		List<AvatarStatus> list = new ArrayList<>();
+		
+		for(Avatar ava : avatarList) {
+			AvatarStatus avasta = new AvatarStatus(ava);
+			if(meetingRoomService.isSelectedAvatar(meetingRoomId, ava.getId())) {
+				avasta.setSelected(true);
+				num++;
+			}
+			else avasta.setSelected(false);
+			list.add(avasta);
+		}
+		avatarChoiceRes.setStatus(num == meetingRoomService.userNumber(meetingRoomId) ? 1 : 0);
+		
+    	sendingOperations.convertAndSend("/topic/meeting/avatar/"+meetingRoomId, list);
 	}
 
 	@PatchMapping("/pick/result/pick")
