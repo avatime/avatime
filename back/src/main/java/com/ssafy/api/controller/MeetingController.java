@@ -40,15 +40,17 @@ import io.swagger.annotations.ApiOperation;
 import io.swagger.annotations.ApiParam;
 import io.swagger.annotations.ApiResponse;
 import io.swagger.annotations.ApiResponses;
+import lombok.RequiredArgsConstructor;
 
 /**
  * 인증 관련 API 요청 처리를 위한 컨트롤러 정의.
  */
 @Api(value = "미팅방 관련 API", tags = {"Meeting."})
 @RestController
+@RequiredArgsConstructor
 @RequestMapping("/api/v1/meeting")
 public class MeetingController {
-	SimpMessageSendingOperations sendingOperations;	
+	private final SimpMessageSendingOperations sendingOperations;	
 	
 	@Autowired
 	MeetingRoomService meetingRoomService;
@@ -87,8 +89,6 @@ public class MeetingController {
 	
 	@MessageMapping("/meeting/avatar/{meetingRoomId}")
 	public void sendAvatarInfo(@DestinationVariable Long meetingRoomId) throws Exception {
-		System.out.println(">>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>");
-		sendingOperations.convertAndSend("/topic/meeting/avatar/"+meetingRoomId, "success");
 		int num = 0;
 		AvatarChoiceRes avatarChoiceRes = new AvatarChoiceRes();
 		List<Avatar> avatarList = avatarService.findAll();
