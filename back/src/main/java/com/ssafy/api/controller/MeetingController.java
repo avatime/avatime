@@ -2,9 +2,11 @@ package com.ssafy.api.controller;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 import java.util.Timer;
 import java.util.TimerTask;
 
+import org.apache.commons.collections4.map.HashedMap;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.messaging.handler.annotation.DestinationVariable;
@@ -104,8 +106,9 @@ public class MeetingController {
 			list.add(avasta);
 		}
 		avatarChoiceRes.setStatus(num == meetingRoomService.userNumber(meetingRoomId) ? 1 : 0);
+		avatarChoiceRes.setAvatar_list(list);
 		
-    	sendingOperations.convertAndSend("/topic/meeting/avatar/"+meetingRoomId, list);
+    	sendingOperations.convertAndSend("/topic/meeting/avatar/"+meetingRoomId, avatarChoiceRes);
 	}
 
 	@PatchMapping("/pick/result/pick")
