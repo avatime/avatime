@@ -87,6 +87,8 @@ public class MeetingController {
 	
 	@MessageMapping("/meeting/avatar/{meetingRoomId}")
 	public void sendAvatarInfo(@DestinationVariable Long meetingRoomId) throws Exception {
+		System.out.println(">>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>");
+		sendingOperations.convertAndSend("/topic/meeting/avatar/"+meetingRoomId, "success");
 		int num = 0;
 		AvatarChoiceRes avatarChoiceRes = new AvatarChoiceRes();
 		List<Avatar> avatarList = avatarService.findAll();
