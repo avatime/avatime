@@ -20,6 +20,6 @@ public class UserSelectAvatarReq {
 	@JsonProperty("user_id")
 	Long userId;
 	
-	@JsonProperty("avater_id")
+	@JsonProperty("avatar_id")
 	Long avatarId;
 }

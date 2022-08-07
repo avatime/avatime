@@ -68,7 +68,7 @@ public class MeetingController {
 	@Autowired
 	AvatarService avatarService;
 	
-	@PatchMapping("/pick/result/selectAvatar")
+	@PatchMapping("/selectAvatar")
 	@ApiOperation(value = "아바타 선택", notes = "<strong>유저별 아바타 선택</strong>") 
     @ApiResponses({
         @ApiResponse(code = 201, message = "성공", response = BaseResponseBody.class),
