@@ -1,38 +1,30 @@
 import { createSlice } from "@reduxjs/toolkit";
 
-interface MeetingState {
-  roomId: number | undefined;
-  totalChatRoomId: number | undefined;
-  genderChatRoomId: number | undefined;
-  userList: undefined;
-}
-
-const initialState: MeetingState = {
-  roomId: undefined,
-  totalChatRoomId: undefined,
-  genderChatRoomId: undefined,
-  userList: undefined,
-};
-
 const meetingSlice = createSlice({
   name: "meeting",
-  initialState,
+  initialState: {
+    roomId: undefined,
+    userList: [] as any[],
+  },
   reducers: {
     setMeetingRoomId(state, action) {
       state.roomId = action.payload;
     },
-    setTotalChatRoomId(state, action) {
-      state.totalChatRoomId = action.payload;
+    addUserList(state, action) {
+      state.userList.push(action.payload);
     },
-    setGenderChatRoomId(state, action) {
-      state.genderChatRoomId = action.payload;
+    removeUserList(state, action) {
+      let index = state.userList.findIndex((it) => it.user_id);
+      if (-1 < index) {
+        state.userList.splice(index, 1);
+      }
     },
-    setUserList(state, action) {
-      state.userList = action.payload;
+    clearUserList(state) {
+      state.userList = [];
     },
   },
 });
 
-export const { setUserList, setMeetingRoomId } = meetingSlice.actions;
+export const { setMeetingRoomId, addUserList, removeUserList, clearUserList } = meetingSlice.actions;
 
 export default meetingSlice.reducer;
