@@ -8,7 +8,7 @@ import {
 } from "@mui/material";
 import React, { FC, useEffect, useState } from "react";
 import { UserInfoRes } from "../../apis/response/userInfoRes";
-import { userApi } from "../../apis/userApi";
+import { userInfoApi } from "../../apis/userApi";
 import CancelIcon from "@mui/icons-material/Cancel";
 
 interface IProps {
@@ -41,7 +41,7 @@ export const UserInfoModal: FC<IProps> = ({ open, onClose, userId }) => {
     if (userId === -1) {
       return;
     }
-    userApi.getUserInfo({ userId }).then((data) => setUserInfo(data));
+    userInfoApi.getUserInfo({ user_id: userId }).then((data) => setUserInfo(data));
   }, [userId]);
 
   
