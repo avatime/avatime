@@ -140,8 +140,8 @@ public class MeetingRoomServiceImpl implements MeetingRoomService {
 		TimerTask task = new TimerTask() {
 			@Override
 			public void run() {
-				if(count > 0) {
-			    	try { sendingOperations.convertAndSend("topic/meeting/"+type+"/timer"+meetingRoomId, count);}
+				if(count >= 0) {
+			    	try { sendingOperations.convertAndSend("/topic/meeting/"+type+"/timer/"+meetingRoomId, count);}
 			    	catch(Exception e) {}
 					count--;
 				} else {
