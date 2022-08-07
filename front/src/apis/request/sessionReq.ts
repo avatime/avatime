@@ -16,11 +16,6 @@ export interface StartFinalPickReq {
   meetingroom_id: number;
 }
 
-export interface MeetingUserInfoReq {
-  meetingroom_id: number;
-  stream_id: string;
-}
-
 export interface RegisterStreamReq {
   meetingroom_id: number;
   user_id: number;

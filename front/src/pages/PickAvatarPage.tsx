@@ -35,14 +35,13 @@ export const PickAvatarPage: FC<IProps> = () => {
 
   //소켓 통신-----------------------------------------------------------------
   const [originData, setOriginData] = useState<AvatarPickInfoRes>();
-  const [stompClient, setStompClient] = useState<any>();
   const [timer, setTimer] = useState(30);
 
   const meetingRoomId = useSelector((state: any) => state.meeting.roomId);
   const userId = useSelector((state: any) => state.user.userId);
 
   useEffect(() => {
-    if (stompClient) {
+    if (!meetingRoomId) {
       return;
     }
 
@@ -70,9 +69,7 @@ export const PickAvatarPage: FC<IProps> = () => {
       client.send(`/app/meeting/avatar/${meetingRoomId}`, {}, "아바타 정보");
       client.send(`/app/meeting/avatar/timer/${meetingRoomId}`, {}, "타이머");
     });
-
-    setStompClient(client);
-  }, [meetingRoomId, stompClient]);
+  }, [meetingRoomId, navigate]);
 
   //아바타 선택
   const [avatarId, setAvatarId] = useState(0);
@@ -84,17 +81,16 @@ export const PickAvatarPage: FC<IProps> = () => {
   };
 
   //언니한테 아바타 뭘 선택했는지 알려줘
-  const finishSelectingAvatar = async () => {
+  const finishSelectingAvatar = () => {
     if (avatarId === 0) {
       return;
     }
 
-    const res = selectAvatarApi.pickAvatar({
+    selectAvatarApi.pickAvatar({
       meetingroom_id: meetingRoomId,
       user_id: userId,
       avatar_id: avatarId,
     });
-    console.log(res);
   };
 
   //----------------------------------------------------------------------------------
@@ -113,7 +109,7 @@ export const PickAvatarPage: FC<IProps> = () => {
                 } else {
                   if (!originData.avatar_list[i].selected) {
                     return (
-                      <Grid item xs>
+                      <Grid item xs={12 / 8}>
                         <AvatarProfile
                           selected={avatarId === originData.avatar_list[i].id}
                           onClick={() => selectAvatar(originData.avatar_list[i].id)}
@@ -124,7 +120,7 @@ export const PickAvatarPage: FC<IProps> = () => {
                     );
                   } else {
                     return (
-                      <Grid item xs>
+                      <Grid item xs={12 / 8}>
                         <AvatarProfile
                           selected={avatarId === originData.avatar_list[i].id}
                           onClick={() => {}}
