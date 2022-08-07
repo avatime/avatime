@@ -9,7 +9,7 @@ interface SelectAvatarApi {
 
 const selectAvatarApi:SelectAvatarApi = {
     pickAvatar: async function (selectAvatarReq: SelectAvatarReq) : Promise<SuccessRes> {
-        return (await (await axiosInstance.patch(`/meeting/selectAvatar`, selectAvatarReq)).data);
+        return (await axiosInstance.patch(`/meeting/selectAvatar`, selectAvatarReq)).data;
     }
 }
 

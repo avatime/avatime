@@ -1,8 +1,7 @@
 import React, { FC, useEffect, useState } from "react";
 import Grid from "@mui/material/Grid";
 import { MainHeader } from "../components/main/MainHeader";
-import { Box, display } from "@mui/system";
-
+import { Box } from "@mui/system";
 import grey from "@mui/material/colors/grey";
 
 import { GaugeBar } from "../components/pickAvatar/GaugeBar";
@@ -10,17 +9,37 @@ import { AvatarPickInfoRes } from "../apis/response/avatarRes";
 
 import SockJS from "sockjs-client";
 import * as Stomp from "stompjs";
-import { SessionModal } from "../components/session/modal/SessionModal";
-import { Typography } from "@mui/material";
+import { Avatar } from "@mui/material";
+import { useSelector } from "react-redux";
+import { selectAvatarApi } from "../apis/avatarApis";
+import { AvatarProfile } from "../components/session/modal/AvatarProfile";
+import { useNavigate } from "react-router";
 
-
-interface IProps {};
-
+interface IProps {}
 
 export const PickAvatarPage: FC<IProps> = () => {
+  const [selected, setSelected] = useState(false);
+  const handleChangeSelect = () => {
+
+    if(avatarId===0) {
+      return
+    }
+    setSelected((prev: any) => (prev ? prev : !prev));
+
+    if (!selected) {
+      finishSelectingAvatar();
+    }
+  };
+  const navigate = useNavigate();
+
   //소켓 통신-----------------------------------------------------------------
-  const [originData, setOriginData] = useState<AvatarPickInfoRes[]>([]);
+  const [originData, setOriginData] = useState<AvatarPickInfoRes>();
   const [stompClient, setStompClient] = useState<any>();
+  const [timer, setTimer] = useState(30);
+
+  const meetingRoomId = useSelector((state: any) => state.meeting.roomId);
+  const userId = useSelector((state: any) => state.user.userId);
+
   useEffect(() => {
     if (stompClient) {
       return;
@@ -31,21 +50,54 @@ export const PickAvatarPage: FC<IProps> = () => {
     client.connect({}, function (frame) {
       console.log("소켓 연결 성공", frame);
 
-      client.subscribe("/topic/getList", function (response) {
+      //아바타 목록
+      client.subscribe(`/topic/meeting/avatar/${meetingRoomId}`, function (response) {
         console.log(response.body);
-        setOriginData(JSON.parse(response.body));
+        const res = JSON.parse(response.body);
+        setOriginData(res);
+        if (res.status === 1) {
+          navigate("/session");
+        }
       });
-      client.send("/app/getList", {}, "aaa");
+
+      //타이머 구독
+      client.subscribe(`/topic/meeting/avatar/timer/${meetingRoomId}`, function (response) {
+        console.log("타이머" + response.body);
+        setTimer(JSON.parse(response.body));
+      });
+
+      client.send(`/app/meeting/avatar/${meetingRoomId}`, {}, "아바타 정보");
+      client.send(`/app/meeting/avatar/timer/${meetingRoomId}`, {}, "타이머");
     });
 
     setStompClient(client);
-  }, [stompClient]);
+  }, [meetingRoomId, stompClient]);
 
+  //아바타 선택
+  const [avatarId, setAvatarId] = useState(0);
+  const selectAvatar = (avaId: number) => {
+    if (!selected) {
+      setAvatarId(avaId);
+    }
+    console.log("아바타선택함수" + avaId);
+  };
 
+  //언니한테 아바타 뭘 선택했는지 알려줘
+  const finishSelectingAvatar = async () => {
+    if (avatarId === 0) {
+      return;
+    }
 
+    const res = selectAvatarApi.pickAvatar({
+      meetingroom_id: meetingRoomId,
+      user_id: userId,
+      avatar_id: avatarId,
+    });
+    console.log(res);
+  };
 
   //----------------------------------------------------------------------------------
-
+  //꼭 다시 봐
   return (
     <div className="mainback" style={{ display: "flex", flexDirection: "column" }}>
       <MainHeader hideSettings={true} />
@@ -53,18 +105,47 @@ export const PickAvatarPage: FC<IProps> = () => {
         <Grid container spacing={2} direction="column" sx={{ height: "100%" }}>
           {Array.from(Array(3)).map((_, index) => (
             <Grid container item xs spacing={2}>
-              {Array.from(Array(8)).map((_, index) => (
-                <Grid item xs>
-                  <Box sx={{ bgcolor: "white", height: "100%" }}>a</Box>
-                </Grid>
-              ))}
+              {Array.from(Array(8)).map((_, idx) => {
+                const i = index * 8 + idx;
+                if (!originData || i > originData.avatar_list.length - 1) {
+                  return null;
+                } else {
+                  if (!originData.avatar_list[i].selected) {
+                    return (
+                      <Grid item xs>
+                        <AvatarProfile
+                          selected={avatarId === originData.avatar_list[i].id}
+                          onClick={() => selectAvatar(originData.avatar_list[i].id)}
+                          avatarName={originData.avatar_list[i].name}
+                          avatarImagePath={originData.avatar_list[i].image_path}
+                        />
+                      </Grid>
+                    );
+                  } else {
+                    return (
+                      <Grid item xs>
+                        <AvatarProfile
+                          selected={avatarId === originData.avatar_list[i].id}
+                          onClick={() => {}}
+                          avatarName={originData.avatar_list[i].name}
+                          avatarImagePath={originData.avatar_list[i].image_path}
+                        />
+                      </Grid>
+                    );
+                  }
+                }
+              })}
             </Grid>
           ))}
         </Grid>
       </Box>
-      <GaugeBar total={100} current={50}/>
-      
-    
+      <GaugeBar
+        total={30}
+        current={timer}
+        finishSelectingAvatar={finishSelectingAvatar}
+        selected={selected}
+        handleChangeSelect={handleChangeSelect}
+      />
     </div>
   );
 };
