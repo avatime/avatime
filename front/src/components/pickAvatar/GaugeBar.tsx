@@ -1,11 +1,16 @@
 import { Box, Button } from "@mui/material";
 import { grey } from "@mui/material/colors";
 import React, { FC, useState } from "react";
+import { AvatarInfoRes } from "../../apis/response/avatarRes";
 
 
 interface SliderProps {
+
     total: number;
     current: number;
+    finishSelectingAvatar: () => void;
+    selected : boolean;
+    handleChangeSelect : () => void;
   }
 
 /**
@@ -13,12 +18,9 @@ interface SliderProps {
  * @function @
  **/
 
-export const GaugeBar: FC<SliderProps> = ({ current, total }) => {
-    
-  const [selected, setSelected] = useState(false);
-  const handleChangeSelect = (event: React.MouseEvent<HTMLElement>) => {
-    setSelected((prev: any) => !prev);
-  };
+export const GaugeBar: FC<SliderProps> = ({ current, total, finishSelectingAvatar, selected, handleChangeSelect}) => {
+  
+  
 
   const width = (current / total) * 100;
   return (
@@ -56,7 +58,7 @@ export const GaugeBar: FC<SliderProps> = ({ current, total }) => {
         ></Box>
         <Button
           variant="text"
-          onClick={handleChangeSelect}
+          onClick={handleChangeSelect }
           sx={{ position: "absolute", left: "0", right: "0", top: "0", bottom: "0" }}
         >
           선택하기
@@ -65,5 +67,6 @@ export const GaugeBar: FC<SliderProps> = ({ current, total }) => {
     </Box>
   );
 };
+
 
 
