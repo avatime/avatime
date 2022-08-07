@@ -23,7 +23,7 @@ import SockJS from "sockjs-client";
 import * as Stomp from "stompjs";
 import { useSelector } from "react-redux";
 import { formatDate } from "../../utils/day";
-import { WS_BASE_URL } from "../../apis/axiosInstance";
+import { WS_BASE_URL } from "../../apis/url";
 
 type ChatType = "all" | "gender";
 

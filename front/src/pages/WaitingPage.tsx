@@ -17,8 +17,8 @@ import { ReceptionModal } from "../components/waitingRoom/ReceptionModal";
 import { WaitingUserProfile } from "../components/waitingRoom/WaitingUserProfile";
 import { UserInfoModal } from "../components/waitingRoom/UserInfoModal";
 import { requestEnterRoomApi, waitingApi } from "../apis/waitingRoomApi";
-import { WS_BASE_URL } from "../apis/axiosInstance";
 import { setMeetingRoomId } from "../stores/slices/meetingSlice";
+import { WS_BASE_URL } from "../apis/url";
 
 interface IProps {}
 
