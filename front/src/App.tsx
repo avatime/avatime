@@ -14,6 +14,7 @@ import { KakaoHandler } from './components/login/KakaoHandler';
 import { NaverHandler } from './components/login/NaverHandler';
 import { LoginPage } from './pages/LoginPage';
 import { MyPage } from './pages/MyPage';
+import { PickAvatarPage } from "./pages/PickAvatarPage";
 import { Canvas } from './pages/Canvas';
 
 function App() {
@@ -30,6 +31,7 @@ function App() {
               <Route path="/login" element={<LoginPage />} />
               <Route path="/mypage" element={<MyPage />} />
               <Route path="/finalPickResult" element={<FinalPickResultPage />} />
+              <Route path="/pickAvatar" element={<PickAvatarPage/>} />
               <Route path="/kakao" element={<KakaoHandler />} />
               <Route path="/naver" element={<NaverHandler />} />
               <Route path="/canvas" element={<Canvas />} />
