@@ -7,52 +7,42 @@ import { getToken } from "../apis/openViduApi";
 import { VideoStream } from "../components/session/VideoStream";
 import { grey } from "@mui/material/colors";
 import { useDispatch, useSelector } from "react-redux";
-import { SessionUser, SessionUserListRes } from "../apis/response/sessionRes";
 import { useQuery } from "react-query";
 import sessionApi from "../apis/sessionApi";
-import { setUserList } from "../stores/slices/meetingSlice";
+import { addUserList, clearUserList, removeUserList } from "../stores/slices/meetingSlice";
 import { useFaceMeshModel } from "../hooks/useFaceMesh";
 
 interface IProps {}
 
 export const SessionPage: FC<IProps> = (props) => {
-  const {
-    data: { userList },
-  } = useQuery<any, SessionUserListRes>(
-    "session/getUserList",
-    () => sessionApi.requestSessionUserList(8),
-    { suspense: true }
+  const headCount = useSelector((state: any) => state.waiting.headCount);
+  const gender = useSelector((state: any) => state.user.userGender);
+  const roomId = useSelector((state: any) => state.meeting.roomId);
+  const userId = useSelector((state: any) => state.user.userId);
+  const { data: meetingRoomInfo } = useQuery("meeting/getRoomInfo", () =>
+    sessionApi.getMeetingRoomInfo({ meetingroom_id: roomId })
   );
-
-  const dispatch = useDispatch();
-  useEffect(() => {
-    dispatch(
-      setUserList(
-        userList.map((it: SessionUser) => ({
-          userId: it.userId,
-          userName: it.userName,
-          avatarId: it.avatarId,
-          avatarName: it.avatarName,
-          avatarImagePath: it.avatarImagePath,
-        }))
-      )
-    );
-  }, [userList, dispatch]);
 
   const [opened, setOpened] = useState<boolean[]>([true, true]);
   const cntOpened = opened.filter((it) => it).length;
 
-  const roomId = useSelector((state: any) => state.meeting.roomId);
   const [subscribers, setSubscribers] = useState<any[]>([]);
   const [publisher, setPublisher] = useState<any>();
+
+  const dispatch = useDispatch();
 
   useEffect(() => {
     const openVidu = new OpenVidu();
     const session = openVidu.initSession();
 
-    session.on("streamCreated", (event) => {
-      var subscriber = session.subscribe(event.stream, "");
+    session.on("streamCreated",  async (event) => {
+      const subscriber = session.subscribe(event.stream, "");
       setSubscribers((prev) => [...prev, subscriber]);
+      const res = await sessionApi.getMeetingUserInfo({
+        meetingroom_id: roomId,
+        stream_id: subscriber.stream.streamId,
+      })
+      dispatch(addUserList(res));
     });
 
     session.on("streamDestroyed", (event) => {
@@ -60,6 +50,8 @@ export const SessionPage: FC<IProps> = (props) => {
         let index = prev.indexOf(event.stream.streamManager, 0);
         return -1 < index ? prev.splice(index, 1) : prev;
       });
+      dispatch(removeUserList(userId));
+
     });
 
     session.on("exception", (exception) => {
@@ -87,6 +79,12 @@ export const SessionPage: FC<IProps> = (props) => {
 
           setPublisher(publisher);
           session.publish(publisher);
+          dispatch(clearUserList());
+          sessionApi.patchRegisterStreamId({
+            meetingroom_id: roomId,
+            user_id: userId,
+            stream_id: publisher.stream.streamId,
+          });
         })
         .catch((error) => {
           console.log("There was an error connecting to the session:", error.code, error.message);
@@ -97,7 +95,7 @@ export const SessionPage: FC<IProps> = (props) => {
       session.disconnect();
       setSubscribers([]);
     };
-  }, [roomId, setPublisher]);
+  }, [dispatch, roomId, setPublisher, userId]);
 
   const faceMeshModel = useFaceMeshModel();
 
@@ -106,7 +104,7 @@ export const SessionPage: FC<IProps> = (props) => {
       <Grid item xs={9}>
         <Box height="95vh" display="flex" flexDirection="column">
           <Box borderRadius="10px" flex={1} position="relative" bgcolor={grey[200]}>
-            {userList.length === 2 ? (
+            {headCount === 2 ? (
               <>
                 <Box height="95%" p={2}>
                   <VideoStream
@@ -132,14 +130,18 @@ export const SessionPage: FC<IProps> = (props) => {
                     <Box flex={1} key={idx}>
                       <Grid container height="95%" spacing={2} alignItems="stretch">
                         {[publisher, ...subscribers]
-                          .slice((it * userList.length) / 2, ((it + 1) * userList.length) / 2)
+                          .slice((it * headCount) / 2, ((it + 1) * headCount) / 2)
                           .map((it, idx) => (
-                            <Grid item xs={24 / userList.length} key={idx}>
+                            <Grid item xs={24 / headCount} key={idx}>
                               <VideoStream
                                 faceMeshModel={faceMeshModel}
                                 streamManager={it}
-                                name={"sdafasdf"}
-                                avatarPath={it === publisher ? `${process.env.PUBLIC_URL}/sampleMask2.jpg` : `${process.env.PUBLIC_URL}/sampleMask1.jpg`}
+                                name={it.stream.streamId}
+                                avatarPath={
+                                  it === publisher
+                                    ? `${process.env.PUBLIC_URL}/sampleMask2.jpg`
+                                    : `${process.env.PUBLIC_URL}/sampleMask1.jpg`
+                                }
                               />
                             </Grid>
                           ))}
@@ -155,24 +157,32 @@ export const SessionPage: FC<IProps> = (props) => {
       </Grid>
       <Grid item xs={3}>
         <Box display="flex" flexDirection="column" height="95vh" sx={{ overflow: "hidden" }}>
-          <ChatRoom
-            chatType="all"
-            isOpened={opened[0]}
-            onClickHeader={() => {
-              setOpened((prev) => [!prev[0], prev[1]]);
-            }}
-            maxHeight={opened[0] && cntOpened === 1 ? "100%" : "50%"}
-            chattingRoomId={1}
-          />
-          <ChatRoom
-            chatType="gender"
-            isOpened={opened[1]}
-            onClickHeader={() => {
-              setOpened((prev) => [prev[0], !prev[1]]);
-            }}
-            maxHeight={opened[1] && cntOpened === 1 ? "100%" : "50%"}
-            chattingRoomId={1}
-          />
+          {meetingRoomInfo && (
+            <ChatRoom
+              chatType="all"
+              isOpened={opened[0]}
+              onClickHeader={() => {
+                setOpened((prev) => [!prev[0], prev[1]]);
+              }}
+              maxHeight={opened[0] && cntOpened === 1 ? "100%" : "50%"}
+              chattingRoomId={meetingRoomInfo.chattingroom_id}
+            />
+          )}
+          {meetingRoomInfo && (
+            <ChatRoom
+              chatType="gender"
+              isOpened={opened[1]}
+              onClickHeader={() => {
+                setOpened((prev) => [prev[0], !prev[1]]);
+              }}
+              maxHeight={opened[1] && cntOpened === 1 ? "100%" : "50%"}
+              chattingRoomId={
+                gender === "M"
+                  ? meetingRoomInfo.men_chattingroom_id
+                  : meetingRoomInfo.women_chattingroom_id
+              }
+            />
+          )}
         </Box>
       </Grid>
     </Grid>

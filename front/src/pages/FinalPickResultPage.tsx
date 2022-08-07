@@ -15,10 +15,14 @@ interface IProps {}
 
 export const FinalPickResultPage: FC<IProps> = (props) => {
   const userList = useSelector((state: any) => state.meeting.userList);
+  const roomId = useSelector((state: any) => state.meeting.roomId);
 
   const { data } = useQuery(
     "meeting/resultMeetingPick",
-    () => sessionApi.getFinalPickResult(0, userList.length),
+    () =>
+      sessionApi.getFinalPickResult({
+        meetingroom_id: roomId,
+      }),
     {
       staleTime: Infinity,
     }
@@ -40,9 +44,9 @@ export const FinalPickResultPage: FC<IProps> = (props) => {
     temp[0] = 0;
 
     while (cnt < userList.length) {
-      const pickUserIndex = data.resultList.findIndex(
+      const pickUserIndex = data.result_list.findIndex(
         // eslint-disable-next-line no-loop-func
-        (it) => it.userId === data.resultList[prevUserIndex].pickUserId
+        (it) => it.id === data.result_list[prevUserIndex].pick_user_id
       );
       if (temp[pickUserIndex] !== -1) {
         while (temp[idx] !== -1 && idx < userList.length) {
@@ -156,32 +160,26 @@ const FinalPickResultPagePresenter: FC<IPresenterProps> = ({
         <Grid item xs />
         {UserProfileList(userList.length / 2, userList.length)}
         <Xwrapper>
-          {data?.resultList?.map(
-            (it, idx) =>
+          {data?.result_list?.map((it, idx) => {
+            const color =
+              userList.length <= -timer &&
+              it.id === data?.result_list?.find((i) => i.id === it.pick_user_id)?.pick_user_id
+                ? "red"
+                : theme.palette.primary.main;
+            return (
               arrowOrderList[idx] <= -timer && (
                 <Xarrow
-                  key={it.userId}
-                  start={"out" + it.userId}
-                  end={"in" + it.pickUserId}
+                  key={it.id}
+                  start={"out" + it.id}
+                  end={"in" + it.pick_user_id}
                   curveness={0}
-                  lineColor={
-                    userList.length <= -timer &&
-                    it.userId ===
-                      data?.resultList?.find((i) => i.userId === it.pickUserId)?.pickUserId
-                      ? "red"
-                      : theme.palette.primary.main
-                  }
-                  headColor={
-                    userList.length <= -timer &&
-                    it.userId ===
-                      data?.resultList?.find((i) => i.userId === it.pickUserId)?.pickUserId
-                      ? "red"
-                      : theme.palette.primary.main
-                  }
+                  lineColor={color}
+                  headColor={color}
                   animateDrawing={0.5}
                 />
               )
-          )}
+            );
+          })}
         </Xwrapper>
       </Grid>
       <Backdrop open={0 < timer}>
