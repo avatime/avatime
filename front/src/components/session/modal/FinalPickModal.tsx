@@ -1,4 +1,4 @@
-import { Box,  Typography, Grid } from "@mui/material";
+import { Box, Typography, Grid } from "@mui/material";
 import React, { FC, useState } from "react";
 import { useEffect } from "react";
 import { useQuery } from "react-query";
@@ -14,9 +14,23 @@ interface IProps {
 
 export const FinalPickModal: FC<IProps> = ({ isOpened }) => {
   const totalUserList = useSelector((state: any) => state.meeting.userList);
+  const meetingRoomid = useSelector((state: any) => state.meeting.roomId);
+  const userId = useSelector((state: any) => state.user.userId);
+  const gender = useSelector((state: any) => state.user.userGender);
+
+  const [targetUserList, setTargetUserList] = useState();
+  useEffect(() => {
+    if (!totalUserList) {
+      return;
+    }
+
+    setTargetUserList(
+      totalUserList.filter((it: any) => it.gender !== gender)
+    )
+  }, [totalUserList, gender]);
 
   const [selectedUserId, setSelectedUserId] = useState(
-    totalUserList[totalUserList.length / 2].userId
+    totalUserList.find((it: any) => it.gender !== gender)
   );
 
   const [timer, setTimer] = useState(-1);
@@ -39,10 +53,10 @@ export const FinalPickModal: FC<IProps> = ({ isOpened }) => {
   const { isLoading } = useQuery(
     "meeting/pick",
     () =>
-      sessionApi.patchMeetingPick({
-        meetingRoomId: 0,
-        userId: 0,
-        pickUserId: selectedUserId,
+      sessionApi.patchFinalPick({
+        meetingroom_id: meetingRoomid,
+        user_id: userId,
+        pick_user_id: selectedUserId,
       }),
     {
       enabled: timer === 0,
@@ -64,7 +78,6 @@ export const FinalPickModal: FC<IProps> = ({ isOpened }) => {
       userList={totalUserList.slice(totalUserList.length / 2)}
       selectedUserId={selectedUserId}
       onClickAvatar={(userId) => setSelectedUserId(userId)}
-      isLoading={isLoading}
     />
   );
 };
@@ -75,7 +88,6 @@ interface IPresenterProps {
   userList: any[];
   selectedUserId: number;
   onClickAvatar: (userId: number) => void;
-  isLoading: boolean;
 }
 
 const FinalPickModalPresenter: FC<IPresenterProps> = ({
@@ -84,7 +96,6 @@ const FinalPickModalPresenter: FC<IPresenterProps> = ({
   userList,
   selectedUserId,
   onClickAvatar,
-  isLoading,
 }) => {
   return (
     <SessionModal open={isOpened} justifyContent="stretch">
