@@ -236,9 +236,9 @@ public class MeetingRoomServiceImpl implements MeetingRoomService {
 	}
 
 	@Override
-	public MeetingRoomUserRelation findByMeetingRoomIdAndStreamId(Long meetingRoomId, Long streamId) throws Exception {
+	public List<MeetingRoomUserRelation> findAllByMeetingRoomId(Long meetingRoomId) throws Exception {
 		// TODO Auto-generated method stub
-		return meetingRoomUserRelationRepository.findByMeetingRoomIdAndStreamId(meetingRoomId, streamId).get();
+		return meetingRoomUserRelationRepository.findAllByMeetingRoomId(meetingRoomId);
 	}
 
 }

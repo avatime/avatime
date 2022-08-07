@@ -1,5 +1,7 @@
 package com.ssafy.api.response;
 
+import java.util.List;
+
 import com.ssafy.common.model.response.BaseResponseBody;
 
 import io.swagger.annotations.ApiModel;
@@ -17,4 +19,5 @@ public class MeetingRoomInfoRes extends BaseResponseBody {
 	Long chattingroom_id;
 	Long men_chattingroom_id;
 	Long women_chattingroom_id;
+	List<MeetingRoomUserRes> meeting_user_info_list;
 }

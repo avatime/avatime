@@ -111,7 +111,23 @@ public class MeetingController {
 					.chattingroom_id(chattingRoomService.findByRoomIdAndType(meetingroom_id, 0).getId())
 					.men_chattingroom_id(chatList.get(0).getId())
 					.women_chattingroom_id(chatList.get(1).getId())
+					.meeting_user_info_list(new ArrayList<>())
 					.build();
+			
+			List<MeetingRoomUserRelation> meetingRoomUserRelationList = meetingRoomService.findAllByMeetingRoomId(meetingroom_id);
+			for (MeetingRoomUserRelation meetingRoomUserRelation : meetingRoomUserRelationList) {
+				Avatar avatar = avatarService.findById(meetingRoomUserRelation.getAvatarId());
+				MeetingRoomUserRes meetingRoomUserRes = MeetingRoomUserRes.builder()
+						.user_id(meetingRoomUserRelation.getUser().getId())
+						.user_name(meetingRoomUserRelation.getUser().getName())
+						.avatar_id(avatar.getId())
+						.avatar_name(avatar.getName())
+						.avatar_image_path(avatar.getImagePath())
+						.gender(meetingRoomUserRelation.getUser().getGender())
+						.build();
+				meetingRoomInfoRes.getMeeting_user_info_list().add(meetingRoomUserRes);
+			}
+				
 			return ResponseEntity.status(200).body(meetingRoomInfoRes);
 		} catch (Exception e) {
 			// TODO Auto-generated catch block
@@ -200,50 +216,6 @@ public class MeetingController {
 		MeetingRoomUserRelation meetingRoomUser = meetingRoomService.findUser(leavingMeetingRoomReq.getMeetingRoomId(), leavingMeetingRoomReq.getUserId());
 		meetingRoomUser.setLeftMeeting(true);
 		meetingRoomService.save(meetingRoomUser);
-	}
-	
-	@GetMapping("/{meetingroom_id}/{stream_id}")
-	@ApiOperation(value = "유저 정보 반환", notes = "<strong>meeting room id</strong> 와  <strong>stream id </strong>에 따른 유저 정보 반환") 
-    @ApiResponses({
-        @ApiResponse(code = 200, message = "성공", response = MeetingRoomUserRes.class),
-        @ApiResponse(code = 500, message = "서버 오류", response = BaseResponseBody.class)
-    })
-	public ResponseEntity<?> getMeetingRoomInfo(@PathVariable Long meetingroom_id, Long stream_id) {
-		try {
-			MeetingRoomUserRelation meetingRoomUserRelation = meetingRoomService.findByMeetingRoomIdAndStreamId(meetingroom_id, stream_id);
-			Avatar avatar = avatarService.findById(meetingRoomUserRelation.getAvatarId());
-			MeetingRoomUserRes meetingRoomUserRes = MeetingRoomUserRes.builder()
-					.user_id(meetingRoomUserRelation.getUser().getId())
-					.user_name(meetingRoomUserRelation.getUser().getName())
-					.avatar_id(avatar.getId())
-					.avatar_name(avatar.getName())
-					.avatar_image_path(avatar.getImagePath())
-					.gender(meetingRoomUserRelation.getUser().getGender())
-					.build();
-			return ResponseEntity.status(200).body(meetingRoomUserRes);
-		} catch (Exception e) {
-			// TODO Auto-generated catch block
-			return ResponseEntity.status(500).body("");
-		}
-	}
-	
-	@PatchMapping("/registerStream")
-	@ApiOperation(value = "오픈비두 스트림 아이디 등록", notes = "<strong>오픈비두 스트림 아이디</strong> 등록") 
-    @ApiResponses({
-        @ApiResponse(code = 200, message = "성공", response = BaseResponseBody.class),
-        @ApiResponse(code = 500, message = "서버 오류", response = BaseResponseBody.class)
-    })
-	public ResponseEntity<?> registerOpenViduStreamId(@RequestBody @ApiParam(value="미팅룸, 유저 아이디와 등록할 오픈비두 스트림 ID", required = true) RegisterOpenViduStreamReq registerOpenViduStreamReq) {
-		
-		try {
-			MeetingRoomUserRelation meetingRoomUserRelation = meetingRoomService.findUser(registerOpenViduStreamReq.getMeetingroom_id(), registerOpenViduStreamReq.getUser_id());
-			meetingRoomUserRelation.setStreamId(registerOpenViduStreamReq.getStream_id());
-			meetingRoomService.save(meetingRoomUserRelation);
-			return ResponseEntity.status(200).body("성공");
-			
-		} catch(Exception e) {
-			return ResponseEntity.status(500).body("서버 오류");
-		}
 	}
 	
 	@MessageMapping("/meeting/status")

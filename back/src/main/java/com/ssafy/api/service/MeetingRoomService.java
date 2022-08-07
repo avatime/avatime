@@ -23,6 +23,6 @@ public interface MeetingRoomService {
 	public void save(MeetingRoom meetingRoom);
 	public MeetingRoom findById(Long meetingRoomId);
 	public void pickAvatar(Long meetingRoomId) throws Exception;
-	public MeetingRoomUserRelation findByMeetingRoomIdAndStreamId(Long meetingRoomId, Long streamId) throws Exception;
+	public List<MeetingRoomUserRelation> findAllByMeetingRoomId(Long meetingRoomId) throws Exception;
 	int sendAvatarInfo(Long meetingRoomId) throws Exception;
 }

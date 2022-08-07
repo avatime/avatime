@@ -25,14 +25,11 @@ insert into waiting_room values ('0', '2', now(), '6', 'ⓕⓤⓒⓚ', '2', '0')
 insert into waiting_room values ('0', '2', now(), '6', '울산광역시', '2', '1');
 insert into waiting_room values ('0', '3', now(), '6', '화났어?', '2', '0');
 
-insert into avatar (image_path, name) values ("호랑이.png", "호랑이");
-insert into avatar (image_path, name) values ("사자.png", "사자");
-insert into avatar (image_path, name) values ("강아지.png", "강아지");
-insert into avatar (image_path, name) values ("고양이.png", "고양이");
-insert into avatar (image_path, name) values ("기린.png", "기린");
-insert into avatar (image_path, name) values ("코끼리.png", "코끼리");
-insert into avatar (image_path, name) values ("나무늘보.png", "나무늘보");
-insert into avatar (image_path, name) values ("불가사리.png", "불가사리");
+insert into avatar (image_path, name) values ("액션가면.jpg", "액션가면");
+insert into avatar (image_path, name) values ("헐크.jpg", "헐크");
+insert into avatar (image_path, name) values ("조커.jpg", "조커");
+insert into avatar (image_path, name) values ("지니.jpg", "지니");
+insert into avatar (image_path, name) values ("아기조커.jpg", "아기조커");
 
 insert into user (description, gender, name, profile_image_path, social_id, social_type) values ("testing3", "F", "채윤선", "https://jira.ssafy.com/secure/useravatar?avatarId=10508", "5524137@naver.com", 1);
 insert into user (description, gender, name, profile_image_path, social_id, social_type) values ("testing", "M", "정건우", "https://jira.ssafy.com/secure/useravatar?avatarId=10341", "abcxj123@naver.com", 1);
