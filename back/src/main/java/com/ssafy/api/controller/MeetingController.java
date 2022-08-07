@@ -90,7 +90,12 @@ public class MeetingController {
 	}
 	
 	@MessageMapping("/meeting/avatar/{meetingRoomId}")
-	public void sendAvatarInfo(@DestinationVariable Long meetingRoomId) throws Exception {
+	public void startAvatarChoice(@DestinationVariable Long meetingRoomId) throws Exception {
+		sendAvatarInfo(meetingRoomId);
+		meetingRoomService.timer(meetingRoomId, 30, "avatar");
+	}
+	
+	public int sendAvatarInfo(Long meetingRoomId) throws Exception {
 		int num = 0;
 		AvatarChoiceRes avatarChoiceRes = new AvatarChoiceRes();
 		List<Avatar> avatarList = avatarService.findAll();
@@ -109,6 +114,7 @@ public class MeetingController {
 		avatarChoiceRes.setAvatar_list(list);
 		
     	sendingOperations.convertAndSend("/topic/meeting/avatar/"+meetingRoomId, avatarChoiceRes);
+    	return avatarChoiceRes.getStatus();
 	}
 
 	@PatchMapping("/pick/result/pick")
@@ -180,7 +186,7 @@ public class MeetingController {
 	}
 	
 	@MessageMapping("meeting/leave")
-	public void leavingMeeting(LeavingMeetingRoomReq leavingMeetingRoomReq) {
+	public void leavingMeeting(LeavingMeetingRoomReq leavingMeetingRoomReq) throws Exception {
 		MeetingRoomUserRelation meetingRoomUser = meetingRoomService.findUser(leavingMeetingRoomReq.getMeetingRoomId(), leavingMeetingRoomReq.getUserId());
 		meetingRoomUser.setLeftMeeting(true);
 		meetingRoomService.save(meetingRoomUser);
