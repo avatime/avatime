@@ -8,6 +8,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.messaging.simp.SimpMessageSendingOperations;
 import org.springframework.stereotype.Service;
 
+import com.ssafy.api.controller.MeetingController;
 import com.ssafy.db.entity.MeetingRoom;
 import com.ssafy.db.entity.MeetingRoomUserRelation;
 import com.ssafy.db.entity.WaitingRoomUserRelation;

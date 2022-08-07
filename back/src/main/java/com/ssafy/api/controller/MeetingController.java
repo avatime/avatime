@@ -97,6 +97,7 @@ public class MeetingController {
 	public void startAvatarChoice(@DestinationVariable Long meetingRoomId) throws Exception {
 		sendAvatarInfo(meetingRoomId);
 		meetingRoomService.timer(meetingRoomId, 30, "avatar");
+		sendAvatarInfo(meetingRoomId);
 	}
 	
 	public int sendAvatarInfo(Long meetingRoomId) throws Exception {
