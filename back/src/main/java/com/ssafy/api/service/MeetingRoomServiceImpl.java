@@ -1,5 +1,6 @@
 package com.ssafy.api.service;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Timer;
 import java.util.TimerTask;
@@ -9,6 +10,9 @@ import org.springframework.messaging.simp.SimpMessageSendingOperations;
 import org.springframework.stereotype.Service;
 
 import com.ssafy.api.controller.MeetingController;
+import com.ssafy.api.response.AvatarChoiceRes;
+import com.ssafy.api.response.entity.AvatarStatus;
+import com.ssafy.db.entity.Avatar;
 import com.ssafy.db.entity.MeetingRoom;
 import com.ssafy.db.entity.MeetingRoomUserRelation;
 import com.ssafy.db.entity.WaitingRoomUserRelation;
@@ -196,6 +200,31 @@ public class MeetingRoomServiceImpl implements MeetingRoomService {
 				}
 			}
 		}
+		
+		sendAvatarInfo(meetingRoomId);
+	}
+	
+	@Override
+	public int sendAvatarInfo(Long meetingRoomId) throws Exception {
+		int num = 0;
+		AvatarChoiceRes avatarChoiceRes = new AvatarChoiceRes();
+		List<Avatar> avatarList = avatarService.findAll();
+		List<AvatarStatus> list = new ArrayList<>();
+		
+		for(Avatar ava : avatarList) {
+			AvatarStatus avasta = new AvatarStatus(ava);
+			if(isSelectedAvatar(meetingRoomId, ava.getId())) {
+				avasta.setSelected(true);
+				num++;
+			}
+			else avasta.setSelected(false);
+			list.add(avasta);
+		}
+		avatarChoiceRes.setStatus(num == userNumber(meetingRoomId) ? 1 : 0);
+		avatarChoiceRes.setAvatar_list(list);
+		
+    	sendingOperations.convertAndSend("/topic/meeting/avatar/"+meetingRoomId, avatarChoiceRes);
+    	return avatarChoiceRes.getStatus();
 	}
 
 	@Override
