@@ -1,6 +1,5 @@
 package com.ssafy.api.service;
 
-import java.util.ArrayList;
 import java.util.List;
 import java.util.Timer;
 import java.util.TimerTask;
@@ -9,9 +8,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.messaging.simp.SimpMessageSendingOperations;
 import org.springframework.stereotype.Service;
 
-import com.ssafy.api.response.MeetingRoomInfoRes;
-import com.ssafy.api.response.entity.StreamUser;
-import com.ssafy.db.entity.ChattingRoom;
 import com.ssafy.db.entity.MeetingRoom;
 import com.ssafy.db.entity.MeetingRoomUserRelation;
 import com.ssafy.db.entity.WaitingRoomUserRelation;
@@ -148,7 +144,7 @@ public class MeetingRoomServiceImpl implements MeetingRoomService {
 					timer.cancel();
 					if(type.equals("avatar"))
 						try {
-							sendMeetingRoomInfo(meetingRoomId);
+							pickAvatar(meetingRoomId);
 						} catch (Exception e) {
 							// TODO Auto-generated catch block
 							
@@ -179,17 +175,14 @@ public class MeetingRoomServiceImpl implements MeetingRoomService {
 	}
 	
 	@Override
-	public void sendMeetingRoomInfo(Long meetingRoomId) throws Exception {
+	public void save(MeetingRoom meetingRoom) {
+		meetingRoomRepository.save(meetingRoom);
+	}
+	
+	@Override
+	public void pickAvatar(Long meetingRoomId) throws Exception {
 		// TODO Auto-generated method stub
-		MeetingRoomInfoRes meetingRoomInfo = new MeetingRoomInfoRes();
-		meetingRoomInfo.setCreated_time(meetingRoomRepository.findById(meetingRoomId).get().getCreatedTime().toString());
-		meetingRoomInfo.setChattingroom_id(chattingRoomService.findByRoomIdAndType(meetingRoomId, 0).getId());
-		List<ChattingRoom> chatList = chattingRoomRepository.findAllByRoomId(meetingRoomId).get();
-		meetingRoomInfo.setMen_chattingroom_id(chatList.get(0).getId());
-		meetingRoomInfo.setWomen_chattingroom_id(chatList.get(1).getId());
-		meetingRoomInfo.setLast_pick_status(meetingRoomRepository.findById(meetingRoomId).get().getStatus() == 1);
 		List<MeetingRoomUserRelation> userList = meetingRoomUserRelationRepository.findAllByMeetingRoomIdAndLeftMeeting(meetingRoomId, false);
-		List<StreamUser> list = new ArrayList<>();
 		
 		for(MeetingRoomUserRelation user : userList) {
 			if(user.getAvatarId() == null) {
@@ -201,25 +194,19 @@ public class MeetingRoomServiceImpl implements MeetingRoomService {
 					}
 				}
 			}
-			StreamUser su = StreamUser.builder()
-					.user_id(user.getUser().getId())
-					.user_name(user.getUser().getName())
-					.avatar_id(user.getAvatarId())
-					.avatar_name(avatarService.findById(user.getAvatarId()).getName())
-					.avatar_image_path(avatarService.findById(user.getAvatarId()).getImagePath())
-					.build();
-			list.add(su);
 		}
-		
-		meetingRoomInfo.setStream_list(list);
-		
-		sendingOperations.convertAndSend("topic/meeting/"+meetingRoomId, meetingRoomInfo);
 	}
 
 	@Override
 	public MeetingRoom findById(Long meetingRoomId) {
 		// TODO Auto-generated method stub
 		return meetingRoomRepository.findById(meetingRoomId).get();
+	}
+
+	@Override
+	public MeetingRoomUserRelation findByMeetingRoomIdAndStreamId(Long meetingRoomId, Long streamId) throws Exception {
+		// TODO Auto-generated method stub
+		return meetingRoomUserRelationRepository.findByMeetingRoomIdAndStreamId(meetingRoomId, streamId).get();
 	}
 
 }

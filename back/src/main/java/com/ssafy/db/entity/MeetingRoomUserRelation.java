@@ -40,11 +40,15 @@ public class MeetingRoomUserRelation  extends BaseEntity {
     @Column(columnDefinition = "BOOLEAN DEFAULT FALSE")
     private boolean leftMeeting;
     
+    @Column
+    private String streamId;
+    
     @Builder
     public MeetingRoomUserRelation(MeetingRoom meetingRoom, User user) {
     	this.meetingRoom = meetingRoom;
     	this.user = user;
     	this.avatarId = null;
     	this.pickUserId = null;
+    	this.streamId = null;
     }
 }
