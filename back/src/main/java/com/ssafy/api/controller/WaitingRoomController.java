@@ -4,6 +4,7 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 
+import org.apache.commons.collections4.CollectionUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -17,7 +18,6 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
-import com.ssafy.api.dto.ChatRoom;
 import com.ssafy.api.request.StatePostReq;
 import com.ssafy.api.request.WaitingRoomPostReq;
 import com.ssafy.api.request.WaitingRoomStartReq;
@@ -91,19 +91,21 @@ public class WaitingRoomController {
 		// cnt_man, cnt_woman 쿼리 미작성
 		List<WaitingRoomRes> waitingRoomList = new ArrayList<>();
 		for (WaitingRoom wr : waitingRoom) {
-			Gender gender = genderService.findById(wr.getId()).get();
-			WaitingRoomRes w = WaitingRoomRes.builder()
-					.id(wr.getId())
-					.name(wr.getName())
-					.headCount(wr.getHeadCount())
-					.status(wr.getStatus())
-					.cntMan(gender.getM())
-					.cntWoman(gender.getF())
-					.sido(sidoService.findById(wr.getSidoId()).get().getName())
-					.age(ageService.findById(wr.getAgeId()).get().getName())
-					.createdTime(wr.getCreatedTime())
-					.build();
-			waitingRoomList.add(w);
+			Gender gender = genderService.findById(wr.getId()).orElse(null);
+			if (gender != null) {
+				WaitingRoomRes w = WaitingRoomRes.builder()
+						.id(wr.getId())
+						.name(wr.getName())
+						.headCount(wr.getHeadCount())
+						.status(wr.getStatus())
+						.cntMan(gender.getM())
+						.cntWoman(gender.getF())
+						.sido(sidoService.findById(wr.getSidoId()).get().getName())
+						.age(ageService.findById(wr.getAgeId()).get().getName())
+						.createdTime(wr.getCreatedTime())
+						.build();
+				waitingRoomList.add(w);
+			}
 		}
 		simp.convertAndSend("/topic/getList", waitingRoomList);
 	}
@@ -119,7 +121,7 @@ public class WaitingRoomController {
 		HashMap<String, Object> map = new HashMap<>();
 		map.put("status", wr.getStatus());
 		List<Object> userList = new ArrayList<>();
-		List<WaitingRoomUserRelation> info = wrurRepository.findByWaitingRoomId(wrId).get();
+		List<WaitingRoomUserRelation> info = wrurRepository.findByWaitingRoomId(wrId);
 		for (WaitingRoomUserRelation wrur : info) {
 			if (wrur.getType() == 0 || wrur.getType() == 1 ) {
 				HashMap<String, Object> user = new HashMap<>();
@@ -140,7 +142,7 @@ public class WaitingRoomController {
 	
 	@MessageMapping("/reception/{wrId}")
 	public void reception(@DestinationVariable Long wrId) {
-		List<WaitingRoomUserRelation> wrur = waitingRoomUserRelationService.findByWaitingRoomIdAndType(wrId);
+		List<WaitingRoomUserRelation> wrur = waitingRoomUserRelationService.findByWaitingRoomIdAndType(wrId, 2);
 		List<WaitingUserRes> wu = new ArrayList<>();
 		for(WaitingRoomUserRelation wr : wrur) {
 			User user = wr.getUser();
@@ -228,6 +230,7 @@ public class WaitingRoomController {
 				}
 			}
 			else {
+				int pastType = userState.getType();
 				userState.setType(value.getType());
 				wrurRepository.saveAndFlush(userState);
 				if (value.getType() == 2 || value.getType() == 3 || value.getType() == 4) {
@@ -235,8 +238,18 @@ public class WaitingRoomController {
 				}
 				
 				if (value.getType() == 0 || value.getType() == 5) {
-					waitingRoom();
-					info(value.getRoomId());
+					if (value.getType() == 5) {
+						if (pastType == 0) {    // 나간 사람이 하필 방장이라는 뜻
+							List<WaitingRoomUserRelation> wrur = waitingRoomUserRelationService.findByWaitingRoomIdAndType(value.getRoomId(), 1);
+							if (CollectionUtils.isNotEmpty(wrur)) {
+								WaitingRoomUserRelation relation = wrur.get(0);
+								relation.setType(0);
+								wrurRepository.saveAndFlush(relation);
+							}
+						}
+						waitingRoom();
+						info(value.getRoomId());
+					}
 				}
 				
 				if (value.getType() == 4) {

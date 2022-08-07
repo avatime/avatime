@@ -32,8 +32,7 @@ public class WaitingRoomUserRelationServiceImpl implements WaitingRoomUserRelati
 	}
 	
 	@Override
-	public List<WaitingRoomUserRelation> findByWaitingRoomIdAndType(Long wrId) {
-		int type = 2;
+	public List<WaitingRoomUserRelation> findByWaitingRoomIdAndType(Long wrId, int type) {
 		return waitingRoomUserRelationRepository.findByWaitingRoomIdAndType(wrId, type);
 	}
 	
