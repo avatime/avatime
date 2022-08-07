@@ -67,12 +67,15 @@ export const SessionPage: FC<IProps> = (props) => {
 
     session.on("streamCreated", async (event) => {
       const subscriber = session.subscribe(event.stream, "");
-      setSubscribers((prev) => [...prev, { stream: subscriber, userId: +event.stream.connection.data }]);
+      setSubscribers((prev) => [
+        ...prev,
+        { streamManager: subscriber, userId: +event.stream.connection.data },
+      ]);
     });
 
     session.on("streamDestroyed", (event) => {
       setSubscribers((prev) => {
-        let index = prev.findIndex((it) => it.subscriber === event.stream);
+        let index = prev.findIndex((it) => it.userId === +event.stream.connection.data);
         return -1 < index ? prev.splice(index, 1) : prev;
       });
     });
@@ -131,98 +134,108 @@ export const SessionPage: FC<IProps> = (props) => {
   );
 
   const streamList = useMemo(
-    () => [{ stream: publisher, userId }, ...subscribers],
+    () => [{ streamManager: publisher, userId }, ...subscribers],
     [publisher, subscribers, userId]
   );
-
   return (
-    <Grid container spacing={3} sx={{ float: "left" }} p={2}>
-      <Grid item xs={9}>
-        <Box height="95vh" display="flex" flexDirection="column">
-          <Box borderRadius="10px" flex={1} position="relative" bgcolor={grey[200]}>
-            {headCount === 2 ? (
-              <>
-                <Box height="95%" p={2}>
-                  <VideoStream
-                    faceMeshModel={faceMeshModel}
-                    streamManager={subscribers[0].stream}
-                    name={"아무개"}
-                    avatarPath={""}
-                  />
-                </Box>
-                <Box width="30%" height="30%" p={2} position="absolute" bottom="0" right="0">
-                  <VideoStream
-                    faceMeshModel={faceMeshModel}
-                    streamManager={publisher}
-                    name={"나나나나"}
-                    avatarPath={""}
-                  />
-                </Box>
-              </>
-            ) : (
-              <Box height="100%" display="flex" flexDirection="column" p={2}>
-                {publisher &&
-                  [0, 1].map((it, idx) => (
-                    <Box flex={1} key={idx}>
-                      <Grid container height="95%" spacing={2} alignItems="stretch">
-                        {meetingRoomInfo && meetingRoomInfo?.meeting_user_info_list
-                          .slice((it * headCount) / 2, ((it + 1) * headCount) / 2)
-                          .map((userInfo, idx) => (
-                            <Grid item xs={24 / headCount} key={idx} sx={{ position: "relative" }}>
-                              <VideoStream
-                                faceMeshModel={faceMeshModel}
-                                streamManager={streamList.find(
-                                  (it) => it.userId === userInfo.user_id
-                                ).stream}
-                                name={userInfo.avatar_name}
-                                avatarPath={userInfo.avatar_image_path}
-                              />
-                            </Grid>
-                          ))}
-                      </Grid>
+    <div className="mainback">
+      <Grid container spacing={3} sx={{ float: "left" }} p={2}>
+        <Grid item xs={9}>
+          <Box height="95vh" display="flex" flexDirection="column">
+            <Box borderRadius="10px" flex={1} position="relative" bgcolor={grey[200]}>
+              {publisher &&
+                (headCount === 2 ? (
+                  <>
+                    <Box height="95%" p={2}>
+                      <VideoStream
+                        faceMeshModel={faceMeshModel}
+                        streamManager={subscribers[0].stream}
+                        name={"아무개"}
+                        avatarPath={""}
+                      />
                     </Box>
-                  ))}
-              </Box>
+                    <Box width="30%" height="30%" p={2} position="absolute" bottom="0" right="0">
+                      <VideoStream
+                        faceMeshModel={faceMeshModel}
+                        streamManager={publisher}
+                        name={"나나나나"}
+                        avatarPath={""}
+                      />
+                    </Box>
+                  </>
+                ) : (
+                  <Box height="100%" display="flex" flexDirection="column" p={2}>
+                    {meetingRoomInfo &&
+                      [0, 1].map((it, idx) => (
+                        <Box flex={1} key={idx} height="50%">
+                          <Grid container height="100%" spacing={2} alignItems="stretch">
+                            {streamList
+                              .slice((it * headCount) / 2, ((it + 1) * headCount) / 2)
+                              .map((stream, idx) => {
+                                const userInfo = meetingRoomInfo.meeting_user_info_list.find(
+                                  (it) => it.user_id === stream.userId
+                                );
+                                return (
+                                  <Grid
+                                    item
+                                    xs={24 / headCount}
+                                    key={idx}
+                                    sx={{ position: "relative", height: "100%" }}
+                                  >
+                                    <VideoStream
+                                      faceMeshModel={faceMeshModel}
+                                      streamManager={stream.streamManager}
+                                      name={userInfo!.avatar_name}
+                                      avatarPath={userInfo!.avatar_image_path}
+                                    />
+                                  </Grid>
+                                );
+                              })}
+                          </Grid>
+                        </Box>
+                      ))}
+                  </Box>
+                ))}
+            </Box>
+            <Box p={1} />
+            <ControllBar
+              type="master"
+              onChangeMicStatus={onChangeMicStatus}
+              onChangeCameraStatus={onChangeCameraStatus}
+            />
+          </Box>
+        </Grid>
+        <Grid item xs={3}>
+          <Box display="flex" flexDirection="column" height="95vh" sx={{ overflow: "hidden" }}>
+            {meetingRoomInfo && (
+              <ChatRoom
+                chatType="all"
+                isOpened={opened[0]}
+                onClickHeader={() => {
+                  setOpened((prev) => [!prev[0], prev[1]]);
+                }}
+                maxHeight={opened[0] && cntOpened === 1 ? "100%" : "50%"}
+                chattingRoomId={meetingRoomInfo.chattingroom_id}
+              />
+            )}
+            {meetingRoomInfo && (
+              <ChatRoom
+                chatType="gender"
+                isOpened={opened[1]}
+                onClickHeader={() => {
+                  setOpened((prev) => [prev[0], !prev[1]]);
+                }}
+                maxHeight={opened[1] && cntOpened === 1 ? "100%" : "50%"}
+                chattingRoomId={
+                  gender === "M"
+                    ? meetingRoomInfo.men_chattingroom_id
+                    : meetingRoomInfo.women_chattingroom_id
+                }
+              />
             )}
           </Box>
-          <Box p={1} />
-          <ControllBar
-            type="master"
-            onChangeMicStatus={onChangeMicStatus}
-            onChangeCameraStatus={onChangeCameraStatus}
-          />
-        </Box>
+        </Grid>
       </Grid>
-      <Grid item xs={3}>
-        <Box display="flex" flexDirection="column" height="95vh" sx={{ overflow: "hidden" }}>
-          {meetingRoomInfo && (
-            <ChatRoom
-              chatType="all"
-              isOpened={opened[0]}
-              onClickHeader={() => {
-                setOpened((prev) => [!prev[0], prev[1]]);
-              }}
-              maxHeight={opened[0] && cntOpened === 1 ? "100%" : "50%"}
-              chattingRoomId={meetingRoomInfo.chattingroom_id}
-            />
-          )}
-          {meetingRoomInfo && (
-            <ChatRoom
-              chatType="gender"
-              isOpened={opened[1]}
-              onClickHeader={() => {
-                setOpened((prev) => [prev[0], !prev[1]]);
-              }}
-              maxHeight={opened[1] && cntOpened === 1 ? "100%" : "50%"}
-              chattingRoomId={
-                gender === "M"
-                  ? meetingRoomInfo.men_chattingroom_id
-                  : meetingRoomInfo.women_chattingroom_id
-              }
-            />
-          )}
-        </Box>
-      </Grid>
-    </Grid>
+    </div>
   );
 };
