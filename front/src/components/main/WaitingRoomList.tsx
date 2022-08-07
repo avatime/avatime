@@ -85,12 +85,7 @@ const columns: Column[] = [
     align: "right",
   },
 
-  {
-    id: "status",
-    label: "활성화상태",
-    minWidth: 170,
-    align: "right",
-  },
+
 ];
 
 const style = {
@@ -186,7 +181,7 @@ export const WaitingRoomList: FC<IProps> = (props) => {
       return;
     }
 
-    console.log("asdasd")
+    console.log("asdasd");
     const socket = new SockJS(WS_BASE_URL);
     const client = Stomp.over(socket);
     client.connect({}, function (frame) {
@@ -250,6 +245,10 @@ export const WaitingRoomList: FC<IProps> = (props) => {
   };
 
   const enterRoom = async (waitingRoomInfoRes: WaitingRoomInfoRes) => {
+    if (waitingRoomInfoRes.status === 1) {
+      return;
+    }
+
     setRoomId(waitingRoomInfoRes.id);
 
     requestEnterRoomApi.requestEnterRoom({
@@ -344,7 +343,7 @@ export const WaitingRoomList: FC<IProps> = (props) => {
             </TableHead>
             <TableBody>
               {data?.map((row, idx) => (
-                <TableRow hover onClick={() => enterRoom(row)} key={idx}>
+                <TableRow hover={row.status === 0} onClick={() => enterRoom(row)} key={idx}>
                   {columns.map((column) => (
                     <TableCell key={column.id} align={column.align}>
                       {column.format ? column.format(row) : row[column.id]}

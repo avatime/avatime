@@ -72,11 +72,11 @@ export const WaitingPage: FC<IProps> = (props) => {
 
     return () => {
       client.disconnect(() => {
-        requestEnterRoomApi.requestEnterRoom({
-          room_id: waitingState?.roomId,
-          user_id: userId,
-          type: 5,
-        });
+        // requestEnterRoomApi.requestEnterRoom({
+        //   room_id: waitingState?.roomId,
+        //   user_id: userId,
+        //   type: 5,
+        // });
       });
     };
   }, [dispatch, navigate, userId, waitingState]);
