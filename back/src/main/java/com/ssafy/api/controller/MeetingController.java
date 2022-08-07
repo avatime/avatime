@@ -83,9 +83,6 @@ public class MeetingController {
 		try {
 			if(meetingRoomService.isSelectedAvatar(meetingRoomId, avatarId)) return ResponseEntity.status(409).body("");
 			else meetingRoomService.choiceAvatar(meetingRoomId, userId, avatarId);
-			
-			meetingRoomService.sendAvatarInfo(meetingRoomId);
-			
 		} catch(Exception e) {
 			return ResponseEntity.status(500).body("");
 		}
