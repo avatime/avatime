@@ -3,6 +3,7 @@ package com.ssafy.api.service;
 import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -35,5 +36,15 @@ public class ChattingRoomServiceImpl implements ChattingRoomService{
 	@Override
 	public ChattingRoom findByRoomIdAndType(Long roomId, int type) {
 		return chattingRoomRepository.findByRoomIdAndType(roomId, type).get();
+	}
+	
+	@Override
+	public List<ChattingRoom> findAllByRoomId(Long roomId) {
+		Sort sort = sortById();
+		return chattingRoomRepository.findAllByRoomIdAndType(roomId, 1, sort).get();
+	}
+	
+	private Sort sortById() {
+		return Sort.by(Sort.Direction.DESC, "id");
 	}
 }
