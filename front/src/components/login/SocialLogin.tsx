@@ -7,7 +7,7 @@ interface IProps {}
 export const SocialLogin: FC<IProps> = (props) => {
   return (
     <div className="social_login">
-      <a id="kakao-login-btn" href={KAKAO_AUTH_URL} style={{ marginBottom: "5vh" }}>
+      <a id="kakao-login-btn" href={KAKAO_AUTH_URL} style={{ marginBottom: "6vh" }}>
         <img
           src="//k.kakaocdn.net/14/dn/btqCn0WEmI3/nijroPfbpCa4at5EIsjyf0/o.jpg"
           height="60"

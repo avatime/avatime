@@ -18,6 +18,7 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 
 import lombok.Getter;
 import lombok.Setter;
+import lombok.ToString;
 
 /**
  * 유저 모델 정의.
@@ -26,6 +27,7 @@ import lombok.Setter;
 @Entity
 @Getter
 @Setter
+@ToString
 public class User extends BaseEntity{
 	@Column(updatable = false, nullable = false)
     private String gender;
@@ -36,12 +38,15 @@ public class User extends BaseEntity{
     @Column(columnDefinition = "TEXT")
     private String description;
 	
+    @JsonProperty
     @Column(updatable = false, nullable = false)
     private String profileImagePath;
 	
+    @JsonProperty
     @Column(updatable = false, nullable = false)
     private int socialType;
 	
+    @JsonProperty
     @Column(updatable = false, nullable = false)
     private String socialId;
     

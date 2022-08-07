@@ -7,7 +7,6 @@ import {
   Typography,
   Modal,
   TextField,
-  MenuItem,
   Avatar,
   IconButton,
 } from "@mui/material";
@@ -15,7 +14,7 @@ import CheckIcon from "@mui/icons-material/Check";
 import RefreshIcon from "@mui/icons-material/Refresh";
 import { useSelector, useDispatch } from "react-redux";
 import { registerApi, userModifyApi, nameCheckApi, profileAllApi } from "../../apis/userApi";
-import { ProfileRes } from "../../apis/response/profileRes";
+import { ProfileRes } from "../../apis/response/memberRes";
 import {
   setUserId,
   setUserName,
@@ -145,14 +144,14 @@ export const ProfileArea: FC<IProps> = (props) => {
     if (!nameCheck || !nameSatis || !descSatis) {
       alert("잘못된 항목이 있습니다.");
     } else {
-      console.log("user_id : "+userId);
-      console.log("name : "+name);
-      console.log("profile_image_path : "+image);
-      console.log("description : "+desc);
+      console.log("user_id : " + userId);
+      console.log("name : " + name);
+      console.log("profile_image_path : " + image);
+      console.log("description : " + desc);
       isLogin
         ? userModifyApi
             .modifyUser({
-              user_id: userId,
+              id: userId,
               name: name,
               profile_image_path: image,
               description: desc,
@@ -161,6 +160,10 @@ export const ProfileArea: FC<IProps> = (props) => {
               console.log(res.statusCode);
               console.log(res.message);
               alert("회원수정 완료!");
+              dispatch(setProfileImagePath(image));
+              dispatch(setUserName(name));
+              dispatch(setUserDesc(desc));
+              navigate("/main");
             })
             .catch(function (err) {
               console.log(err);
@@ -211,69 +214,67 @@ export const ProfileArea: FC<IProps> = (props) => {
 
   return (
     <>
-      <Stack direction="row" spacing={0} display="flex" justifyContent="center">
-        <Box display="flex" justifyContent="center" alignItems="center">
-          <IconButton onClick={handleOpen}>
-            <Avatar
-              src={image}
-              sx={{ width: 80, height: 80 }}
-              style={{
-                display: "flex",
-                justifyContent: "center",
-                alignItems: "center",
-              }}
-            />
-          </IconButton>
-          <Modal
-            open={open}
-            onClose={handleClose}
-            aria-labelledby="modal-modal-title"
-            aria-describedby="modal-modal-description"
-          >
-            <Box sx={style}>
-              <Typography id="modal-modal-title" variant="h6" component="h2" textAlign="center">
-                프로필 사진 바꾸기
-              </Typography>
-              <Typography id="modal-modal-description" textAlign="center"></Typography>
-              <Box>
-                {profileImages?.map((ProfileRes, idx) => {
-                  return (
-                    <IconButton
-                      key={idx}
-                      onClick={() => getProfile(ProfileRes.image_path)}
-                      sx={{ margin: 3 }}
-                    >
-                      <Avatar
-                        src={ProfileRes.image_path}
-                        sx={{ width: 80, height: 80 }}
-                        style={{
-                          display: "flex",
-                          justifyContent: "center",
-                          alignItems: "center",
-                        }}
-                      />
-                    </IconButton>
-                  );
-                })}
-              </Box>
+      <Box display="flex" justifyContent="center" alignItems="center">
+        <IconButton onClick={handleOpen}>
+          <Avatar
+            src={image}
+            sx={{ width: 80, height: 80 }}
+            style={{
+              display: "flex",
+              justifyContent: "center",
+              alignItems: "center",
+            }}
+          />
+        </IconButton>
+        <Modal
+          open={open}
+          onClose={handleClose}
+          aria-labelledby="modal-modal-title"
+          aria-describedby="modal-modal-description"
+        >
+          <Box sx={style}>
+            <Typography id="modal-modal-title" variant="h6" component="h2" textAlign="center">
+              프로필 사진 바꾸기
+            </Typography>
+            <Typography id="modal-modal-description" textAlign="center"></Typography>
+            <Box>
+              {profileImages?.map((ProfileRes, idx) => {
+                return (
+                  <IconButton
+                    key={idx}
+                    onClick={() => getProfile(ProfileRes.image_path)}
+                    sx={{ margin: 3 }}
+                  >
+                    <Avatar
+                      src={ProfileRes.image_path}
+                      sx={{ width: 80, height: 80 }}
+                      style={{
+                        display: "flex",
+                        justifyContent: "center",
+                        alignItems: "center",
+                      }}
+                    />
+                  </IconButton>
+                );
+              })}
             </Box>
-          </Modal>
-        </Box>
-        <Box>
-          <IconButton onClick={confirmInfo}>
-            <CheckIcon />
-          </IconButton>
-          <IconButton onClick={refreshForm}>
-            <RefreshIcon />
-          </IconButton>
-        </Box>
-      </Stack>
+          </Box>
+        </Modal>
+      </Box>
+      <Box display="flex" justifyContent="center">
+        <IconButton onClick={confirmInfo}>
+          <CheckIcon />
+        </IconButton>
+        <IconButton onClick={refreshForm}>
+          <RefreshIcon />
+        </IconButton>
+      </Box>
       <Grid
         display="flex"
         justifyContent="center"
         alignItems="center"
-        marginTop="6vh"
-        marginBottom="6vh"
+        marginTop="3vh"
+        marginBottom="3vh"
       >
         <TextField
           id="inputName"
