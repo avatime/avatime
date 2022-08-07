@@ -14,4 +14,4 @@ export const REDIRECT_URI_NAVER: string =
 export const WS_BASE_URL = (DEV ? `${URL_LOCAL}${PORT_SERVER}` : URL_RELEASE) + "/ws/ava";
 export const API_BASE_URL = (DEV ? `${URL_LOCAL}${PORT_SERVER}` : URL_RELEASE) + "/api/v1";
 
-export const OPENVIDU_SERVER_URL = (DEV ? URL_LOCAL : URL_RELEASE) + PORT_OPENVIDU;
+export const OPENVIDU_SERVER_URL = (DEV ? "https://localhost" : URL_RELEASE) + PORT_OPENVIDU;
