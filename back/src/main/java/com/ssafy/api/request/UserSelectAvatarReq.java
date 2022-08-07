@@ -14,7 +14,7 @@ import lombok.Setter;
 @ApiModel("UserSelectAvatar")
 public class UserSelectAvatarReq {
 	
-	@JsonProperty("meeting_room_id")
+	@JsonProperty("meetingroom_id")
 	Long meetingRoomId;
 	
 	@JsonProperty("user_id")
