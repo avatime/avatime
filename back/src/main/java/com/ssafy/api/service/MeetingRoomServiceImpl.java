@@ -75,9 +75,11 @@ public class MeetingRoomServiceImpl implements MeetingRoomService {
 	@Override
 	public void choiceAvatar(Long meetingRoomId, Long userId, Long avatarId) throws Exception {
 		// TODO Auto-generated method stub
-		MeetingRoomUserRelation meetingRoomUserRelation = meetingRoomUserRelationRepository.findByMeetingRoomIdAndUserId(meetingRoomId, userId).get();
-		meetingRoomUserRelation.setAvatarId(avatarId);
-		meetingRoomUserRelationRepository.save(meetingRoomUserRelation);
+		MeetingRoomUserRelation meetingRoomUserRelation = meetingRoomUserRelationRepository.findByMeetingRoomIdAndUserId(meetingRoomId, userId).orElse(null);
+		if(meetingRoomUserRelation != null) {
+			meetingRoomUserRelation.setAvatarId(avatarId);
+			meetingRoomUserRelationRepository.save(meetingRoomUserRelation);
+		}
 	}
 
 	@Override
