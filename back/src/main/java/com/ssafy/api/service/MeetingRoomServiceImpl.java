@@ -20,9 +20,12 @@ import com.ssafy.db.repository.MeetingRoomRepository;
 import com.ssafy.db.repository.MeetingRoomUserRelationRepository;
 import com.ssafy.db.repository.WaitingRoomUserRelationRepository;
 
+import lombok.RequiredArgsConstructor;
+
 /**
  *	미팅 관련 비즈니스 로직 처리를 위한 서비스 구현 정의.
  */
+@RequiredArgsConstructor
 @Service("meetingService")
 public class MeetingRoomServiceImpl implements MeetingRoomService {
 
@@ -44,7 +47,7 @@ public class MeetingRoomServiceImpl implements MeetingRoomService {
 	@Autowired
 	AvatarService avatarService;
 	
-	SimpMessageSendingOperations sendingOperations;
+	private final SimpMessageSendingOperations sendingOperations;
 	
 	@Override
 	public MeetingRoom createMeetingRoomSession(int type, Long mainSessionId) throws Exception {
@@ -140,12 +143,16 @@ public class MeetingRoomServiceImpl implements MeetingRoomService {
 				if(count > 0) {
 			    	try { sendingOperations.convertAndSend("topic/meeting/"+type+"/timer"+meetingRoomId, count);}
 			    	catch(Exception e) {}
-//					System.out.println("hi =>" + count);
 					count--;
 				} else {
-//					System.out.println("end");
 					timer.cancel();
-					if(type.equals("avatar")) sendMeetingRoomInfo(meetingRoomId);
+					if(type.equals("avatar"))
+						try {
+							sendMeetingRoomInfo(meetingRoomId);
+						} catch (Exception e) {
+							// TODO Auto-generated catch block
+							
+						}
 				}
 			}
 		};
@@ -172,7 +179,7 @@ public class MeetingRoomServiceImpl implements MeetingRoomService {
 	}
 	
 	@Override
-	public void sendMeetingRoomInfo(Long meetingRoomId) {
+	public void sendMeetingRoomInfo(Long meetingRoomId) throws Exception {
 		// TODO Auto-generated method stub
 		MeetingRoomInfoRes meetingRoomInfo = new MeetingRoomInfoRes();
 		meetingRoomInfo.setCreated_time(meetingRoomRepository.findById(meetingRoomId).get().getCreatedTime().toString());
@@ -185,6 +192,15 @@ public class MeetingRoomServiceImpl implements MeetingRoomService {
 		List<StreamUser> list = new ArrayList<>();
 		
 		for(MeetingRoomUserRelation user : userList) {
+			if(user.getAvatarId() == null) {
+				for(Long avatarId = 1L; avatarId<= avatarService.findAll().size(); avatarId++) {
+					if(!isSelectedAvatar(meetingRoomId, avatarId)) {
+						user.setAvatarId(avatarId);
+						meetingRoomUserRelationRepository.save(user);
+						break;
+					}
+				}
+			}
 			StreamUser su = StreamUser.builder()
 					.user_id(user.getUser().getId())
 					.user_name(user.getUser().getName())
