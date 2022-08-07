@@ -83,16 +83,6 @@ const userInfoApi: UserInfoApi = {
   },
 };
 
-interface UserApi {
-  getUserInfo(userReq: UserReq): Promise<UserInfoRes>;
-}
-
-export const userApi: UserApi = {
-  getUserInfo: async function (userReq: UserReq): Promise<UserInfoRes> {
-    return (await axiosInstance.get(`/user/${userReq.userId}`)).data;
-  }
-}
-
 export {
   profileAllApi,
   userInfoApi,
