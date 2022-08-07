@@ -25,7 +25,6 @@ import {
   ToggleButton,
   Typography,
 } from "@mui/material";
-import { WS_BASE_URL } from "../../apis/axiosInstance";
 import { ageApi, makeNewRoomApi, requestEnterRoomApi, sidoApi } from "../../apis/waitingRoomApi";
 import { ResultWaitingModal } from "../waitingRoom/ResultWaitingModal";
 import {
@@ -40,6 +39,7 @@ import {
 import { useNavigate } from "react-router";
 import { Add } from "@mui/icons-material";
 import { useQuery } from "react-query";
+import { WS_BASE_URL } from "../../apis/url";
 
 interface IProps {}
 

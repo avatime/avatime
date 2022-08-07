@@ -1,6 +1,7 @@
 import axios from "axios";
+import { OPENVIDU_SERVER_URL } from "./url";
 
-const OPENVIDU_SERVER_URL = 'https://' + window.location.hostname + ':4443';
+
 const OPENVIDU_SERVER_SECRET = 'MY_SECRET';
 
 export function getToken(roomId: string): Promise<any> {

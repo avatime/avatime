@@ -14,6 +14,7 @@ import { useSelector } from "react-redux";
 import { selectAvatarApi } from "../apis/avatarApis";
 import { AvatarProfile } from "../components/session/modal/AvatarProfile";
 import { useNavigate } from "react-router";
+import { WS_BASE_URL } from "../apis/url";
 
 interface IProps {}
 
@@ -45,7 +46,7 @@ export const PickAvatarPage: FC<IProps> = () => {
       return;
     }
 
-    const socket = new SockJS("http://localhost:8080/ws/ava");
+    const socket = new SockJS(WS_BASE_URL);
     const client = Stomp.over(socket);
     client.connect({}, function (frame) {
       console.log("소켓 연결 성공", frame);
