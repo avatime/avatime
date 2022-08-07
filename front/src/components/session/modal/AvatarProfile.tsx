@@ -53,7 +53,14 @@ interface IProps {
 export const AvatarProfile: FC<IProps> = ({ selected, onClick, avatarName, avatarImagePath }) => {
   const theme = useTheme();
   return (
-    <Box display="flex" flexDirection="column" alignItems="center" width="100%" height="100%" borderRadius="10px">
+    <Box
+      display="flex"
+      flexDirection="column"
+      alignItems="center"
+      width="100%"
+      height="100%"
+      borderRadius="10px"
+    >
       <ImageButton
         focusRipple
         style={{
@@ -67,7 +74,7 @@ export const AvatarProfile: FC<IProps> = ({ selected, onClick, avatarName, avata
         <ImageSrc style={{ backgroundImage: `url(${avatarImagePath})` }} />
         {!selected && <ImageBackdrop className="MuiImageBackdrop-root" />}
       </ImageButton>
-      <Box p={1}/>
+      <Box p={1} />
       <Typography component="span" variant="h6">
         {avatarName}
       </Typography>

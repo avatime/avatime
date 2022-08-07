@@ -1,6 +1,6 @@
-import React, { FC, useEffect, useState, useCallback } from "react";
+import React, { FC, useEffect, useState, useCallback, useMemo } from "react";
 import { ChatRoom } from "../components/chat/ChatRoom";
-import { Box, Grid } from "@mui/material";
+import { Box, Grid, CircularProgress } from "@mui/material";
 import { ControllBar } from "../components/session/ControllBar";
 import { OpenVidu } from "openvidu-browser";
 import { getToken } from "../apis/openViduApi";
@@ -9,8 +9,12 @@ import { grey } from "@mui/material/colors";
 import { useDispatch, useSelector } from "react-redux";
 import { useQuery } from "react-query";
 import sessionApi from "../apis/sessionApi";
-import { addUserList, clearUserList, removeUserList } from "../stores/slices/meetingSlice";
+import { setUserInfoList } from "../stores/slices/meetingSlice";
 import { useFaceMeshModel } from "../hooks/useFaceMesh";
+import SockJS from "sockjs-client";
+import { WS_BASE_URL } from "../apis/url";
+import * as Stomp from "stompjs";
+import { MeetingRoomInfoRes } from "../apis/response/sessionRes";
 
 interface IProps {}
 
@@ -19,39 +23,58 @@ export const SessionPage: FC<IProps> = (props) => {
   const gender = useSelector((state: any) => state.user.userGender);
   const roomId = useSelector((state: any) => state.meeting.roomId);
   const userId = useSelector((state: any) => state.user.userId);
-  const { data: meetingRoomInfo } = useQuery("meeting/getRoomInfo", () =>
-    sessionApi.getMeetingRoomInfo({ meetingroom_id: roomId })
-  );
+  const dispatch = useDispatch();
+
+  const [meetingRoomInfo, setMeetingRoomInfo] = useState<MeetingRoomInfoRes>();
+  useEffect(() => {
+    if (meetingRoomInfo) {
+      return;
+    }
+
+    sessionApi.getMeetingRoomInfo({ meetingroom_id: roomId }).then((res: MeetingRoomInfoRes) => {
+      console.log("AAA", res);
+      setMeetingRoomInfo(res);
+      dispatch(setUserInfoList(res.meeting_user_info_list));
+    });
+  }, [dispatch, meetingRoomInfo, roomId]);
 
   const [opened, setOpened] = useState<boolean[]>([true, true]);
   const cntOpened = opened.filter((it) => it).length;
 
+  useEffect(() => {
+    if (!roomId) {
+      return;
+    }
+
+    const socket = new SockJS(WS_BASE_URL);
+    const client = Stomp.over(socket);
+
+    client.connect({}, function (frame) {
+      console.log("소켓 연결 성공", frame);
+    });
+
+    return () => {
+      client.disconnect(() => {});
+    };
+  }, [roomId]);
+
   const [subscribers, setSubscribers] = useState<any[]>([]);
   const [publisher, setPublisher] = useState<any>();
-
-  const dispatch = useDispatch();
 
   useEffect(() => {
     const openVidu = new OpenVidu();
     const session = openVidu.initSession();
 
-    session.on("streamCreated",  async (event) => {
+    session.on("streamCreated", async (event) => {
       const subscriber = session.subscribe(event.stream, "");
-      setSubscribers((prev) => [...prev, subscriber]);
-      const res = await sessionApi.getMeetingUserInfo({
-        meetingroom_id: roomId,
-        stream_id: subscriber.stream.streamId,
-      })
-      dispatch(addUserList(res));
+      setSubscribers((prev) => [...prev, { stream: subscriber, userId: +event.stream.connection.data }]);
     });
 
     session.on("streamDestroyed", (event) => {
       setSubscribers((prev) => {
-        let index = prev.indexOf(event.stream.streamManager, 0);
+        let index = prev.findIndex((it) => it.subscriber === event.stream);
         return -1 < index ? prev.splice(index, 1) : prev;
       });
-      dispatch(removeUserList(userId));
-
     });
 
     session.on("exception", (exception) => {
@@ -60,7 +83,7 @@ export const SessionPage: FC<IProps> = (props) => {
 
     getToken(String(roomId)).then((token) => {
       session
-        .connect(token, { clientData: "userName" })
+        .connect(token, userId)
         .then(async () => {
           await navigator.mediaDevices.getUserMedia({ audio: true, video: true });
           const devices = await openVidu.getDevices();
@@ -79,12 +102,6 @@ export const SessionPage: FC<IProps> = (props) => {
 
           setPublisher(publisher);
           session.publish(publisher);
-          dispatch(clearUserList());
-          sessionApi.patchRegisterStreamId({
-            meetingroom_id: roomId,
-            user_id: userId,
-            stream_id: publisher.stream.streamId,
-          });
         })
         .catch((error) => {
           console.log("There was an error connecting to the session:", error.code, error.message);
@@ -95,7 +112,7 @@ export const SessionPage: FC<IProps> = (props) => {
       session.disconnect();
       setSubscribers([]);
     };
-  }, [dispatch, roomId, setPublisher, userId]);
+  }, [roomId, userId]);
 
   const faceMeshModel = useFaceMeshModel();
 
@@ -113,6 +130,11 @@ export const SessionPage: FC<IProps> = (props) => {
     [publisher]
   );
 
+  const streamList = useMemo(
+    () => [{ stream: publisher, userId }, ...subscribers],
+    [publisher, subscribers, userId]
+  );
+
   return (
     <Grid container spacing={3} sx={{ float: "left" }} p={2}>
       <Grid item xs={9}>
@@ -123,7 +145,7 @@ export const SessionPage: FC<IProps> = (props) => {
                 <Box height="95%" p={2}>
                   <VideoStream
                     faceMeshModel={faceMeshModel}
-                    streamManager={subscribers[0]}
+                    streamManager={subscribers[0].stream}
                     name={"아무개"}
                     avatarPath={""}
                   />
@@ -143,19 +165,17 @@ export const SessionPage: FC<IProps> = (props) => {
                   [0, 1].map((it, idx) => (
                     <Box flex={1} key={idx}>
                       <Grid container height="95%" spacing={2} alignItems="stretch">
-                        {[publisher, ...subscribers]
+                        {meetingRoomInfo && meetingRoomInfo?.meeting_user_info_list
                           .slice((it * headCount) / 2, ((it + 1) * headCount) / 2)
-                          .map((it, idx) => (
-                            <Grid item xs={24 / headCount} key={idx}>
+                          .map((userInfo, idx) => (
+                            <Grid item xs={24 / headCount} key={idx} sx={{ position: "relative" }}>
                               <VideoStream
                                 faceMeshModel={faceMeshModel}
-                                streamManager={it}
-                                name={it.stream.streamId}
-                                avatarPath={
-                                  it === publisher
-                                    ? `${process.env.PUBLIC_URL}/sampleMask2.jpg`
-                                    : `${process.env.PUBLIC_URL}/sampleMask1.jpg`
-                                }
+                                streamManager={streamList.find(
+                                  (it) => it.userId === userInfo.user_id
+                                ).stream}
+                                name={userInfo.avatar_name}
+                                avatarPath={userInfo.avatar_image_path}
                               />
                             </Grid>
                           ))}
