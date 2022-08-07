@@ -109,7 +109,7 @@ public class MeetingRoomServiceImpl implements MeetingRoomService {
 		MeetingRoom meetingRoom = createMeetingRoomSession(0, waitingRoomId);
 		Long meetingRoomId = meetingRoom.getId();
 		// meetingroomuserrelation 삽입
-		List<WaitingRoomUserRelation> list = waitingRoomUserRelationRepository.findByWaitingRoomId(waitingRoomId).get();
+		List<WaitingRoomUserRelation> list = waitingRoomUserRelationRepository.findByWaitingRoomId(waitingRoomId);
 		for(WaitingRoomUserRelation user : list) {
 			if(user.getType() == 1 || user.getType() == 0) {
 				MeetingRoomUserRelation meetingRoomUserRelation = MeetingRoomUserRelation.builder()
