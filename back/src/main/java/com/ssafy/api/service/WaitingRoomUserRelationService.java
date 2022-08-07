@@ -9,6 +9,6 @@ import com.ssafy.db.entity.WaitingRoomUserRelation;
 
 public interface WaitingRoomUserRelationService {
 	public WaitingRoomUserRelation save(int type, User user, WaitingRoom waitingRoom);
-	List<WaitingRoomUserRelation> findByWaitingRoomIdAndType(Long wrId);
+	List<WaitingRoomUserRelation> findByWaitingRoomIdAndType(Long wrId, int type);
 	Optional<WaitingRoomUserRelation> findBystate(Long wrId, Long userId);
 }
