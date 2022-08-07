@@ -1,4 +1,4 @@
-import React, { FC, useEffect, useState } from "react";
+import React, { FC, useEffect, useState, useCallback } from "react";
 import { ChatRoom } from "../components/chat/ChatRoom";
 import { Box, Grid } from "@mui/material";
 import { ControllBar } from "../components/session/ControllBar";
@@ -99,6 +99,20 @@ export const SessionPage: FC<IProps> = (props) => {
 
   const faceMeshModel = useFaceMeshModel();
 
+  const onChangeCameraStatus = useCallback(
+    (status: boolean) => {
+      publisher?.publishVideo(status);
+    },
+    [publisher]
+  );
+
+  const onChangeMicStatus = useCallback(
+    (status: boolean) => {
+      publisher?.publishAudio(status);
+    },
+    [publisher]
+  );
+
   return (
     <Grid container spacing={3} sx={{ float: "left" }} p={2}>
       <Grid item xs={9}>
@@ -152,7 +166,11 @@ export const SessionPage: FC<IProps> = (props) => {
             )}
           </Box>
           <Box p={1} />
-          <ControllBar type="master" />
+          <ControllBar
+            type="master"
+            onChangeMicStatus={onChangeMicStatus}
+            onChangeCameraStatus={onChangeCameraStatus}
+          />
         </Box>
       </Grid>
       <Grid item xs={3}>
