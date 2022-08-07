@@ -84,7 +84,7 @@ public class MeetingController {
 			if(meetingRoomService.isSelectedAvatar(meetingRoomId, avatarId)) return ResponseEntity.status(409).body("");
 			else meetingRoomService.choiceAvatar(meetingRoomId, userId, avatarId);
 			
-			sendAvatarInfo(meetingRoomId);
+			meetingRoomService.sendAvatarInfo(meetingRoomId);
 			
 		} catch(Exception e) {
 			return ResponseEntity.status(500).body("");
@@ -95,31 +95,8 @@ public class MeetingController {
 	
 	@MessageMapping("/meeting/avatar/{meetingRoomId}")
 	public void startAvatarChoice(@DestinationVariable Long meetingRoomId) throws Exception {
-		sendAvatarInfo(meetingRoomId);
+		meetingRoomService.sendAvatarInfo(meetingRoomId);
 		meetingRoomService.timer(meetingRoomId, 30, "avatar");
-		sendAvatarInfo(meetingRoomId);
-	}
-	
-	public int sendAvatarInfo(Long meetingRoomId) throws Exception {
-		int num = 0;
-		AvatarChoiceRes avatarChoiceRes = new AvatarChoiceRes();
-		List<Avatar> avatarList = avatarService.findAll();
-		List<AvatarStatus> list = new ArrayList<>();
-		
-		for(Avatar ava : avatarList) {
-			AvatarStatus avasta = new AvatarStatus(ava);
-			if(meetingRoomService.isSelectedAvatar(meetingRoomId, ava.getId())) {
-				avasta.setSelected(true);
-				num++;
-			}
-			else avasta.setSelected(false);
-			list.add(avasta);
-		}
-		avatarChoiceRes.setStatus(num == meetingRoomService.userNumber(meetingRoomId) ? 1 : 0);
-		avatarChoiceRes.setAvatar_list(list);
-		
-    	sendingOperations.convertAndSend("/topic/meeting/avatar/"+meetingRoomId, avatarChoiceRes);
-    	return avatarChoiceRes.getStatus();
 	}
 	
 	@GetMapping("/{meetingroom_id}")
