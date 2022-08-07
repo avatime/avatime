@@ -2,11 +2,7 @@ package com.ssafy.api.controller;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Map;
-import java.util.Timer;
-import java.util.TimerTask;
 
-import org.apache.commons.collections4.map.HashedMap;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.messaging.handler.annotation.DestinationVariable;
@@ -22,16 +18,21 @@ import org.springframework.web.bind.annotation.RestController;
 
 import com.ssafy.api.request.FinalChoiceUserReq;
 import com.ssafy.api.request.LeavingMeetingRoomReq;
-import com.ssafy.api.request.MeetingRoomPostReq;
+import com.ssafy.api.request.RegisterOpenViduStreamReq;
 import com.ssafy.api.request.UserSelectAvatarReq;
 import com.ssafy.api.response.AvatarChoiceRes;
 import com.ssafy.api.response.FinalChoiceRes;
+import com.ssafy.api.response.LastPickStatusRes;
+import com.ssafy.api.response.MeetingRoomInfoRes;
+import com.ssafy.api.response.MeetingRoomUserRes;
 import com.ssafy.api.response.entity.AvatarStatus;
 import com.ssafy.api.response.entity.Result;
 import com.ssafy.api.service.AvatarService;
+import com.ssafy.api.service.ChattingRoomService;
 import com.ssafy.api.service.MeetingRoomService;
 import com.ssafy.common.model.response.BaseResponseBody;
 import com.ssafy.db.entity.Avatar;
+import com.ssafy.db.entity.ChattingRoom;
 import com.ssafy.db.entity.MeetingRoom;
 import com.ssafy.db.entity.MeetingRoomUserRelation;
 import com.ssafy.db.entity.User;
@@ -56,6 +57,9 @@ public class MeetingController {
 	
 	@Autowired
 	MeetingRoomService meetingRoomService;
+	
+	@Autowired
+	ChattingRoomService chattingRoomService;
 	
 	@Autowired
 //	UserService userService;
@@ -116,6 +120,29 @@ public class MeetingController {
     	sendingOperations.convertAndSend("/topic/meeting/avatar/"+meetingRoomId, avatarChoiceRes);
     	return avatarChoiceRes.getStatus();
 	}
+	
+	@GetMapping("/{meetingroom_id}")
+	@ApiOperation(value = "미팅룸 정보 반환", notes = "<strong>meeting room id</strong>에 따른 미팅방 정보 반환") 
+    @ApiResponses({
+        @ApiResponse(code = 200, message = "성공", response = BaseResponseBody.class),
+        @ApiResponse(code = 500, message = "서버 오류", response = BaseResponseBody.class)
+    })
+	public ResponseEntity<?> getMeetingRoomInfo(@PathVariable Long meetingroom_id) {
+		try {
+			MeetingRoom meetingRoom = meetingRoomService.findById(meetingroom_id);
+			List<ChattingRoom> chatList = chattingRoomService.findAllByRoomId(meetingroom_id);
+			MeetingRoomInfoRes meetingRoomInfoRes = MeetingRoomInfoRes.builder()
+					.created_time(meetingRoom.getCreatedTime().toString())
+					.chattingroom_id(chattingRoomService.findByRoomIdAndType(meetingroom_id, 0).getId())
+					.men_chattingroom_id(chatList.get(0).getId())
+					.women_chattingroom_id(chatList.get(1).getId())
+					.build();
+			return ResponseEntity.status(200).body(meetingRoomInfoRes);
+		} catch (Exception e) {
+			// TODO Auto-generated catch block
+			return ResponseEntity.status(500).body("");
+		}
+	}
 
 	@PatchMapping("/pick/result/pick")
 	@ApiOperation(value = "최종 선택", notes = "<strong>meeting room id</strong>에 따른 미팅 최종 결과") 
@@ -136,18 +163,6 @@ public class MeetingController {
 		return ResponseEntity.status(200).body("");
 	}
 	 
-	@PostMapping("/pick/result")
-	@ApiOperation(value = "최종 선택 시작", notes = "<strong>meeting room id</strong>방에서 최종 선택 시작") 
-    @ApiResponses({
-        @ApiResponse(code = 200, message = "성공", response = BaseResponseBody.class),
-        @ApiResponse(code = 500, message = "서버 오류", response = BaseResponseBody.class)
-    })
-	public ResponseEntity<?> finalPickStart(@RequestBody @ApiParam(value="미팅방 정보", required = true) Long meetingRoomId) throws Exception {
-		meetingRoomService.timer(meetingRoomId, 15, "pick");
-		meetingRoomService.sendMeetingRoomInfo(meetingRoomId);
-		return ResponseEntity.status(200).body("");
-	}
-	
 	@GetMapping("/pick/result/{meetingroomId}")
 	@ApiOperation(value = "최종 결과", notes = "<strong>meeting room id</strong>에 따른 미팅 최종 결과") 
     @ApiResponses({
@@ -185,11 +200,86 @@ public class MeetingController {
 		return ResponseEntity.status(200).body(FinalChoiceRes.of(200, "최종 결과 불러오기 성공", finalChoiceRes));
 	}
 	
+	@PostMapping("/pick/result")
+	@ApiOperation(value = "최종 선택 시작", notes = "<strong>meeting room id</strong>방에서 최종 선택 시작") 
+    @ApiResponses({
+        @ApiResponse(code = 200, message = "성공", response = BaseResponseBody.class),
+        @ApiResponse(code = 500, message = "서버 오류", response = BaseResponseBody.class)
+    })
+	public ResponseEntity<?> finalPickStart(@RequestBody @ApiParam(value="미팅방 정보", required = true) Long meetingRoomId) throws Exception {
+		try {
+			MeetingRoom meetingRoom = meetingRoomService.findById(meetingRoomId);
+			meetingRoom.setStatus(1);
+			meetingRoomService.save(meetingRoom);
+			sendLastPickStatus(meetingRoomId);
+			meetingRoomService.timer(meetingRoomId, 15, "pick");
+			return ResponseEntity.status(201).body("성공");
+		}
+		catch(Exception e) {
+			return ResponseEntity.status(500).body("서버 오류");
+		}
+	}
+	
 	@MessageMapping("meeting/leave")
 	public void leavingMeeting(LeavingMeetingRoomReq leavingMeetingRoomReq) throws Exception {
 		MeetingRoomUserRelation meetingRoomUser = meetingRoomService.findUser(leavingMeetingRoomReq.getMeetingRoomId(), leavingMeetingRoomReq.getUserId());
 		meetingRoomUser.setLeftMeeting(true);
 		meetingRoomService.save(meetingRoomUser);
-		meetingRoomService.sendMeetingRoomInfo(leavingMeetingRoomReq.getMeetingRoomId());
+	}
+	
+	@GetMapping("/{meetingroom_id}/{stream_id}")
+	@ApiOperation(value = "유저 정보 반환", notes = "<strong>meeting room id</strong> 와  <strong>stream id </strong>에 따른 유저 정보 반환") 
+    @ApiResponses({
+        @ApiResponse(code = 200, message = "성공", response = MeetingRoomUserRes.class),
+        @ApiResponse(code = 500, message = "서버 오류", response = BaseResponseBody.class)
+    })
+	public ResponseEntity<?> getMeetingRoomInfo(@PathVariable Long meetingroom_id, Long stream_id) {
+		try {
+			MeetingRoomUserRelation meetingRoomUserRelation = meetingRoomService.findByMeetingRoomIdAndStreamId(meetingroom_id, stream_id);
+			Avatar avatar = avatarService.findById(meetingRoomUserRelation.getAvatarId());
+			MeetingRoomUserRes meetingRoomUserRes = MeetingRoomUserRes.builder()
+					.user_id(meetingRoomUserRelation.getUser().getId())
+					.user_name(meetingRoomUserRelation.getUser().getName())
+					.avatar_id(avatar.getId())
+					.avatar_name(avatar.getName())
+					.avatar_image_path(avatar.getImagePath())
+					.gender(meetingRoomUserRelation.getUser().getGender())
+					.build();
+			return ResponseEntity.status(200).body(meetingRoomUserRes);
+		} catch (Exception e) {
+			// TODO Auto-generated catch block
+			return ResponseEntity.status(500).body("");
+		}
+	}
+	
+	@PatchMapping("/registerStream")
+	@ApiOperation(value = "오픈비두 스트림 아이디 등록", notes = "<strong>오픈비두 스트림 아이디</strong> 등록") 
+    @ApiResponses({
+        @ApiResponse(code = 200, message = "성공", response = BaseResponseBody.class),
+        @ApiResponse(code = 500, message = "서버 오류", response = BaseResponseBody.class)
+    })
+	public ResponseEntity<?> registerOpenViduStreamId(@RequestBody @ApiParam(value="미팅룸, 유저 아이디와 등록할 오픈비두 스트림 ID", required = true) RegisterOpenViduStreamReq registerOpenViduStreamReq) {
+		
+		try {
+			MeetingRoomUserRelation meetingRoomUserRelation = meetingRoomService.findUser(registerOpenViduStreamReq.getMeetingroom_id(), registerOpenViduStreamReq.getUser_id());
+			meetingRoomUserRelation.setStreamId(registerOpenViduStreamReq.getStream_id());
+			meetingRoomService.save(meetingRoomUserRelation);
+			return ResponseEntity.status(200).body("성공");
+			
+		} catch(Exception e) {
+			return ResponseEntity.status(500).body("서버 오류");
+		}
+	}
+	
+	@MessageMapping("/meeting/status")
+	public void LastPickStatus(@DestinationVariable Long meetingRoomId) {
+		sendLastPickStatus(meetingRoomId);
+	}
+	
+	public void sendLastPickStatus(Long meetingRoomId) {
+		MeetingRoom meetingRoom = meetingRoomService.findById(meetingRoomId);
+		LastPickStatusRes lastPickStatusRes = new LastPickStatusRes();
+		lastPickStatusRes.setLast_pick_status(meetingRoom.getStatus() == 1);
+		sendingOperations.convertAndSend("/topic/meeting/status/"+meetingRoomId, lastPickStatusRes);
 	}
 }
