@@ -79,7 +79,9 @@ public class MeetingRoomServiceImpl implements MeetingRoomService {
 		if(meetingRoomUserRelation != null) {
 			meetingRoomUserRelation.setAvatarId(avatarId);
 			meetingRoomUserRelationRepository.save(meetingRoomUserRelation);
-			sendAvatarInfo(meetingRoomId);
+			System.out.println(">>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>..");
+			System.out.println(sendAvatarInfo(meetingRoomId));
+			System.out.println("<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<");
 		}
 	}
 
@@ -213,7 +215,7 @@ public class MeetingRoomServiceImpl implements MeetingRoomService {
 		AvatarChoiceRes avatarChoiceRes = new AvatarChoiceRes();
 		List<Avatar> avatarList = avatarService.findAll();
 		List<AvatarStatus> list = new ArrayList<>();
-		
+		System.out.println("11111111111111111111111111");
 		for(Avatar ava : avatarList) {
 			AvatarStatus avasta = new AvatarStatus(ava);
 			if(isSelectedAvatar(meetingRoomId, ava.getId())) {
@@ -223,10 +225,12 @@ public class MeetingRoomServiceImpl implements MeetingRoomService {
 			else avasta.setSelected(false);
 			list.add(avasta);
 		}
+		System.out.println("22222222222222222222222222");
 		avatarChoiceRes.setStatus(num == userNumber(meetingRoomId) ? 1 : 0);
 		avatarChoiceRes.setAvatar_list(list);
 		
     	sendingOperations.convertAndSend("/topic/meeting/avatar/"+meetingRoomId, avatarChoiceRes);
+    	System.out.println("3333333333333333333333333333333");
     	return avatarChoiceRes.getStatus();
 	}
 
