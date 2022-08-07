@@ -1,7 +1,6 @@
 import { Box, Button } from "@mui/material";
 import { grey } from "@mui/material/colors";
 import React, { FC, useState } from "react";
-import { AvatarInfoRes } from "../../apis/response/avatarRes";
 
 
 interface SliderProps {
@@ -13,15 +12,7 @@ interface SliderProps {
     handleChangeSelect : () => void;
   }
 
-/**
- * @author
- * @function @
- **/
-
 export const GaugeBar: FC<SliderProps> = ({ current, total, finishSelectingAvatar, selected, handleChangeSelect}) => {
-  
-  
-
   const width = (current / total) * 100;
   return (
     <Box

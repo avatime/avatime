@@ -3,6 +3,16 @@ export interface MeetingRoomInfoRes {
   chattingroom_id: number;
   men_chattingroom_id: number;
   women_chattingroom_id: number;
+  meeting_user_info_list: MeetingUserInfoRes[];
+}
+
+export interface MeetingUserInfoRes {
+  user_id: number;
+  user_name: string;
+  avatar_id: number;
+  avatar_image_path: string;
+  avatar_name: string;
+  gender: string;
 }
 
 export interface FinalPickRes {
@@ -27,11 +37,3 @@ export interface PickResultRes {
   pick_user_id: number;
 }
 
-export interface MeetingUserInfoRes {
-  user_id: number;
-  user_name: string;
-  avatar_id: number;
-  avatar_image_path: string;
-  avatar_name: string;
-  gender: string;
-}

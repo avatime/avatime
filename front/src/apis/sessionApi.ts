@@ -3,7 +3,6 @@ import {
   FinalPickResultReq,
   MeetingRoomInfoReq,
   StartFinalPickReq,
-  MeetingUserInfoReq,
   RegisterStreamReq,
 } from "./request/sessionReq";
 import { MeetingRoomInfoRes, FinalPickResultRes, MeetingUserInfoRes } from "./response/sessionRes";
@@ -14,7 +13,6 @@ interface SessionApi {
   patchFinalPick(finalPickReq: FinalPickReq): Promise<void>;
   getFinalPickResult(finalPickResultReq: FinalPickResultReq): Promise<FinalPickResultRes>;
   postStartFinalPick(startFinalPickReq: StartFinalPickReq): Promise<void>;
-  getMeetingUserInfo(meetingUserInfoReq: MeetingUserInfoReq): Promise<MeetingUserInfoRes>;
   patchRegisterStreamId(registerStreamReq: RegisterStreamReq): Promise<void>;
 }
 
@@ -35,15 +33,6 @@ const sessionApi: SessionApi = {
   },
   postStartFinalPick: async function (startFinalPickReq: StartFinalPickReq): Promise<void> {
     return (await axiosInstance.post(`/meeting/pick/start`, startFinalPickReq)).data;
-  },
-  getMeetingUserInfo: async function (
-    meetingUserInfoReq: MeetingUserInfoReq
-  ): Promise<MeetingUserInfoRes> {
-    return (
-      await axiosInstance.get(
-        `/meeting/${meetingUserInfoReq.meetingroom_id}/${meetingUserInfoReq.stream_id}`
-      )
-    ).data;
   },
   patchRegisterStreamId: async function (registerStreamReq: RegisterStreamReq): Promise<void> {
     return (await axiosInstance.patch(`/meeting/registerStream`, registerStreamReq)).data;

@@ -1,4 +1,4 @@
-import React, { FC, useState } from "react";
+import React, { FC, useEffect, useState } from "react";
 import { Box } from "@mui/system";
 import { Button } from "@mui/material";
 import MicIcon from "@mui/icons-material/Mic";
@@ -10,23 +10,31 @@ import ExitToAppIcon from "@mui/icons-material/ExitToApp";
 import PeopleIcon from "@mui/icons-material/People";
 import { Clock } from "./Clock";
 import { FinalPickModal } from "./modal/FinalPickModal";
-import { useNavigate } from 'react-router';
+import { useNavigate } from "react-router";
 
 type Type = "master" | "normal";
 interface IProps {
   type: Type;
+  onChangeMicStatus: (status: boolean) => void;
+  onChangeCameraStatus: (status: boolean) => void;
 }
 
-export const ControllBar: FC<IProps> = ({ type }) => {
+export const ControllBar: FC<IProps> = ({ type, ...callback }) => {
   const [micStatus, setMicStatus] = useState(true);
   const onChangeMicStatus = () => {
     setMicStatus((prev) => !prev);
   };
+  useEffect(() => {
+    callback.onChangeMicStatus(micStatus);
+  }, [micStatus, callback]);
 
   const [cameraStatus, setCameraStatus] = useState(true);
   const onChangeCameraStatus = () => {
     setCameraStatus((prev) => !prev);
   };
+  useEffect(() => {
+    callback.onChangeCameraStatus(cameraStatus);
+  }, [cameraStatus, callback]);
 
   const [lastPickModalOpen, setLastPickModalOpen] = useState(false);
 
