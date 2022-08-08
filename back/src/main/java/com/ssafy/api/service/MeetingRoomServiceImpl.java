@@ -130,7 +130,6 @@ public class MeetingRoomServiceImpl implements MeetingRoomService {
 		return meetingRoomId;
 	}
 
-	private int count;
 	@Override
 	public void timer(Long meetingRoomId, int time, String type) throws Exception {
 		// TODO Auto-generated method stub
@@ -139,9 +138,10 @@ public class MeetingRoomServiceImpl implements MeetingRoomService {
 			meetingRoom.setStatus(1);
 			meetingRoomRepository.save(meetingRoom);
 		}
-		count = time;
 		Timer timer = new Timer();
 		TimerTask task = new TimerTask() {
+			int count = time;
+			
 			@Override
 			public void run() {
 				if(count >= 0) {
