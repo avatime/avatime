@@ -45,7 +45,7 @@ public class FileController {
 			avatar.setUserId(avatarCustomReq.getUser_id());
 
 			System.out.println(avatarCustomReq.getImage_code());
-			return ResponseEntity.status(201).body("성공");
+			return ResponseEntity.status(201).body(decoder(avatarCustomReq)?"성공":"실패");
 		} catch (Exception e) {
 			return ResponseEntity.status(500).body("서버 오류");
 		}
@@ -64,7 +64,7 @@ public class FileController {
 
 			BufferedImage bufImg = ImageIO.read(new ByteArrayInputStream(imageBytes));
 
-			ImageIO.write(bufImg, "PNG", new File(target+name+"png"));
+			ImageIO.write(bufImg, "PNG", new File(target+name+".png"));
 
 		} catch (IOException e) {
 			// TODO Auto-generated catch block
