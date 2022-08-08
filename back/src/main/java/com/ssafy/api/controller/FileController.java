@@ -4,6 +4,8 @@ import java.awt.image.BufferedImage;
 import java.io.ByteArrayInputStream;
 import java.io.File;
 import java.io.IOException;
+import java.nio.file.Path;
+import java.nio.file.Paths;
 
 import javax.imageio.ImageIO;
 import javax.xml.bind.DatatypeConverter;
@@ -43,9 +45,11 @@ public class FileController {
 			Avatar avatar = new Avatar();
 			avatar.setName(avatarCustomReq.getAvatar_name());
 			avatar.setUserId(avatarCustomReq.getUser_id());
+			Path currentPath = Paths.get("");
+	        String path = currentPath.toAbsolutePath().toString();
 
 			System.out.println(avatarCustomReq.getImage_code());
-			return ResponseEntity.status(201).body(decoder(avatarCustomReq)?"성공":"실패");
+			return ResponseEntity.status(201).body(decoder(avatarCustomReq)?path:path);
 		} catch (Exception e) {
 			return ResponseEntity.status(500).body("서버 오류");
 		}
@@ -55,7 +59,7 @@ public class FileController {
 
 		String base64 = avatarCustomReq.getImage_code();
 		String name = avatarCustomReq.getAvatar_name();
-		String target = "file://i7a309.p.ssafy.io/home/ubuntu/avatar/";
+		String target = "/home/ubuntu/avatar/";
 		String data = base64.split(",")[1];
 
 		byte[] imageBytes = DatatypeConverter.parseBase64Binary(data);
@@ -64,7 +68,9 @@ public class FileController {
 
 			BufferedImage bufImg = ImageIO.read(new ByteArrayInputStream(imageBytes));
 
-			if(!ImageIO.write(bufImg, "PNG", new File(target+name+".png"))) return false;
+			Path currentPath = Paths.get("");
+	        String path = currentPath.toAbsolutePath().toString();
+			if(!ImageIO.write(bufImg, "PNG", new File(path + "/"+name+".png"))) return false;
 
 		} catch (IOException e) {
 			// TODO Auto-generated catch block
