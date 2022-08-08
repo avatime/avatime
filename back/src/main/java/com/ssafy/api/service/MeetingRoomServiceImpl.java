@@ -211,7 +211,7 @@ public class MeetingRoomServiceImpl implements MeetingRoomService {
 	public int sendAvatarInfo(Long meetingRoomId) throws Exception {
 		int num = 0;
 		AvatarChoiceRes avatarChoiceRes = new AvatarChoiceRes();
-		List<Avatar> avatarList = avatarService.findAll();
+		List<Avatar> avatarList = avatarService.findAllByUserId(0L);
 		List<AvatarStatus> list = new ArrayList<>();
 		for(Avatar ava : avatarList) {
 			AvatarStatus avasta = new AvatarStatus(ava);
