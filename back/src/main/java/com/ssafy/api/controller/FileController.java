@@ -55,7 +55,7 @@ public class FileController {
 
 		String base64 = avatarCustomReq.getImage_code();
 		String name = avatarCustomReq.getAvatar_name();
-		String target = "\\home\\ubuntu\\avatar\\";
+		String target = "file://i7a309.p.ssafy.io/home/ubuntu/avatar/";
 		String data = base64.split(",")[1];
 
 		byte[] imageBytes = DatatypeConverter.parseBase64Binary(data);
@@ -64,7 +64,7 @@ public class FileController {
 
 			BufferedImage bufImg = ImageIO.read(new ByteArrayInputStream(imageBytes));
 
-			ImageIO.write(bufImg, "PNG", new File(target+name+".png"));
+			if(!ImageIO.write(bufImg, "PNG", new File(target+name+".png"))) return false;
 
 		} catch (IOException e) {
 			// TODO Auto-generated catch block
