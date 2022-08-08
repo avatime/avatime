@@ -88,24 +88,21 @@ public class WaitingRoomController {
 	@MessageMapping("/getList")
 	public void waitingRoom() {
 		List<WaitingRoom> waitingRoom = waitingRoomService.findAll();
-		// cnt_man, cnt_woman 쿼리 미작성
 		List<WaitingRoomRes> waitingRoomList = new ArrayList<>();
 		for (WaitingRoom wr : waitingRoom) {
 			Gender gender = genderService.findById(wr.getId()).orElse(null);
-			if (gender != null) {
-				WaitingRoomRes w = WaitingRoomRes.builder()
-						.id(wr.getId())
-						.name(wr.getName())
-						.headCount(wr.getHeadCount())
-						.status(wr.getStatus())
-						.cntMan(gender.getM())
-						.cntWoman(gender.getF())
-						.sido(sidoService.findById(wr.getSidoId()).get().getName())
-						.age(ageService.findById(wr.getAgeId()).get().getName())
-						.createdTime(wr.getCreatedTime())
-						.build();
-				waitingRoomList.add(w);
-			}
+			WaitingRoomRes w = WaitingRoomRes.builder()
+					.id(wr.getId())
+					.name(wr.getName())
+					.headCount(wr.getHeadCount())
+					.status(wr.getStatus())
+					.cntMan(gender.getM())
+					.cntWoman(gender.getF())
+					.sido(sidoService.findById(wr.getSidoId()).get().getName())
+					.age(ageService.findById(wr.getAgeId()).get().getName())
+					.createdTime(wr.getCreatedTime())
+					.build();
+			waitingRoomList.add(w);
 		}
 		simp.convertAndSend("/topic/getList", waitingRoomList);
 	}
@@ -193,8 +190,15 @@ public class WaitingRoomController {
 		WaitingRoom waitingRoom = waitingRoomService.findById(waitingRoomStartReq.getWaitingRoomId()).get();
 		int status = 1;
 		waitingRoom.setStatus(status);
+		List<WaitingRoomUserRelation> wrur = waitingRoomUserRelationService.findByWaitingRoomIdAndType(waitingRoomStartReq.getWaitingRoomId(), 2);
+		if (CollectionUtils.isNotEmpty(wrur)) {
+			for (WaitingRoomUserRelation person : wrur) {    // 남아있는 접수처, 일괄 거절처리
+				person.setType(4);
+				wrurRepository.saveAndFlush(person);
+			}
+		}
+		
 		waitingRoom();
-		// 이 때 접수처에 있는 잉여유저들 일괄 거절처리 해야함
 		
 		long meetingRoomId = meetingRoomService.createMeetingRoom(waitingRoomStartReq.getWaitingRoomId());
 		info(waitingRoomStartReq.getWaitingRoomId(), meetingRoomId);
@@ -239,7 +243,7 @@ public class WaitingRoomController {
 				
 				if (value.getType() == 0 || value.getType() == 5) {
 					if (value.getType() == 5) {
-						if (pastType == 0) {    // 나간 사람이 하필 방장이라는 뜻
+						if (pastType == 0) {    // 나간 사람이 하필 방장이면
 							List<WaitingRoomUserRelation> wrur = waitingRoomUserRelationService.findByWaitingRoomIdAndType(value.getRoomId(), 1);
 							if (CollectionUtils.isNotEmpty(wrur)) {
 								WaitingRoomUserRelation relation = wrur.get(0);
@@ -261,6 +265,7 @@ public class WaitingRoomController {
 			waitingRoomUserRelationService.save(value.getType(), userRepository.findById(value.getUserId()).get(), waitingRoomService.findById(value.getRoomId()).get());
             reception(value.getRoomId());
 		}
+		waitingRoom();
 		return null;
 	}
 	
