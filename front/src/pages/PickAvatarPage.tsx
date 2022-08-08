@@ -97,7 +97,6 @@ export const PickAvatarPage: FC<IProps> = () => {
   //꼭 다시 봐
   return (
     <div className="mainback" style={{ display: "flex", flexDirection: "column" }}>
-      <MainHeader hideSettings={true} />
       <Box flex={1} borderRadius="10px" bgcolor={grey[200]} m={2} p={2}>
         <Grid container spacing={2} direction="column" sx={{ height: "100%" }}>
           {Array.from(Array(3)).map((_, index) => (

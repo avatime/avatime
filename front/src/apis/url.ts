@@ -1,4 +1,4 @@
-const DEV = false;
+const DEV = true;
 
 const PORT_WEB = ":3000";
 const PORT_SERVER = ":8080";

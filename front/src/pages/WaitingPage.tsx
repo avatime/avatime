@@ -8,7 +8,7 @@ import Button from "@mui/material/Button";
 import PlayCircleOutlineIcon from "@mui/icons-material/PlayCircleOutline";
 import ExitToAppIcon from "@mui/icons-material/ExitToApp";
 import PeopleAltIcon from "@mui/icons-material/PeopleAlt";
-import { useSelector, useDispatch } from 'react-redux';
+import { useSelector, useDispatch } from "react-redux";
 import { useNavigate } from "react-router";
 import SockJS from "sockjs-client";
 import * as Stomp from "stompjs";
@@ -72,11 +72,11 @@ export const WaitingPage: FC<IProps> = (props) => {
 
     return () => {
       client.disconnect(() => {
-        // requestEnterRoomApi.requestEnterRoom({
-        //   room_id: waitingState?.roomId,
-        //   user_id: userId,
-        //   type: 5,
-        // });
+        requestEnterRoomApi.requestEnterRoom({
+          room_id: waitingState?.roomId,
+          user_id: userId,
+          type: 5,
+        });
       });
     };
   }, [dispatch, navigate, userId, waitingState]);
@@ -89,7 +89,7 @@ export const WaitingPage: FC<IProps> = (props) => {
   const onClickStart = () => {
     // eslint-disable-next-line no-restricted-globals
     if (confirm("정말 시작할건가요?")) {
-       waitingApi.startPickAvatar({
+      waitingApi.startPickAvatar({
         waiting_room_id: Number(waitingState.roomId),
       });
     }
@@ -115,7 +115,6 @@ export const WaitingPage: FC<IProps> = (props) => {
 
   return (
     <div className="mainback" style={{ display: "flex", flexDirection: "column" }}>
-      <MainHeader hideSettings={true} />
       <Grid container spacing={3} p={2} sx={{ flex: "1" }}>
         <Grid item xs={9} sx={{ float: "left", display: "flex", flexDirection: "column" }}>
           <Box pl={1}>
