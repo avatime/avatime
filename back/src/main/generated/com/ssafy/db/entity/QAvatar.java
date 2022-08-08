@@ -28,6 +28,8 @@ public class QAvatar extends EntityPathBase<Avatar> {
 
     public final StringPath name = createString("name");
 
+    public final NumberPath<Long> userId = createNumber("userId", Long.class);
+
     public QAvatar(String variable) {
         super(Avatar.class, forVariable(variable));
     }
