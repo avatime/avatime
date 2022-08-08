@@ -23,4 +23,15 @@ public class AvatarServiceImpl implements AvatarService {
 	public Avatar findById(Long id) {
 		return avatarRepository.findById(id).get();
 	}
+
+	@Override
+	public List<Avatar> findAllByUserId(Long UserId) {
+		// TODO Auto-generated method stub
+		return avatarRepository.findAllByUserId(UserId).get();
+	}
+	
+	@Override
+	public void saveAvatar(Avatar avatar) {
+		avatarRepository.save(avatar);
+	}
 }

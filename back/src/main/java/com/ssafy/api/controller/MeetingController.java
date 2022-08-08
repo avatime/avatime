@@ -18,6 +18,7 @@ import org.springframework.web.bind.annotation.RestController;
 
 import com.ssafy.api.request.FinalChoiceUserReq;
 import com.ssafy.api.request.LeavingMeetingRoomReq;
+import com.ssafy.api.request.MeetingRoomIdReq;
 import com.ssafy.api.request.RegisterOpenViduStreamReq;
 import com.ssafy.api.request.UserSelectAvatarReq;
 import com.ssafy.api.response.AvatarChoiceRes;
@@ -191,14 +192,15 @@ public class MeetingController {
 		return ResponseEntity.status(200).body(FinalChoiceRes.of(200, "최종 결과 불러오기 성공", finalChoiceRes));
 	}
 	
-	@PostMapping("/pick/result")
+	@PostMapping("/pick/start")
 	@ApiOperation(value = "최종 선택 시작", notes = "<strong>meeting room id</strong>방에서 최종 선택 시작") 
     @ApiResponses({
         @ApiResponse(code = 200, message = "성공", response = BaseResponseBody.class),
         @ApiResponse(code = 500, message = "서버 오류", response = BaseResponseBody.class)
     })
-	public ResponseEntity<?> finalPickStart(@RequestBody @ApiParam(value="미팅방 정보", required = true) Long meetingRoomId) throws Exception {
+	public ResponseEntity<?> finalPickStart(@RequestBody @ApiParam(value="미팅방 정보", required = true) MeetingRoomIdReq meetingRoomIdReq) throws Exception {
 		try {
+			Long meetingRoomId = meetingRoomIdReq.getMeetingroom_id();
 			MeetingRoom meetingRoom = meetingRoomService.findById(meetingRoomId);
 			meetingRoom.setStatus(1);
 			meetingRoomService.save(meetingRoom);

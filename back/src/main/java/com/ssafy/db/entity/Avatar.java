@@ -19,4 +19,7 @@ public class Avatar extends BaseEntity {
 	
 	@Column(updatable = false, nullable = false)
 	private String name;
+	
+	@Column(columnDefinition = "INT UNSIGNED DEFAULT 0")
+	private Long userId;
 }
