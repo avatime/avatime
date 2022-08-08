@@ -55,7 +55,7 @@ public class FileController {
 
 		String base64 = avatarCustomReq.getImage_code();
 		String name = avatarCustomReq.getAvatar_name();
-		String target = "C:\\Users\\SSAFY\\Desktop\\AVATIME\\S07P12A309\\back\\src\\main\\resources\\";
+		String target = "home\\ubuntu\\avatar\\";
 		String data = base64.split(",")[1];
 
 		byte[] imageBytes = DatatypeConverter.parseBase64Binary(data);
