@@ -136,7 +136,7 @@ public class MeetingController {
 		}
 	}
 
-	@PatchMapping("/pick/result/pick")
+	@PatchMapping("/pick")
 	@ApiOperation(value = "최종 선택", notes = "<strong>meeting room id</strong>에 따른 미팅 최종 결과") 
     @ApiResponses({
         @ApiResponse(code = 201, message = "성공", response = BaseResponseBody.class),
