@@ -15,7 +15,6 @@ import lombok.ToString;
 @Entity
 @Getter
 @Setter
-@ToString
 @Immutable
 @Subselect("select w.waiting_room_id, " +"count(case when u.gender = 'F' then 1 end) as F, " +
 			"count(case when u.gender = 'M' then 1 end) as M, " +
