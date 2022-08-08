@@ -29,11 +29,15 @@ public class QMeetingRoomUserRelation extends EntityPathBase<MeetingRoomUserRela
     //inherited
     public final NumberPath<Long> id = _super.id;
 
+    public final BooleanPath leftMeeting = createBoolean("leftMeeting");
+
     public final BooleanPath matched = createBoolean("matched");
 
     public final QMeetingRoom meetingRoom;
 
     public final NumberPath<Long> pickUserId = createNumber("pickUserId", Long.class);
+
+    public final StringPath streamId = createString("streamId");
 
     public final QUser user;
 
