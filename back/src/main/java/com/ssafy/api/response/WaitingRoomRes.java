@@ -32,6 +32,9 @@ public class WaitingRoomRes {
 	
 	private String sido;
 	
+	@JsonProperty("image_path")
+	private String imagePath;
+	
 	@JsonProperty("created_time")
 	private Date createdTime;
 }

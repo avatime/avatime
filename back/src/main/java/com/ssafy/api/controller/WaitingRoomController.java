@@ -91,18 +91,22 @@ public class WaitingRoomController {
 		List<WaitingRoomRes> waitingRoomList = new ArrayList<>();
 		for (WaitingRoom wr : waitingRoom) {
 			Gender gender = genderService.findById(wr.getId()).orElse(null);
-			WaitingRoomRes w = WaitingRoomRes.builder()
-					.id(wr.getId())
-					.name(wr.getName())
-					.headCount(wr.getHeadCount())
-					.status(wr.getStatus())
-					.cntMan(gender.getM())
-					.cntWoman(gender.getF())
-					.sido(sidoService.findById(wr.getSidoId()).get().getName())
-					.age(ageService.findById(wr.getAgeId()).get().getName())
-					.createdTime(wr.getCreatedTime())
-					.build();
-			waitingRoomList.add(w);
+			if (gender != null) {
+				User user = waitingRoomUserRelationService.findByWaitingRoomIdAndType(wr.getId(), 0).get(0).getUser();
+				WaitingRoomRes w = WaitingRoomRes.builder()
+						.id(wr.getId())
+						.name(wr.getName())
+						.headCount(wr.getHeadCount())
+						.status(wr.getStatus())
+						.cntMan(gender.getM())
+						.cntWoman(gender.getF())
+						.sido(sidoService.findById(wr.getSidoId()).get().getName())
+						.age(ageService.findById(wr.getAgeId()).get().getName())
+						.imagePath(user.getProfileImagePath())
+						.createdTime(wr.getCreatedTime())
+						.build();
+				waitingRoomList.add(w);
+			}
 		}
 		simp.convertAndSend("/topic/getList", waitingRoomList);
 	}
@@ -166,7 +170,6 @@ public class WaitingRoomController {
 		List<Age> age = ageService.findAll();
 		return new ResponseEntity<List<Age>>(age, HttpStatus.OK);
 	}
-	
 	
 	@PostMapping("/create")
 	@ApiOperation(value = "대기방 생성", notes = "대기방을 생성합니다.")
