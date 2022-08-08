@@ -142,7 +142,7 @@ public class UserServiceImpl implements UserService {
             StringBuilder sb = new StringBuilder();
             sb.append("grant_type=authorization_code");
             sb.append("&client_id=6300198dbbef93aac1c88f68eeb4525a"); // TODO REST_API_KEY 입력
-            sb.append("&redirect_uri=https://i7a309.p.ssafy.io"); // TODO 인가코드 받은 redirect_uri 입력
+            sb.append("&redirect_uri=https://i7a309.p.ssafy.io/kakao"); // TODO 인가코드 받은 redirect_uri 입력
             sb.append("&code=" + code);
             bw.write(sb.toString());
             bw.flush();
