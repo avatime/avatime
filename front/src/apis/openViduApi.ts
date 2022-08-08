@@ -2,7 +2,7 @@ import axios from "axios";
 import { OPENVIDU_SERVER_URL } from "./url";
 
 
-const OPENVIDU_SERVER_SECRET = 'MY_SECRET';
+const OPENVIDU_SERVER_SECRET = 'AVATIME';
 
 export function getToken(roomId: string): Promise<any> {
     return createSession(roomId).then((roomId) => createToken(roomId));
