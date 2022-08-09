@@ -1,7 +1,7 @@
 import React, { FC, useMemo, useState } from "react";
 import { Backdrop, Box, Button, Grid, Typography, useTheme, CircularProgress } from "@mui/material";
 import { grey } from "@mui/material/colors";
-import { useSelector } from "react-redux";
+import { useSelector, useDispatch } from 'react-redux';
 import Xarrow, { Xwrapper } from "react-xarrows";
 import { useQuery } from "react-query";
 import sessionApi from "../apis/sessionApi";
@@ -10,6 +10,7 @@ import useTimer from "../hooks/useTimer";
 import { useEffect } from "react";
 import { SessionModal } from "../components/session/modal/SessionModal";
 import { useNavigate } from "react-router";
+import { setSubMeetingRoomId } from "../stores/slices/meetingSlice";
 
 interface IProps {}
 
@@ -67,13 +68,13 @@ export const FinalPickResultPage: FC<IProps> = (props) => {
   }, [pickResult]);
 
   const navigate = useNavigate();
+  const dispatch = useDispatch();
   const onModalClose = () => {
     if (pickResult?.matched) {
-      
-
-      navigate("/session");
+      dispatch(setSubMeetingRoomId(pickResult.meetingroom_id));
+      navigate("/subSession");
     } else {
-      navigate("/");
+      navigate("/main");
     }
   };
 
