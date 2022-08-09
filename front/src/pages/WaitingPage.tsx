@@ -19,6 +19,7 @@ import { UserInfoModal } from "../components/waitingRoom/UserInfoModal";
 import { requestEnterRoomApi, waitingApi } from "../apis/waitingRoomApi";
 import { setMeetingRoomId } from "../stores/slices/meetingSlice";
 import { WS_BASE_URL } from "../apis/url";
+import { setMaster } from "../stores/slices/waitingSlice";
 
 interface IProps {}
 
@@ -53,7 +54,9 @@ export const WaitingPage: FC<IProps> = (props) => {
         const res = JSON.parse(response.body);
         console.log(res);
         setWaitingUserList(res.user_list);
-        setIsMaster(res.user_list.find((it: any) => it.id === userId).type === 0);
+        const isMaster = res.user_list.find((it: any) => it.id === userId).type === 0;
+        setIsMaster(isMaster);
+        dispatch(setMaster(isMaster));
 
         if (res.status) {
           dispatch(setMeetingRoomId(res.meeting_room_id));
