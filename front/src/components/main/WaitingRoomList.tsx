@@ -14,6 +14,7 @@ import { useDispatch, useSelector } from "react-redux";
 import CloseIcon from "@mui/icons-material/Close";
 import ava2 from "../../assets/result_waiting_ava2.gif";
 import {
+  Avatar,
   Box,
   Button,
   IconButton,
@@ -40,6 +41,7 @@ import { useNavigate } from "react-router";
 import { Add } from "@mui/icons-material";
 import { useQuery } from "react-query";
 import { WS_BASE_URL } from "../../apis/url";
+import "../../style.css";
 
 interface IProps {}
 
@@ -51,41 +53,51 @@ interface IProps {}
 interface Column {
   id: "name" | "cnt_man" | "cnt_woman" | "age" | "sido" | "status";
   label: string;
-  minWidth?: number;
-  align?: "right";
-  format?: (value: any) => string;
+  maxWidth?: number;
+  align?: "right" | "left" | "center";
+  format?: (value: any) => any;
 }
 
 const columns: Column[] = [
-  { id: "name", label: "방제목", minWidth: 170 },
+  {
+    id: "name",
+    label: "방제목",
+    maxWidth: 100,
+
+    format: (obj) => (
+      <div style={{ display: "flex", alignItems: "center" }}>
+        <Avatar alt="masterProfile" src={obj.image_path} />
+        {"   "}
+        <p style={{ marginLeft: 10 }}>{obj.name}</p>
+      </div>
+    ),
+  },
   {
     id: "cnt_man",
     label: "남자",
-    minWidth: 50,
-    align: "right",
+    maxWidth: 50,
+    align: "center",
     format: (obj) => `${obj.cnt_man} / ${obj.head_count / 2}`,
   },
   {
     id: "cnt_woman",
     label: "여자",
-    minWidth: 50,
-    align: "right",
+    maxWidth: 50,
+    align: "center",
     format: (obj) => `${obj.cnt_woman} / ${obj.head_count / 2}`,
   },
   {
     id: "age",
     label: "나이",
-    minWidth: 40,
-    align: "right",
+    maxWidth: 40,
+    align: "center",
   },
   {
     id: "sido",
     label: "지역",
-    minWidth: 170,
-    align: "right",
+    maxWidth: 100,
+    align: "center",
   },
-
-
 ];
 
 const style = {
@@ -224,7 +236,7 @@ export const WaitingRoomList: FC<IProps> = (props) => {
             return false;
           }
 
-          return (userGender === "M" ? room.cnt_max : room.cnt_woman) !== room.head_count / 2;
+          return (userGender === "M" ? room.cnt_man : room.cnt_woman) !== room.head_count / 2;
         })
         .filter((room) => room.name.includes(keyword))
     );
@@ -269,6 +281,8 @@ export const WaitingRoomList: FC<IProps> = (props) => {
   const setRoomData = async () => {
     if (!ageId || !headCounts || !sidoId || !name.length) {
       alert("빈칸을 모두 채워주세요!");
+    } else if (name.length >= 30) {
+      alert("방 제목 글자수를 30글자 이하로 해주세요!");
     } else {
       const res = await makeNewRoomApi.makeNewRoom({
         name,
@@ -295,10 +309,10 @@ export const WaitingRoomList: FC<IProps> = (props) => {
   //------------------------------------------------------------------------------------------
   return (
     <div>
-      <Stack direction="row">
+      <Stack direction="row" style={{ marginLeft: "5%", marginRight: "5%" }}>
         <ToggleButton
           selected={selected}
-          color="primary"
+          color="secondary"
           onClick={handleChangeStatus}
           sx={{ marginRight: "auto", padding: "0", marginBottom: "1%" }}
           value="status"
@@ -329,9 +343,9 @@ export const WaitingRoomList: FC<IProps> = (props) => {
           </IconButton>
         </Paper>
       </Stack>
-      <Paper sx={{ overflow: "hidden" }}>
+      <Paper sx={{ overflow: "hidden", marginLeft: "5%", marginRight: "5%" }}>
         <TableContainer sx={{ maxHeight: "65vh" }}>
-          <Table stickyHeader aria-label="sticky table" style={{ border: "5px ridge" }}>
+          <Table stickyHeader aria-label="sticky table" style={{ borderRadius: "50px" }}>
             <TableHead>
               <TableRow>
                 {columns.map((column) => (
@@ -342,27 +356,41 @@ export const WaitingRoomList: FC<IProps> = (props) => {
               </TableRow>
             </TableHead>
             <TableBody>
-              {data?.map((row, idx) => (
-                <TableRow hover={row.status === 0} onClick={() => enterRoom(row)} key={idx}>
-                  {columns.map((column) => (
-                    <TableCell key={column.id} align={column.align}>
-                      {column.format ? column.format(row) : row[column.id]}
-                    </TableCell>
-                  ))}
-                </TableRow>
-              ))}
+              {data?.map((row, idx) => {
+                const availabeRoom =
+                  row.status === 0 &&
+                  (userGender === "M" ? row.cnt_man : row.cnt_woman) !== row.head_count / 2;
+                return (
+                  <TableRow
+                    className={availabeRoom ? "click" : ""}
+                    hover={availabeRoom}
+                    onClick={() => enterRoom(row)}
+                    key={idx}
+                    sx={{
+                      bgcolor: availabeRoom ? "white" : "#EFEFEF",
+                    }}
+                  >
+                    {columns.map((column) => (
+                      <TableCell key={column.id} align={column.align}>
+                        {column.format ? column.format(row) : row[column.id]}
+                      </TableCell>
+                    ))}
+                  </TableRow>
+                );
+              })}
             </TableBody>
           </Table>
         </TableContainer>
       </Paper>
       <Box p={1} />
-      <Box sx={{ flex: 1 }}>
+      <Box sx={{ flex: 1, marginLeft: "5%", marginRight: "5%" }}>
         <Button
           variant="contained"
           aria-label="makenewroom"
           sx={{ float: "right" }}
           onClick={handleOpen}
           startIcon={<Add />}
+          color="secondary"
         >
           새로운 방 만들기
         </Button>
