@@ -93,8 +93,8 @@ public class MeetingRoomServiceImpl implements MeetingRoomService {
 		MeetingRoomUserRelation meetingRoomUser = meetingRoomUserRelationRepository.findByMeetingRoomIdAndUserId(meetingRoomId, userId).get();
 		meetingRoomUser.setPickUserId(pickUserId);
 		MeetingRoomUserRelation pickedUserInfo = meetingRoomUserRelationRepository.findByMeetingRoomIdAndUserId(meetingRoomId, pickUserId).get();
-		if(pickedUserInfo.getPickUserId()==userId) {
-			System.out.println("");
+		if(pickedUserInfo.getPickUserId() != null && pickedUserInfo.getPickUserId().equals(userId)) {
+//			System.out.println("");
 			meetingRoomUser.setMatched(true);
 			pickedUserInfo.setMatched(true);
 			meetingRoomUserRelationRepository.save(pickedUserInfo);
