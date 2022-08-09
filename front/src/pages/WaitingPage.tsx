@@ -36,8 +36,8 @@ export const WaitingPage: FC<IProps> = (props) => {
   const userId = useSelector((state: any) => state.user.userId);
 
   const [waitingUserList, setWaitingUserList] = useState<WaitingUser[]>([]);
-
   const [candidateList, setCandidateList] = useState<WaitingUser[]>([]);
+  const [isMaster, setIsMaster] = useState<boolean>();
 
   const navigate = useNavigate();
   const dispatch = useDispatch();
@@ -53,16 +53,14 @@ export const WaitingPage: FC<IProps> = (props) => {
         const res = JSON.parse(response.body);
         console.log(res);
         setWaitingUserList(res.user_list);
+        setIsMaster(res.user_list.find((it: any) => it.id === userId).type === 0);
+
         if (res.status) {
           dispatch(setMeetingRoomId(res.meeting_room_id));
           navigate("/pickAvatar");
         }
       });
       client.send(`/app/waiting/info/${waitingState.roomId}`);
-
-      if (!waitingState.isMaster) {
-        return;
-      }
 
       client.subscribe(`/topic/reception/${waitingState.roomId}`, (response) => {
         setCandidateList(JSON.parse(response.body));
@@ -148,7 +146,7 @@ export const WaitingPage: FC<IProps> = (props) => {
           </Box>
           <Box p={1} />
           <Grid container spacing={2} alignItems="end">
-            {waitingState.isMaster && (
+            {isMaster && (
               <>
                 <Grid item xs={1} mr={1}>
                   <IconButton onClick={onClickReception}>
