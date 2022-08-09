@@ -4,7 +4,7 @@ const PORT_WEB = ":3000";
 const PORT_SERVER = ":8080";
 const PORT_OPENVIDU = ":4443";
 
-const URL_LOCAL = "https://localhost";
+const URL_LOCAL = "http://localhost";
 const URL_RELEASE = "https://i7a309.p.ssafy.io";
 
 export const REDIRECT_URI_KAKAO: string =
