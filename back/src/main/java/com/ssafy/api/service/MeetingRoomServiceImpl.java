@@ -94,26 +94,30 @@ public class MeetingRoomServiceImpl implements MeetingRoomService {
 		meetingRoomUser.setPickUserId(pickUserId);
 		MeetingRoomUserRelation pickedUserInfo = meetingRoomUserRelationRepository.findByMeetingRoomIdAndUserId(meetingRoomId, pickUserId).get();
 		if(pickedUserInfo.getPickUserId() != null && pickedUserInfo.getPickUserId().equals(userId)) {
-			meetingRoomUser.setMatched(true);
-			pickedUserInfo.setMatched(true);
-			meetingRoomUserRelationRepository.save(pickedUserInfo);
-			MeetingRoom subMeetingRoom = createMeetingRoomSession(1, meetingRoomId);
-			MeetingRoomUserRelation meetingRoomUserRelation1 = MeetingRoomUserRelation.builder()
-					.meetingRoom(subMeetingRoom)
-					.avatarId(meetingRoomUser.getAvatarId())
-					.user(meetingRoomUser.getUser())
-					.build();
-			meetingRoomUserRelationRepository.save(meetingRoomUserRelation1);
-			MeetingRoomUserRelation meetingRoomUserRelation2 = MeetingRoomUserRelation.builder()
-					.meetingRoom(subMeetingRoom)
-					.avatarId(pickedUserInfo.getAvatarId())
-					.user(pickedUserInfo.getUser())
-					.build();
-			meetingRoomUserRelationRepository.save(meetingRoomUserRelation2);
+			matched(meetingRoomUser, pickedUserInfo, meetingRoomId);
 		} else {
 			meetingRoomUser.setMatched(false);
 		}
 		meetingRoomUserRelationRepository.save(meetingRoomUser);
+	}
+	
+	public void matched(MeetingRoomUserRelation meetingRoomUser, MeetingRoomUserRelation pickedUserInfo, Long meetingRoomId) throws Exception {
+		meetingRoomUser.setMatched(true);
+		pickedUserInfo.setMatched(true);
+		meetingRoomUserRelationRepository.save(pickedUserInfo);
+		MeetingRoom subMeetingRoom = createMeetingRoomSession(1, meetingRoomId);
+		MeetingRoomUserRelation meetingRoomUserRelation1 = MeetingRoomUserRelation.builder()
+				.meetingRoom(subMeetingRoom)
+				.avatarId(meetingRoomUser.getAvatarId())
+				.user(meetingRoomUser.getUser())
+				.build();
+		meetingRoomUserRelationRepository.save(meetingRoomUserRelation1);
+		MeetingRoomUserRelation meetingRoomUserRelation2 = MeetingRoomUserRelation.builder()
+				.meetingRoom(subMeetingRoom)
+				.avatarId(pickedUserInfo.getAvatarId())
+				.user(pickedUserInfo.getUser())
+				.build();
+		meetingRoomUserRelationRepository.save(meetingRoomUserRelation2);
 	}
 
 	@Override
@@ -174,6 +178,20 @@ public class MeetingRoomServiceImpl implements MeetingRoomService {
 							// TODO Auto-generated catch block
 							
 						}
+					if(type.equals("pick")) {
+						List<MeetingRoomUserRelation> userList = meetingRoomUserRelationRepository.findAllByMeetingRoomIdAndLeftMeeting(meetingRoomId, false);
+						for(MeetingRoomUserRelation user : userList) {
+							if(userRepository.findById(user.getId()).get().getGender().equals("M")) continue;
+							MeetingRoomUserRelation pickedUserInfo = findUser(meetingRoomId, user.getPickUserId());
+							if(user.getId().equals(pickedUserInfo.getPickUserId())) {
+								try {
+									matched(user, pickedUserInfo, meetingRoomId);
+								} catch (Exception e) {
+									// TODO Auto-generated catch block
+								}
+							}
+						}
+					}
 				}
 			}
 		};
