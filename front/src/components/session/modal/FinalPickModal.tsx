@@ -1,7 +1,7 @@
 import { Box, Typography, Grid } from "@mui/material";
 import React, { FC, useState } from "react";
 import { useEffect } from "react";
-import { useSelector } from "react-redux";
+import { useSelector, useDispatch } from "react-redux";
 import { useNavigate } from "react-router";
 import SockJS from "sockjs-client";
 import sessionApi from "../../../apis/sessionApi";
@@ -9,6 +9,8 @@ import { WS_BASE_URL } from "../../../apis/url";
 import { AvatarProfile } from "./AvatarProfile";
 import { SessionModal } from "./SessionModal";
 import * as Stomp from "stompjs";
+import { setPickUserName } from "../../../stores/slices/meetingSlice";
+import { MeetingUserInfoRes } from "../../../apis/response/sessionRes";
 
 interface IProps {
   isOpened: boolean;
@@ -20,7 +22,7 @@ export const FinalPickModal: FC<IProps> = ({ isOpened }) => {
   const userId = useSelector((state: any) => state.user.userId);
   const gender = useSelector((state: any) => state.user.userGender);
 
-  const [targetUserList, setTargetUserList] = useState<any[]>();
+  const [targetUserList, setTargetUserList] = useState<MeetingUserInfoRes[]>();
   const [selectedUserId, setSelectedUserId] = useState(0);
   useEffect(() => {
     if (!totalUserList || !gender) {
@@ -53,18 +55,22 @@ export const FinalPickModal: FC<IProps> = ({ isOpened }) => {
     };
   }, [meetingRoomId]);
 
+  const dispatch = useDispatch();
   const navigate = useNavigate();
   useEffect(() => {
-    if (timer === 0) {
-      sessionApi
-        .patchFinalPick({
-          meetingroom_id: meetingRoomId,
-          user_id: userId,
-          pick_user_id: selectedUserId,
-        })
-        .then(() => navigate("/finalPickResult"));
+    if (timer !== 0 || !targetUserList) {
+      return;
     }
-  }, [timer, navigate, meetingRoomId, userId, selectedUserId]);
+
+    dispatch(setPickUserName(targetUserList.find((it) => it.user_id === selectedUserId)!.user_name));
+    sessionApi
+      .patchFinalPick({
+        meetingroom_id: meetingRoomId,
+        user_id: userId,
+        pick_user_id: selectedUserId,
+      })
+      .then(() => navigate("/finalPickResult"));
+  }, [timer, navigate, meetingRoomId, userId, selectedUserId, dispatch, targetUserList]);
 
   return (
     <FinalPickModalPresenter
