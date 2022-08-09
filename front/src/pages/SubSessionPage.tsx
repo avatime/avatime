@@ -9,14 +9,14 @@ import grey from "@mui/material/colors/grey";
 interface IProps {}
 
 export const SubSessionPage: FC<IProps> = (props) => {
-  const roomId = useSelector((state: any) => state.meeting.subRoomId);
+  const subRoomId = useSelector((state: any) => state.meeting.subRoomId);
   const userId = useSelector((state: any) => state.user.userId);
   const userName = useSelector((state: any) => state.user.userName);
   const pickUserName = useSelector((state: any) => state.meeting.pickUserName);
 
   const { publisher, streamList, onChangeCameraStatus, onChangeMicStatus } = useOpenvidu(
     userId,
-    roomId
+    subRoomId
   );
 
   return (

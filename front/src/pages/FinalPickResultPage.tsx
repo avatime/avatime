@@ -1,7 +1,7 @@
 import React, { FC, useMemo, useState } from "react";
 import { Backdrop, Box, Button, Grid, Typography, useTheme, CircularProgress } from "@mui/material";
 import { grey } from "@mui/material/colors";
-import { useSelector, useDispatch } from 'react-redux';
+import { useSelector, useDispatch } from "react-redux";
 import Xarrow, { Xwrapper } from "react-xarrows";
 import { useQuery } from "react-query";
 import sessionApi from "../apis/sessionApi";
@@ -17,22 +17,24 @@ interface IProps {}
 export const FinalPickResultPage: FC<IProps> = (props) => {
   const roomId = useSelector((state: any) => state.meeting.roomId);
   const gender = useSelector((state: any) => state.user.userGender);
+  const userId = useSelector((state: any) => state.user.userId);
   const [pickResult, setPickResult] = useState<FinalPickResultRes>();
 
   useEffect(() => {
-    if (!roomId || !gender) {
+    if (!roomId || !gender || !userId) {
       return;
     }
 
     sessionApi
       .getFinalPickResult({
         meetingroom_id: roomId,
+        user_id: userId,
       })
       .then((it) => {
         it.result_list.sort((a, _) => (a.gender === gender ? -1 : 1));
         setPickResult(it);
       });
-  }, [gender, roomId]);
+  }, [gender, roomId, userId]);
 
   const timer = useTimer(5, 1000);
   const [arrowOrderList, setArrowOrderList] = useState<number[]>([]);

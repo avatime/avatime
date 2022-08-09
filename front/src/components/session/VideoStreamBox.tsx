@@ -24,6 +24,8 @@ export const VideoStreamBox: FC<IProps> = ({ name, speaking, micStatus, videoSta
         transition: "0.3s",
       }}
     >
+      {children}
+      
       <Box position="absolute" bottom={0}>
         <Typography variant="subtitle1" color="white">
           {name}
@@ -34,7 +36,6 @@ export const VideoStreamBox: FC<IProps> = ({ name, speaking, micStatus, videoSta
         {!micStatus && <MicOffIcon style={{ width: "12px", color: "red" }} />}
         {!videoStatus && <VideocamOffIcon style={{ width: "12px", color: "red" }} />}
       </Box>
-      {children}
     </Box>
   );
 };
