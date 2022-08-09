@@ -2,7 +2,6 @@ import React, { FC, useEffect, useState } from "react";
 import { ChatRoom } from "../components/chat/ChatRoom";
 import { Box, Grid } from "@mui/material";
 import { ControllBar } from "../components/session/ControllBar";
-import { VideoStream } from "../components/session/VideoStream";
 import { grey } from "@mui/material/colors";
 import { useDispatch, useSelector } from "react-redux";
 import sessionApi from "../apis/sessionApi";
@@ -13,6 +12,7 @@ import { WS_BASE_URL } from "../apis/url";
 import * as Stomp from "stompjs";
 import { MeetingRoomInfoRes } from "../apis/response/sessionRes";
 import { useOpenvidu } from "../hooks/useOpenvidu";
+import { AvatarVideoStream } from "../components/session/AvatarVideoStream";
 
 interface IProps {}
 
@@ -96,7 +96,7 @@ export const SessionPage: FC<IProps> = (props) => {
                                   key={idx}
                                   sx={{ position: "relative", height: "100%" }}
                                 >
-                                  <VideoStream
+                                  <AvatarVideoStream
                                     faceMeshModel={faceMeshModel}
                                     streamManager={stream.streamManager}
                                     name={userInfo!.avatar_name}

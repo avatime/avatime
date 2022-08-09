@@ -28,8 +28,11 @@ const sessionApi: SessionApi = {
   getFinalPickResult: async function (
     finalPickResultReq: FinalPickResultReq
   ): Promise<FinalPickResultRes> {
-    return (await axiosInstance.get(`/meeting/pick/result/${finalPickResultReq.meetingroom_id}`))
-      .data;
+    return (
+      await axiosInstance.get(
+        `/meeting/pick/result/${finalPickResultReq.meetingroom_id}/${finalPickResultReq.user_id}`
+      )
+    ).data;
   },
   postStartFinalPick: async function (startFinalPickReq: StartFinalPickReq): Promise<void> {
     return (await axiosInstance.post(`/meeting/pick/start`, startFinalPickReq)).data;
