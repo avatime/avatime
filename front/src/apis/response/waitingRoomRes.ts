@@ -9,6 +9,7 @@ export interface WaitingRoomInfoRes {
   sido: string;
   created_time: string;
   status: number;
+  image_path: string;
 }
 
 export interface WaitingUser {
