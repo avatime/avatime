@@ -205,6 +205,7 @@ public class WaitingRoomController {
 		
 		long meetingRoomId = meetingRoomService.createMeetingRoom(waitingRoomStartReq.getWaitingRoomId());
 		info(waitingRoomStartReq.getWaitingRoomId(), meetingRoomId);
+		meetingRoomService.timer(meetingRoomId, 30, "avatar");
 		return ResponseEntity.status(200).body("");
 	}
 	
