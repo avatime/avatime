@@ -30,17 +30,36 @@ export const useFaceMeshModel = (): any => {
 };
 
 export const useFaceMask = (
-  model: any,
   videoElement: HTMLVideoElement | null,
   canvasElement: HTMLCanvasElement | null,
   avatarPath: any
 ) => {
+  const [model, setModel] = useState<any>();
+
+  useEffect(() => {
+    if (model) {
+      return;
+    }
+
+    load({
+      maxContinuousChecks: 5,
+      detectionConfidence: 0.9,
+      maxFaces: 1,
+      iouThreshold: 0.3,
+      scoreThreshold: 0.75,
+    }).then((it) => setModel(it));
+  }, [model]);
+
   const requestRef = useRef<number>(0);
   const [faceCanvas, setFaceCanvas] = useState<FaceCanvas>();
 
   const animate = useCallback(async () => {
+    if (!model) {
+      return;
+    }
+
     try {
-      const predictions = await model.estimateFaces(videoElement);
+      const predictions = await model!.estimateFaces(videoElement);
       if (!predictions.length) {
         requestRef.current = requestAnimationFrame(animate);
         return;
@@ -67,7 +86,7 @@ export const useFaceMask = (
     } catch (e) {
       requestRef.current = requestAnimationFrame(animate);
     }
-  }, [faceCanvas, model, videoElement, canvasElement, avatarPath]);
+  }, [model, videoElement, faceCanvas, canvasElement, avatarPath]);
 
   useEffect(() => {
     requestRef.current = requestAnimationFrame(animate);

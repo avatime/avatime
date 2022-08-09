@@ -6,7 +6,6 @@ import { grey } from "@mui/material/colors";
 import { useDispatch, useSelector } from "react-redux";
 import sessionApi from "../apis/sessionApi";
 import { setUserInfoList } from "../stores/slices/meetingSlice";
-import { useFaceMeshModel } from "../hooks/useFaceMesh";
 import SockJS from "sockjs-client";
 import { WS_BASE_URL } from "../apis/url";
 import * as Stomp from "stompjs";
@@ -65,7 +64,6 @@ export const SessionPage: FC<IProps> = (props) => {
     };
   }, [roomId]);
 
-  const faceMeshModel = useFaceMeshModel();
   const { publisher, streamList, onChangeCameraStatus, onChangeMicStatus } = useOpenvidu(
     userId,
     roomId
@@ -97,7 +95,6 @@ export const SessionPage: FC<IProps> = (props) => {
                                   sx={{ position: "relative", height: "100%" }}
                                 >
                                   <AvatarVideoStream
-                                    faceMeshModel={faceMeshModel}
                                     streamManager={stream.streamManager}
                                     name={userInfo!.avatar_name}
                                     avatarPath={userInfo!.avatar_image_path}
