@@ -123,12 +123,13 @@ export const PickAvatarPage: FC<IProps> = () => {
                     );
                   } else {
                     return (
-                      <Grid item xs={12 / 8}>
+                      <Grid item xs={12 / 8} style={{border : "2px solid red"}}>
                         <AvatarProfile
                           selected={avatarId === originData.avatar_list[i].id}
                           onClick={() => {}}
                           avatarName={originData.avatar_list[i].name}
                           avatarImagePath={originData.avatar_list[i].image_path}
+                          
                         />
                       </Grid>
                     );
