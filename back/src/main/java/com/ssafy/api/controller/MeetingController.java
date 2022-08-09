@@ -157,7 +157,7 @@ public class MeetingController {
         @ApiResponse(code = 200, message = "성공", response = BaseResponseBody.class),
         @ApiResponse(code = 500, message = "서버 오류", response = BaseResponseBody.class)
     })
-	public ResponseEntity<?> finalMeetingResult(@PathVariable Long meetingRoomId, Long userId) {
+	public ResponseEntity<?> finalMeetingResult(@PathVariable Long meetingRoomId, @PathVariable Long userId) {
 		FinalChoiceRes finalChoiceRes = new FinalChoiceRes();
 		List<Result> list = new ArrayList<>();
 		try {
