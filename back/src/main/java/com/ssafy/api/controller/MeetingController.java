@@ -90,7 +90,6 @@ public class MeetingController {
 	@MessageMapping("/meeting/avatar/{meetingRoomId}")
 	public void startAvatarChoice(@DestinationVariable Long meetingRoomId) throws Exception {
 		meetingRoomService.sendAvatarInfo(meetingRoomId);
-		meetingRoomService.timer(meetingRoomId, 30, "avatar");
 	}
 	
 	@GetMapping("/{meetingroom_id}")
