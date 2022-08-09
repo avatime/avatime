@@ -25,4 +25,5 @@ public interface MeetingRoomService {
 	public void pickAvatar(Long meetingRoomId) throws Exception;
 	public List<MeetingRoomUserRelation> findAllByMeetingRoomId(Long meetingRoomId) throws Exception;
 	int sendAvatarInfo(Long meetingRoomId) throws Exception;
+	MeetingRoom findSubMeetingRoom(Long mainMeetingRoomId, Long userId) throws Exception;
 }
