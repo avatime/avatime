@@ -26,36 +26,36 @@ export const SubSessionPage: FC<IProps> = (props) => {
 
   return (
     <div className="mainback">
-      <Grid container  p={2}>
-        <Grid item xs>
-          <Box  display="flex" flexDirection="column">
-            <Box borderRadius="10px" flex={1} position="relative" bgcolor={grey[200]}>
-              <Box height="95%" p={2}>
-                {pickUserStreamManager && (
-                  <VideoStream
-                    streamManager={
-                      streamList.find((it) => it.streamManager !== publisher).streamManager
-                    }
-                    name={pickUserName}
-                  />
-                )}
-              </Box>
-              {publisher && (
-                <Box width="30%" height="30%" p={2} position="absolute" bottom="0" right="0">
-                  <VideoStream streamManager={publisher} name={userName} />
-                </Box>
+      <Box p={3} display="flex" flexDirection="column" alignItems="stretch" position="relative">
+        <Box
+          p={3}
+          borderRadius="10px"
+          flex={1}
+          position="relative"
+          bgcolor={grey[200]}
+          display="flex"
+          flexDirection="column"
+          justifyContent="center"
+        >
+          <Grid container direction="row" alignItems="center" spacing={3}>
+            <Grid item xs>
+              {publisher && <VideoStream streamManager={publisher} name={userName} />}
+            </Grid>
+            <Grid item xs>
+              {pickUserStreamManager && (
+                <VideoStream streamManager={pickUserStreamManager} name={pickUserName} />
               )}
-            </Box>
-            <Box p={1} />
-            <ControllBar
-              type="normal"
-              onChangeMicStatus={onChangeMicStatus}
-              onChangeCameraStatus={onChangeCameraStatus}
-              lastPickModalOpen={false}
-            />
-          </Box>
-        </Grid>
-      </Grid>
+            </Grid>
+          </Grid>
+        </Box>
+        <Box p={1} />
+        <ControllBar
+          type="normal"
+          onChangeMicStatus={onChangeMicStatus}
+          onChangeCameraStatus={onChangeCameraStatus}
+          lastPickModalOpen={false}
+        />
+      </Box>
     </div>
   );
 };
