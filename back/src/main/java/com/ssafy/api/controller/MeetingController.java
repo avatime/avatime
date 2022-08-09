@@ -169,7 +169,7 @@ public class MeetingController {
 			boolean matched = false;
 			for(MeetingRoomUserRelation m : meetingRoomUserlist) {
 				if(m.isMatched()) matched = true;
-				User user = userRepository.findById(m.getId()).get();
+				User user = userRepository.findById(m.getUser().getId()).get();
 				Avatar avatar = avatarService.findById(m.getAvatarId());
 				Result res = Result.builder()
 						.id(user.getId())
