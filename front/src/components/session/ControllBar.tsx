@@ -11,15 +11,20 @@ import PeopleIcon from "@mui/icons-material/People";
 import { Clock } from "./Clock";
 import { FinalPickModal } from "./modal/FinalPickModal";
 import { useNavigate } from "react-router";
+import sessionApi from "../../apis/sessionApi";
+import { useSelector } from "react-redux";
 
 type Type = "master" | "normal";
 interface IProps {
   type: Type;
   onChangeMicStatus: (status: boolean) => void;
   onChangeCameraStatus: (status: boolean) => void;
+  lastPickModalOpen: boolean;
 }
 
-export const ControllBar: FC<IProps> = ({ type, ...callback }) => {
+export const ControllBar: FC<IProps> = ({ type, lastPickModalOpen, ...callback }) => {
+  const meetingRoomId = useSelector((state: any) => state.meeting.roomId);
+
   const [micStatus, setMicStatus] = useState(true);
   const onChangeMicStatus = () => {
     setMicStatus((prev) => !prev);
@@ -36,23 +41,18 @@ export const ControllBar: FC<IProps> = ({ type, ...callback }) => {
     callback.onChangeCameraStatus(cameraStatus);
   }, [cameraStatus, callback]);
 
-  const [lastPickModalOpen, setLastPickModalOpen] = useState(false);
-
-  const onClickSettings = () => {};
-
-  const onClickPick = () => {
-    // eslint-disable-next-line no-restricted-globals
-    if (confirm("정말 최종 선택을 하시겠습니까?")) {
-      setLastPickModalOpen(true);
-    }
-  };
-
   const navigate = useNavigate();
   const onClickExit = () => {
     // eslint-disable-next-line no-restricted-globals
     if (confirm("정말 나가시겠습니까?")) {
       navigate("/");
     }
+  };
+
+  const onClickPick = () => {
+    sessionApi.postStartFinalPick({
+      meetingroom_id: meetingRoomId,
+    });
   };
 
   return (
@@ -62,7 +62,6 @@ export const ControllBar: FC<IProps> = ({ type, ...callback }) => {
       onChangeMicStatus={onChangeMicStatus}
       cameraStatus={cameraStatus}
       onChangeCameraStatus={onChangeCameraStatus}
-      onClickSettings={onClickSettings}
       onClickPick={onClickPick}
       onClickExit={onClickExit}
       lastPickModalOpen={lastPickModalOpen}
@@ -76,7 +75,6 @@ interface IPresenterProps {
   onChangeMicStatus: () => void;
   cameraStatus: boolean;
   onChangeCameraStatus: () => void;
-  onClickSettings: () => void;
   onClickPick: () => void;
   onClickExit: () => void;
   lastPickModalOpen: boolean;
@@ -88,7 +86,6 @@ export const ControllBarPresenter: FC<IPresenterProps> = ({
   onChangeMicStatus,
   cameraStatus,
   onChangeCameraStatus,
-  onClickSettings,
   onClickPick,
   onClickExit,
   lastPickModalOpen,
@@ -116,9 +113,6 @@ export const ControllBarPresenter: FC<IPresenterProps> = ({
             onClick={onChangeCameraStatus}
           >
             카메라
-          </Button>
-          <Button variant="contained" startIcon={<SettingsIcon />} onClick={onClickSettings}>
-            설정
           </Button>
           {type === "master" && (
             <Button variant="contained" startIcon={<PeopleIcon />} onClick={onClickPick}>

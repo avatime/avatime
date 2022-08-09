@@ -32,7 +32,6 @@ export const SessionPage: FC<IProps> = (props) => {
     }
 
     sessionApi.getMeetingRoomInfo({ meetingroom_id: roomId }).then((res: MeetingRoomInfoRes) => {
-      console.log("AAA", res);
       setMeetingRoomInfo(res);
       dispatch(setUserInfoList(res.meeting_user_info_list));
     });
@@ -40,6 +39,8 @@ export const SessionPage: FC<IProps> = (props) => {
 
   const [opened, setOpened] = useState<boolean[]>([true, true]);
   const cntOpened = opened.filter((it) => it).length;
+
+  const [lastPickModalOpen, setLastPickModalOpen] = useState(false);
 
   useEffect(() => {
     if (!roomId) {
@@ -51,6 +52,13 @@ export const SessionPage: FC<IProps> = (props) => {
 
     client.connect({}, function (frame) {
       console.log("소켓 연결 성공", frame);
+
+      client.subscribe(`/topic/meeting/status/{roomId}`, function (response) {
+        console.log(response.body);
+        if (JSON.parse(response.body).last_pick_status) {
+          setLastPickModalOpen(true);
+        }
+      });
     });
 
     return () => {
@@ -137,6 +145,7 @@ export const SessionPage: FC<IProps> = (props) => {
     () => [{ streamManager: publisher, userId }, ...subscribers],
     [publisher, subscribers, userId]
   );
+
   return (
     <div className="mainback">
       <Grid container spacing={3} sx={{ float: "left" }} p={2}>
@@ -202,6 +211,7 @@ export const SessionPage: FC<IProps> = (props) => {
               type="master"
               onChangeMicStatus={onChangeMicStatus}
               onChangeCameraStatus={onChangeCameraStatus}
+              lastPickModalOpen={lastPickModalOpen}
             />
           </Box>
         </Grid>
