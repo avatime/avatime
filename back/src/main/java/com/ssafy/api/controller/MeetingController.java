@@ -169,7 +169,7 @@ public class MeetingController {
 			for(MeetingRoomUserRelation user : userList) {
 				Avatar avatar = avatarService.findById(user.getAvatarId());
 				Result result = Result.builder()
-						.id(userId)
+						.id(user.getUser().getId())
 						.name(user.getUser().getName())
 						.gender(user.getUser().getGender())
 						.avatar_id(user.getAvatarId())
