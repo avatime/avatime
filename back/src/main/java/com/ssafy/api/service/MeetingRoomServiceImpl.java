@@ -19,6 +19,7 @@ import com.ssafy.db.entity.WaitingRoomUserRelation;
 import com.ssafy.db.repository.ChattingRoomRepository;
 import com.ssafy.db.repository.MeetingRoomRepository;
 import com.ssafy.db.repository.MeetingRoomUserRelationRepository;
+import com.ssafy.db.repository.UserRepository;
 import com.ssafy.db.repository.WaitingRoomUserRelationRepository;
 
 import lombok.RequiredArgsConstructor;
@@ -47,6 +48,9 @@ public class MeetingRoomServiceImpl implements MeetingRoomService {
 	
 	@Autowired
 	AvatarService avatarService;
+	
+	@Autowired
+	UserRepository userRepository;
 	
 	private final SimpMessageSendingOperations sendingOperations;
 	
@@ -89,7 +93,8 @@ public class MeetingRoomServiceImpl implements MeetingRoomService {
 		MeetingRoomUserRelation meetingRoomUser = meetingRoomUserRelationRepository.findByMeetingRoomIdAndUserId(meetingRoomId, userId).get();
 		meetingRoomUser.setPickUserId(pickUserId);
 		MeetingRoomUserRelation pickedUserInfo = meetingRoomUserRelationRepository.findByMeetingRoomIdAndUserId(meetingRoomId, pickUserId).get();
-		if(pickedUserInfo.getPickUserId() == userId) {
+		if(pickedUserInfo.getPickUserId()==userId) {
+			System.out.println("");
 			meetingRoomUser.setMatched(true);
 			pickedUserInfo.setMatched(true);
 			meetingRoomUserRelationRepository.save(pickedUserInfo);

@@ -159,21 +159,28 @@ public class MeetingController {
     })
 	public ResponseEntity<?> finalMeetingResult(@PathVariable Long meetingRoomId, Long userId) {
 		FinalChoiceRes finalChoiceRes = new FinalChoiceRes();
+		List<Result> list = new ArrayList<>();
 		try {
 			MeetingRoomUserRelation meetingRoomUserRelation = meetingRoomService.findUser(meetingRoomId, userId);
 			finalChoiceRes.setMatched(meetingRoomUserRelation.isMatched());
 			if(meetingRoomUserRelation.isMatched()) finalChoiceRes.setMeetingroom_id(meetingRoomService.findSubMeetingRoom(meetingRoomId, userId).getId());
-			Avatar avatar = avatarService.findById(meetingRoomUserRelation.getAvatarId());
-			Result result = Result.builder()
-					.id(userId)
-					.name(meetingRoomUserRelation.getUser().getName())
-					.gender(meetingRoomUserRelation.getUser().getGender())
-					.avatar_id(meetingRoomUserRelation.getAvatarId())
-					.avatar_name(avatar.getName())
-					.avatar_image_path(avatar.getImagePath())
-					.pick_user_id(meetingRoomUserRelation.getPickUserId())
-					.build();
-			finalChoiceRes.setResult_list(result);
+			List<MeetingRoomUserRelation> userList = meetingRoomService.findAllByMeetingRoomId(meetingRoomId);
+			String gender = userRepository.findById(userId).get().getGender();
+			for(MeetingRoomUserRelation user : userList) {
+				Avatar avatar = avatarService.findById(user.getAvatarId());
+				Result result = Result.builder()
+						.id(userId)
+						.name(user.getUser().getName())
+						.gender(user.getUser().getGender())
+						.avatar_id(user.getAvatarId())
+						.avatar_name(avatar.getName())
+						.avatar_image_path(avatar.getImagePath())
+						.pick_user_id(user.getPickUserId())
+						.build();
+				if(user.getUser().getGender().equals(gender)) list.add(0, result);
+				else list.add(result);
+			}
+			finalChoiceRes.setResult_list(list);
 		} catch (Exception e) {
 			return ResponseEntity.status(500).body("");
 		}
