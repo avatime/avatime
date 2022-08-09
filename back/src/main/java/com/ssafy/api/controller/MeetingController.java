@@ -19,14 +19,11 @@ import org.springframework.web.bind.annotation.RestController;
 import com.ssafy.api.request.FinalChoiceUserReq;
 import com.ssafy.api.request.LeavingMeetingRoomReq;
 import com.ssafy.api.request.MeetingRoomIdReq;
-import com.ssafy.api.request.RegisterOpenViduStreamReq;
 import com.ssafy.api.request.UserSelectAvatarReq;
-import com.ssafy.api.response.AvatarChoiceRes;
 import com.ssafy.api.response.FinalChoiceRes;
 import com.ssafy.api.response.LastPickStatusRes;
 import com.ssafy.api.response.MeetingRoomInfoRes;
 import com.ssafy.api.response.MeetingRoomUserRes;
-import com.ssafy.api.response.entity.AvatarStatus;
 import com.ssafy.api.response.entity.Result;
 import com.ssafy.api.service.AvatarService;
 import com.ssafy.api.service.ChattingRoomService;
@@ -36,7 +33,6 @@ import com.ssafy.db.entity.Avatar;
 import com.ssafy.db.entity.ChattingRoom;
 import com.ssafy.db.entity.MeetingRoom;
 import com.ssafy.db.entity.MeetingRoomUserRelation;
-import com.ssafy.db.entity.User;
 import com.ssafy.db.repository.UserRepository;
 
 import io.swagger.annotations.Api;
@@ -94,6 +90,7 @@ public class MeetingController {
 	@MessageMapping("/meeting/avatar/{meetingRoomId}")
 	public void startAvatarChoice(@DestinationVariable Long meetingRoomId) throws Exception {
 		meetingRoomService.sendAvatarInfo(meetingRoomId);
+		meetingRoomService.timer(meetingRoomId, 30, "avatar");
 	}
 	
 	@GetMapping("/{meetingroom_id}")
@@ -148,42 +145,41 @@ public class MeetingController {
 		try {
 			meetingRoomService.finalChoice(meetingRoomId, userId, pickedUserId);
 		} catch(Exception e) {
-			return ResponseEntity.status(500).body("");
+			return ResponseEntity.status(500).body(e);
 		}
 		
 		return ResponseEntity.status(200).body("");
 	}
 	 
-	@GetMapping("/pick/result/{meetingroomId}")
+	@GetMapping("/pick/result/{meetingRoomId}/{userId}")
 	@ApiOperation(value = "최종 결과", notes = "<strong>meeting room id</strong>에 따른 미팅 최종 결과") 
     @ApiResponses({
         @ApiResponse(code = 200, message = "성공", response = BaseResponseBody.class),
         @ApiResponse(code = 500, message = "서버 오류", response = BaseResponseBody.class)
     })
-	public ResponseEntity<?> finalMeetingResult(@PathVariable Long meetingroomId) {
+	public ResponseEntity<?> finalMeetingResult(@PathVariable Long meetingRoomId, Long userId) {
 		FinalChoiceRes finalChoiceRes = new FinalChoiceRes();
 		List<Result> list = new ArrayList<>();
-		System.out.println(meetingroomId);
 		try {
-			List<MeetingRoomUserRelation> meetingRoomUserlist = meetingRoomService.finalChoiceResult(meetingroomId);
-			boolean matched = false;
-			for(MeetingRoomUserRelation m : meetingRoomUserlist) {
-				if(m.isMatched()) matched = true;
-				User user = userRepository.findById(m.getUser().getId()).get();
-				Avatar avatar = avatarService.findById(m.getAvatarId());
-				Result res = Result.builder()
-						.id(user.getId())
-						.name(user.getName())
-						.gender(user.getGender())
-						.avatar_id(avatar.getId())
+			MeetingRoomUserRelation meetingRoomUserRelation = meetingRoomService.findUser(meetingRoomId, userId);
+			finalChoiceRes.setMatched(meetingRoomUserRelation.isMatched());
+			if(meetingRoomUserRelation.isMatched()) finalChoiceRes.setMeetingroom_id(meetingRoomService.findSubMeetingRoom(meetingRoomId, userId).getId());
+			List<MeetingRoomUserRelation> userList = meetingRoomService.findAllByMeetingRoomId(meetingRoomId);
+			String gender = userRepository.findById(userId).get().getGender();
+			for(MeetingRoomUserRelation user : userList) {
+				Avatar avatar = avatarService.findById(user.getAvatarId());
+				Result result = Result.builder()
+						.id(userId)
+						.name(user.getUser().getName())
+						.gender(user.getUser().getGender())
+						.avatar_id(user.getAvatarId())
 						.avatar_name(avatar.getName())
 						.avatar_image_path(avatar.getImagePath())
-						.pick_user_id(m.getPickUserId())
+						.pick_user_id(user.getPickUserId())
 						.build();
-				list.add(res);
+				if(user.getUser().getGender().equals(gender)) list.add(0, result);
+				else list.add(result);
 			}
-			finalChoiceRes.setMatched(matched);
-			finalChoiceRes.setMeetingroom_id(meetingroomId);
 			finalChoiceRes.setResult_list(list);
 		} catch (Exception e) {
 			return ResponseEntity.status(500).body("");

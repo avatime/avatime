@@ -22,7 +22,7 @@ public class FinalChoiceRes extends BaseResponseBody {
 
 	boolean matched;
 	Long meetingroom_id;
-	Result result_list;
+	List<Result> result_list;
 
 	public static FinalChoiceRes of(Integer statusCode, String message, FinalChoiceRes finalChoiceRes) {
 		FinalChoiceRes res = new FinalChoiceRes();
