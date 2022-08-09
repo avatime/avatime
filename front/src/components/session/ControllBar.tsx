@@ -93,9 +93,9 @@ export const ControllBarPresenter: FC<IPresenterProps> = ({
   return (
     <>
       <Box sx={{ display: "flex" }}>
-        <Box width="30%" display="flex" justifyContent="center" alignItems="center">
+        {/* <Box width="30%" display="flex" justifyContent="center" alignItems="center">
           <Clock />
-        </Box>
+        </Box> */}
 
         <Box flex={1} display="flex" flexDirection="row" justifyContent="space-around" p={2}>
           <Button
