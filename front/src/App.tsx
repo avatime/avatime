@@ -16,6 +16,7 @@ import { LoginPage } from './pages/LoginPage';
 import { MyPage } from './pages/MyPage';
 import { PickAvatarPage } from "./pages/PickAvatarPage";
 import { Canvas } from './pages/Canvas';
+import { SubSessionPage } from './pages/SubSessionPage';
 
 function App() {
   return (
@@ -35,6 +36,7 @@ function App() {
               <Route path="/kakao" element={<KakaoHandler />} />
               <Route path="/naver" element={<NaverHandler />} />
               <Route path="/canvas" element={<Canvas />} />
+              <Route path="/subSession" element={<SubSessionPage />} />
             </Routes>
           </BrowserRouter>
         </PersistGate>

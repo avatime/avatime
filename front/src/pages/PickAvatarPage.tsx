@@ -69,6 +69,10 @@ export const PickAvatarPage: FC<IProps> = () => {
       client.send(`/app/meeting/avatar/${meetingRoomId}`, {}, "아바타 정보");
       client.send(`/app/meeting/avatar/timer/${meetingRoomId}`, {}, "타이머");
     });
+
+    return () => {
+      client.disconnect(() => {});
+    }
   }, [meetingRoomId, navigate]);
 
   //아바타 선택

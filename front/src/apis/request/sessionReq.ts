@@ -10,6 +10,7 @@ export interface FinalPickReq {
 
 export interface FinalPickResultReq {
   meetingroom_id: number;
+  user_id: number;
 }
 
 export interface StartFinalPickReq {

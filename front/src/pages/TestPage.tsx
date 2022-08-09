@@ -19,6 +19,7 @@ export const TestPage: FC<IProps> = (props) => {
       <Link to="/finalPickResult">finalPickResult</Link><br/>
       <Link to="/pickAvatar">PickAvatarPage</Link><br/>
       <Link to="/canvas">Canvas</Link>
+      <Link to="/subSession">SubSession</Link>
     </div>
   );
 };
