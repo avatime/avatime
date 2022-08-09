@@ -89,10 +89,23 @@ public class MeetingRoomServiceImpl implements MeetingRoomService {
 		MeetingRoomUserRelation meetingRoomUser = meetingRoomUserRelationRepository.findByMeetingRoomIdAndUserId(meetingRoomId, userId).get();
 		meetingRoomUser.setPickUserId(pickUserId);
 		MeetingRoomUserRelation pickedUserInfo = meetingRoomUserRelationRepository.findByMeetingRoomIdAndUserId(meetingRoomId, pickUserId).get();
-		if(pickedUserInfo.getPickUserId() == userId) {
+        if(userId.equals(pickedUserInfo.getPickUserId())) {
 			meetingRoomUser.setMatched(true);
 			pickedUserInfo.setMatched(true);
 			meetingRoomUserRelationRepository.save(pickedUserInfo);
+			MeetingRoom subMeetingRoom = createMeetingRoomSession(1, meetingRoomId);
+			MeetingRoomUserRelation meetingRoomUserRelation1 = MeetingRoomUserRelation.builder()
+					.meetingRoom(subMeetingRoom)
+					.avatarId(meetingRoomUser.getAvatarId())
+					.user(meetingRoomUser.getUser())
+					.build();
+			meetingRoomUserRelationRepository.save(meetingRoomUserRelation1);
+			MeetingRoomUserRelation meetingRoomUserRelation2 = MeetingRoomUserRelation.builder()
+					.meetingRoom(subMeetingRoom)
+					.avatarId(pickedUserInfo.getAvatarId())
+					.user(pickedUserInfo.getUser())
+					.build();
+			meetingRoomUserRelationRepository.save(meetingRoomUserRelation2);
 		} else {
 			meetingRoomUser.setMatched(false);
 		}
@@ -239,6 +252,16 @@ public class MeetingRoomServiceImpl implements MeetingRoomService {
 	public List<MeetingRoomUserRelation> findAllByMeetingRoomId(Long meetingRoomId) throws Exception {
 		// TODO Auto-generated method stub
 		return meetingRoomUserRelationRepository.findAllByMeetingRoomId(meetingRoomId);
+	}
+	
+	@Override
+	public MeetingRoom findSubMeetingRoom(Long mainMeetingRoomId, Long userId) throws Exception {
+		List<MeetingRoom> list = meetingRoomRepository.findAllBymainSessionIdAndType(mainMeetingRoomId, 1).get();
+		for(MeetingRoom meetingRoom : list) {
+			if(meetingRoomUserRelationRepository.existsByMeetingRoomIdAndUserId(mainMeetingRoomId, userId)) return meetingRoom;
+		}
+		
+		return null;
 	}
 
 }

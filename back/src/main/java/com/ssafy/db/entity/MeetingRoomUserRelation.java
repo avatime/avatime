@@ -1,5 +1,6 @@
 package com.ssafy.db.entity;
 
+import javax.persistence.CascadeType;
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.ManyToOne;
@@ -20,9 +21,10 @@ import lombok.Setter;
 @Getter
 @Setter
 @NoArgsConstructor
+@Builder
 public class MeetingRoomUserRelation  extends BaseEntity {
 
-	@ManyToOne
+	@ManyToOne(cascade = CascadeType.ALL)
 	private MeetingRoom meetingRoom;
 	
     @ManyToOne
