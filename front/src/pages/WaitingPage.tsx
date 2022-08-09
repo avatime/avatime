@@ -168,6 +168,7 @@ export const WaitingPage: FC<IProps> = (props) => {
                     startIcon={<PlayCircleOutlineIcon />}
                     sx={{ width: "100%" }}
                     onClick={onClickStart}
+                    color="secondary"
                     // disabled={waitingUserList.length !== waitingState.headCount}
                   >
                     시작
