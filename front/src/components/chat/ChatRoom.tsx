@@ -244,7 +244,7 @@ const ChatRoomPresenter: FC<IPresenterProps> = ({
             onKeyUp={onKeyUp}
             onKeyDown={onKeyDown}
           />
-          <Button variant="contained" onClick={sendMessage} disabled={!message}>
+          <Button variant="contained" onClick={sendMessage} disabled={!message} color="secondary">
             <SendIcon />
           </Button>
         </Stack>

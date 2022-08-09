@@ -100,7 +100,7 @@ export const ControllBarPresenter: FC<IPresenterProps> = ({
         <Box flex={1} display="flex" flexDirection="row" justifyContent="space-around" p={2}>
           <Button
             variant="contained"
-            color={micStatus ? "primary" : "error"}
+            color={micStatus ? "secondary" : "error"}
             startIcon={micStatus ? <MicIcon /> : <MicOffIcon />}
             onClick={onChangeMicStatus}
           >
@@ -108,18 +108,28 @@ export const ControllBarPresenter: FC<IPresenterProps> = ({
           </Button>
           <Button
             variant="contained"
-            color={cameraStatus ? "primary" : "error"}
+            color={cameraStatus ? "secondary" : "error"}
             startIcon={cameraStatus ? <VideocamIcon /> : <VideocamOffIcon />}
             onClick={onChangeCameraStatus}
           >
             카메라
           </Button>
           {type === "master" && (
-            <Button variant="contained" startIcon={<PeopleIcon />} onClick={onClickPick}>
+            <Button
+              variant="contained"
+              startIcon={<PeopleIcon />}
+              onClick={onClickPick}
+              color="secondary"
+            >
               최종 선택
             </Button>
           )}
-          <Button variant="contained" startIcon={<ExitToAppIcon />} onClick={onClickExit}>
+          <Button
+            variant="contained"
+            startIcon={<ExitToAppIcon />}
+            onClick={onClickExit}
+            color="secondary"
+          >
             나가기
           </Button>
         </Box>
