@@ -19,6 +19,7 @@ import { Canvas } from "./pages/Canvas";
 import { SubSessionPage } from "./pages/SubSessionPage";
 import green from "@mui/material/colors/green";
 import { createTheme ,ThemeProvider} from "@mui/material/styles";
+import { LandingPage } from "./pages/Landing/LandingPage";
 
 
 export const theme = createTheme({
@@ -37,7 +38,8 @@ function App() {
           <ThemeProvider theme={theme}>
             <BrowserRouter>
               <Routes>
-                <Route path="/" element={<TestPage />} />
+                <Route path="/" element={<LandingPage />} />
+                <Route path="/test" element={<TestPage />} />
                 <Route path="/main" element={<MainPage />} />
                 <Route path="/waiting" element={<WaitingPage />} />
                 <Route path="/session" element={<SessionPage />} />
