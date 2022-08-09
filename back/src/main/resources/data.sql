@@ -30,6 +30,8 @@ insert into avatar (image_path, name) values ("헐크.jpg", "헐크");
 insert into avatar (image_path, name) values ("조커.jpg", "조커");
 insert into avatar (image_path, name) values ("지니.jpg", "지니");
 insert into avatar (image_path, name) values ("아기조커.jpg", "아기조커");
+insert into avatar (image_path, name) values ("햄찌우먼.jpg", "햄찌우먼");
+insert into avatar (image_path, name) values ("수박맨.jpg", "수박맨");
 
 insert into user (description, gender, name, profile_image_path, social_id, social_type) values ("testing3", "F", "채윤선", "https://jira.ssafy.com/secure/useravatar?avatarId=10508", "5524137@naver.com", 1);
 insert into user (description, gender, name, profile_image_path, social_id, social_type) values ("testing", "M", "정건우", "https://jira.ssafy.com/secure/useravatar?avatarId=10341", "abcxj123@naver.com", 1);
