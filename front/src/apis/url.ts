@@ -1,4 +1,4 @@
-const DEV = true;
+const DEV = process.env.NODE_ENV !== "production";
 
 const PORT_WEB = ":3000";
 const PORT_SERVER = ":8080";
