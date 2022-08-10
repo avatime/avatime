@@ -11,7 +11,7 @@ import { NaverHandler } from "./components/login/NaverHandler";
 import { LoginPage } from "./pages/LoginPage";
 import { MyPage } from "./pages/MyPage";
 import { PickAvatarPage } from "./pages/PickAvatarPage";
-import { Canvas } from "./pages/Canvas";
+import { CanvasPage } from "./pages/CanvasPage";
 import { SubSessionPage } from "./pages/SubSessionPage";
 import green from "@mui/material/colors/green";
 import { createTheme, ThemeProvider } from "@mui/material/styles";
@@ -29,6 +29,7 @@ export const theme = createTheme({
 
 function App() {
   const isLogin = useSelector((state: any) => state.user.isLogin);
+  const socialId = useSelector((state: any) => state.user.socialId);
   return (
     <div>
       <ThemeProvider theme={theme}>
@@ -38,38 +39,38 @@ function App() {
             <Route path="/test" element={<TestPage />} />
             <Route
               path="/main"
-              element={<ProtectedRoute outlet={<MainPage />} isLogin={isLogin} />}
+              element={<ProtectedRoute outlet={<MainPage />} isAuthentication={isLogin} />}
             />
             <Route
               path="/waiting"
-              element={<ProtectedRoute outlet={<WaitingPage />} isLogin={isLogin} />}
+              element={<ProtectedRoute outlet={<WaitingPage />} isAuthentication={isLogin} />}
             />
             <Route
               path="/session"
-              element={<ProtectedRoute outlet={<SessionPage />} isLogin={isLogin} />}
+              element={<ProtectedRoute outlet={<SessionPage />} isAuthentication={isLogin} />}
             />
             <Route path="/login" element={<LoginPage />} />
             <Route
               path="/mypage"
-              element={<ProtectedRoute outlet={<MyPage />} isLogin={isLogin} />}
+              element={<ProtectedRoute outlet={<MyPage />} isAuthentication={!!socialId} />}
             />
             <Route
               path="/finalPickResult"
-              element={<ProtectedRoute outlet={<FinalPickResultPage />} isLogin={isLogin} />}
+              element={<ProtectedRoute outlet={<FinalPickResultPage />} isAuthentication={isLogin} />}
             />
             <Route
               path="/pickAvatar"
-              element={<ProtectedRoute outlet={<PickAvatarPage />} isLogin={isLogin} />}
+              element={<ProtectedRoute outlet={<PickAvatarPage />} isAuthentication={isLogin} />}
             />
             <Route path="/kakao" element={<KakaoHandler />} />
             <Route path="/naver" element={<NaverHandler />} />
             <Route
               path="/canvas"
-              element={<ProtectedRoute outlet={<Canvas />} isLogin={isLogin} />}
+              element={<ProtectedRoute outlet={<CanvasPage />} isAuthentication={isLogin} />}
             />
             <Route
               path="/subSession"
-              element={<ProtectedRoute outlet={<SubSessionPage />} isLogin={isLogin} />}
+              element={<ProtectedRoute outlet={<SubSessionPage />} isAuthentication={isLogin} />}
             />
           </Routes>
         </BrowserRouter>
