@@ -84,7 +84,7 @@ export const ProfileArea: FC<IProps> = (props) => {
       // 생성가능
       setNameText(" ");
       setOverlap(false);
-    } else if (name === userName) {
+    } else if (name.trim() === userName) {
       setNameText("현재 이름과 같습니다.");
       setOverlap(true);
     } else {
@@ -131,7 +131,7 @@ export const ProfileArea: FC<IProps> = (props) => {
   };
 
   const handleDescChange = (event: React.ChangeEvent<HTMLInputElement>) => {
-    if (event.target.value.trim().length > 255) {
+    if (event.target.value.length > 255) {
       setDescSatis(false);
     } else {
       setDescSatis(true);
@@ -218,7 +218,7 @@ export const ProfileArea: FC<IProps> = (props) => {
         <Box display="flex" justifyContent="center" alignItems="center" marginLeft="10vw">
           <IconButton onClick={handleOpen}>
             <Avatar
-              src={`url(${image})`}
+              src={image}
               sx={{ width: 80, height: 80 }}
               style={{
                 display: "flex",
@@ -247,7 +247,7 @@ export const ProfileArea: FC<IProps> = (props) => {
                       sx={{ margin: 3 }}
                     >
                       <Avatar
-                        src={process.env.PUBLIC_URL + '/profile01.png'}
+                        src={ProfileRes.image_path}
                         sx={{ width: 80, height: 80 }}
                         style={{
                           display: "flex",
