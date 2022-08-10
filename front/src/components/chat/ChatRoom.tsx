@@ -19,11 +19,9 @@ import { styled } from "@mui/material/styles";
 import useScrollToBottomRef from "../../hooks/useScrollToBottomRef";
 import { grey } from "@mui/material/colors";
 import SendIcon from "@mui/icons-material/Send";
-import SockJS from "sockjs-client";
-import * as Stomp from "stompjs";
 import { useSelector } from "react-redux";
 import { formatDate } from "../../utils/day";
-import { WS_BASE_URL } from "../../apis/url";
+import { useWebSocket } from "../../hooks/useWebSocket";
 
 type ChatType = "all" | "gender";
 
@@ -47,14 +45,8 @@ export const ChatRoom: FC<IProps> = ({
   const [chatList, setChatList] = useState<ChatMessageRes[]>([]);
   const userId = useSelector((state: any) => state.user.userId);
 
-  useEffect(() => {
-    if (!userId) {
-      return;
-    }
-
-    const socket = new SockJS(WS_BASE_URL);
-    const client = Stomp.over(socket);
-    client.connect({}, () => {
+  useWebSocket({
+    onConnect(frame, client) {
       client.subscribe(`/topic/chatting/receive/${chattingRoomId}`, (res) => {
         setChatList(JSON.parse(res.body));
       });
@@ -65,17 +57,16 @@ export const ChatRoom: FC<IProps> = ({
         user_id: userId,
         message: "ENTER",
       });
-    });
-
-    return () => {
+    },
+    beforeDisconnected(frame, client) {
       chatApi.sendMessage({
         chattingroom_id: chattingRoomId,
         chat_type: "LEAVE",
         user_id: userId,
         message: "LEAVE",
       });
-    };
-  }, [chattingRoomId, userId]);
+    },
+  });
 
   const chatBodyRef = useScrollToBottomRef();
   const chatInputRef = useScrollToBottomRef();
@@ -212,6 +203,7 @@ const ChatRoomPresenter: FC<IPresenterProps> = ({
                 order={it.user_id === userId ? "right" : "left"}
                 showName={
                   idx === 0 ||
+                  chatList[idx - 1].chat_type !== it.chat_type ||
                   chatList[idx - 1].user_id !== it.user_id ||
                   formatDate(chatList[idx - 1].created_time, "A h:mm") !== formatedTime
                 }
