@@ -12,15 +12,15 @@ import { useSelector } from "react-redux";
 import { selectAvatarApi } from "../apis/avatarApis";
 import { AvatarProfile } from "../components/session/modal/AvatarProfile";
 import { useNavigate } from "react-router";
+import { useWebSocket } from "../hooks/useWebSocket";
 
 interface IProps {}
 
 export const PickAvatarPage: FC<IProps> = () => {
   const [selected, setSelected] = useState(false);
   const handleChangeSelect = () => {
-
-    if(avatarId===0) {
-      return
+    if (avatarId === 0) {
+      return;
     }
     setSelected((prev: any) => (prev ? prev : !prev));
 
@@ -37,40 +37,29 @@ export const PickAvatarPage: FC<IProps> = () => {
   const meetingRoomId = useSelector((state: any) => state.meeting.roomId);
   const userId = useSelector((state: any) => state.user.userId);
 
-  // useEffect(() => {
-  //   if (!meetingRoomId) {
-  //     return;
-  //   }
+  useWebSocket({
+    onConnect: (frame, client) => {
+      //아바타 목록
+      client.subscribe(`/topic/meeting/avatar/${meetingRoomId}`, function (response) {
+        console.log(response.body);
+        const res = JSON.parse(response.body);
+        setOriginData(res);
+        if (res.status === 1) {
+          navigate("/session");
+        }
+      });
 
-  //   const socket = new SockJS(WS_BASE_URL);
-  //   const client = Stomp.over(socket);
-  //   client.connect({}, function (frame) {
-  //     console.log("소켓 연결 성공", frame);
+      //타이머 구독
+      client.subscribe(`/topic/meeting/avatar/timer/${meetingRoomId}`, function (response) {
+        console.log("타이머" + response.body);
+        setTimer(JSON.parse(response.body));
+      });
 
-  //     //아바타 목록
-  //     client.subscribe(`/topic/meeting/avatar/${meetingRoomId}`, function (response) {
-  //       console.log(response.body);
-  //       const res = JSON.parse(response.body);
-  //       setOriginData(res);
-  //       if (res.status === 1) {
-  //         navigate("/session");
-  //       }
-  //     });
-
-  //     //타이머 구독
-  //     client.subscribe(`/topic/meeting/avatar/timer/${meetingRoomId}`, function (response) {
-  //       console.log("타이머" + response.body);
-  //       setTimer(JSON.parse(response.body));
-  //     });
-
-  //     client.send(`/app/meeting/avatar/${meetingRoomId}`, {}, "아바타 정보");
-  //     client.send(`/app/meeting/avatar/timer/${meetingRoomId}`, {}, "타이머");
-  //   });
-
-  //   return () => {
-  //     client.disconnect(() => {});
-  //   }
-  // }, [meetingRoomId, navigate]);
+      client.publish({ destination: `/app/meeting/avatar/${meetingRoomId}` });
+      client.publish({ destination: `/app/meeting/avatar/timer/${meetingRoomId}` });
+    },
+    beforeDisconnected: (frame, client) => {},
+  });
 
   //아바타 선택
   const [avatarId, setAvatarId] = useState(0);
@@ -121,14 +110,13 @@ export const PickAvatarPage: FC<IProps> = () => {
                   } else {
                     return (
                       <Grid item xs={12 / 8}>
-                        <Box style={selected? {} : {border : "2px solid red"}} >
-                        <AvatarProfile
-                          selected={avatarId === originData.avatar_list[i].id}
-                          onClick={() => {}}
-                          avatarName={originData.avatar_list[i].name}
-                          avatarImagePath={originData.avatar_list[i].image_path}
-                          
-                        />
+                        <Box style={selected ? {} : { border: "2px solid red" }}>
+                          <AvatarProfile
+                            selected={avatarId === originData.avatar_list[i].id}
+                            onClick={() => {}}
+                            avatarName={originData.avatar_list[i].name}
+                            avatarImagePath={originData.avatar_list[i].image_path}
+                          />
                         </Box>
                       </Grid>
                     );

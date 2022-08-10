@@ -5,7 +5,7 @@ import { ControllBar } from "../components/session/ControllBar";
 import { VideoStream } from "../components/session/VideoStream";
 import { useOpenvidu } from "../hooks/useOpenvidu";
 import grey from "@mui/material/colors/grey";
-import { WS_BASE_URL } from "../apis/url";
+import { useWebSocket } from "../hooks/useWebSocket";
 
 interface IProps {}
 
@@ -26,30 +26,18 @@ export const SubSessionPage: FC<IProps> = (props) => {
     [publisher, streamList]
   );
 
-  // useEffect(() => {
-  //   if (!subRoomId || !userId) {
-  //     return;
-  //   }
-
-  //   const socket = new SockJS(WS_BASE_URL);
-  //   const client = Stomp.over(socket);
-
-  //   client.connect({}, function (frame) {
-  //     console.log("소켓 연결 성공", frame);
-  //   });
-
-  //   return () => {
-  //     client.send(
-  //       "/app/meeting/leave",
-  //       {},
-  //       JSON.stringify({
-  //         meetingroom_id: subRoomId,
-  //         user_id: userId,
-  //       })
-  //     );
-  //     client.disconnect(() => {});
-  //   };
-  // }, [subRoomId, userId]);
+  useWebSocket({
+    onConnect(frame, client) {},
+    beforeDisconnected(frame, client) {
+      client.publish({
+        destination: "/app/meeting/leave",
+        body: JSON.stringify({
+          meetingroom_id: subRoomId,
+          user_id: userId,
+        }),
+      });
+    },
+  });
 
   return (
     <div className="mainback">

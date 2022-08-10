@@ -21,6 +21,7 @@ import { grey } from "@mui/material/colors";
 import SendIcon from "@mui/icons-material/Send";
 import { useSelector } from "react-redux";
 import { formatDate } from "../../utils/day";
+import { useWebSocket } from "../../hooks/useWebSocket";
 
 type ChatType = "all" | "gender";
 
@@ -44,35 +45,28 @@ export const ChatRoom: FC<IProps> = ({
   const [chatList, setChatList] = useState<ChatMessageRes[]>([]);
   const userId = useSelector((state: any) => state.user.userId);
 
-  // useEffect(() => {
-  //   if (!userId) {
-  //     return;
-  //   }
+  useWebSocket({
+    onConnect(frame, client) {
+      client.subscribe(`/topic/chatting/receive/${chattingRoomId}`, (res) => {
+        setChatList(JSON.parse(res.body));
+      });
 
-  //   const socket = new SockJS(WS_BASE_URL);
-  //   const client = Stomp.over(socket);
-  //   client.connect({}, () => {
-  //     client.subscribe(`/topic/chatting/receive/${chattingRoomId}`, (res) => {
-  //       setChatList(JSON.parse(res.body));
-  //     });
-
-  //     chatApi.sendMessage({
-  //       chattingroom_id: chattingRoomId,
-  //       chat_type: "ENTER",
-  //       user_id: userId,
-  //       message: "ENTER",
-  //     });
-  //   });
-
-  //   return () => {
-  //     chatApi.sendMessage({
-  //       chattingroom_id: chattingRoomId,
-  //       chat_type: "LEAVE",
-  //       user_id: userId,
-  //       message: "LEAVE",
-  //     });
-  //   };
-  // }, [chattingRoomId, userId]);
+      chatApi.sendMessage({
+        chattingroom_id: chattingRoomId,
+        chat_type: "ENTER",
+        user_id: userId,
+        message: "ENTER",
+      });
+    },
+    beforeDisconnected(frame, client) {
+      chatApi.sendMessage({
+        chattingroom_id: chattingRoomId,
+        chat_type: "LEAVE",
+        user_id: userId,
+        message: "LEAVE",
+      });
+    },
+  });
 
   const chatBodyRef = useScrollToBottomRef();
   const chatInputRef = useScrollToBottomRef();
@@ -209,6 +203,7 @@ const ChatRoomPresenter: FC<IPresenterProps> = ({
                 order={it.user_id === userId ? "right" : "left"}
                 showName={
                   idx === 0 ||
+                  chatList[idx - 1].chat_type !== it.chat_type ||
                   chatList[idx - 1].user_id !== it.user_id ||
                   formatDate(chatList[idx - 1].created_time, "A h:mm") !== formatedTime
                 }
