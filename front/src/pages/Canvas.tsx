@@ -29,6 +29,7 @@
 //               .exportImage("png")
 //               .then((data) => {
 //                 console.log(data);
+//                 console.log(this.canvas);
 //               })
 //               .catch((e) => {
 //                 console.log(e);
@@ -41,7 +42,6 @@
 //     );
 //   }
 // };
-
 
 import React, { FC } from 'react'
 
