@@ -73,7 +73,7 @@ export const WaitingPage: FC<IProps> = (props) => {
 
         if (res.status) {
           dispatch(setMeetingRoomId(res.meeting_room_id));
-          navigate("/pickAvatar");
+          navigate("/pickAvatar", { replace: true });
         }
       });
       client.publish({ destination: `/app/waiting/info/${waitingState.roomId}` });
@@ -114,7 +114,7 @@ export const WaitingPage: FC<IProps> = (props) => {
   const onClickExit = async () => {
     // eslint-disable-next-line no-restricted-globals
     if (confirm("정말 나가실건가요?")) {
-      navigate("/main");
+      navigate("/main", { replace: true });
     }
   };
 

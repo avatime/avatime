@@ -48,15 +48,17 @@ interface IProps {
   onClick: () => void;
   avatarName: string;
   avatarImagePath: string;
+  showX?: boolean;
 }
 
-export const AvatarProfile: FC<IProps> = ({ selected, onClick, avatarName, avatarImagePath }) => {
+export const AvatarProfile: FC<IProps> = ({ selected, onClick, avatarName, avatarImagePath, showX = false }) => {
   const theme = useTheme();
   return (
     <Box
       display="flex"
       flexDirection="column"
       alignItems="center"
+      justifyContent="center"
       width="100%"
       height="100%"
       borderRadius="10px"

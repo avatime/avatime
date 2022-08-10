@@ -2,10 +2,6 @@ import { BrowserRouter, Routes } from "react-router-dom";
 import { Route } from "react-router";
 import { TestPage } from "./pages/TestPage";
 import { MainPage } from "./pages/MainPage";
-import store from "./stores";
-import { Provider } from "react-redux";
-import { PersistGate } from "redux-persist/integration/react";
-import { persistStore } from "redux-persist";
 import { SessionPage } from "./pages/SessionPage";
 import { WaitingPage } from "./pages/WaitingPage";
 import "./style.css";
@@ -18,9 +14,10 @@ import { PickAvatarPage } from "./pages/PickAvatarPage";
 import { Canvas } from "./pages/Canvas";
 import { SubSessionPage } from "./pages/SubSessionPage";
 import green from "@mui/material/colors/green";
-import { createTheme ,ThemeProvider} from "@mui/material/styles";
+import { createTheme, ThemeProvider } from "@mui/material/styles";
 import { LandingPage } from "./pages/Landing/LandingPage";
-
+import ProtectedRoute from "./ProtectedRoute";
+import { useSelector } from "react-redux";
 
 export const theme = createTheme({
   palette: {
@@ -31,31 +28,52 @@ export const theme = createTheme({
 });
 
 function App() {
+  const isLogin = useSelector((state: any) => state.user.isLogin);
   return (
     <div>
-      <Provider store={store}>
-        <PersistGate persistor={persistStore(store)}>
-          <ThemeProvider theme={theme}>
-            <BrowserRouter>
-              <Routes>
-                <Route path="/" element={<LandingPage />} />
-                <Route path="/test" element={<TestPage />} />
-                <Route path="/main" element={<MainPage />} />
-                <Route path="/waiting" element={<WaitingPage />} />
-                <Route path="/session" element={<SessionPage />} />
-                <Route path="/login" element={<LoginPage />} />
-                <Route path="/mypage" element={<MyPage />} />
-                <Route path="/finalPickResult" element={<FinalPickResultPage />} />
-                <Route path="/pickAvatar" element={<PickAvatarPage />} />
-                <Route path="/kakao" element={<KakaoHandler />} />
-                <Route path="/naver" element={<NaverHandler />} />
-                <Route path="/canvas" element={<Canvas />} />
-                <Route path="/subSession" element={<SubSessionPage />} />
-              </Routes>
-            </BrowserRouter>
-          </ThemeProvider>
-        </PersistGate>
-      </Provider>
+      <ThemeProvider theme={theme}>
+        <BrowserRouter>
+          <Routes>
+            <Route path="/" element={<LandingPage />} />
+            <Route path="/test" element={<TestPage />} />
+            <Route
+              path="/main"
+              element={<ProtectedRoute outlet={<MainPage />} isLogin={isLogin} />}
+            />
+            <Route
+              path="/waiting"
+              element={<ProtectedRoute outlet={<WaitingPage />} isLogin={isLogin} />}
+            />
+            <Route
+              path="/session"
+              element={<ProtectedRoute outlet={<SessionPage />} isLogin={isLogin} />}
+            />
+            <Route path="/login" element={<LoginPage />} />
+            <Route
+              path="/mypage"
+              element={<ProtectedRoute outlet={<MyPage />} isLogin={isLogin} />}
+            />
+            <Route
+              path="/finalPickResult"
+              element={<ProtectedRoute outlet={<FinalPickResultPage />} isLogin={isLogin} />}
+            />
+            <Route
+              path="/pickAvatar"
+              element={<ProtectedRoute outlet={<PickAvatarPage />} isLogin={isLogin} />}
+            />
+            <Route path="/kakao" element={<KakaoHandler />} />
+            <Route path="/naver" element={<NaverHandler />} />
+            <Route
+              path="/canvas"
+              element={<ProtectedRoute outlet={<Canvas />} isLogin={isLogin} />}
+            />
+            <Route
+              path="/subSession"
+              element={<ProtectedRoute outlet={<SubSessionPage />} isLogin={isLogin} />}
+            />
+          </Routes>
+        </BrowserRouter>
+      </ThemeProvider>
     </div>
   );
 }
