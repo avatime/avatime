@@ -13,6 +13,7 @@ export const SubSessionPage: FC<IProps> = (props) => {
   const userId = useSelector((state: any) => state.user.userId);
   const userName = useSelector((state: any) => state.user.userName);
   const pickUserName = useSelector((state: any) => state.meeting.pickUserName);
+  const gender = useSelector((state: any) => state.user.userGender);
 
   const { publisher, streamList, onChangeCameraStatus, onChangeMicStatus } = useOpenvidu(
     userId,
@@ -39,11 +40,17 @@ export const SubSessionPage: FC<IProps> = (props) => {
         >
           <Grid container direction="row" alignItems="center" spacing={3}>
             <Grid item xs>
-              {publisher && <VideoStream streamManager={publisher} name={userName} />}
+              {publisher && (
+                <VideoStream streamManager={publisher} name={userName} gender={gender} />
+              )}
             </Grid>
             <Grid item xs>
               {pickUserStreamManager && (
-                <VideoStream streamManager={pickUserStreamManager} name={pickUserName} />
+                <VideoStream
+                  streamManager={pickUserStreamManager}
+                  name={pickUserName}
+                  gender={gender === "M" ? "F" : "M"}
+                />
               )}
             </Grid>
           </Grid>

@@ -9,12 +9,14 @@ interface IProps {
   streamManager: StreamManager;
   name: string;
   avatarPath: string;
+  gender: string;
 }
 
 export const AvatarVideoStream: FC<IProps> = ({
   streamManager,
   name,
   avatarPath,
+  gender,
 }) => {
   const canvasRef = useRef<HTMLCanvasElement>(null);
   const { videoRef, speaking, micStatus, videoStatus } = useStream(streamManager);
@@ -26,6 +28,7 @@ export const AvatarVideoStream: FC<IProps> = ({
       speaking={speaking}
       micStatus={micStatus}
       videoStatus={videoStatus}
+      gender={gender}
     >
       <video
         id="streamVideo"
@@ -49,6 +52,7 @@ export const AvatarVideoStream: FC<IProps> = ({
           bottom: 0,
           objectFit: "cover",
           borderRadius: "10px",
+          backgroundImage: `url(가상배경.png)`,
         }}
       />
     </VideoStreamBox>
