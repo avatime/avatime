@@ -74,9 +74,9 @@ export const FinalPickResultPage: FC<IProps> = (props) => {
   const onModalClose = () => {
     if (pickResult?.matched) {
       dispatch(setSubMeetingRoomId(pickResult.meetingroom_id));
-      navigate("/subSession");
+      navigate("/subSession", { replace: true });
     } else {
-      navigate("/main");
+      navigate("/main", { replace: true });
     }
   };
 

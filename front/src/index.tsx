@@ -6,19 +6,28 @@ import reportWebVitals from "./reportWebVitals";
 import dayjs from "dayjs";
 import customParseFormat from "dayjs/plugin/customParseFormat";
 import * as tf from "@tensorflow/tfjs";
+import store from "./stores";
+import { Provider } from "react-redux";
+import { PersistGate } from "redux-persist/integration/react";
+import { persistStore } from "redux-persist";
+
 const root = ReactDOM.createRoot(document.getElementById("root") as HTMLElement);
 
 const queryClient = new QueryClient();
 
 dayjs.extend(customParseFormat);
 
-tf.env().set('WEBGL_CPU_FORWARD', false);
+tf.env().set("WEBGL_CPU_FORWARD", false);
 
 root.render(
   // <React.StrictMode>
-    <QueryClientProvider client={queryClient}>
-      <App />
-    </QueryClientProvider>
+  <QueryClientProvider client={queryClient}>
+    <Provider store={store}>
+      <PersistGate persistor={persistStore(store)}>
+        <App />
+      </PersistGate>
+    </Provider>
+  </QueryClientProvider>
   // </React.StrictMode>
 );
 

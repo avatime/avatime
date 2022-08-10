@@ -60,7 +60,7 @@ export const FinalPickModal: FC<IProps> = ({ isOpened }) => {
         user_id: userId,
         pick_user_id: selectedUserId,
       })
-      .then(() => navigate("/finalPickResult"));
+      .then(() => navigate("/finalPickResult", { replace: true }));
   }, [timer, navigate, meetingRoomId, userId, selectedUserId, dispatch, targetUserList]);
 
   return (

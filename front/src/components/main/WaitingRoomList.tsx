@@ -200,7 +200,7 @@ export const WaitingRoomList: FC<IProps> = (props) => {
         console.log(response.body);
         const res = JSON.parse(response.body);
         if (res.success) {
-          navigate("/waiting");
+          navigate("/waiting", { replace: true });
           dispatch(setChatRoomId(res.chatting_room_id));
           //웨이팅방입장!!!!!
         } else {
@@ -289,7 +289,7 @@ export const WaitingRoomList: FC<IProps> = (props) => {
       dispatch(setChatRoomId(res.chatting_room_id));
 
       handleClose();
-      navigate("/waiting");
+      navigate("/waiting", { replace: true });
     }
   };
 

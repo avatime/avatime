@@ -45,7 +45,7 @@ export const PickAvatarPage: FC<IProps> = () => {
         const res = JSON.parse(response.body);
         setOriginData(res);
         if (res.status === 1) {
-          navigate("/session");
+          navigate("/session", { replace: true });
         }
       });
 
@@ -110,7 +110,7 @@ export const PickAvatarPage: FC<IProps> = () => {
                   } else {
                     return (
                       <Grid item xs={12 / 8}>
-                        <Box style={selected ? {} : { border: "2px solid red" }}>
+                        <Box style={{ border: "2px solid red" }}>
                           <AvatarProfile
                             selected={avatarId === originData.avatar_list[i].id}
                             onClick={() => {}}
