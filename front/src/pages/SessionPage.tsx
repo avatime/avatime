@@ -41,7 +41,7 @@ export const SessionPage: FC<IProps> = (props) => {
   const [lastPickModalOpen, setLastPickModalOpen] = useState(false);
 
   useEffect(() => {
-    if (!roomId) {
+    if (!roomId || !userId) {
       return;
     }
 
@@ -60,9 +60,17 @@ export const SessionPage: FC<IProps> = (props) => {
     });
 
     return () => {
+      client.send(
+        "/app/meeting/leave",
+        {},
+        JSON.stringify({
+          meetingroom_id: roomId,
+          user_id: userId,
+        })
+      );
       client.disconnect(() => {});
     };
-  }, [roomId]);
+  }, [roomId, userId]);
 
   const { publisher, streamList, onChangeCameraStatus, onChangeMicStatus } = useOpenvidu(
     userId,
