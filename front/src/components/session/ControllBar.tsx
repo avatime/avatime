@@ -45,7 +45,7 @@ export const ControllBar: FC<IProps> = ({ type, lastPickModalOpen, ...callback }
   const onClickExit = () => {
     // eslint-disable-next-line no-restricted-globals
     if (confirm("정말 나가시겠습니까?")) {
-      navigate("/");
+      navigate("/main");
     }
   };
 
