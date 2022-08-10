@@ -40,6 +40,7 @@ import { Add } from "@mui/icons-material";
 import { useQuery } from "react-query";
 import "../../style.css";
 import { useWebSocket } from "../../hooks/useWebSocket";
+import { Loading } from "./Loading";
 
 interface IProps {}
 
@@ -187,7 +188,7 @@ export const WaitingRoomList: FC<IProps> = (props) => {
 
   const dispatch = useDispatch();
 
-  useWebSocket({
+  const connected = useWebSocket({
     onConnect: (frame, client) => {
       client.subscribe("/topic/getList", function (response) {
         console.log(response.body);
@@ -369,6 +370,7 @@ export const WaitingRoomList: FC<IProps> = (props) => {
           </Table>
         </TableContainer>
       </Paper>
+        <Loading loading={!connected} />
       <Box p={1} />
       <Box sx={{ flex: 1, marginLeft: "5%", marginRight: "5%" }}>
         <Button
