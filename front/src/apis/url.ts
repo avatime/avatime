@@ -11,7 +11,8 @@ export const REDIRECT_URI_KAKAO: string =
   (DEV ? `${URL_LOCAL}${PORT_SERVER}` : URL_RELEASE) + "/kakao"; // 8080
 export const REDIRECT_URI_NAVER: string =
   (DEV ? `${URL_LOCAL}${PORT_WEB}` : URL_RELEASE) + "/naver"; // 3000
-export const WS_BASE_URL = `ws://${DEV ? `localhost${PORT_SERVER}` : "i7a309.p.ssafy.io"}/ws/ava`;
+export const WS_BASE_URL =
+  (DEV ? `ws://localhost${PORT_SERVER}` : "wss://i7a309.p.ssafy.io") + "/ws/ava";
 export const API_BASE_URL = (DEV ? `${URL_LOCAL}${PORT_SERVER}` : URL_RELEASE) + "/api/v1";
 
 export const OPENVIDU_SERVER_URL =
