@@ -24,6 +24,7 @@ import {
   setSocialType,
   setProfileImagePath,
   setIsLogin,
+  setToken,
 } from "../../stores/slices/userSlice";
 import { useNavigate } from "react-router";
 
@@ -32,8 +33,8 @@ const style = {
   top: "50%",
   left: "50%",
   transform: "translate(-50%, -50%)",
-  width: 600,
-  height: 600,
+  width: 800,
+  height: 400,
   bgcolor: "background.paper",
   border: "2px solid #000",
   boxShadow: 24,
@@ -189,7 +190,7 @@ export const ProfileArea: FC<IProps> = (props) => {
               dispatch(setSocialId(res.social_id));
               dispatch(setSocialType(res.social_type));
               dispatch(setIsLogin(true));
-              localStorage.setItem("token", res.accessToken);
+              dispatch(setToken(res.accessToken));
               navigate("/main");
             })
             .catch(function (err) {
