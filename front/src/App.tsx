@@ -11,6 +11,7 @@ import { NaverHandler } from "./components/login/NaverHandler";
 import { LoginPage } from "./pages/LoginPage";
 import { MyPage } from "./pages/MyPage";
 import { PickAvatarPage } from "./pages/PickAvatarPage";
+import { CanvasPage } from "./pages/CanvasPage";
 import { SubSessionPage } from "./pages/SubSessionPage";
 import green from "@mui/material/colors/green";
 import { createTheme, ThemeProvider } from "@mui/material/styles";
@@ -63,6 +64,10 @@ function App() {
             />
             <Route path="/kakao" element={<KakaoHandler />} />
             <Route path="/naver" element={<NaverHandler />} />
+            <Route
+              path="/canvas"
+              element={<ProtectedRoute outlet={<CanvasPage />} isAuthentication={isLogin} />}
+            />
             <Route
               path="/subSession"
               element={<ProtectedRoute outlet={<SubSessionPage />} isAuthentication={isLogin} />}
