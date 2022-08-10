@@ -1,6 +1,6 @@
 import React, { FC, useEffect, useState } from "react";
 import { ChatRoom } from "../components/chat/ChatRoom";
-import { Badge, BadgeProps, Box, Grid, IconButton, styled, Typography } from "@mui/material";
+import { Badge, BadgeProps, Box, Grid, IconButton, styled, Typography, Stack } from '@mui/material';
 import { grey } from "@mui/material/colors";
 import { MainHeader } from "../components/main/MainHeader";
 import "../components/chat/style.css";
@@ -116,17 +116,17 @@ export const WaitingPage: FC<IProps> = (props) => {
 
   return (
     <div className="mainback" style={{ display: "flex", flexDirection: "column" }}>
-      <Grid container spacing={3} p={2} sx={{ flex: "1" }}>
+      <Grid container spacing={3} p={2} sx={{ flex: "1" }} justifyContent="space-evenly">
         <Grid item xs={9} sx={{ float: "left", display: "flex", flexDirection: "column" }}>
           <Box pl={1}>
-            <Typography>
+            <Typography variant="h4">
               {waitingState.roomName} / {waitingState.sido} / {waitingState.age}
             </Typography>
           </Box>
           <Box flex={1} borderRadius="10px" bgcolor={grey[200]} p={2}>
             <Grid container spacing={2} height="100%">
               {waitingUserList.map((it) => (
-                <Grid item xs={12 / (waitingState.headCount / 2)} key={it.id} height="50%">
+                <Grid item xs={3} key={it.id} height="50%">
                   <WaitingUserProfile
                     waitingUser={it}
                     onClickAvatar={onOpenInfo}
@@ -138,6 +138,13 @@ export const WaitingPage: FC<IProps> = (props) => {
           </Box>
         </Grid>
         <Grid item xs={3} sx={{ float: "left", display: "flex", flexDirection: "column" }}>
+          <Stack width="100%" direction="row-reverse">
+            <IconButton onClick={onClickReception}>
+              <StyledBadge color="primary" badgeContent={candidateList.length} overlap="circular">
+                <PeopleAltIcon />
+              </StyledBadge>
+            </IconButton>
+          </Stack>
           <Box flex={1}>
             <ChatRoom
               chatType="all"
@@ -150,31 +157,18 @@ export const WaitingPage: FC<IProps> = (props) => {
           <Box p={1} />
           <Grid container spacing={2} alignItems="end">
             {isMaster && (
-              <>
-                <Grid item xs={1} mr={1}>
-                  <IconButton onClick={onClickReception}>
-                    <StyledBadge
-                      color="primary"
-                      badgeContent={candidateList.length}
-                      overlap="circular"
-                    >
-                      <PeopleAltIcon />
-                    </StyledBadge>
-                  </IconButton>
-                </Grid>
-                <Grid item xs>
-                  <Button
-                    variant="contained"
-                    startIcon={<PlayCircleOutlineIcon />}
-                    sx={{ width: "100%" }}
-                    onClick={onClickStart}
-                    color="secondary"
-                    // disabled={waitingUserList.length !== waitingState.headCount}
-                  >
-                    시작
-                  </Button>
-                </Grid>
-              </>
+              <Grid item xs>
+                <Button
+                  variant="contained"
+                  startIcon={<PlayCircleOutlineIcon />}
+                  sx={{ width: "100%" }}
+                  onClick={onClickStart}
+                  color="secondary"
+                  // disabled={waitingUserList.length !== waitingState.headCount}
+                >
+                  시작
+                </Button>
+              </Grid>
             )}
             <Grid item xs>
               <Button

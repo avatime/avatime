@@ -1,6 +1,6 @@
 import { Box } from "@mui/system";
 import React, { FC } from "react";
-import { Typography } from "@mui/material";
+import { Typography, useTheme } from "@mui/material";
 import VideocamOffIcon from "@mui/icons-material/VideocamOff";
 import MicOffIcon from "@mui/icons-material/MicOff";
 
@@ -9,10 +9,19 @@ interface IProps {
   speaking: boolean;
   micStatus: boolean;
   videoStatus: boolean;
+  gender: string;
   children: React.ReactNode;
 }
 
-export const VideoStreamBox: FC<IProps> = ({ name, speaking, micStatus, videoStatus, children }) => {
+export const VideoStreamBox: FC<IProps> = ({
+  name,
+  speaking,
+  micStatus,
+  videoStatus,
+  gender,
+  children,
+}) => {
+  const theme = useTheme();
   return (
     <Box
       sx={{
@@ -25,8 +34,15 @@ export const VideoStreamBox: FC<IProps> = ({ name, speaking, micStatus, videoSta
       }}
     >
       {children}
-      
-      <Box position="absolute" bottom={0}>
+
+      <Box
+        position="absolute"
+        bottom={0}
+        p={1}
+        m={1}
+        bgcolor={gender === "M" ? theme.palette.primary.light : theme.palette.error.light}
+        borderRadius="10px"
+      >
         <Typography variant="subtitle1" color="white">
           {name}
         </Typography>
