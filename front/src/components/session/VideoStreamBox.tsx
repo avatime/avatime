@@ -10,6 +10,7 @@ interface IProps {
   micStatus: boolean;
   videoStatus: boolean;
   gender: string;
+  me: boolean;
   children: React.ReactNode;
 }
 
@@ -19,6 +20,7 @@ export const VideoStreamBox: FC<IProps> = ({
   micStatus,
   videoStatus,
   gender,
+  me,
   children,
 }) => {
   const theme = useTheme();
@@ -45,6 +47,7 @@ export const VideoStreamBox: FC<IProps> = ({
       >
         <Typography variant="subtitle1" color="white">
           {name}
+          {me && " (나)"}
         </Typography>
       </Box>
 

@@ -10,6 +10,7 @@ interface IProps {
   name: string;
   avatarPath: string;
   gender: string;
+  me: boolean;
 }
 
 export const AvatarVideoStream: FC<IProps> = ({
@@ -17,6 +18,7 @@ export const AvatarVideoStream: FC<IProps> = ({
   name,
   avatarPath,
   gender,
+  me,
 }) => {
   const canvasRef = useRef<HTMLCanvasElement>(null);
   const { videoRef, speaking, micStatus, videoStatus } = useStream(streamManager);
@@ -29,6 +31,7 @@ export const AvatarVideoStream: FC<IProps> = ({
       micStatus={micStatus}
       videoStatus={videoStatus}
       gender={gender}
+      me={me}
     >
       <video
         id="streamVideo"
