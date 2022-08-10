@@ -19,9 +19,10 @@ interface IProps {
   open: boolean;
   onClickClose: () => void;
   candidateList: WaitingUser[];
+  isMaster: boolean;
 }
 
-export const ReceptionModal: FC<IProps> = ({ open, onClickClose, candidateList }) => {
+export const ReceptionModal: FC<IProps> = ({ open, onClickClose, candidateList, isMaster }) => {
   const roomId = useSelector((state: any) => state.waiting.roomId);
   const onClickAccept = async (userId: number) => {
     await requestEnterRoomApi.requestEnterRoom({
@@ -66,7 +67,9 @@ export const ReceptionModal: FC<IProps> = ({ open, onClickClose, candidateList }
             <Typography variant="h5">접수처</Typography>
             <Box p={1} />
             {candidateList.length === 0 ? (
-              <Typography variant="h6" textAlign="center">참가 신청한 사람이 없어요</Typography>
+              <Typography variant="h6" textAlign="center">
+                참가 신청한 사람이 없어요
+              </Typography>
             ) : (
               <List>
                 {candidateList.map((it) => (
@@ -76,6 +79,7 @@ export const ReceptionModal: FC<IProps> = ({ open, onClickClose, candidateList }
                         waitingUser={it}
                         onClickAccept={onClickAccept}
                         onClickRefuse={onClickRefuse}
+                        isMaster={isMaster}
                       />
                     </ListItem>
                     <Box m={1}>
