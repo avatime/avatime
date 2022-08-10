@@ -39,6 +39,10 @@
 
 }
 
+h1 {
+  font-family: 'ONE-Mobile-Title' !important;
+}
+
 .click:hover {
 
   background: #FEE299!important;
