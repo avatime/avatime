@@ -126,11 +126,12 @@ public class WaitingRoomController {
 		for (WaitingRoomUserRelation wrur : info) {
 			if (wrur.getType() == 0 || wrur.getType() == 1 ) {
 				HashMap<String, Object> user = new HashMap<>();
-				user.put("id", wrur.getUser().getId());
+				User pariticipant = wrur.getUser();
+				user.put("id", pariticipant.getId());
 				user.put("type", wrur.getType());
-				user.put("name", wrur.getUser().getName());
-				user.put("gender", wrur.getUser().getGender());
-				user.put("profile_img_path", wrur.getUser().getProfileImagePath());
+				user.put("name", pariticipant.getName());
+				user.put("gender", pariticipant.getGender());
+				user.put("profile_img_path", pariticipant.getProfileImagePath());
 				userList.add(user);
 			}
 		}
