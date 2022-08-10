@@ -69,7 +69,7 @@ export const MainHeader: FC<IProps> = ({ hideSettings = false }) => {
               >
                 <Avatar
                   alt="프로필 사진"
-                  src={`url(${profileImagePath})`}
+                  src={profileImagePath}
                   sx={{ width: 56, height: 56 }}
                   aria-controls={open ? "composition-menu" : undefined}
                   aria-expanded={open ? "true" : undefined}
