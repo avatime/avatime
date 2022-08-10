@@ -128,7 +128,7 @@ export const ControllBarPresenter: FC<IPresenterProps> = ({
             variant="contained"
             startIcon={<ExitToAppIcon />}
             onClick={onClickExit}
-            color="secondary"
+            color="error"
           >
             나가기
           </Button>
