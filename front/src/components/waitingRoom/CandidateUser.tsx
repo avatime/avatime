@@ -8,9 +8,15 @@ interface IProps {
   waitingUser: WaitingUser;
   onClickAccept: (userId: number) => void;
   onClickRefuse: (userId: number) => void;
+  isMaster: boolean;
 }
 
-export const CandidateUser: FC<IProps> = ({ waitingUser, onClickAccept, onClickRefuse }) => {
+export const CandidateUser: FC<IProps> = ({
+  waitingUser,
+  onClickAccept,
+  onClickRefuse,
+  isMaster,
+}) => {
   const theme = useTheme();
   return (
     <Box display="flex" flexDirection="row" alignItems="center" width="100%">
@@ -20,17 +26,22 @@ export const CandidateUser: FC<IProps> = ({ waitingUser, onClickAccept, onClickR
             waitingUser.gender === "M" ? theme.palette.primary.light : theme.palette.error.light
           }`,
         }}
+        src={waitingUser.profile_img_path}
       />
       <Box p={1} />
       <Typography variant="subtitle2" flex={1}>
         {waitingUser.name}
       </Typography>
-      <IconButton color="success" onClick={() => onClickAccept(waitingUser.id)}>
-        <CheckCircleIcon />
-      </IconButton>
-      <IconButton color="error" onClick={() => onClickRefuse(waitingUser.id)}>
-        <CancelIcon />
-      </IconButton>
+      {isMaster && (
+        <>
+          <IconButton color="success" onClick={() => onClickAccept(waitingUser.id)}>
+            <CheckCircleIcon />
+          </IconButton>
+          <IconButton color="error" onClick={() => onClickRefuse(waitingUser.id)}>
+            <CancelIcon />
+          </IconButton>
+        </>
+      )}
     </Box>
   );
 };
