@@ -14,6 +14,7 @@ import {
   setUserDesc,
   setProfileImagePath,
   setIsLogin,
+  setToken,
 } from "../../stores/slices/userSlice";
 
 interface IProps {
@@ -45,16 +46,17 @@ export const MainHeader: FC<IProps> = ({ hideSettings = false }) => {
     dispatch(reset);
     dispatch(setUserName(""));
     dispatch(setUserDesc(""));
-    dispatch(setProfileImagePath("https://jira.ssafy.com/secure/useravatar?avatarId=10334"));
+    dispatch(setProfileImagePath("https://img1.daumcdn.net/thumb/R1280x0/?scode=mtistory2&fname=https%3A%2F%2Fblog.kakaocdn.net%2Fdn%2FbjG0o2%2FbtrJlz5Xgi5%2F22KkMl1kDkBWLw7lI2t5MK%2Fimg.png"));
     dispatch(setIsLogin("false"));
+    dispatch(setToken(""));
     alert("로그아웃 완료");
     navigate("/");
   };
 
   return (
     <>
-      <Box display="flex" justifyContent="center" alignItems="center" marginBottom="2%">
-        <Link to="/main" style={{ display: "flex", justifyContent: "center" }}>
+      <Box display="flex" justifyContent="right" alignItems="center" marginBottom="2%">
+        <Link to="/main">
           <img src={logo} alt="로고" style={{ width: "70%", paddingTop: "2%" }} />
         </Link>
 
@@ -63,11 +65,11 @@ export const MainHeader: FC<IProps> = ({ hideSettings = false }) => {
             <Tooltip title="설정">
               <IconButton
                 onClick={handleOpenUserMenu}
-                style={{ position: "absolute", right: "3%" }}
+                style={{ marginLeft: "27%", marginRight: "3%" }}
               >
                 <Avatar
                   alt="프로필 사진"
-                  src={profileImagePath}
+                  src={`url(${profileImagePath})`}
                   sx={{ width: 56, height: 56 }}
                   aria-controls={open ? "composition-menu" : undefined}
                   aria-expanded={open ? "true" : undefined}

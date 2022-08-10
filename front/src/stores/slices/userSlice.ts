@@ -7,8 +7,9 @@ const initialState = {
   userDesc: "",
   socialId: undefined,
   socialType: undefined,
-  profileImagePath: undefined,
+  profileImagePath: "https://img1.daumcdn.net/thumb/R1280x0/?scode=mtistory2&fname=https%3A%2F%2Fblog.kakaocdn.net%2Fdn%2FbjG0o2%2FbtrJlz5Xgi5%2F22KkMl1kDkBWLw7lI2t5MK%2Fimg.png",
   isLogin: false,
+  token: "",
 };
 
 const userSlice = createSlice({
@@ -43,6 +44,9 @@ const userSlice = createSlice({
     setIsLogin(state, action) {
       state.isLogin = action.payload;
     },
+    setToken(state, action) {
+      state.token = action.payload;
+    },
   },
 });
 
@@ -56,6 +60,7 @@ export const {
   setSocialType,
   setProfileImagePath,
   setIsLogin,
+  setToken,
 } = userSlice.actions;
 
 export default userSlice.reducer;

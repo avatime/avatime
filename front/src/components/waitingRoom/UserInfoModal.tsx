@@ -7,7 +7,7 @@ import {
   IconButton,
 } from "@mui/material";
 import React, { FC, useEffect, useState } from "react";
-import { UserInfoRes } from "../../apis/response/userInfoRes";
+import { UserInfoRes } from "../../apis/response/memberRes";
 import { userInfoApi } from "../../apis/userApi";
 import CancelIcon from "@mui/icons-material/Cancel";
 

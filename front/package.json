@@ -23,6 +23,7 @@
     "@types/stompjs": "^2.3.5",
     "@types/three": "^0.142.0",
     "axios": "^0.27.2",
+    "canvas-to-image": "^2.2.0",
     "dayjs": "^1.11.3",
     "http-proxy-middleware": "^2.0.6",
     "net": "^1.0.2",
