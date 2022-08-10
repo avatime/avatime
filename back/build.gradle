@@ -145,11 +145,13 @@ dependencies {
     implementation("com.querydsl:querydsl-jpa:${querydslVer}")
     implementation("com.querydsl:querydsl-apt:${querydslVer}")
 
+    //STOMP 웹소캣 서버 사이드 테스트를 위한 의존성 추가
+    implementation("org.springframework.boot:spring-boot-starter-mustache")
     //STOMP 관련 프론트 라이브러리
-    implementation('org.webjars.bower:jquery:3.5.1')    // 기존 3.3.1
-    implementation('org.webjars:sockjs-client:1.5.1')    // 기존 1.1.2
-    implementation('org.webjars:stomp-websocket:2.3.4')    // 기존 2.3.3-1
-    implementation('org.webjars:webjars-locator:0.45')    // 기존 0.30
+    implementation('org.webjars.bower:jquery:3.3.1')
+    implementation('org.webjars:sockjs-client:1.1.2')
+    implementation('org.webjars:stomp-websocket:2.3.3-1')
+    implementation('org.webjars:webjars-locator:0.30')
     //WebRTC 클라이언트 의존성 추가
     implementation('org.webjars.bower:webrtc-adapter:7.4.0')
     //Kurento (미디어서버) 관련 의존성 추가
@@ -173,8 +175,6 @@ implementation'com.google.code.gson:gson:2.8.7'
   
   // s3 관련
   implementation 'org.springframework.cloud:spring-cloud-starter-aws:2.2.6.RELEASE'
-  implementation platform('com.amazonaws:aws-java-sdk-bom:1.11.1000')
-  implementation 'com.amazonaws:aws-java-sdk-s3'
 
     //IntelliJ용
     //IntelliJ에서는 하기 annotationProcessor를 쓰면 별도의 querydsl 플러그인 및 플러그인 설정이 불필요.
