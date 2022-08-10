@@ -8,8 +8,6 @@ import TableHead from "@mui/material/TableHead";
 import TableRow from "@mui/material/TableRow";
 import SearchIcon from "@mui/icons-material/Search";
 import { AgeRes, SidoRes, WaitingRoomInfoRes } from "../../apis/response/waitingRoomRes";
-import * as Stomp from "stompjs";
-import SockJS from "sockjs-client";
 import { useDispatch, useSelector } from "react-redux";
 import CloseIcon from "@mui/icons-material/Close";
 import ava2 from "../../assets/result_waiting_ava2.gif";
@@ -40,8 +38,8 @@ import {
 import { useNavigate } from "react-router";
 import { Add } from "@mui/icons-material";
 import { useQuery } from "react-query";
-import { WS_BASE_URL } from "../../apis/url";
 import "../../style.css";
+import { useWebSocket } from "../../hooks/useWebSocket";
 
 interface IProps {}
 
@@ -188,22 +186,14 @@ export const WaitingRoomList: FC<IProps> = (props) => {
   };
 
   const dispatch = useDispatch();
-  useEffect(() => {
-    if (!userId) {
-      return;
-    }
 
-    console.log("asdasd");
-    const socket = new SockJS(WS_BASE_URL);
-    const client = Stomp.over(socket);
-    client.connect({}, function (frame) {
-      console.log("소켓 연결 성공", frame);
-
+  useWebSocket({
+    onConnect: (frame, client) => {
       client.subscribe("/topic/getList", function (response) {
         console.log(response.body);
         setOriginData(JSON.parse(response.body));
       });
-      client.send("/app/getList", {}, "aaa");
+      client.publish({ destination: "/app/getList" });
 
       //대기방 입장신청 결과 소켓 통신
       client.subscribe(`/topic/enter/result/${userId}`, function (response) {
@@ -217,12 +207,9 @@ export const WaitingRoomList: FC<IProps> = (props) => {
           setopenWaiting(false);
         }
       });
-    });
-
-    return () => {
-      client.disconnect(() => {});
-    };
-  }, [dispatch, navigate, userId]);
+    },
+    beforeDisconnected: (frame, client) => {},
+  });
 
   useEffect(() => {
     setData(

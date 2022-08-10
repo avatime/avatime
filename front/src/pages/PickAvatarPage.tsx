@@ -7,14 +7,11 @@ import grey from "@mui/material/colors/grey";
 import { GaugeBar } from "../components/pickAvatar/GaugeBar";
 import { AvatarPickInfoRes } from "../apis/response/avatarRes";
 
-import SockJS from "sockjs-client";
-import * as Stomp from "stompjs";
 import { Avatar } from "@mui/material";
 import { useSelector } from "react-redux";
 import { selectAvatarApi } from "../apis/avatarApis";
 import { AvatarProfile } from "../components/session/modal/AvatarProfile";
 import { useNavigate } from "react-router";
-import { WS_BASE_URL } from "../apis/url";
 
 interface IProps {}
 
@@ -40,40 +37,40 @@ export const PickAvatarPage: FC<IProps> = () => {
   const meetingRoomId = useSelector((state: any) => state.meeting.roomId);
   const userId = useSelector((state: any) => state.user.userId);
 
-  useEffect(() => {
-    if (!meetingRoomId) {
-      return;
-    }
+  // useEffect(() => {
+  //   if (!meetingRoomId) {
+  //     return;
+  //   }
 
-    const socket = new SockJS(WS_BASE_URL);
-    const client = Stomp.over(socket);
-    client.connect({}, function (frame) {
-      console.log("소켓 연결 성공", frame);
+  //   const socket = new SockJS(WS_BASE_URL);
+  //   const client = Stomp.over(socket);
+  //   client.connect({}, function (frame) {
+  //     console.log("소켓 연결 성공", frame);
 
-      //아바타 목록
-      client.subscribe(`/topic/meeting/avatar/${meetingRoomId}`, function (response) {
-        console.log(response.body);
-        const res = JSON.parse(response.body);
-        setOriginData(res);
-        if (res.status === 1) {
-          navigate("/session");
-        }
-      });
+  //     //아바타 목록
+  //     client.subscribe(`/topic/meeting/avatar/${meetingRoomId}`, function (response) {
+  //       console.log(response.body);
+  //       const res = JSON.parse(response.body);
+  //       setOriginData(res);
+  //       if (res.status === 1) {
+  //         navigate("/session");
+  //       }
+  //     });
 
-      //타이머 구독
-      client.subscribe(`/topic/meeting/avatar/timer/${meetingRoomId}`, function (response) {
-        console.log("타이머" + response.body);
-        setTimer(JSON.parse(response.body));
-      });
+  //     //타이머 구독
+  //     client.subscribe(`/topic/meeting/avatar/timer/${meetingRoomId}`, function (response) {
+  //       console.log("타이머" + response.body);
+  //       setTimer(JSON.parse(response.body));
+  //     });
 
-      client.send(`/app/meeting/avatar/${meetingRoomId}`, {}, "아바타 정보");
-      client.send(`/app/meeting/avatar/timer/${meetingRoomId}`, {}, "타이머");
-    });
+  //     client.send(`/app/meeting/avatar/${meetingRoomId}`, {}, "아바타 정보");
+  //     client.send(`/app/meeting/avatar/timer/${meetingRoomId}`, {}, "타이머");
+  //   });
 
-    return () => {
-      client.disconnect(() => {});
-    }
-  }, [meetingRoomId, navigate]);
+  //   return () => {
+  //     client.disconnect(() => {});
+  //   }
+  // }, [meetingRoomId, navigate]);
 
   //아바타 선택
   const [avatarId, setAvatarId] = useState(0);

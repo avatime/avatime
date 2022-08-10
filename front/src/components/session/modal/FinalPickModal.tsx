@@ -3,12 +3,9 @@ import React, { FC, useState } from "react";
 import { useEffect } from "react";
 import { useSelector, useDispatch } from "react-redux";
 import { useNavigate } from "react-router";
-import SockJS from "sockjs-client";
 import sessionApi from "../../../apis/sessionApi";
-import { WS_BASE_URL } from "../../../apis/url";
 import { AvatarProfile } from "./AvatarProfile";
 import { SessionModal } from "./SessionModal";
-import * as Stomp from "stompjs";
 import { setPickUserName } from "../../../stores/slices/meetingSlice";
 import { MeetingUserInfoRes } from "../../../apis/response/sessionRes";
 
@@ -36,24 +33,24 @@ export const FinalPickModal: FC<IProps> = ({ isOpened }) => {
 
   const [timer, setTimer] = useState(15);
 
-  useEffect(() => {
-    if (!meetingRoomId) {
-      return;
-    }
+  // useEffect(() => {
+  //   if (!meetingRoomId) {
+  //     return;
+  //   }
 
-    const socket = new SockJS(WS_BASE_URL);
-    const client = Stomp.over(socket);
-    client.connect({}, function (frame) {
-      client.subscribe(`/topic/meeting/pick/timer/${meetingRoomId}`, function (response) {
-        setTimer(JSON.parse(response.body));
-      });
-      client.send(`/app/meeting/pick/timer/${meetingRoomId}`, {}, "타이머");
-    });
+  //   const socket = new SockJS(WS_BASE_URL);
+  //   const client = Stomp.over(socket);
+  //   client.connect({}, function (frame) {
+  //     client.subscribe(`/topic/meeting/pick/timer/${meetingRoomId}`, function (response) {
+  //       setTimer(JSON.parse(response.body));
+  //     });
+  //     client.send(`/app/meeting/pick/timer/${meetingRoomId}`, {}, "타이머");
+  //   });
 
-    return () => {
-      client.disconnect(() => {});
-    };
-  }, [meetingRoomId]);
+  //   return () => {
+  //     client.disconnect(() => {});
+  //   };
+  // }, [meetingRoomId]);
 
   const dispatch = useDispatch();
   const navigate = useNavigate();

@@ -19,11 +19,8 @@ import { styled } from "@mui/material/styles";
 import useScrollToBottomRef from "../../hooks/useScrollToBottomRef";
 import { grey } from "@mui/material/colors";
 import SendIcon from "@mui/icons-material/Send";
-import SockJS from "sockjs-client";
-import * as Stomp from "stompjs";
 import { useSelector } from "react-redux";
 import { formatDate } from "../../utils/day";
-import { WS_BASE_URL } from "../../apis/url";
 
 type ChatType = "all" | "gender";
 
@@ -47,35 +44,35 @@ export const ChatRoom: FC<IProps> = ({
   const [chatList, setChatList] = useState<ChatMessageRes[]>([]);
   const userId = useSelector((state: any) => state.user.userId);
 
-  useEffect(() => {
-    if (!userId) {
-      return;
-    }
+  // useEffect(() => {
+  //   if (!userId) {
+  //     return;
+  //   }
 
-    const socket = new SockJS(WS_BASE_URL);
-    const client = Stomp.over(socket);
-    client.connect({}, () => {
-      client.subscribe(`/topic/chatting/receive/${chattingRoomId}`, (res) => {
-        setChatList(JSON.parse(res.body));
-      });
+  //   const socket = new SockJS(WS_BASE_URL);
+  //   const client = Stomp.over(socket);
+  //   client.connect({}, () => {
+  //     client.subscribe(`/topic/chatting/receive/${chattingRoomId}`, (res) => {
+  //       setChatList(JSON.parse(res.body));
+  //     });
 
-      chatApi.sendMessage({
-        chattingroom_id: chattingRoomId,
-        chat_type: "ENTER",
-        user_id: userId,
-        message: "ENTER",
-      });
-    });
+  //     chatApi.sendMessage({
+  //       chattingroom_id: chattingRoomId,
+  //       chat_type: "ENTER",
+  //       user_id: userId,
+  //       message: "ENTER",
+  //     });
+  //   });
 
-    return () => {
-      chatApi.sendMessage({
-        chattingroom_id: chattingRoomId,
-        chat_type: "LEAVE",
-        user_id: userId,
-        message: "LEAVE",
-      });
-    };
-  }, [chattingRoomId, userId]);
+  //   return () => {
+  //     chatApi.sendMessage({
+  //       chattingroom_id: chattingRoomId,
+  //       chat_type: "LEAVE",
+  //       user_id: userId,
+  //       message: "LEAVE",
+  //     });
+  //   };
+  // }, [chattingRoomId, userId]);
 
   const chatBodyRef = useScrollToBottomRef();
   const chatInputRef = useScrollToBottomRef();
