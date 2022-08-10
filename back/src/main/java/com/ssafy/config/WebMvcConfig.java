@@ -1,8 +1,8 @@
 package com.ssafy.config;
 
+
 import javax.servlet.Filter;
 
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.web.servlet.FilterRegistrationBean;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -10,11 +10,9 @@ import org.springframework.web.cors.CorsConfiguration;
 import org.springframework.web.cors.CorsConfigurationSource;
 import org.springframework.web.cors.UrlBasedCorsConfigurationSource;
 import org.springframework.web.filter.CommonsRequestLoggingFilter;
-import org.springframework.web.servlet.config.annotation.InterceptorRegistry;
 import org.springframework.web.servlet.config.annotation.ResourceHandlerRegistry;
 import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
 
-import com.ssafy.api.handler.LoginInterceptor;
 import com.ssafy.common.util.JwtTokenUtil;
 
 @Configuration
@@ -77,15 +75,5 @@ public class WebMvcConfig implements WebMvcConfigurer {
         FilterRegistrationBean registration = new FilterRegistrationBean(requestLoggingFilter());
         registration.addUrlPatterns("/api/*");
         return registration;
-    }
-    
-    @Autowired
-    LoginInterceptor loginInterceptor;
-    
-    @Override
-    public void addInterceptors(InterceptorRegistry registry) {
-    	registry.addInterceptor(loginInterceptor)
-    			.addPathPatterns("/**")
-    			.excludePathPatterns("/login");
     }
 }
