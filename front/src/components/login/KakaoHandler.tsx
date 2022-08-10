@@ -9,6 +9,7 @@ import {
   setSocialType,
   setProfileImagePath,
   setIsLogin,
+  setToken,
 } from "../../stores/slices/userSlice";
 import { useQuery } from "react-query";
 import { kakaoLogin } from "../../apis/userApi";
@@ -45,7 +46,7 @@ export const KakaoHandler: FC<Iprops> = (props) => {
         dispatch(setSocialId(datas.social_id));
         dispatch(setSocialType(datas.social_type));
         dispatch(setIsLogin(true));
-        localStorage.setItem("token", datas.accessToken);
+        dispatch(setToken(datas.accessToken));
         navigate("/main");
         alert("로그인 성공");
       }
