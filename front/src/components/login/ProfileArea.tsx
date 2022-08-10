@@ -13,7 +13,7 @@ import {
 import CheckIcon from "@mui/icons-material/Check";
 import RefreshIcon from "@mui/icons-material/Refresh";
 import { useSelector, useDispatch } from "react-redux";
-import { registerApi, userModifyApi, nameCheckApi, profileAllApi,} from "../../apis/userApi";
+import { registerApi, userModifyApi, nameCheckApi, profileAllApi } from "../../apis/userApi";
 import { ProfileRes } from "../../apis/response/memberRes";
 import {
   setUserId,
@@ -32,8 +32,8 @@ const style = {
   top: "50%",
   left: "50%",
   transform: "translate(-50%, -50%)",
-  width: 800,
-  height: 400,
+  width: 600,
+  height: 600,
   bgcolor: "background.paper",
   border: "2px solid #000",
   boxShadow: 24,
@@ -119,7 +119,7 @@ export const ProfileArea: FC<IProps> = (props) => {
   }, [profileImages]);
 
   const handleNameChange = (event: React.ChangeEvent<HTMLInputElement>) => {
-    setName(event.target.value);
+    setName(event.target.value.trim());
     if (event.target.value.trim().length < 2 || event.target.value.trim().length > 10) {
       setNameSatis(false);
     } else {
@@ -144,17 +144,17 @@ export const ProfileArea: FC<IProps> = (props) => {
     if (!nameCheck || !nameSatis || !descSatis) {
       alert("잘못된 항목이 있습니다.");
     } else {
-      console.log("user_id : "+userId);
-      console.log("name : "+name);
-      console.log("profile_image_path : "+image);
-      console.log("description : "+desc);
+      console.log("user_id : " + userId);
+      console.log("name : " + name);
+      console.log("profile_image_path : " + image);
+      console.log("description : " + desc);
       isLogin
         ? userModifyApi
             .modifyUser({
               id: userId,
               name: name,
               profile_image_path: image,
-              description: desc
+              description: desc,
             })
             .then((res) => {
               console.log(res.statusCode);
@@ -163,7 +163,7 @@ export const ProfileArea: FC<IProps> = (props) => {
               dispatch(setProfileImagePath(image));
               dispatch(setUserName(name));
               dispatch(setUserDesc(desc));
-              navigate("/main"); 
+              navigate("/main");
             })
             .catch(function (err) {
               console.log(err);
@@ -214,11 +214,11 @@ export const ProfileArea: FC<IProps> = (props) => {
 
   return (
     <>
-      <Stack direction="row" spacing={0} display="flex" justifyContent="center">
-        <Box display="flex" justifyContent="center" alignItems="center">
+      <Box justifyContent="center" alignItems="center">
+        <Box display="flex" justifyContent="center" alignItems="center" marginLeft="10vw">
           <IconButton onClick={handleOpen}>
             <Avatar
-              src={image}
+              src={`url(${image})`}
               sx={{ width: 80, height: 80 }}
               style={{
                 display: "flex",
@@ -247,7 +247,7 @@ export const ProfileArea: FC<IProps> = (props) => {
                       sx={{ margin: 3 }}
                     >
                       <Avatar
-                        src={ProfileRes.image_path}
+                        src={process.env.PUBLIC_URL + '/profile01.png'}
                         sx={{ width: 80, height: 80 }}
                         style={{
                           display: "flex",
@@ -261,8 +261,7 @@ export const ProfileArea: FC<IProps> = (props) => {
               </Box>
             </Box>
           </Modal>
-        </Box>
-        <Box>
+          <Box display="inline" marginLeft="4vw">
           <IconButton onClick={confirmInfo}>
             <CheckIcon />
           </IconButton>
@@ -270,13 +269,15 @@ export const ProfileArea: FC<IProps> = (props) => {
             <RefreshIcon />
           </IconButton>
         </Box>
-      </Stack>
+        </Box>
+        
+      </Box>
       <Grid
         display="flex"
         justifyContent="center"
         alignItems="center"
         marginTop="6vh"
-        marginBottom="6vh"
+        marginBottom="4vh"
       >
         <TextField
           id="inputName"
@@ -300,15 +301,14 @@ export const ProfileArea: FC<IProps> = (props) => {
           type="string"
           value={desc}
           placeholder="자기소개를 입력해주세요."
-          minRows={4}
-          maxRows={6}
+          rows={6}
           multiline
           onChange={handleDescChange}
           helperText={descText}
           error={overContents}
           sx={{
             height: "20vh",
-            width: "30vw",
+            width: "25vw",
           }}
         />
       </Grid>
