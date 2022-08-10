@@ -7,9 +7,10 @@ interface IProps {
   streamManager: StreamManager;
   name: string;
   gender: string;
+  me: boolean;
 }
 
-export const VideoStream: FC<IProps> = ({ streamManager, name, gender }) => {
+export const VideoStream: FC<IProps> = ({ streamManager, name, gender, me }) => {
   const { videoRef, speaking, micStatus, videoStatus } = useStream(streamManager);
 
   return (
@@ -19,6 +20,7 @@ export const VideoStream: FC<IProps> = ({ streamManager, name, gender }) => {
       micStatus={micStatus}
       videoStatus={videoStatus}
       gender={gender}
+      me={me}
     >
       <video
         id="streamVideo"
