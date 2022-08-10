@@ -6,9 +6,10 @@ import { VideoStreamBox } from "./VideoStreamBox";
 interface IProps {
   streamManager: StreamManager;
   name: string;
+  gender: string;
 }
 
-export const VideoStream: FC<IProps> = ({ streamManager, name }) => {
+export const VideoStream: FC<IProps> = ({ streamManager, name, gender }) => {
   const { videoRef, speaking, micStatus, videoStatus } = useStream(streamManager);
 
   return (
@@ -17,6 +18,7 @@ export const VideoStream: FC<IProps> = ({ streamManager, name }) => {
       speaking={speaking}
       micStatus={micStatus}
       videoStatus={videoStatus}
+      gender={gender}
     >
       <video
         id="streamVideo"

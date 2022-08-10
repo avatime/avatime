@@ -98,6 +98,7 @@ export const SessionPage: FC<IProps> = (props) => {
                                     streamManager={stream.streamManager}
                                     name={userInfo!.avatar_name}
                                     avatarPath={userInfo!.avatar_image_path}
+                                    gender={userInfo!.gender}
                                   />
                                 </Grid>
                               );
