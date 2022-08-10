@@ -1,13 +1,13 @@
 import { createSlice } from "@reduxjs/toolkit";
 
 const initialState = {
-  userId: 2,
+  userId: undefined,
   userName: "",
-  userGender: "M",
+  userGender: undefined,
   userDesc: "",
   socialId: undefined,
   socialType: undefined,
-  profileImagePath: "https://jira.ssafy.com/secure/useravatar?avatarId=10334",
+  profileImagePath: undefined,
   isLogin: false,
 };
 
