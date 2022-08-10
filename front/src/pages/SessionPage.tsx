@@ -6,12 +6,10 @@ import { grey } from "@mui/material/colors";
 import { useDispatch, useSelector } from "react-redux";
 import sessionApi from "../apis/sessionApi";
 import { setUserInfoList } from "../stores/slices/meetingSlice";
-import SockJS from "sockjs-client";
-import { WS_BASE_URL } from "../apis/url";
-import * as Stomp from "stompjs";
 import { MeetingRoomInfoRes } from "../apis/response/sessionRes";
 import { useOpenvidu } from "../hooks/useOpenvidu";
 import { AvatarVideoStream } from "../components/session/AvatarVideoStream";
+import { useWebSocket } from "../hooks/useWebSocket";
 
 interface IProps {}
 
@@ -40,37 +38,25 @@ export const SessionPage: FC<IProps> = (props) => {
 
   const [lastPickModalOpen, setLastPickModalOpen] = useState(false);
 
-  useEffect(() => {
-    if (!roomId || !userId) {
-      return;
-    }
-
-    const socket = new SockJS(WS_BASE_URL);
-    const client = Stomp.over(socket);
-
-    client.connect({}, function (frame) {
-      console.log("소켓 연결 성공", frame);
-
-      client.subscribe(`/topic/meeting/status/{roomId}`, function (response) {
+  useWebSocket({
+    onConnect(frame, client) {
+      client.subscribe(`/topic/meeting/status/${roomId}`, function (response) {
         console.log(response.body);
         if (JSON.parse(response.body).last_pick_status) {
           setLastPickModalOpen(true);
         }
       });
-    });
-
-    return () => {
-      client.send(
-        "/app/meeting/leave",
-        {},
-        JSON.stringify({
+    },
+    beforeDisconnected(frame, client) {
+      client.publish({
+        destination: "/app/meeting/leave",
+        body: JSON.stringify({
           meetingroom_id: roomId,
           user_id: userId,
-        })
-      );
-      client.disconnect(() => {});
-    };
-  }, [roomId, userId]);
+        }),
+      });
+    },
+  });
 
   const { publisher, streamList, onChangeCameraStatus, onChangeMicStatus } = useOpenvidu(
     userId,
@@ -107,6 +93,7 @@ export const SessionPage: FC<IProps> = (props) => {
                                     name={userInfo!.avatar_name}
                                     avatarPath={userInfo!.avatar_image_path}
                                     gender={userInfo!.gender}
+                                    me={userInfo!.user_id === userId}
                                   />
                                 </Grid>
                               );

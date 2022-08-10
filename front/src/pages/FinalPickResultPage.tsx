@@ -107,6 +107,8 @@ const FinalPickResultPagePresenter: FC<IPresenterProps> = ({
   arrowOrderList,
   onModalClose,
 }) => {
+  const theme = useTheme();
+
   const UserProfileList = (l: number, r: number) => (
     <Grid container item spacing={2} direction="column" xs={2} justifyContent="center">
       {pickResult.result_list.slice(l, r).map((it) => (
@@ -129,7 +131,7 @@ const FinalPickResultPagePresenter: FC<IPresenterProps> = ({
               backgroundSize: "cover",
               backgroundPosition: "center 50%",
               borderRadius: "100%",
-              border: "2px solid black",
+              border: `3px solid ${it.gender === "M" ? theme.palette.primary.light : theme.palette.error.light}`,
             }}
           >
             <Box
@@ -153,7 +155,6 @@ const FinalPickResultPagePresenter: FC<IPresenterProps> = ({
     </Grid>
   );
 
-  const theme = useTheme();
   const headCount = pickResult.result_list.length;
 
   return (
