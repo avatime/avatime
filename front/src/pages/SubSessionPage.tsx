@@ -55,7 +55,7 @@ export const SubSessionPage: FC<IProps> = (props) => {
           <Grid container direction="row" alignItems="center" spacing={3}>
             <Grid item xs>
               {publisher && (
-                <VideoStream streamManager={publisher} name={userName} gender={gender} />
+                <VideoStream streamManager={publisher} name={userName} gender={gender} me={true} />
               )}
             </Grid>
             <Grid item xs>
@@ -64,6 +64,7 @@ export const SubSessionPage: FC<IProps> = (props) => {
                   streamManager={pickUserStreamManager}
                   name={pickUserName}
                   gender={gender === "M" ? "F" : "M"}
+                  me={false}
                 />
               )}
             </Grid>

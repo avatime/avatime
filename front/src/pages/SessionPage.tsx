@@ -93,6 +93,7 @@ export const SessionPage: FC<IProps> = (props) => {
                                     name={userInfo!.avatar_name}
                                     avatarPath={userInfo!.avatar_image_path}
                                     gender={userInfo!.gender}
+                                    me={userInfo!.user_id === userId}
                                   />
                                 </Grid>
                               );
