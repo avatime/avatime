@@ -244,6 +244,7 @@ export const WaitingPage: FC<IProps> = (props) => {
         open={openReception}
         onClickClose={onClickReception}
         candidateList={candidateList}
+        isMaster={!!isMaster}
       />
       <UserInfoModal open={openInfo} onClose={onCloseInfo} userId={infoUserId} />
       <Snackbar
