@@ -11,6 +11,11 @@ import java.nio.charset.StandardCharsets;
 
 @SpringBootApplication
 public class GroupCallApplication {
+	
+	static {
+		System.setProperty("com.amazonaws.sdk.disableEc2Metadata", "true");
+	}
+	
 	public static void main(String[] args) {
         SpringApplication.run(GroupCallApplication.class, args);
     }
