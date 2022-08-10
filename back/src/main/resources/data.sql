@@ -43,13 +43,13 @@ insert into waiting_room_user_relation(type, waiting_room_id, user_id) values (1
 insert into chatting_room (room_id, type) values (1, 2);
 
 insert into profile(image_path, name) values
-("https://img1.daumcdn.net/thumb/R1280x0/?scode=mtistory2&fname=https%3A%2F%2Fblog.kakaocdn.net%2Fdn%2FbjG0o2%2FbtrJlz5Xgi5%2F22KkMl1kDkBWLw7lI2t5MK%2Fimg.png", "프로필 1"),
-("https://img1.daumcdn.net/thumb/R1280x0/?scode=mtistory2&fname=https%3A%2F%2Fblog.kakaocdn.net%2Fdn%2FeHXZTS%2FbtrJlWtej9K%2FlLjeKoY6rh7vxgK0diJ3sk%2Fimg.png", "프로필 2"),
-("https://img1.daumcdn.net/thumb/R1280x0/?scode=mtistory2&fname=https%3A%2F%2Fblog.kakaocdn.net%2Fdn%2FWgNF2%2FbtrJmrTSP1Y%2F6kQKqaIKJ9aQdaYABbRw5K%2Fimg.png", "프로필 3"),
-("https://img1.daumcdn.net/thumb/R1280x0/?scode=mtistory2&fname=https%3A%2F%2Fblog.kakaocdn.net%2Fdn%2FcebsTT%2FbtrJhkh02Am%2F8EnPBvOdiz708vN8V0xyG0%2Fimg.png", "프로필 4"),
-("https://img1.daumcdn.net/thumb/R1280x0/?scode=mtistory2&fname=https%3A%2F%2Fblog.kakaocdn.net%2Fdn%2FbaWS9w%2FbtrJnbQNBFS%2F31DkltOF58zYwbqErKGkrk%2Fimg.png", "프로필 5"),
-("https://img1.daumcdn.net/thumb/R1280x0/?scode=mtistory2&fname=https%3A%2F%2Fblog.kakaocdn.net%2Fdn%2FH4MVr%2FbtrJgOiKHw7%2FoKVgzrgvD29Ry0d6ScbKSK%2Fimg.png", "프로필 6"),
-("https://img1.daumcdn.net/thumb/R1280x0/?scode=mtistory2&fname=https%3A%2F%2Fblog.kakaocdn.net%2Fdn%2FNmqcf%2FbtrJhjKaV6y%2FVdYnXsk8U62veYZaDdmab0%2Fimg.png", "프로필 7"),
-("https://img1.daumcdn.net/thumb/R1280x0/?scode=mtistory2&fname=https%3A%2F%2Fblog.kakaocdn.net%2Fdn%2FbqXPyF%2FbtrJm8NpRnT%2FOksELKJlGWxyEtezs2KPE0%2Fimg.png", "프로필 8"),
-("https://img1.daumcdn.net/thumb/R1280x0/?scode=mtistory2&fname=https%3A%2F%2Fblog.kakaocdn.net%2Fdn%2FbHvdCG%2FbtrJncWsNQU%2FPNINdWNRbMdLesxSus3qS1%2Fimg.png", "프로필 9"),
-("https://img1.daumcdn.net/thumb/R1280x0/?scode=mtistory2&fname=https%3A%2F%2Fblog.kakaocdn.net%2Fdn%2FTOFpg%2FbtrJn6aJ3Vi%2F5KbgcoyVhn30fIIQ24qnq0%2Fimg.png", "프로필 10");
+("https://avatimebucket2022.s3.ap-northeast-2.amazonaws.com/%ED%94%84%EB%A1%9C%ED%95%84/profile01.png", "프로필 1"),
+("https://avatimebucket2022.s3.ap-northeast-2.amazonaws.com/%ED%94%84%EB%A1%9C%ED%95%84/profile02.png", "프로필 2"),
+("https://avatimebucket2022.s3.ap-northeast-2.amazonaws.com/%ED%94%84%EB%A1%9C%ED%95%84/profile03.png", "프로필 3"),
+("https://avatimebucket2022.s3.ap-northeast-2.amazonaws.com/%ED%94%84%EB%A1%9C%ED%95%84/profile04.png", "프로필 4"),
+("https://avatimebucket2022.s3.ap-northeast-2.amazonaws.com/%ED%94%84%EB%A1%9C%ED%95%84/profile05.png", "프로필 5"),
+("https://avatimebucket2022.s3.ap-northeast-2.amazonaws.com/%ED%94%84%EB%A1%9C%ED%95%84/profile06.png", "프로필 6"),
+("https://avatimebucket2022.s3.ap-northeast-2.amazonaws.com/%ED%94%84%EB%A1%9C%ED%95%84/profile07.png", "프로필 7"),
+("https://avatimebucket2022.s3.ap-northeast-2.amazonaws.com/%ED%94%84%EB%A1%9C%ED%95%84/profile08.png", "프로필 8"),
+("https://avatimebucket2022.s3.ap-northeast-2.amazonaws.com/%ED%94%84%EB%A1%9C%ED%95%84/profile09.png", "프로필 9"),
+("https://avatimebucket2022.s3.ap-northeast-2.amazonaws.com/%ED%94%84%EB%A1%9C%ED%95%84/profile10.png", "프로필 10");
