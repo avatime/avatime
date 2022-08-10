@@ -40,7 +40,7 @@ export const SessionPage: FC<IProps> = (props) => {
 
   useWebSocket({
     onConnect(frame, client) {
-      client.subscribe(`/topic/meeting/status/{roomId}`, function (response) {
+      client.subscribe(`/topic/meeting/status/${roomId}`, function (response) {
         console.log(response.body);
         if (JSON.parse(response.body).last_pick_status) {
           setLastPickModalOpen(true);
