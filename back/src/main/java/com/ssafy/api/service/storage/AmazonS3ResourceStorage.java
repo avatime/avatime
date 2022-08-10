@@ -29,20 +29,7 @@ public class AmazonS3ResourceStorage {
             amazonS3Client.putObject(new PutObjectRequest(bucket, fullPath, file)
                     .withCannedAcl(CannedAccessControlList.PublicRead));
         } catch (Exception e) {
-        	throw new RuntimeException();
-        } finally {
-            if (file.exists()) {
-                file.delete();
-            }
-        }
-    }
-    
-    public void storeAvatar(String fullPath, File file) {
-        try {
-            amazonS3Client.putObject(new PutObjectRequest(bucket, fullPath, file)
-                    .withCannedAcl(CannedAccessControlList.PublicRead));
-        } catch (Exception e) {
-        	throw new RuntimeException();
+            throw new RuntimeException();
         } finally {
             if (file.exists()) {
                 file.delete();
