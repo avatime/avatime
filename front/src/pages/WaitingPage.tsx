@@ -1,8 +1,20 @@
 import React, { FC, useEffect, useMemo, useState } from "react";
 import { ChatRoom } from "../components/chat/ChatRoom";
-import { Badge, BadgeProps, Box, Grid, IconButton, styled, Typography, Stack } from "@mui/material";
+import {
+  Badge,
+  BadgeProps,
+  Box,
+  Grid,
+  IconButton,
+  styled,
+  Typography,
+  Stack,
+  Snackbar,
+  Slide,
+  SlideProps,
+  Alert,
+} from "@mui/material";
 import { grey } from "@mui/material/colors";
-import { MainHeader } from "../components/main/MainHeader";
 import "../components/chat/style.css";
 import Button from "@mui/material/Button";
 import PlayCircleOutlineIcon from "@mui/icons-material/PlayCircleOutline";
@@ -23,6 +35,10 @@ import { setMaster } from "../stores/slices/waitingSlice";
 
 interface IProps {}
 
+function SlideTransition(props: SlideProps) {
+  return <Slide {...props} direction="down" />;
+}
+
 const StyledBadge = styled(Badge)<BadgeProps>(({ theme }) => ({
   "& .MuiBadge-badge": {
     right: -3,
@@ -41,6 +57,7 @@ export const WaitingPage: FC<IProps> = (props) => {
   const [waitingUserList, setWaitingUserList] = useState<WaitingUser[]>([]);
   const [candidateList, setCandidateList] = useState<WaitingUser[]>([]);
   const [isMaster, setIsMaster] = useState<boolean>();
+  const [showSnack, setShowSnack] = useState(false);
 
   const navigate = useNavigate();
   const dispatch = useDispatch();
@@ -68,7 +85,13 @@ export const WaitingPage: FC<IProps> = (props) => {
       client.send(`/app/waiting/info/${waitingState.roomId}`);
 
       client.subscribe(`/topic/reception/${waitingState.roomId}`, (response) => {
-        setCandidateList(JSON.parse(response.body));
+        setCandidateList((prev) => {
+          const res = JSON.parse(response.body);
+          if (prev.length < res.length) {
+            setShowSnack(true);
+          }
+          return res;
+        });
       });
       client.send(`/app/reception/${waitingState.roomId}`);
     });
@@ -157,12 +180,7 @@ export const WaitingPage: FC<IProps> = (props) => {
                   const list = outerIdx === 0 ? sameGenderUserList : diffGenderUserList;
                   const it = innerIdx < list.length ? list[innerIdx] : null;
                   return (
-                    <Grid
-                      key={innerIdx}
-                      item
-                      xs={3}
-                      height="80%"
-                    >
+                    <Grid key={innerIdx} item xs={3} height="80%">
                       <WaitingUserProfile
                         waitingUser={it}
                         onClickAvatar={onOpenInfo}
@@ -228,6 +246,17 @@ export const WaitingPage: FC<IProps> = (props) => {
         candidateList={candidateList}
       />
       <UserInfoModal open={openInfo} onClose={onCloseInfo} userId={infoUserId} />
+      <Snackbar
+        anchorOrigin={{ vertical: "top", horizontal: "center" }}
+        open={showSnack}
+        onClose={() => setShowSnack(false)}
+        TransitionComponent={SlideTransition}
+        autoHideDuration={2000}
+      >
+        <Alert onClose={() => setShowSnack(false)} severity="success" sx={{ width: "100%" }}>
+          누군가 참가 신청을 했어요!!
+        </Alert>
+      </Snackbar>
     </div>
   );
 };
