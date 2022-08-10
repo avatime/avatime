@@ -46,7 +46,11 @@ export const MainHeader: FC<IProps> = ({ hideSettings = false }) => {
     dispatch(reset);
     dispatch(setUserName(""));
     dispatch(setUserDesc(""));
-    dispatch(setProfileImagePath("https://img1.daumcdn.net/thumb/R1280x0/?scode=mtistory2&fname=https%3A%2F%2Fblog.kakaocdn.net%2Fdn%2FbjG0o2%2FbtrJlz5Xgi5%2F22KkMl1kDkBWLw7lI2t5MK%2Fimg.png"));
+    dispatch(
+      setProfileImagePath(
+        "https://img1.daumcdn.net/thumb/R1280x0/?scode=mtistory2&fname=https%3A%2F%2Fblog.kakaocdn.net%2Fdn%2FbjG0o2%2FbtrJlz5Xgi5%2F22KkMl1kDkBWLw7lI2t5MK%2Fimg.png"
+      )
+    );
     dispatch(setIsLogin("false"));
     dispatch(setToken(""));
     alert("로그아웃 완료");
@@ -95,6 +99,11 @@ export const MainHeader: FC<IProps> = ({ hideSettings = false }) => {
               <MenuItem>
                 <Link to="/mypage" style={{ textDecoration: "none" }}>
                   마이페이지
+                </Link>
+              </MenuItem>
+              <MenuItem>
+                <Link to="/canvas" style={{ textDecoration: "none" }}>
+                  아바타룸
                 </Link>
               </MenuItem>
               <MenuItem onClick={logout}>로그아웃</MenuItem>

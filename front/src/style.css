@@ -49,4 +49,17 @@ h1 {
   
 
 }
-
+input[type=color]{
+	width: 36px;
+	height: 36px;
+	border: none;
+	border-radius: 10px;
+	background: none;
+}
+input[type="color"]::-webkit-color-swatch-wrapper {
+	padding: 0;
+}
+input[type="color"]::-webkit-color-swatch {
+	border: solid 1px #000; /*change color of the swatch border here*/
+	border-radius: 5px;
+}
