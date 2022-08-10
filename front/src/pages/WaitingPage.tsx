@@ -22,8 +22,6 @@ import ExitToAppIcon from "@mui/icons-material/ExitToApp";
 import PeopleAltIcon from "@mui/icons-material/PeopleAlt";
 import { useSelector, useDispatch } from "react-redux";
 import { useNavigate } from "react-router";
-import SockJS from "sockjs-client";
-import * as Stomp from "stompjs";
 import { WaitingUser } from "../apis/response/waitingRoomRes";
 import { ReceptionModal } from "../components/waitingRoom/ReceptionModal";
 import { WaitingUserProfile } from "../components/waitingRoom/WaitingUserProfile";
@@ -32,6 +30,7 @@ import { requestEnterRoomApi, waitingApi } from "../apis/waitingRoomApi";
 import { setMeetingRoomId } from "../stores/slices/meetingSlice";
 import { WS_BASE_URL } from "../apis/url";
 import { setMaster } from "../stores/slices/waitingSlice";
+import { useWebSocket } from "../hooks/useWebSocket";
 
 interface IProps {}
 
@@ -61,14 +60,9 @@ export const WaitingPage: FC<IProps> = (props) => {
 
   const navigate = useNavigate();
   const dispatch = useDispatch();
-  useEffect(() => {
-    if (!waitingState?.roomId) {
-      return;
-    }
 
-    const socket = new SockJS(WS_BASE_URL);
-    const client = Stomp.over(socket);
-    client.connect({}, () => {
+  useWebSocket({
+    onConnect: (frame, client) => {
       client.subscribe(`/topic/waiting/info/${waitingState.roomId}`, (response) => {
         const res = JSON.parse(response.body);
         console.log(res);
@@ -82,7 +76,7 @@ export const WaitingPage: FC<IProps> = (props) => {
           navigate("/pickAvatar");
         }
       });
-      client.send(`/app/waiting/info/${waitingState.roomId}`);
+      client.publish({ destination: `/app/waiting/info/${waitingState.roomId}` });
 
       client.subscribe(`/topic/reception/${waitingState.roomId}`, (response) => {
         setCandidateList((prev) => {
@@ -93,19 +87,16 @@ export const WaitingPage: FC<IProps> = (props) => {
           return res;
         });
       });
-      client.send(`/app/reception/${waitingState.roomId}`);
-    });
-
-    return () => {
-      client.disconnect(() => {
-        requestEnterRoomApi.requestEnterRoom({
-          room_id: waitingState?.roomId,
-          user_id: userId,
-          type: 5,
-        });
+      client.publish({ destination: `/app/reception/${waitingState.roomId}` });
+    },
+    beforeDisconnected: function (frame, client): void {
+      requestEnterRoomApi.requestEnterRoom({
+        room_id: waitingState?.roomId,
+        user_id: userId,
+        type: 5,
       });
-    };
-  }, [dispatch, navigate, userId, waitingState]);
+    },
+  });
 
   const [openReception, setOpenReception] = useState(false);
   const onClickReception = () => {
