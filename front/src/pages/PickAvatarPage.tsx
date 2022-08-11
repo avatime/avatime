@@ -3,16 +3,15 @@ import Grid from "@mui/material/Grid";
 import { MainHeader } from "../components/main/MainHeader";
 import { Box } from "@mui/system";
 import grey from "@mui/material/colors/grey";
-
 import { GaugeBar } from "../components/pickAvatar/GaugeBar";
 import { AvatarPickInfoRes } from "../apis/response/avatarRes";
-
 import { Avatar } from "@mui/material";
 import { useSelector } from "react-redux";
 import { selectAvatarApi } from "../apis/avatarApis";
 import { AvatarProfile } from "../components/session/modal/AvatarProfile";
 import { useNavigate } from "react-router";
 import { useWebSocket } from "../hooks/useWebSocket";
+import DoDisturbIcon from "@mui/icons-material/DoDisturb";
 
 interface IProps {}
 
@@ -109,14 +108,25 @@ export const PickAvatarPage: FC<IProps> = () => {
                     );
                   } else {
                     return (
-                      <Grid item xs={12 / 8}>
-                        <Box style={{ border: "2px solid red" }}>
-                          <AvatarProfile
-                            selected={avatarId === originData.avatar_list[i].id}
-                            onClick={() => {}}
-                            avatarName={originData.avatar_list[i].name}
-                            avatarImagePath={originData.avatar_list[i].image_path}
-                          />
+                      <Grid item xs={12 / 8} position="relative">
+                        <AvatarProfile
+                          selected={avatarId === originData.avatar_list[i].id}
+                          onClick={() => {}}
+                          avatarName={originData.avatar_list[i].name}
+                          avatarImagePath={originData.avatar_list[i].image_path}
+                          canSelect={false}
+                        />
+                        <Box
+                          position="absolute"
+                          left="16px"
+                          right="0"
+                          top="0"
+                          bottom="32px"
+                          display="flex"
+                          justifyContent="center"
+                          alignItems="center"
+                        >
+                          <DoDisturbIcon fontSize="inherit" color="error" sx={{fontSize: "10vw"}}/>
                         </Box>
                       </Grid>
                     );
