@@ -1,4 +1,4 @@
-import React, { FC, useEffect, useState } from "react";
+import React, { FC, useEffect, useMemo, useState } from "react";
 import { ChatRoom } from "../components/chat/ChatRoom";
 import { Box, Grid } from "@mui/material";
 import { ControllBar } from "../components/session/ControllBar";
@@ -60,7 +60,18 @@ export const SessionPage: FC<IProps> = (props) => {
 
   const { publisher, streamList, onChangeCameraStatus, onChangeMicStatus } = useOpenvidu(
     userId,
-    roomId
+    roomId,
+    gender
+  );
+
+  const sameGenderUserList = useMemo(
+    () => streamList.filter((it) => it.gender === gender),
+    [gender, streamList]
+  );
+
+  const diffGenderUserList = useMemo(
+    () => streamList.filter((it) => it.gender !== gender),
+    [gender, streamList]
   );
 
   return (
@@ -75,29 +86,28 @@ export const SessionPage: FC<IProps> = (props) => {
                     [0, 1].map((it, idx) => (
                       <Box flex={1} key={idx} height="50%">
                         <Grid container height="100%" spacing={2} alignItems="stretch">
-                          {streamList
-                            .slice((it * headCount) / 2, ((it + 1) * headCount) / 2)
-                            .map((stream, idx) => {
-                              const userInfo = meetingRoomInfo.meeting_user_info_list.find(
-                                (it) => it.user_id === stream.userId
-                              );
-                              return (
-                                <Grid
-                                  item
-                                  xs={24 / headCount}
-                                  key={idx}
-                                  sx={{ position: "relative", height: "100%" }}
-                                >
-                                  <AvatarVideoStream
-                                    streamManager={stream.streamManager}
-                                    name={userInfo!.avatar_name}
-                                    avatarPath={userInfo!.avatar_image_path}
-                                    gender={userInfo!.gender}
-                                    me={userInfo!.user_id === userId}
-                                  />
-                                </Grid>
-                              );
-                            })}
+                          {(idx ? diffGenderUserList : sameGenderUserList).map((stream, idx) => {
+                            const userInfo = meetingRoomInfo.meeting_user_info_list.find(
+                              (it) => it.user_id === stream.userId
+                            );
+                            console.log(userInfo)
+                            return (
+                              <Grid
+                                item
+                                xs={24 / headCount}
+                                key={idx}
+                                sx={{ position: "relative", height: "100%" }}
+                              >
+                                <AvatarVideoStream
+                                  streamManager={stream.streamManager}
+                                  name={userInfo!.avatar_name}
+                                  avatarPath={userInfo!.avatar_image_path}
+                                  gender={userInfo!.gender}
+                                  me={userInfo!.user_id === userId}
+                                />
+                              </Grid>
+                            );
+                          })}
                         </Grid>
                       </Box>
                     ))}

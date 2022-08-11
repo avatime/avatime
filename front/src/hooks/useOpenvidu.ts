@@ -2,7 +2,7 @@ import { OpenVidu } from "openvidu-browser";
 import { getToken } from "../apis/openViduApi";
 import { useCallback, useEffect, useMemo, useState } from "react";
 
-export const useOpenvidu = (userId: number, meetingRoomId: number) => {
+export const useOpenvidu = (userId: number, meetingRoomId: number, gender: string) => {
   const [subscribers, setSubscribers] = useState<any[]>([]);
   const [publisher, setPublisher] = useState<any>();
 
@@ -12,9 +12,10 @@ export const useOpenvidu = (userId: number, meetingRoomId: number) => {
 
     session.on("streamCreated", (event) => {
       const subscriber = session.subscribe(event.stream, "");
+      const data = JSON.parse(event.stream.connection.data);
       setSubscribers((prev) => [
         ...prev,
-        { streamManager: subscriber, userId: +event.stream.connection.data },
+        { streamManager: subscriber, userId: +data.userId, gender: data.gender },
       ]);
     });
 
@@ -22,7 +23,7 @@ export const useOpenvidu = (userId: number, meetingRoomId: number) => {
       event.preventDefault();
       
       setSubscribers((prev) => {
-        let index = prev.findIndex((it) => it.userId === +event.stream.connection.data);
+        let index = prev.findIndex((it) => it.userId === +JSON.parse(event.stream.connection.data).userId);
         return -1 < index ? prev.splice(index, 1) : prev;
       });
     });
@@ -33,7 +34,7 @@ export const useOpenvidu = (userId: number, meetingRoomId: number) => {
 
     getToken(String(meetingRoomId)).then((token) => {
       session
-        .connect(token, userId)
+        .connect(token, JSON.stringify({userId, gender}))
         .then(async () => {
           await navigator.mediaDevices.getUserMedia({ audio: true, video: true });
           const devices = await openVidu.getDevices();
@@ -62,7 +63,7 @@ export const useOpenvidu = (userId: number, meetingRoomId: number) => {
       session.disconnect();
       setSubscribers([]);
     };
-  }, [meetingRoomId, userId]);
+  }, [gender, meetingRoomId, userId]);
 
   const onChangeCameraStatus = useCallback(
     (status: boolean) => {
@@ -79,8 +80,8 @@ export const useOpenvidu = (userId: number, meetingRoomId: number) => {
   );
 
   const streamList = useMemo(
-    () => [{ streamManager: publisher, userId }, ...subscribers],
-    [publisher, subscribers, userId]
+    () => [{ streamManager: publisher, userId, gender }, ...subscribers],
+    [gender, publisher, subscribers, userId]
   );
 
   return {
