@@ -31,18 +31,23 @@ const ImageSrc = styled("span")({
   borderRadius: "10px",
 });
 
-
-
 interface IProps {
   selected: boolean;
   onClick: () => void;
   avatarName: string;
   avatarImagePath: string;
-  showX?: boolean;
+  canSelect?: boolean;
   opacity?: number;
 }
 
-export const AvatarProfile: FC<IProps> = ({ selected, onClick, avatarName, avatarImagePath, showX = false, opacity = 0.4 }) => {
+export const AvatarProfile: FC<IProps> = ({
+  selected,
+  onClick,
+  avatarName,
+  avatarImagePath,
+  canSelect = true,
+  opacity = 0.4,
+}) => {
   const theme = useTheme();
   const ImageBackdrop = styled("span")(({ theme }) => ({
     position: "absolute",
@@ -55,6 +60,9 @@ export const AvatarProfile: FC<IProps> = ({ selected, onClick, avatarName, avata
     transition: theme.transitions.create("opacity"),
     borderRadius: "10px",
   }));
+  const selectedColor = theme.palette.info.light;
+  const cantSelectColor = theme.palette.error.main;
+
   return (
     <Box
       display="flex"
@@ -70,8 +78,12 @@ export const AvatarProfile: FC<IProps> = ({ selected, onClick, avatarName, avata
         style={{
           width: "100%",
           height: "100%",
-          borderRadius: "10px",
-          border: selected ? `4px solid ${theme.palette.primary.main}` : "",
+          borderRadius: "15px",
+          border: selected
+            ? `4px solid ${selectedColor}`
+            : !canSelect
+            ? `4px solid ${cantSelectColor}`
+            : "",
         }}
         onClick={onClick}
       >
@@ -79,7 +91,11 @@ export const AvatarProfile: FC<IProps> = ({ selected, onClick, avatarName, avata
         {!selected && <ImageBackdrop className="MuiImageBackdrop-root" />}
       </ImageButton>
       <Box p={1} />
-      <Typography component="span" variant="h6">
+      <Typography
+        component="span"
+        variant="h6"
+        color={selected ? selectedColor : !canSelect ? cantSelectColor : ""}
+      >
         {avatarName}
       </Typography>
     </Box>
