@@ -82,7 +82,7 @@ public class MeetingRoomServiceImpl implements MeetingRoomService {
 		MeetingRoomUserRelation meetingRoomUserRelation = meetingRoomUserRelationRepository.findByMeetingRoomIdAndUserId(meetingRoomId, userId).orElse(null);
 		if(meetingRoomUserRelation != null) {
 			meetingRoomUserRelation.setAvatarId(avatarId);
-			meetingRoomUserRelationRepository.save(meetingRoomUserRelation);
+			meetingRoomUserRelationRepository.saveAndFlush(meetingRoomUserRelation);
 			sendAvatarInfo(meetingRoomId);
 		}
 	}
