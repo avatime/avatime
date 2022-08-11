@@ -65,9 +65,7 @@ function App() {
             <Route path="/kakao" element={<KakaoHandler />} />
             <Route path="/naver" element={<NaverHandler />} />
             <Route
-              path="/canvas"
-              element={<ProtectedRoute outlet={<CanvasPage />} isAuthentication={isLogin} />}
-            />
+              path="/canvas" element={<CanvasPage />} />
             <Route
               path="/subSession"
               element={<ProtectedRoute outlet={<SubSessionPage />} isAuthentication={isLogin} />}
