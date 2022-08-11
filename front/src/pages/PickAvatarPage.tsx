@@ -116,7 +116,7 @@ export const PickAvatarPage: FC<IProps> = () => {
                           avatarImagePath={originData.avatar_list[i].image_path}
                           canSelect={false}
                         />
-                        <Box
+                        {avatarId !== originData.avatar_list[i].id && <Box
                           position="absolute"
                           left="16px"
                           right="0"
@@ -127,7 +127,7 @@ export const PickAvatarPage: FC<IProps> = () => {
                           alignItems="center"
                         >
                           <DoDisturbIcon fontSize="inherit" color="error" sx={{fontSize: "10vw"}}/>
-                        </Box>
+                        </Box>}
                       </Grid>
                     );
                   }
