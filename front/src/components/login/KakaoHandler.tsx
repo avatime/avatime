@@ -1,5 +1,6 @@
 import React, { FC } from "react";
 import { useDispatch } from "react-redux";
+import { KAKAO_AGREE_URL } from "../../apis/Auth";
 import {
   setUserId,
   setUserName,
@@ -47,8 +48,12 @@ export const KakaoHandler: FC<Iprops> = (props) => {
         dispatch(setSocialType(datas.social_type));
         dispatch(setIsLogin(true));
         dispatch(setToken(datas.accessToken));
+        localStorage.setItem("token", datas.accessToken);
         navigate("/main");
         alert("로그인 성공");
+      } else if(res.data.statusCode === 205) {
+        alert("로그인 실패! 정보 제공 동의 후 다시 시도해주세요.");
+        window.location.replace(KAKAO_AGREE_URL);
       }
     },
     onError: (err) => console.log(err),
