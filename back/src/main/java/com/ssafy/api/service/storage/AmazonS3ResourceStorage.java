@@ -29,7 +29,9 @@ public class AmazonS3ResourceStorage {
             amazonS3Client.putObject(new PutObjectRequest(bucket, fullPath, file)
                     .withCannedAcl(CannedAccessControlList.PublicRead));
         } catch (Exception e) {
-            throw new RuntimeException();
+        	System.out.println(fullPath);
+        	System.out.println("에바");
+           System.out.println(e);
         } finally {
             if (file.exists()) {
                 file.delete();
