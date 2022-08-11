@@ -1,9 +1,8 @@
-import React, { FC, useMemo, useState } from "react";
-import { Backdrop, Box, Button, Grid, Typography, useTheme, CircularProgress } from "@mui/material";
+import React, { FC, useState } from "react";
+import { Backdrop, Box, Grid, Typography, useTheme, CircularProgress } from "@mui/material";
 import { grey } from "@mui/material/colors";
 import { useSelector, useDispatch } from "react-redux";
 import Xarrow, { Xwrapper } from "react-xarrows";
-import { useQuery } from "react-query";
 import sessionApi from "../apis/sessionApi";
 import { FinalPickResultRes } from "../apis/response/sessionRes";
 import useTimer from "../hooks/useTimer";
@@ -90,6 +89,7 @@ export const FinalPickResultPage: FC<IProps> = (props) => {
       timer={timer}
       arrowOrderList={arrowOrderList}
       onModalClose={onModalClose}
+      gender={gender}
     />
   );
 };
@@ -99,6 +99,7 @@ interface IPresenterProps {
   timer: number;
   arrowOrderList: number[];
   onModalClose: () => void;
+  gender: string;
 }
 
 const FinalPickResultPagePresenter: FC<IPresenterProps> = ({
@@ -106,52 +107,57 @@ const FinalPickResultPagePresenter: FC<IPresenterProps> = ({
   timer,
   arrowOrderList,
   onModalClose,
+  gender,
 }) => {
   const theme = useTheme();
 
-  const UserProfileList = (l: number, r: number) => (
+  const UserProfileList = (left: boolean) => (
     <Grid container item spacing={2} direction="column" xs={2} justifyContent="center">
-      {pickResult.result_list.slice(l, r).map((it) => (
-        <Grid
-          item
-          xs={3}
-          key={it.avatar_id}
-          position="relative"
-          display="flex"
-          flexDirection="column"
-          alignItems="center"
-        >
-          <Box
+      {pickResult.result_list
+        .filter((it) => (left ? gender === it.gender : gender !== it.gender))
+        .map((it) => (
+          <Grid
+            item
+            xs={3}
+            key={it.avatar_id}
             position="relative"
-            sx={{
-              height: "70%",
-              aspectRatio: "auto 1 / 1",
-              backgroundColor: "white",
-              backgroundImage: `url(${it.avatar_image_path})`,
-              backgroundSize: "cover",
-              backgroundPosition: "center 50%",
-              borderRadius: "100%",
-              border: `3px solid ${it.gender === "M" ? theme.palette.primary.light : theme.palette.error.light}`,
-            }}
+            display="flex"
+            flexDirection="column"
+            alignItems="center"
           >
             <Box
-              id={(l === 0 ? "in" : "out") + it.id}
-              position="absolute"
-              top="20%"
-              right={l === 0 ? 0 : 100}
-              left={l === 0 ? 100 : 0}
-            />
-            <Box
-              id={(l === 0 ? "out" : "in") + it.id}
-              position="absolute"
-              bottom="20%"
-              right={l === 0 ? 0 : 100}
-              left={l === 0 ? 100 : 0}
-            />
-          </Box>
-          <Typography variant="subtitle1">{it.avatar_name}</Typography>
-        </Grid>
-      ))}
+              position="relative"
+              sx={{
+                height: "70%",
+                aspectRatio: "auto 1 / 1",
+                backgroundColor: "white",
+                backgroundImage: `url(${it.avatar_image_path})`,
+                backgroundSize: "cover",
+                backgroundPosition: "center 50%",
+                borderRadius: "100%",
+                border: `3px solid ${
+                  it.gender === "M" ? theme.palette.primary.light : theme.palette.error.light
+                }`,
+              }}
+            >
+              <Box
+                id={(left ? "in" : "out") + it.id}
+                position="absolute"
+                top="20%"
+                right={left ? 0 : 100}
+                left={left ? 100 : 0}
+              />
+              <Box
+                id={(left ? "out" : "in") + it.id}
+                position="absolute"
+                bottom="20%"
+                right={left ? 0 : 100}
+                left={left ? 100 : 0}
+              />
+            </Box>
+            <Typography variant="subtitle1">{it.avatar_name}</Typography>
+          </Grid>
+        ))}
     </Grid>
   );
 
@@ -168,9 +174,9 @@ const FinalPickResultPagePresenter: FC<IPresenterProps> = ({
         direction="row"
         spacing={3}
       >
-        {UserProfileList(0, headCount / 2)}
+        {UserProfileList(true)}
         <Grid item xs />
-        {UserProfileList(headCount / 2, headCount)}
+        {UserProfileList(false)}
         <Xwrapper>
           {pickResult.result_list.map((it, idx) => {
             const color =

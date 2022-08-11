@@ -2,29 +2,43 @@ import { OpenVidu } from "openvidu-browser";
 import { getToken } from "../apis/openViduApi";
 import { useCallback, useEffect, useMemo, useState } from "react";
 
-export const useOpenvidu = (userId: number, meetingRoomId: number) => {
+export const useOpenvidu = (userId: number, meetingRoomId: number, gender: string) => {
   const [subscribers, setSubscribers] = useState<any[]>([]);
   const [publisher, setPublisher] = useState<any>();
+  const [session, setSession] = useState<any>();
+
+  const leaveSession = useCallback(() => {
+    console.log("AAAA", session)
+    if (session) {
+      session.disconnect();
+    }
+    setSession(null);
+    setPublisher(null);
+    setSubscribers([]);
+  }, [session]);
 
   useEffect(() => {
     const openVidu = new OpenVidu();
-    const session = openVidu.initSession();
+    let session = openVidu.initSession();
 
     session.on("streamCreated", (event) => {
       const subscriber = session.subscribe(event.stream, "");
+      const data = JSON.parse(event.stream.connection.data);
       setSubscribers((prev) => [
         ...prev,
-        { streamManager: subscriber, userId: +event.stream.connection.data },
+        { streamManager: subscriber, userId: +data.userId, gender: data.gender },
       ]);
     });
 
     session.on("streamDestroyed", (event) => {
       event.preventDefault();
-      
-      setSubscribers((prev) => {
-        let index = prev.findIndex((it) => it.userId === +event.stream.connection.data);
-        return -1 < index ? prev.splice(index, 1) : prev;
-      });
+
+      let index = subscribers.findIndex(
+        (it) => it.userId === +JSON.parse(event.stream.connection.data).userId
+      );
+      if (-1 < index) {
+        setSubscribers((prev) => prev.splice(index, 1));
+      }
     });
 
     session.on("exception", (exception) => {
@@ -32,8 +46,8 @@ export const useOpenvidu = (userId: number, meetingRoomId: number) => {
     });
 
     getToken(String(meetingRoomId)).then((token) => {
-      session
-        .connect(token, userId)
+      session!
+        .connect(token, JSON.stringify({ userId, gender }))
         .then(async () => {
           await navigator.mediaDevices.getUserMedia({ audio: true, video: true });
           const devices = await openVidu.getDevices();
@@ -58,11 +72,23 @@ export const useOpenvidu = (userId: number, meetingRoomId: number) => {
         });
     });
 
+    setSession(session);
     return () => {
-      session.disconnect();
+      if (session) {
+        session.disconnect();
+      }
+      setSession(null);
+      setPublisher(null);
       setSubscribers([]);
     };
-  }, [meetingRoomId, userId]);
+  }, [gender, meetingRoomId, userId]);
+
+  useEffect(() => {
+    window.addEventListener("beforeunload", () => leaveSession());
+    return () => {
+      window.removeEventListener("beforeunload", () => leaveSession());
+    };
+  }, [leaveSession]);
 
   const onChangeCameraStatus = useCallback(
     (status: boolean) => {
@@ -79,8 +105,8 @@ export const useOpenvidu = (userId: number, meetingRoomId: number) => {
   );
 
   const streamList = useMemo(
-    () => [{ streamManager: publisher, userId }, ...subscribers],
-    [publisher, subscribers, userId]
+    () => [{ streamManager: publisher, userId, gender }, ...subscribers],
+    [gender, publisher, subscribers, userId]
   );
 
   return {
