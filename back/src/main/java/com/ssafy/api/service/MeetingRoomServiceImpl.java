@@ -92,13 +92,14 @@ public class MeetingRoomServiceImpl implements MeetingRoomService {
 		// TODO Auto-generated method stub
 		MeetingRoomUserRelation meetingRoomUser = meetingRoomUserRelationRepository.findByMeetingRoomIdAndUserId(meetingRoomId, userId).get();
 		meetingRoomUser.setPickUserId(pickUserId);
+		meetingRoomUserRelationRepository.saveAndFlush(meetingRoomUser);
 		MeetingRoomUserRelation pickedUserInfo = meetingRoomUserRelationRepository.findByMeetingRoomIdAndUserId(meetingRoomId, pickUserId).get();
 		if(pickedUserInfo.getPickUserId() != null && pickedUserInfo.getPickUserId().equals(userId)) {
 			matched(meetingRoomUser, pickedUserInfo, meetingRoomId);
 		} else {
 			meetingRoomUser.setMatched(false);
 		}
-		meetingRoomUserRelationRepository.save(meetingRoomUser);
+		meetingRoomUserRelationRepository.saveAndFlush(meetingRoomUser);
 	}
 	
 	public void matched(MeetingRoomUserRelation meetingRoomUser, MeetingRoomUserRelation pickedUserInfo, Long meetingRoomId) throws Exception {
