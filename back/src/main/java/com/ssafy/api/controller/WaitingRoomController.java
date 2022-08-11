@@ -117,7 +117,7 @@ public class WaitingRoomController {
 		info(wrId, -1L);
 	}
 	
-	public void info(Long wrId, Long meetingRoomId) {
+	public void info(Long wrId, Long mrId) {
 		WaitingRoom wr = waitingRoomService.findById(wrId).get();
 		HashMap<String, Object> map = new HashMap<>();
 		map.put("status", wr.getStatus());
@@ -126,17 +126,18 @@ public class WaitingRoomController {
 		for (WaitingRoomUserRelation wrur : info) {
 			if (wrur.getType() == 0 || wrur.getType() == 1 ) {
 				HashMap<String, Object> user = new HashMap<>();
-				user.put("id", wrur.getUser().getId());
+				User pariticipant = wrur.getUser();
+				user.put("id", pariticipant.getId());
 				user.put("type", wrur.getType());
-				user.put("name", wrur.getUser().getName());
-				user.put("gender", wrur.getUser().getGender());
-				user.put("profile_img_path", wrur.getUser().getProfileImagePath());
+				user.put("name", pariticipant.getName());
+				user.put("gender", pariticipant.getGender());
+				user.put("profile_img_path", pariticipant.getProfileImagePath());
 				userList.add(user);
 			}
 		}
 		map.put("user_list", userList);
-		if (meetingRoomId != -1) {
-			map.put("meeting_room_id", meetingRoomId);
+		if (mrId != -1) {
+			map.put("meeting_room_id", mrId);
 		}
 		simp.convertAndSend("/topic/waiting/info/" + wrId, map);
 	}
@@ -237,29 +238,24 @@ public class WaitingRoomController {
 					return ResponseEntity.status(409).body("");
 				}
 			}
-			else {
+			else {    // 입장 이외의 모든 사항
 				int pastType = userState.getType();
 				userState.setType(value.getType());
 				wrurRepository.saveAndFlush(userState);
 				if (value.getType() == 2 || value.getType() == 3 || value.getType() == 4) {
 					reception(value.getRoomId());
 				}
-				
-				if (value.getType() == 0 || value.getType() == 5) {
-					if (value.getType() == 5) {
-						if (pastType == 0) {    // 나간 사람이 하필 방장이면
-							List<WaitingRoomUserRelation> wrur = waitingRoomUserRelationService.findByWaitingRoomIdAndType(value.getRoomId(), 1);
-							if (CollectionUtils.isNotEmpty(wrur)) {
-								WaitingRoomUserRelation relation = wrur.get(0);
-								relation.setType(0);
-								wrurRepository.saveAndFlush(relation);
-							}
+				if (value.getType() == 5) {
+					if (pastType == 0) {    // 나간 사람이 하필 방장이면
+						List<WaitingRoomUserRelation> wrur = waitingRoomUserRelationService.findByWaitingRoomIdAndType(value.getRoomId(), 1);
+						if (CollectionUtils.isNotEmpty(wrur)) {
+							WaitingRoomUserRelation relation = wrur.get(0);
+							relation.setType(0);
+							wrurRepository.saveAndFlush(relation);
 						}
-						waitingRoom();
-						info(value.getRoomId());
 					}
+					info(value.getRoomId());
 				}
-				
 				if (value.getType() == 4) {
 					result(user.getId(), false);
 				}
