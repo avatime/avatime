@@ -50,9 +50,10 @@ export const NaverHandler: FC<Iprops> = (props) => {
         dispatch(setSocialType(datas.social_type));
         dispatch(setIsLogin(true));
         dispatch(setToken(datas.accessToken));
+        localStorage.setItem("token", datas.accessToken);
         navigate("/main");
         alert("로그인 성공");
-      }
+      } 
     },
     onError: (err) => console.log(err),
   });
