@@ -175,6 +175,8 @@ implementation'com.google.code.gson:gson:2.8.7'
   
   // s3 관련
   implementation 'org.springframework.cloud:spring-cloud-starter-aws:2.2.6.RELEASE'
+  implementation platform('com.amazonaws:aws-java-sdk-bom:1.11.1000')
+  implementation 'com.amazonaws:aws-java-sdk-s3'
 
     //IntelliJ용
     //IntelliJ에서는 하기 annotationProcessor를 쓰면 별도의 querydsl 플러그인 및 플러그인 설정이 불필요.
