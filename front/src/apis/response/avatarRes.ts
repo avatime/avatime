@@ -10,3 +10,10 @@ export interface AvatarPickInfoRes {
     status: number;
     avatar_list : Array<AvatarInfoRes>;
 }
+
+export interface GetAvatarRes {
+    id: number;
+    name: string;
+    path: string;
+    base64: string;
+}
