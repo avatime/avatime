@@ -18,7 +18,8 @@ export const SubSessionPage: FC<IProps> = (props) => {
 
   const { publisher, streamList, onChangeCameraStatus, onChangeMicStatus } = useOpenvidu(
     userId,
-    subRoomId
+    subRoomId,
+    gender
   );
 
   const pickUserStreamManager = useMemo(
