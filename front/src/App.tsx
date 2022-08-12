@@ -49,21 +49,50 @@ function App() {
               path="/session"
               element={<ProtectedRoute outlet={<SessionPage />} isAuthentication={isLogin} />}
             />
-            <Route path="/login" element={<LoginPage />} />
+            <Route
+              path="/login"
+              element={
+                <ProtectedRoute
+                  outlet={<LoginPage />}
+                  isAuthentication={!isLogin}
+                  redirectPath="/main"
+                />
+              }
+            />
             <Route
               path="/mypage"
-              element={<ProtectedRoute outlet={<MyPage />} isAuthentication={!!socialId} />}
+              element={<ProtectedRoute outlet={<MyPage />} isAuthentication={socialId} />}
             />
             <Route
               path="/finalPickResult"
-              element={<ProtectedRoute outlet={<FinalPickResultPage />} isAuthentication={isLogin} />}
+              element={
+                <ProtectedRoute outlet={<FinalPickResultPage />} isAuthentication={isLogin} />
+              }
             />
             <Route
               path="/pickAvatar"
               element={<ProtectedRoute outlet={<PickAvatarPage />} isAuthentication={isLogin} />}
             />
-            <Route path="/kakao" element={<KakaoHandler />} />
-            <Route path="/naver" element={<NaverHandler />} />
+             <Route
+              path="/kakao"
+              element={
+                <ProtectedRoute
+                  outlet={<KakaoHandler />}
+                  isAuthentication={!isLogin}
+                  redirectPath="/main"
+                />
+              }
+            />
+             <Route
+              path="/naver"
+              element={
+                <ProtectedRoute
+                  outlet={<NaverHandler />}
+                  isAuthentication={!isLogin}
+                  redirectPath="/main"
+                />
+              }
+            />
             <Route
               path="/canvas"
               element={<ProtectedRoute outlet={<CanvasPage />} isAuthentication={isLogin} />}
