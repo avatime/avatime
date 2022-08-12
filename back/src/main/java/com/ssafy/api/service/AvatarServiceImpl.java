@@ -34,4 +34,12 @@ public class AvatarServiceImpl implements AvatarService {
 	public void saveAvatar(Avatar avatar) {
 		avatarRepository.save(avatar);
 	}
+
+	@Override
+	public boolean checkAvatarName(String name) {
+		boolean response;
+		response = avatarRepository.existsByName(name);
+		System.out.println("response: " + response);
+		return response;
+	}
 }

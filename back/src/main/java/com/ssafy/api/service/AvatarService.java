@@ -10,4 +10,5 @@ public interface AvatarService {
 	List<Avatar> findAllByUserId(Long UserId);
 	Avatar findById(Long id);
 	void saveAvatar(Avatar avatar);
+	boolean checkAvatarName(String name);
 }
