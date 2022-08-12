@@ -207,7 +207,7 @@ public class MeetingController {
 		}
 	}
 	
-	@MessageMapping("meeting/leave")
+	@MessageMapping("/meeting/leave")
 	public void leavingMeeting(LeavingMeetingRoomReq leavingMeetingRoomReq) throws Exception {
 		MeetingRoomUserRelation meetingRoomUser = meetingRoomService.findUser(leavingMeetingRoomReq.getMeetingRoomId(), leavingMeetingRoomReq.getUserId());
 		meetingRoomUser.setLeftMeeting(true);
