@@ -4,12 +4,13 @@ import { Box, Grid } from "@mui/material";
 import { ControllBar } from "../components/session/ControllBar";
 import { grey } from "@mui/material/colors";
 import { useDispatch, useSelector } from "react-redux";
-import sessionApi from "../apis/sessionApi";
 import { setUserInfoList } from "../stores/slices/meetingSlice";
 import { MeetingRoomInfoRes } from "../apis/response/sessionRes";
 import { useOpenvidu } from "../hooks/useOpenvidu";
 import { AvatarVideoStream } from "../components/session/AvatarVideoStream";
 import { useWebSocket } from "../hooks/useWebSocket";
+import { useNavigate } from "react-router";
+import { AvatimeApi } from "../apis/avatimeApi";
 
 interface IProps {}
 
@@ -20,6 +21,7 @@ export const SessionPage: FC<IProps> = (props) => {
   const userId = useSelector((state: any) => state.user.userId);
   const isMaster = useSelector((state: any) => state.waiting.isMaster);
   const dispatch = useDispatch();
+  const navigate = useNavigate();
 
   const [meetingRoomInfo, setMeetingRoomInfo] = useState<MeetingRoomInfoRes>();
   useEffect(() => {
@@ -27,11 +29,17 @@ export const SessionPage: FC<IProps> = (props) => {
       return;
     }
 
-    sessionApi.getMeetingRoomInfo({ meetingroom_id: roomId }).then((res: MeetingRoomInfoRes) => {
-      setMeetingRoomInfo(res);
-      dispatch(setUserInfoList(res.meeting_user_info_list));
-    });
-  }, [dispatch, meetingRoomInfo, roomId]);
+    AvatimeApi.getInstance().getMeetingRoomInfo(
+      { meetingroom_id: roomId },
+      {
+        onSuccess: (data) => {
+          setMeetingRoomInfo(data);
+          dispatch(setUserInfoList(data.meeting_user_info_list));
+        },
+        navigate,
+      }
+    );
+  }, [dispatch, meetingRoomInfo, navigate, roomId]);
 
   const [opened, setOpened] = useState<boolean[]>([true, true]);
   const cntOpened = opened.filter((it) => it).length;
@@ -90,7 +98,7 @@ export const SessionPage: FC<IProps> = (props) => {
                             const userInfo = meetingRoomInfo.meeting_user_info_list.find(
                               (it) => it.user_id === stream.userId
                             );
-                            console.log(userInfo)
+                            console.log(userInfo);
                             return (
                               <Grid
                                 item

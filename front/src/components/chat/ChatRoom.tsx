@@ -9,7 +9,6 @@ import {
   Typography,
 } from "@mui/material";
 import React, { FC, useEffect, useState } from "react";
-import chatApi from "../../apis/chatApi";
 import { ChatMessageRes } from "../../apis/response/chatRes";
 import { ChatBlock } from "./ChatBlock";
 import "./style.css";
@@ -22,6 +21,8 @@ import SendIcon from "@mui/icons-material/Send";
 import { useSelector } from "react-redux";
 import { formatDate } from "../../utils/day";
 import { useWebSocket } from "../../hooks/useWebSocket";
+import { useNavigate } from "react-router";
+import { AvatimeApi } from "../../apis/avatimeApi";
 
 type ChatType = "all" | "gender";
 
@@ -42,6 +43,7 @@ export const ChatRoom: FC<IProps> = ({
   chattingRoomId,
   foldable = true,
 }) => {
+  const navigate = useNavigate();
   const [chatList, setChatList] = useState<ChatMessageRes[]>([]);
   const userId = useSelector((state: any) => state.user.userId);
 
@@ -50,21 +52,30 @@ export const ChatRoom: FC<IProps> = ({
       client.subscribe(`/topic/chatting/receive/${chattingRoomId}`, (res) => {
         setChatList(JSON.parse(res.body));
       });
-
-      chatApi.sendMessage({
-        chattingroom_id: chattingRoomId,
-        chat_type: "ENTER",
-        user_id: userId,
-        message: "ENTER",
-      });
+      AvatimeApi.getInstance().sendMessage(
+        {
+          chattingroom_id: chattingRoomId,
+          chat_type: "ENTER",
+          user_id: userId,
+          message: "ENTER",
+        },
+        {
+          navigate,
+        }
+      );
     },
     beforeDisconnected(frame, client) {
-      chatApi.sendMessage({
-        chattingroom_id: chattingRoomId,
-        chat_type: "LEAVE",
-        user_id: userId,
-        message: "LEAVE",
-      });
+      AvatimeApi.getInstance().sendMessage(
+        {
+          chattingroom_id: chattingRoomId,
+          chat_type: "LEAVE",
+          user_id: userId,
+          message: "LEAVE",
+        },
+        {
+          navigate,
+        }
+      );
     },
   });
 
@@ -89,12 +100,18 @@ export const ChatRoom: FC<IProps> = ({
       return;
     }
 
-    chatApi.sendMessage({
-      chattingroom_id: chattingRoomId,
-      chat_type: "TALK",
-      user_id: userId,
-      message,
-    });
+    AvatimeApi.getInstance().sendMessage(
+      {
+        chattingroom_id: chattingRoomId,
+        chat_type: "TALK",
+        user_id: userId,
+        message,
+      },
+      {
+        navigate,
+      }
+    );
+
     setMessage("");
   };
 
