@@ -46,4 +46,13 @@ public class AvatarServiceImpl implements AvatarService {
 		// TODO Auto-generated method stub
 		return avatarRepository.findByUserIdAndSlot(userId, slot).orElse(new Avatar());
 	}
+	
+	@Override
+	public boolean checkAvatarName(String name) {
+		boolean response;
+		response = avatarRepository.existsByName(name);
+		System.out.println("response: " + response);
+		return response;
+	}
+
 }

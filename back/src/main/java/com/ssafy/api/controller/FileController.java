@@ -85,4 +85,18 @@ public class FileController {
 			return ResponseEntity.status(500).body("실패: 관리자에게 문의하세요");
 		}
 	}
+	
+	@GetMapping("/check/{name}")
+	@ApiOperation(value = "아바타 이름 중복 체크", notes = "")
+	public ResponseEntity<?> checkAvatarName(@PathVariable String name){
+		boolean response;
+		try {
+			response = avatarService.checkAvatarName(name);
+		} catch (Exception e) {
+			return ResponseEntity.status(500).body(e);
+		}
+		return ResponseEntity.ok(!response);
+	}
+
+
 }
