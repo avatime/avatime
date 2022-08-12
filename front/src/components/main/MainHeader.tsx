@@ -19,6 +19,7 @@ import {
   setSocialType,
 } from "../../stores/slices/userSlice";
 import { AvatimeApi } from "../../apis/avatimeApi";
+import { AvatimeWs } from "../../apis/avatimeWs";
 
 interface IProps {
   hideSettings?: boolean;
@@ -48,6 +49,7 @@ export const MainHeader: FC<IProps> = ({ hideSettings = false }) => {
     localStorage.clear();
     dispatch(reset());
     AvatimeApi.getInstance().logout();
+    AvatimeWs.getInstance().logout();
     alert("로그아웃 완료");
     navigate("/");
   };

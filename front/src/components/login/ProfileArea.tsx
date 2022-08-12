@@ -27,6 +27,7 @@ import {
 } from "../../stores/slices/userSlice";
 import { useNavigate } from "react-router";
 import { AvatimeApi } from "../../apis/avatimeApi";
+import { AvatimeWs } from "../../apis/avatimeWs";
 
 const style = {
   position: "absolute" as "absolute",
@@ -203,6 +204,7 @@ export const ProfileArea: FC<IProps> = (props) => {
                 dispatch(setIsLogin(true));
                 dispatch(setToken(data.accessToken));
                 AvatimeApi.getInstance().login(data.accessToken);
+                AvatimeWs.getInstance().login(data.accessToken);
                 navigate("/main");
               },
               navigate,
