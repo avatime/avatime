@@ -18,3 +18,8 @@ export interface GetAvatarRes {
     base64: string;
     slot: number;
 }
+
+export interface SaveAvatarRes {
+    id: number;
+    path: string;
+}

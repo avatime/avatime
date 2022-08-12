@@ -19,7 +19,7 @@ import { NameCheckReq, UserModifyReq, RegisterReq, UserInfoReq } from "./request
 import { ProfileRes, UserModifyRes, RegisterRes, UserInfoRes } from "./response/memberRes";
 import { AvatarApi } from './avatarApis';
 import { SelectAvatarReq, AvatarNameCheckReq, GetAvatarReq, GetAvatarAllReq, SaveAvatarReq } from "./request/avatarReq";
-import { GetAvatarRes } from "./response/avatarRes";
+import { GetAvatarRes, SaveAvatarRes } from "./response/avatarRes";
 import { SuccessRes } from "./response/successRes";
 
 export interface RequestConfig<R> {
@@ -68,8 +68,8 @@ export class AvatimeApi implements SessionApi, ChatApi, WaitingApi, UserApi, Ava
       ...requestConfig,
     });
   }
-  saveAvatar(saveAvatarReq: SaveAvatarReq, requestConfig: RequestConfig<boolean>): void {
-    this.request<SaveAvatarReq, boolean>({
+  saveAvatar(saveAvatarReq: SaveAvatarReq, requestConfig: RequestConfig<SaveAvatarRes>): void {
+    this.request<SaveAvatarReq, SaveAvatarRes>({
       method: "post",
       url: `/avatar/custom`,
       data: saveAvatarReq,
@@ -79,7 +79,7 @@ export class AvatimeApi implements SessionApi, ChatApi, WaitingApi, UserApi, Ava
   getAvatar(getAvatarReq: GetAvatarReq, requestConfig: RequestConfig<GetAvatarRes>): void {
     this.request<GetAvatarReq, GetAvatarRes>({
       method: "get",
-      url: `/avatar/load/${getAvatarReq.user_id}/${getAvatarReq.slot}`,
+      url: `/avatar/get/${getAvatarReq.user_id}/${getAvatarReq.slot}`,
       ...requestConfig,
     });
   }
