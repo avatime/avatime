@@ -15,6 +15,8 @@ import {
   setProfileImagePath,
   setIsLogin,
   setToken,
+  setSocialId,
+  setSocialType,
 } from "../../stores/slices/userSlice";
 import { AvatimeApi } from "../../apis/avatimeApi";
 
@@ -44,16 +46,7 @@ export const MainHeader: FC<IProps> = ({ hideSettings = false }) => {
 
   const logout = () => {
     localStorage.clear();
-    dispatch(reset);
-    dispatch(setUserName(""));
-    dispatch(setUserDesc(""));
-    dispatch(
-      setProfileImagePath(
-        "https://avatimebucket2022.s3.ap-northeast-2.amazonaws.com/%ED%94%84%EB%A1%9C%ED%95%84/profile01.png"
-      )
-    );
-    dispatch(setIsLogin("false"));
-    dispatch(setToken(""));
+    dispatch(reset());
     AvatimeApi.getInstance().logout();
     alert("로그아웃 완료");
     navigate("/");

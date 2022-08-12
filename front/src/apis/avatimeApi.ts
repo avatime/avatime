@@ -272,8 +272,11 @@ export class AvatimeApi implements SessionApi, ChatApi, WaitingApi, UserApi, Ava
     const headers: any = {
       "content-type": "application/json",
     };
+
     if (token) {
       headers.Authorization = `Bearer ${token}`;
+    } else if (localStorage.getItem("token")) {
+      headers.Authorization = `Bearer ${localStorage.getItem("token")}`;
     }
 
     return axios.create({
