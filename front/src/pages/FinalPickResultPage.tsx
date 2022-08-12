@@ -3,17 +3,18 @@ import { Backdrop, Box, Grid, Typography, useTheme, CircularProgress } from "@mu
 import { grey } from "@mui/material/colors";
 import { useSelector, useDispatch } from "react-redux";
 import Xarrow, { Xwrapper } from "react-xarrows";
-import sessionApi from "../apis/sessionApi";
 import { FinalPickResultRes } from "../apis/response/sessionRes";
 import useTimer from "../hooks/useTimer";
 import { useEffect } from "react";
 import { SessionModal } from "../components/session/modal/SessionModal";
 import { useNavigate } from "react-router";
 import { setSubMeetingRoomId } from "../stores/slices/meetingSlice";
+import { AvatimeApi } from "../apis/avatimeApi";
 
 interface IProps {}
 
 export const FinalPickResultPage: FC<IProps> = (props) => {
+  const navigate = useNavigate();
   const roomId = useSelector((state: any) => state.meeting.roomId);
   const gender = useSelector((state: any) => state.user.userGender);
   const userId = useSelector((state: any) => state.user.userId);
@@ -24,16 +25,17 @@ export const FinalPickResultPage: FC<IProps> = (props) => {
       return;
     }
 
-    sessionApi
-      .getFinalPickResult({
-        meetingroom_id: roomId,
-        user_id: userId,
-      })
-      .then((it) => {
-        it.result_list.sort((a, _) => (a.gender === gender ? -1 : 1));
-        setPickResult(it);
-      });
-  }, [gender, roomId, userId]);
+    AvatimeApi.getInstance().getFinalPickResult({
+      meetingroom_id: roomId,
+      user_id: userId,
+    }, {
+      onSuccess: (data) => {
+        data.result_list.sort((a: any) => (a.gender === gender ? -1 : 1));
+        setPickResult(data);
+      },
+      navigate,
+    })
+  }, [gender, navigate, roomId, userId]);
 
   const timer = useTimer(5, 1000);
   const [arrowOrderList, setArrowOrderList] = useState<number[]>([]);
@@ -68,7 +70,6 @@ export const FinalPickResultPage: FC<IProps> = (props) => {
     setArrowOrderList(temp);
   }, [pickResult]);
 
-  const navigate = useNavigate();
   const dispatch = useDispatch();
   const onModalClose = () => {
     if (pickResult?.matched) {

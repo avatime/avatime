@@ -3,12 +3,12 @@ import React, { FC, useState } from "react";
 import { useEffect } from "react";
 import { useSelector, useDispatch } from "react-redux";
 import { useNavigate } from "react-router";
-import sessionApi from "../../../apis/sessionApi";
 import { AvatarProfile } from "./AvatarProfile";
 import { SessionModal } from "./SessionModal";
 import { setPickUserName } from "../../../stores/slices/meetingSlice";
 import { MeetingUserInfoRes } from "../../../apis/response/sessionRes";
 import { useWebSocket } from "../../../hooks/useWebSocket";
+import { AvatimeApi } from "../../../apis/avatimeApi";
 
 interface IProps {
   isOpened: boolean;
@@ -54,13 +54,19 @@ export const FinalPickModal: FC<IProps> = ({ isOpened }) => {
     dispatch(
       setPickUserName(targetUserList.find((it) => it.user_id === selectedUserId)!.user_name)
     );
-    sessionApi
-      .patchFinalPick({
+    AvatimeApi.getInstance().patchFinalPick(
+      {
         meetingroom_id: meetingRoomId,
         user_id: userId,
         pick_user_id: selectedUserId,
-      })
-      .then(() => navigate("/finalPickResult", { replace: true }));
+      },
+      {
+        onSuccess() {
+          navigate("/finalPickResult", { replace: true });
+        },
+        navigate,
+      }
+    );
   }, [timer, navigate, meetingRoomId, userId, selectedUserId, dispatch, targetUserList]);
 
   return (
