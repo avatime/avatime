@@ -60,7 +60,7 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
 																									// 인증 필터를 거치도록 필터를
 																									// 추가
 				.authorizeRequests()
-				.antMatchers("/api/v1/user/check/*", "/api/v1/user/profile", "/api/v1/auth/register", "/api/v1/auth/naver", "/api/v1/auth/kakao",
+				.antMatchers("/api/v1/user/check/*", "/api/v1/user/profile", "/api/v1/auth/register", "/api/v1/auth/naver*/**", "/api/v1/auth/kakao*/**",
 						"/swagger*/**", "/v2/api-docs/**")
 				.permitAll().anyRequest().authenticated() // 인증이 필요한 URL과 필요하지 않은 URL에 대하여 설정
 				.and().cors();
