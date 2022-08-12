@@ -9,4 +9,5 @@ import com.ssafy.db.entity.Avatar;
 
 public interface AvatarRepository extends JpaRepository<Avatar, Long> {
 	Optional<List<Avatar>> findAllByUserId(Long userId);
+	boolean existsByName(String name);
 }
