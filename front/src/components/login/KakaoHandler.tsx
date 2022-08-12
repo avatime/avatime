@@ -49,7 +49,7 @@ export const KakaoHandler: FC<Iprops> = (props) => {
         dispatch(setToken(data.accessToken));
         AvatimeApi.getInstance().login(data.accessToken);
         AvatimeWs.getInstance().login(data.accessToken);
-        // localStorage.setItem("token", data.accessToken);
+        localStorage.setItem("token", data.accessToken);
         navigate("/main");
         alert("로그인 성공");
       } else if(data.statusCode === 205) {
