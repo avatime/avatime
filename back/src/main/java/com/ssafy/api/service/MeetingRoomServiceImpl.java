@@ -279,7 +279,7 @@ public class MeetingRoomServiceImpl implements MeetingRoomService {
 	
 	@Override
 	public MeetingRoom findSubMeetingRoom(Long mainMeetingRoomId, Long userId) throws Exception {
-		List<MeetingRoom> list = meetingRoomRepository.findAllBymainSessionIdAndType(mainMeetingRoomId, 1).get();
+		List<MeetingRoom> list = meetingRoomRepository.findAllBymainSessionIdAndTypeAndStatus(mainMeetingRoomId, 1, 0).get();
 		for(MeetingRoom meetingRoom : list) {
 			if(meetingRoomUserRelationRepository.existsByMeetingRoomIdAndUserId(mainMeetingRoomId, userId)) return meetingRoom;
 		}

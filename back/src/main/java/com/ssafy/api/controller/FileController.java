@@ -5,7 +5,9 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestPart;
 import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.multipart.MultipartFile;
 
 import com.ssafy.api.dto.FileDetail;
 import com.ssafy.api.request.AvatarCustomReq;
@@ -44,12 +46,26 @@ public class FileController {
 //			return ResponseEntity.status(500).body("서버 오류");
 //		}
 //	}
+	
+	@PostMapping("/customTest")
+	@ApiOperation(value = "커스텀 아바타 저장", notes = "")
+	public ResponseEntity<?> avatarUpload(@RequestPart("file") MultipartFile multipartFile) {
+		FileDetail fileDetail = fileUploadService.save(multipartFile);
+//		String filepath = fileUploadService.save2(multipartFile);
+		return ResponseEntity.status(201).body("사진 올리기 성공!!!!!! >> ");
+	}
 
 	@PostMapping("/custom")
 	@ApiOperation(value = "커스텀 아바타 저장", notes = "")
-	public ResponseEntity<?> post(AvatarCustomReq avatarCustomReq) {
-		FileDetail fileDetail = fileUploadService.save(avatarCustomReq);
-		return ResponseEntity.status(201).body("사진 올리기 성공!!!!!! >> " + fileDetail.getPath());
+//	public ResponseEntity<?> post(@RequestPart("file") MultipartFile multipartFile) {
+//		FileDetail fileDetail = fileUploadService.save(multipartFile);
+	public void post(@RequestBody AvatarCustomReq avatarCustomReq) {
+		try {
+			fileUploadService.saveAvatar(avatarCustomReq.getBase64());
+		} catch (Exception e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
 	}
 
 }
