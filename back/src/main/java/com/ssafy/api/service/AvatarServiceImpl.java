@@ -25,9 +25,9 @@ public class AvatarServiceImpl implements AvatarService {
 	}
 
 	@Override
-	public List<Avatar> findAllByUserId(Long UserId) {
+	public List<Avatar> findAllByUserId(Long userId) {
 		// TODO Auto-generated method stub
-		return avatarRepository.findAllByUserId(UserId).get();
+		return avatarRepository.findAllByUserIdOrderBySlotDesc(userId).get();
 	}
 	
 	@Override
@@ -36,10 +36,14 @@ public class AvatarServiceImpl implements AvatarService {
 	}
 
 	@Override
-	public boolean checkAvatarName(String name) {
-		boolean response;
-		response = avatarRepository.existsByName(name);
-		System.out.println("response: " + response);
-		return response;
+	public boolean isExistAvatar(Long userId, Long slot) {
+		// TODO Auto-generated method stub
+		return avatarRepository.existsByUserIdAndSlot(userId, slot);
+	}
+
+	@Override
+	public Avatar findByUserIdAndSlot(Long userId, Long slot) {
+		// TODO Auto-generated method stub
+		return avatarRepository.findByUserIdAndSlot(userId, slot).orElse(new Avatar());
 	}
 }
