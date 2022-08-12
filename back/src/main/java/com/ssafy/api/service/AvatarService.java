@@ -12,4 +12,5 @@ public interface AvatarService {
 	Avatar findByUserIdAndSlot(Long userId, Long slot);
 	void saveAvatar(Avatar avatar);
 	boolean isExistAvatar(Long userId, Long slot);
+	boolean checkAvatarName(String name);
 }
