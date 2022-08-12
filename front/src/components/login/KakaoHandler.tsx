@@ -12,10 +12,9 @@ import {
   setIsLogin,
   setToken,
 } from "../../stores/slices/userSlice";
-import { useQuery } from "react-query";
-import { kakaoLogin } from "../../apis/userApi";
 import { Backdrop, CircularProgress } from "@mui/material";
 import { useNavigate } from "react-router";
+import { AvatimeApi } from "../../apis/avatimeApi";
 
 interface Iprops {}
 
@@ -24,41 +23,39 @@ export const KakaoHandler: FC<Iprops> = (props) => {
   let code = new URL(window.location.href).searchParams.get("code");
   const navigate = useNavigate();
 
-  useQuery("login", kakaoLogin(code as string), {
-    onSuccess: (res: any) => {
-      const datas = res.data;
-      if (datas.statusCode === 201) {
-        console.log(datas);
-        dispatch(setUserGender(datas.gender));
-        console.log(datas.socialId);
-        dispatch(setSocialId(datas.social_id));
-        console.log(datas.socialType);
-        dispatch(setSocialType(datas.social_type));
+  AvatimeApi.getInstance().kakaoLogin(code as string, {
+    onSuccess(data) {
+      if (data.statusCode === 201) {
+        console.log(data);
+        dispatch(setUserGender(data.gender));
+        console.log(data.socialId);
+        dispatch(setSocialId(data.social_id));
+        console.log(data.socialType);
+        dispatch(setSocialType(data.social_type));
         dispatch(setIsLogin(false));
         navigate("/mypage");
         alert("회원가입이 필요합니다.");
-      } else if (res.data.statusCode === 200) {
-        console.log(datas);
-        dispatch(setUserId(datas.user_id));
-        dispatch(setUserName(datas.name));
-        dispatch(setUserGender(datas.gender));
-        dispatch(setUserDesc(datas.description));
-        dispatch(setProfileImagePath(datas.profile_image_path));
-        dispatch(setSocialId(datas.social_id));
-        dispatch(setSocialType(datas.social_type));
+      } else if (data.statusCode === 200) {
+        console.log(data);
+        dispatch(setUserId(data.user_id));
+        dispatch(setUserName(data.name));
+        dispatch(setUserGender(data.gender));
+        dispatch(setUserDesc(data.description));
+        dispatch(setProfileImagePath(data.profile_image_path));
+        dispatch(setSocialId(data.social_id));
+        dispatch(setSocialType(data.social_type));
         dispatch(setIsLogin(true));
-        dispatch(setToken(datas.accessToken));
-        localStorage.setItem("token", datas.accessToken);
+        dispatch(setToken(data.accessToken));
+        // localStorage.setItem("token", data.accessToken);
         navigate("/main");
         alert("로그인 성공");
-      } else if(res.data.statusCode === 205) {
+      } else if(data.statusCode === 205) {
         alert("로그인 실패! 정보 제공 동의 후 다시 시도해주세요.");
         window.location.replace(KAKAO_AGREE_URL);
       }
     },
-    onError: (err) => console.log(err),
-  });
-
+    navigate,
+  })
   // 인가코드
 
   return (

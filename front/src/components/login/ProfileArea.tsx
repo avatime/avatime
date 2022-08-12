@@ -13,7 +13,6 @@ import {
 import CheckIcon from "@mui/icons-material/Check";
 import RefreshIcon from "@mui/icons-material/Refresh";
 import { useSelector, useDispatch } from "react-redux";
-import { registerApi, userModifyApi, nameCheckApi, profileAllApi } from "../../apis/userApi";
 import { ProfileRes } from "../../apis/response/memberRes";
 import {
   setUserId,
@@ -27,6 +26,7 @@ import {
   setToken,
 } from "../../stores/slices/userSlice";
 import { useNavigate } from "react-router";
+import { AvatimeApi } from "../../apis/avatimeApi";
 
 const style = {
   position: "absolute" as "absolute",
@@ -75,10 +75,13 @@ export const ProfileArea: FC<IProps> = (props) => {
   const [profileImages, setProfileImages] = useState<ProfileRes[]>([]);
 
   useEffect(() => {
-    profileAllApi.receive().then((res) => {
-      setProfileImages(res);
+    AvatimeApi.getInstance().getProfileList({
+      onSuccess(data) {
+        setProfileImages(data);
+      },
+      navigate,
     });
-  }, []);
+  }, [navigate]);
 
   useEffect(() => {
     if (nameCheck) {
@@ -125,9 +128,16 @@ export const ProfileArea: FC<IProps> = (props) => {
       setNameSatis(false);
     } else {
       setNameSatis(true);
-      nameCheckApi.checkName({ name: event.target.value }).then((res) => {
-        setNameCheck(res);
-      });
+
+      AvatimeApi.getInstance().checkName(
+        { name: event.target.value },
+        {
+          onSuccess(data) {
+            setNameCheck(data);
+          },
+          navigate,
+        }
+      );
     }
   };
 
@@ -150,53 +160,53 @@ export const ProfileArea: FC<IProps> = (props) => {
       console.log("profile_image_path : " + image);
       console.log("description : " + desc);
       isLogin
-        ? userModifyApi
-            .modifyUser({
+        ? AvatimeApi.getInstance().modifyUser(
+            {
               id: userId,
               name: name,
               profile_image_path: image,
               description: desc,
-            })
-            .then((res) => {
-              console.log(res.statusCode);
-              console.log(res.message);
-              alert("회원수정 완료!");
-              dispatch(setProfileImagePath(image));
-              dispatch(setUserName(name));
-              dispatch(setUserDesc(desc));
-              navigate("/main");
-            })
-            .catch(function (err) {
-              console.log(err);
-              alert("오류발생!");
-            })
-        : registerApi
-            .register({
+            },
+            {
+              onSuccess(data) {
+                console.log(data.statusCode);
+                console.log(data.message);
+                alert("회원수정 완료!");
+                dispatch(setProfileImagePath(image));
+                dispatch(setUserName(name));
+                dispatch(setUserDesc(desc));
+                navigate("/main");
+              },
+              navigate,
+            }
+          )
+        : AvatimeApi.getInstance().register(
+            {
               social_id: socialId,
               social_type: socialType,
               gender: userGender,
               name: name,
               profile_image_path: image,
               description: desc,
-            })
-            .then((res) => {
-              console.log(res);
-              alert("회원가입 완료!");
-              dispatch(setUserId(res.user_id));
-              dispatch(setUserName(res.name));
-              dispatch(setUserGender(res.gender));
-              dispatch(setUserDesc(res.description));
-              dispatch(setProfileImagePath(res.profile_image_path));
-              dispatch(setSocialId(res.social_id));
-              dispatch(setSocialType(res.social_type));
-              dispatch(setIsLogin(true));
-              dispatch(setToken(res.accessToken));
-              navigate("/main");
-            })
-            .catch(function (err) {
-              console.log(err);
-              alert("오류발생!");
-            });
+            },
+            {
+              onSuccess(data) {
+                console.log(data);
+                alert("회원가입 완료!");
+                dispatch(setUserId(data.user_id));
+                dispatch(setUserName(data.name));
+                dispatch(setUserGender(data.gender));
+                dispatch(setUserDesc(data.description));
+                dispatch(setProfileImagePath(data.profile_image_path));
+                dispatch(setSocialId(data.social_id));
+                dispatch(setSocialType(data.social_type));
+                dispatch(setIsLogin(true));
+                dispatch(setToken(data.accessToken));
+                navigate("/main");
+              },
+              navigate,
+            }
+          );
     }
   };
 
@@ -217,7 +227,7 @@ export const ProfileArea: FC<IProps> = (props) => {
     <>
       <Stack>
         <Box display="flex" justifyContent="center" alignItems="start" marginLeft="10vw">
-          <IconButton onClick={handleOpen} >
+          <IconButton onClick={handleOpen}>
             <Avatar
               src={image}
               sx={{ width: 80, height: 80 }}

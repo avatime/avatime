@@ -24,7 +24,6 @@ import {
   ToggleButton,
   Typography,
 } from "@mui/material";
-import { ageApi, makeNewRoomApi, requestEnterRoomApi, sidoApi } from "../../apis/waitingRoomApi";
 import { ResultWaitingModal } from "../waitingRoom/ResultWaitingModal";
 import {
   setWaitingRoomId,
@@ -37,9 +36,9 @@ import {
 } from "../../stores/slices/waitingSlice";
 import { useNavigate } from "react-router";
 import { Add } from "@mui/icons-material";
-import { useQuery } from "react-query";
 import "../../style.css";
 import { useWebSocket } from "../../hooks/useWebSocket";
+import { AvatimeApi } from "../../apis/avatimeApi";
 import { Loading } from "./Loading";
 
 interface IProps {}
@@ -131,6 +130,7 @@ const counts = [
 ];
 
 export const WaitingRoomList: FC<IProps> = (props) => {
+  const navigate = useNavigate();
   const [ageId, setAgeId] = useState(0);
   const [sidoId, setSidoId] = useState(0);
   const [name, setName] = useState("");
@@ -146,8 +146,27 @@ export const WaitingRoomList: FC<IProps> = (props) => {
     setOpen(false);
   };
 
-  const { data: age } = useQuery("waiting/getAge", () => ageApi.receive());
-  const { data: sido } = useQuery("waiting/getSido", () => sidoApi.receive());
+  const [sidoList, setSidoList] = useState<SidoRes[]>();
+  const [ageList, setAgeList] = useState<AgeRes[]>();
+  useEffect(() => {
+    if (sidoList || ageList) {
+      return;
+    }
+
+    AvatimeApi.getInstance().getSidoList({
+      onSuccess(data) {
+        setSidoList(data);
+      },
+      navigate,
+    });
+
+    AvatimeApi.getInstance().getAgeList({
+      onSuccess(data) {
+        setAgeList(data);
+      },
+      navigate,
+    });
+  }, [sidoList, ageList, navigate]);
 
   const handleCountChange = (event: React.ChangeEvent<HTMLInputElement>) => {
     setHeadCounts(Number(event.target.value));
@@ -180,7 +199,6 @@ export const WaitingRoomList: FC<IProps> = (props) => {
   };
 
   const [keyword, setKeyword] = useState("");
-  const navigate = useNavigate();
 
   const searchByName = (event: React.ChangeEvent<HTMLInputElement>) => {
     setKeyword(event.target.value);
@@ -236,10 +254,12 @@ export const WaitingRoomList: FC<IProps> = (props) => {
   const rejectRoom = () => {
     setopenWaiting(false);
 
-    requestEnterRoomApi.requestEnterRoom({
+    AvatimeApi.getInstance().requestEnterRoom({
       user_id: userId,
       room_id: roomId,
       type: 3,
+    }, {
+      navigate
     });
     console.log(roomId);
   };
@@ -251,19 +271,22 @@ export const WaitingRoomList: FC<IProps> = (props) => {
 
     setRoomId(waitingRoomInfoRes.id);
 
-    requestEnterRoomApi.requestEnterRoom({
+    AvatimeApi.getInstance().requestEnterRoom({
       user_id: userId,
       room_id: waitingRoomInfoRes.id,
       type: 2,
+    }, {
+      onSuccess(data) {
+        setopenWaiting(true);
+        dispatch(setWaitingRoomId(waitingRoomInfoRes.id));
+        dispatch(setRoomName(waitingRoomInfoRes.name));
+        dispatch(setAge(waitingRoomInfoRes.age));
+        dispatch(setSido(waitingRoomInfoRes.sido));
+        dispatch(setMaster(false));
+        dispatch(setHeadCount(waitingRoomInfoRes.head_count));
+      },
+      navigate
     });
-
-    setopenWaiting(true);
-    dispatch(setWaitingRoomId(waitingRoomInfoRes.id));
-    dispatch(setRoomName(waitingRoomInfoRes.name));
-    dispatch(setAge(waitingRoomInfoRes.age));
-    dispatch(setSido(waitingRoomInfoRes.sido));
-    dispatch(setMaster(false));
-    dispatch(setHeadCount(waitingRoomInfoRes.head_count));
   };
 
   const setRoomData = async () => {
@@ -272,25 +295,30 @@ export const WaitingRoomList: FC<IProps> = (props) => {
     } else if (name.length >= 30) {
       alert("방 제목 글자수를 30글자 이하로 해주세요!");
     } else {
-      const res = await makeNewRoomApi.makeNewRoom({
+
+      AvatimeApi.getInstance().makeNewRoom({
         name,
         head_count: headCounts,
         user_id: userId,
         age_id: ageId,
         sido_id: sidoId,
+      }, {
+        onSuccess(data) {
+          console.log(data);
+
+          dispatch(setWaitingRoomId(data.waiting_room_id));
+          dispatch(setRoomName(name));
+          dispatch(setAge(ageList?.find((i: AgeRes) => i.id === ageId)?.name));
+          dispatch(setSido(sidoList?.find((i: SidoRes) => i.id === sidoId)?.name));
+          dispatch(setMaster(true));
+          dispatch(setHeadCount(headCounts));
+          dispatch(setChatRoomId(data.chatting_room_id));
+    
+          handleClose();
+          navigate("/waiting", { replace: true });
+        },
+        navigate
       });
-      console.log(res);
-
-      dispatch(setWaitingRoomId(res.waiting_room_id));
-      dispatch(setRoomName(name));
-      dispatch(setAge(age?.find((i: AgeRes) => i.id === ageId)?.name));
-      dispatch(setSido(sido?.find((i: SidoRes) => i.id === sidoId)?.name));
-      dispatch(setMaster(true));
-      dispatch(setHeadCount(headCounts));
-      dispatch(setChatRoomId(res.chatting_room_id));
-
-      handleClose();
-      navigate("/waiting", { replace: true });
     }
   };
 
@@ -437,7 +465,7 @@ export const WaitingRoomList: FC<IProps> = (props) => {
                 value={ageId}
                 onChange={handleAgeChange}
               >
-                {age?.map((option) => (
+                {ageList?.map((option) => (
                   <MenuItem key={option.id} value={option.id}>
                     {option.name}
                   </MenuItem>
@@ -451,7 +479,7 @@ export const WaitingRoomList: FC<IProps> = (props) => {
                 value={sidoId}
                 onChange={handleSidoChange}
               >
-                {sido?.map((option) => (
+                {sidoList?.map((option) => (
                   <MenuItem key={option.id} value={option.id}>
                     {option.name}
                   </MenuItem>
