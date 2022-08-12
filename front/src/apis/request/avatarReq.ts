@@ -17,6 +17,11 @@ export interface SaveAvatarReq {
 
 export interface GetAvatarReq {
     user_id : number,
+    slot : number,
+}
+
+export interface GetAvatarAllReq {
+    user_id : number,
 }
 
 export interface ModifyAvatarReq {
