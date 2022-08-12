@@ -44,14 +44,14 @@ const saveAvatarApi: SaveAvatarApi = {
   }
 }
 
-interface ModifyAvatarApi {
-  modifyAvatar(modifyAvatarReq: ModifyAvatarReq): Promise<boolean>;
-}
+// interface ModifyAvatarApi {
+//   modifyAvatar(modifyAvatarReq: ModifyAvatarReq): Promise<boolean>;
+// }
 
-const modifyAvatarApi: ModifyAvatarApi = {
-  modifyAvatar: async function (modifyAvatarReq: ModifyAvatarReq): Promise<boolean> {
-    return (await axiosInstance.patch(`/api/v1/avatar/modify/${modifyAvatarReq.id}`, modifyAvatarReq)).data;
-  }
-}
+// const modifyAvatarApi: ModifyAvatarApi = {
+//   modifyAvatar: async function (modifyAvatarReq: ModifyAvatarReq): Promise<boolean> {
+//     return (await axiosInstance.patch(`/api/v1/avatar/modify/${modifyAvatarReq.id}`, modifyAvatarReq)).data;
+//   }
+// }
 
-export {selectAvatarApi, avatarNameCheckApi, getAvatarApi, saveAvatarApi, modifyAvatarApi}
+export {selectAvatarApi, avatarNameCheckApi, getAvatarApi, saveAvatarApi}

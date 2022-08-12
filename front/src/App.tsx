@@ -52,7 +52,7 @@ function App() {
             <Route path="/login" element={<LoginPage />} />
             <Route
               path="/mypage"
-              element={<ProtectedRoute outlet={<MyPage />} isAuthentication={!!socialId} />}
+              element={<ProtectedRoute outlet={<MyPage />} isAuthentication={isLogin} />}
             />
             <Route
               path="/finalPickResult"
@@ -65,7 +65,9 @@ function App() {
             <Route path="/kakao" element={<KakaoHandler />} />
             <Route path="/naver" element={<NaverHandler />} />
             <Route
-              path="/canvas" element={<CanvasPage />} />
+              path="/canvas"
+              element={<ProtectedRoute outlet={<CanvasPage />} isAuthentication={isLogin} />}
+            />
             <Route
               path="/subSession"
               element={<ProtectedRoute outlet={<SubSessionPage />} isAuthentication={isLogin} />}

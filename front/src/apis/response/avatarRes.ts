@@ -16,4 +16,5 @@ export interface GetAvatarRes {
     name: string;
     path: string;
     base64: string;
+    slot: number;
 }
