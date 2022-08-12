@@ -20,6 +20,8 @@ import {
 } from "../../stores/slices/userSlice";
 import { AvatimeApi } from "../../apis/avatimeApi";
 import { AvatimeWs } from "../../apis/avatimeWs";
+import { resetMeeting } from "../../stores/slices/meetingSlice";
+import { resetWaiting } from "../../stores/slices/waitingSlice";
 
 interface IProps {
   hideSettings?: boolean;
@@ -48,6 +50,8 @@ export const MainHeader: FC<IProps> = ({ hideSettings = false }) => {
   const logout = () => {
     localStorage.clear();
     dispatch(reset());
+    dispatch(resetWaiting());
+    dispatch(resetMeeting());
     AvatimeApi.getInstance().logout();
     AvatimeWs.getInstance().logout();
     alert("로그아웃 완료");

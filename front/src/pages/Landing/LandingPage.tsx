@@ -1,9 +1,13 @@
 import { Box } from "@mui/material";
-import React, { FC } from "react";
+import React, { FC, useEffect } from "react";
 import "./LandingPage.css";
 import { Link } from "react-router-dom";
 import "animate.css";
 import "aos/dist/aos.css";
+import { useDispatch } from 'react-redux';
+import { reset } from "../../stores/slices/userSlice";
+import { resetWaiting } from "../../stores/slices/waitingSlice";
+import { resetMeeting } from "../../stores/slices/meetingSlice";
 
 interface IProps {}
 
@@ -13,6 +17,18 @@ interface IProps {}
  **/
 
 export const LandingPage: FC<IProps> = (props) => {
+  const dispatch = useDispatch();
+  useEffect(() => {
+    const token = localStorage.getItem("token");
+    localStorage.clear();
+    if (token) {
+      localStorage.setItem("token", token);
+    }
+    dispatch(reset());
+    dispatch(resetWaiting());
+    dispatch(resetMeeting());
+  }, [dispatch]);
+  
   return (
     <div>
       <Box className="landing">

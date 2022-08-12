@@ -1,13 +1,23 @@
 import { createSlice } from "@reduxjs/toolkit";
+import { MeetingUserInfoRes } from "../../apis/response/sessionRes";
+
+export interface MeetingState {
+  roomId: number | undefined;
+  subRoomId: number | undefined;
+  userInfoList: MeetingUserInfoRes[];
+  pickUserName: string | undefined;
+}
+
+const initialState: MeetingState = {
+  roomId: undefined,
+  subRoomId: undefined,
+  userInfoList: [] as any[],
+  pickUserName: undefined,
+};
 
 const meetingSlice = createSlice({
   name: "meeting",
-  initialState: {
-    roomId: undefined,
-    subRoomId: undefined,
-    userInfoList: [] as any[],
-    pickUserName: undefined,
-  },
+  initialState: initialState,
   reducers: {
     setMeetingRoomId(state, action) {
       state.roomId = action.payload;
@@ -21,10 +31,13 @@ const meetingSlice = createSlice({
     setPickUserName(state, action) {
       state.pickUserName = action.payload;
     },
+    resetMeeting(state) {
+      Object.assign(state, initialState);
+    },
   },
 });
 
-export const { setMeetingRoomId, setSubMeetingRoomId, setUserInfoList, setPickUserName } =
+export const { setMeetingRoomId, setSubMeetingRoomId, setUserInfoList, setPickUserName, resetMeeting } =
   meetingSlice.actions;
 
 export default meetingSlice.reducer;
