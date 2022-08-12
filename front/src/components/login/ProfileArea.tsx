@@ -202,6 +202,7 @@ export const ProfileArea: FC<IProps> = (props) => {
                 dispatch(setSocialType(data.social_type));
                 dispatch(setIsLogin(true));
                 dispatch(setToken(data.accessToken));
+                AvatimeApi.getInstance().login(data.accessToken);
                 navigate("/main");
               },
               navigate,
