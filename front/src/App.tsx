@@ -28,8 +28,9 @@ export const theme = createTheme({
 });
 
 function App() {
-  const isLogin = useSelector((state: any) => state.user.isLogin);
+  const isLogin = !!localStorage.getItem("token");
   const socialId = useSelector((state: any) => state.user.socialId);
+
   return (
     <div>
       <ThemeProvider theme={theme}>
@@ -73,7 +74,7 @@ function App() {
               path="/pickAvatar"
               element={<ProtectedRoute outlet={<PickAvatarPage />} isAuthentication={isLogin} />}
             />
-             <Route
+            <Route
               path="/kakao"
               element={
                 <ProtectedRoute
@@ -83,7 +84,7 @@ function App() {
                 />
               }
             />
-             <Route
+            <Route
               path="/naver"
               element={
                 <ProtectedRoute

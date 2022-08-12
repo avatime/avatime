@@ -205,6 +205,7 @@ export const ProfileArea: FC<IProps> = (props) => {
                 dispatch(setToken(data.accessToken));
                 AvatimeApi.getInstance().login(data.accessToken);
                 AvatimeWs.getInstance().login(data.accessToken);
+                localStorage.setItem("token", data.accessToken);
                 navigate("/main");
               },
               navigate,

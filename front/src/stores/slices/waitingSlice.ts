@@ -45,6 +45,9 @@ const waitingSlice = createSlice({
     setChatRoomId(state, action) {
       state.chatRoomId = action.payload;
     },
+    resetWaiting(state) {
+      Object.assign(state, initialState)
+    },
   },
 });
 
@@ -56,6 +59,7 @@ export const {
   setMaster,
   setHeadCount,
   setChatRoomId,
+  resetWaiting,
 } = waitingSlice.actions;
 
 export default waitingSlice.reducer;
