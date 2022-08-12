@@ -1,6 +1,7 @@
 package com.ssafy.config;
 
 import com.ssafy.api.service.UserService;
+import com.ssafy.api.service.UserServiceImpl;
 import com.ssafy.common.auth.JwtAuthenticationFilter;
 import com.ssafy.common.auth.SsafyUserDetailService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -60,8 +61,8 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
             .and()
             .addFilter(new JwtAuthenticationFilter(authenticationManager(), userService)) //HTTP 요청에 JWT 토큰 인증 필터를 거치도록 필터를 추가
             .authorizeRequests()
-            .antMatchers("/api/v1/users/me").authenticated()       //인증이 필요한 URL과 필요하지 않은 URL에 대하여 설정
-    	    .anyRequest().permitAll()
+            .antMatchers("/api/v1/auth/register", "/api/v1/auth/naver", "/api/v1/auth/kakao").permitAll()
+            .anyRequest().authenticated()       //인증이 필요한 URL과 필요하지 않은 URL에 대하여 설정
             .and().cors();
         http
         	.headers()
