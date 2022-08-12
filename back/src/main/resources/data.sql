@@ -26,8 +26,8 @@ insert into avatar (image_path, name) values ("아기조커.jpg", "아기조커"
 insert into avatar (image_path, name) values ("햄찌우먼.png", "햄찌우먼");
 insert into avatar (image_path, name) values ("수박맨.png", "수박맨");
 
-insert into user (description, gender, name, profile_image_path, social_id, social_type) values ("testing3", "F", "채윤선", "https://jira.ssafy.com/secure/useravatar?avatarId=10508", "5524137@naver.com", 1);
-insert into user (description, gender, name, profile_image_path, social_id, social_type) values ("testing", "M", "정건우", "https://jira.ssafy.com/secure/useravatar?avatarId=10341", "abcxj123@naver.com", 1);
+insert into user (description, gender, name, profile_image_path, social_id, social_type) values ("testing3", "F", "채윤선", "https://avatimebucket2022.s3.ap-northeast-2.amazonaws.com/%ED%94%84%EB%A1%9C%ED%95%84/profile01.png", "5524137@naver.com", 1);
+insert into user (description, gender, name, profile_image_path, social_id, social_type) values ("testing", "M", "정건우", "https://avatimebucket2022.s3.ap-northeast-2.amazonaws.com/%ED%94%84%EB%A1%9C%ED%95%84/profile01.png", "abcxj123@naver.com", 1);
 insert into user (description, gender, name, profile_image_path, social_id, social_type) values ("testing2", "M", "이주영", "ss.png", "ssafy2@naver.com", 1);
 insert into user (description, gender, name, profile_image_path, social_id, social_type) values ("testing3", "F", "이지나", "ts.png", "ssafy3@naver.com", 1);
 insert into user (description, gender, name, profile_image_path, social_id, social_type) values ("testing", "M", "김찬영", "sf.png", "ssafy@naver.com", 1);

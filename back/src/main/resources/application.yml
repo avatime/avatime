@@ -1,0 +1,27 @@
+cloud:
+  aws:
+    s3:
+      bucket: avatimebucket2022
+    credentials:
+      access-key: AKIA6RIVG7KLWD6HOFVK
+      secret-key: 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
+    region:
+      static: ap-northeast-2
+      auto: false
+    stack:
+      auto: false
+      
+logging:
+  level:
+    com:
+      amazonaws:
+        util:
+          EC2MetadataUtils: ERROR
+          
+spring:
+  servlet:
+    multipart:
+      max-file-size: 10MB
+      max-request-size: 10MB 
+        
+        
