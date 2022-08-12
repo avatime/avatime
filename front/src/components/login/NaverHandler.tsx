@@ -14,6 +14,7 @@ import {
 import { Backdrop, CircularProgress } from "@mui/material";
 import { useNavigate } from "react-router";
 import { AvatimeApi } from "../../apis/avatimeApi";
+import { AvatimeWs } from "../../apis/avatimeWs";
 
 interface Iprops {}
 
@@ -50,6 +51,7 @@ export const NaverHandler: FC<Iprops> = (props) => {
           dispatch(setIsLogin(true));
           dispatch(setToken(data.accessToken));
           AvatimeApi.getInstance().login(data.accessToken);
+          AvatimeWs.getInstance().login(data.accessToken);
           localStorage.setItem("token", data.accessToken);
           navigate("/main");
           alert("로그인 성공");

@@ -2,6 +2,7 @@
 import { useEffect, useState } from "react";
 import * as Stomp from "@stomp/stompjs";
 import { WS_BASE_URL } from "../apis/url";
+import { AvatimeWs } from '../apis/avatimeWs';
 
 interface Param {
   onConnect: (frame: Stomp.Frame, client: Stomp.Client) => void;
@@ -15,7 +16,7 @@ export const useWebSocket = (param: Param) => {
   useEffect(() => {
     let stompClient: Stomp.Client | undefined;
     const config: Stomp.StompConfig = {
-      connectHeaders: {},
+      connectHeaders: AvatimeWs.getInstance().header,
       brokerURL: WS_BASE_URL,
       reconnectDelay: param.reconnectDelay ? param.reconnectDelay : 5000,
       onConnect: (frame) => {
