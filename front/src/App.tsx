@@ -52,7 +52,7 @@ function App() {
             <Route path="/login" element={<LoginPage />} />
             <Route
               path="/mypage"
-              element={<ProtectedRoute outlet={<MyPage />} isAuthentication={isLogin} />}
+              element={<ProtectedRoute outlet={<MyPage />} isAuthentication={!!socialId} />}
             />
             <Route
               path="/finalPickResult"
