@@ -251,7 +251,6 @@ export class AvatimeApi implements SessionApi, ChatApi, WaitingApi, UserApi, Ava
         switch (status) {
           case 401:
             localStorage.removeItem("token");
-            alert("로그인이 필요해요 ㅠ ㅠ");
             config.navigate("/login", { replace: true });
             return;
           case 500 <= status:
