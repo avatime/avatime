@@ -26,19 +26,14 @@ export const CanvasPage: FC<IProps> = (props) => {
   const [brushColor, setBrushColor] = useState<string>("#000000");
   const [brushRadius, setBrushRadius] = useState<number>(5);
   const canvasRef = useRef<any>();
-  const [avaname, setAvaname] = useState("");
 
   // 저장할 수 있는 아바타 칸이 4개라서 num이 1 ~ 4로 들어와요.
   // 서버 api도 num 번호에 따라 저장하도록 만들어 달라고 하시면 될 듯?
   const onSave = (num: number) => {
-    if(avatarList[num-1] == null) {
-      //setAvaname(prompt("아바타 이름을 알려주세요.")); // 아바타 이름을 어떻게 받는게 좋을지 모르겟는데, 젤 간단한 방법이라 이렇게 했어요 ㅋ
-      console.log(avaname);
-    } else if (window.confirm("아바타 이름을 변경하시겠습니까?")) {
-      // name 중복 검사하기.
-      console.log("변경한대");
-    } else {
-      console.log("변경안한대");
+    const avaname = prompt("아바타 이름을 알려주세요.");
+    if(avaname === null) {
+      alert("아바타 이름을 입력해주세요.");
+      return ;
     }
 
     const dataURL = canvasRef.current.getDataURL();
@@ -51,6 +46,7 @@ export const CanvasPage: FC<IProps> = (props) => {
       name: avaname,
       path: "",
       base64: dataURL,
+      slot: num,
     };
     setAvatarList((prev) => [...prev.slice(0, num - 1), newAvatar, ...prev.slice(num - 1)]);
   };
