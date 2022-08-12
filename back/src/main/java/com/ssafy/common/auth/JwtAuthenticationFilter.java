@@ -15,6 +15,7 @@ import org.springframework.security.web.authentication.www.BasicAuthenticationFi
 import org.springframework.transaction.annotation.Transactional;
 
 import com.auth0.jwt.JWTVerifier;
+import com.auth0.jwt.exceptions.TokenExpiredException;
 import com.auth0.jwt.interfaces.DecodedJWT;
 import com.ssafy.api.service.UserService;
 import com.ssafy.common.util.JwtTokenUtil;
@@ -37,7 +38,6 @@ public class JwtAuthenticationFilter extends BasicAuthenticationFilter {
 			throws ServletException, IOException {
 		// Read the Authorization header, where the JWT Token should be
         String header = request.getHeader(JwtTokenUtil.HEADER_STRING);
-
         // If header does not contain BEARER or is null delegate to Spring impl and exit
         if (header == null || !header.startsWith(JwtTokenUtil.TOKEN_PREFIX)) {
             filterChain.doFilter(request, response);
@@ -53,7 +53,8 @@ public class JwtAuthenticationFilter extends BasicAuthenticationFilter {
             ResponseBodyWriteUtil.sendError(request, response, ex);
             return;
         }
-        
+
+        System.out.println("여기 나오는지 봐바");
         filterChain.doFilter(request, response);
 	}
 	
