@@ -18,7 +18,7 @@ import { UserApi } from './userApi';
 import { NameCheckReq, UserModifyReq, RegisterReq, UserInfoReq } from "./request/memberReq";
 import { ProfileRes, UserModifyRes, RegisterRes, UserInfoRes } from "./response/memberRes";
 import { AvatarApi } from './avatarApis';
-import { SelectAvatarReq, AvatarNameCheckReq, GetAvatarReq, SaveAvatarReq } from "./request/avatarReq";
+import { SelectAvatarReq, AvatarNameCheckReq, GetAvatarReq, GetAvatarAllReq, SaveAvatarReq } from "./request/avatarReq";
 import { GetAvatarRes } from "./response/avatarRes";
 import { SuccessRes } from "./response/successRes";
 
@@ -61,10 +61,10 @@ export class AvatimeApi implements SessionApi, ChatApi, WaitingApi, UserApi, Ava
       ...requestConfig,
     });
   }
-  getAvatarList(getAvatarReq: GetAvatarReq, requestConfig: RequestConfig<GetAvatarRes[]>): void {
-    this.request<GetAvatarReq, GetAvatarRes[]>({
+  getAvatarList(getAvatarAllReq: GetAvatarAllReq, requestConfig: RequestConfig<GetAvatarRes[]>): void {
+    this.request<GetAvatarAllReq, GetAvatarRes[]>({
       method: "get",
-      url: `/avatar/load/${getAvatarReq.user_id}`,
+      url: `/avatar/load/${getAvatarAllReq.user_id}`,
       ...requestConfig,
     });
   }
@@ -73,6 +73,13 @@ export class AvatimeApi implements SessionApi, ChatApi, WaitingApi, UserApi, Ava
       method: "post",
       url: `/avatar/custom`,
       data: saveAvatarReq,
+      ...requestConfig,
+    });
+  }
+  getAvatar(getAvatarReq: GetAvatarReq, requestConfig: RequestConfig<GetAvatarRes>): void {
+    this.request<GetAvatarReq, GetAvatarRes>({
+      method: "get",
+      url: `/avatar/load/${getAvatarReq.user_id}/${getAvatarReq.slot}`,
       ...requestConfig,
     });
   }
