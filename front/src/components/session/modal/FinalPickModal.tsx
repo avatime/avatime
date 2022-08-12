@@ -1,4 +1,4 @@
-import { Box, Typography, Grid } from "@mui/material";
+import { Box, Typography, Grid, Stack, useTheme } from "@mui/material";
 import React, { FC, useState } from "react";
 import { useEffect } from "react";
 import { useSelector, useDispatch } from "react-redux";
@@ -9,6 +9,7 @@ import { setPickUserName } from "../../../stores/slices/meetingSlice";
 import { MeetingUserInfoRes } from "../../../apis/response/sessionRes";
 import { useWebSocket } from "../../../hooks/useWebSocket";
 import { AvatimeApi } from "../../../apis/avatimeApi";
+import { Timer } from "../../timer/Timer";
 
 interface IProps {
   isOpened: boolean;
@@ -95,11 +96,19 @@ const FinalPickModalPresenter: FC<IPresenterProps> = ({
   selectedUserId,
   onClickAvatar,
 }) => {
+  const theme = useTheme();
   return (
     <SessionModal open={isOpened} justifyContent="stretch">
       <>
-        <Typography variant="h4">마음에 드는 상대를 골라주세요! {timer}</Typography>
-        <Box p={3} />
+        <Stack width="100%" direction="row" justifyContent="center" alignItems="center">
+          <Typography variant="h4" alignSelf="center" ml="auto">마음에 드는 상대를 골라주세요!</Typography>
+          <Box ml="auto">
+            <Timer duration={15} remainingTime={timer} />
+          </Box>
+        </Stack>
+        <Box p={1} />
+        <Box width="100%" height="1px" bgcolor={theme.palette.divider} />
+        <Box p={2} />
         <Grid container width="100%" height="100%" spacing={3}>
           {targetUserList?.map((it, idx) => (
             <Grid item key={idx} xs>
