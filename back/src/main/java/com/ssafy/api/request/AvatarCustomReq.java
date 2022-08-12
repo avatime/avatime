@@ -13,5 +13,6 @@ public class AvatarCustomReq {
 
 	Long user_id;
 	String avatar_name;
-	MultipartFile image;
+//	MultipartFile image;
+	String base64;
 }
