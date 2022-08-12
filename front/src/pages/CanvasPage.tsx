@@ -7,7 +7,6 @@ import { MainHeader } from "../components/main/MainHeader";
 import { useRef } from "react";
 import { AvatarProfile } from "../components/session/modal/AvatarProfile";
 import { GetAvatarRes } from "../apis/response/avatarRes";
-import { SaveAvatarReq } from "../apis/request/avatarReq";
 import { useSelector } from "react-redux";
 import { AvatimeApi } from "../apis/avatimeApi";
 import { useNavigate } from 'react-router';
@@ -27,6 +26,8 @@ export const CanvasPage: FC<IProps> = (props) => {
 
   const [brushColor, setBrushColor] = useState<string>("#000000");
   const [brushRadius, setBrushRadius] = useState<number>(5);
+  const [avaid, setAvaid] = useState(0);
+  const [path, setPath] = useState("");
   const canvasRef = useRef<any>();
 
   // 저장할 수 있는 아바타 칸이 4개라서 num이 1 ~ 4로 들어와요.
@@ -36,17 +37,51 @@ export const CanvasPage: FC<IProps> = (props) => {
     if (avaname === null) {
       alert("아바타 이름을 입력해주세요.");
       return;
+    } else if(avaname.length > 4) {
+      alert("4글자 이하로 이름을 지어주세요.");
+      return;
+    } else {
+      AvatimeApi.getInstance().checkAvatarName(
+        {
+          name: avaname,
+        },
+        {
+          onSuccess(data) {
+            if(!data) {
+              alert("중복된 아바타 이름입니다.")
+              return;
+            }
+          },
+          navigate,
+        }
+      );
     }
 
     const dataURL = canvasRef.current.getDataURL();
     console.log(dataURL); // 이게 base64 어쩌구 데이터
 
+    AvatimeApi.getInstance().saveAvatar(
+      {
+        user_id: userId,
+        name: avaname,
+        slot: num,
+        base64: dataURL,
+      },
+      {
+        onSuccess(data) {
+          setPath(data.path);
+          setAvaid(data.id);
+        },
+        navigate,
+      }
+    );
+
     // 여기서 저장하는 API 호출하고, 응답으로 변환된 이미지 data를 받으세요.
     // 여기서 타입은 아래 avatarList의 요소 타입과 같아야 해요!
     const newAvatar: GetAvatarRes = {
-      id: 0,
+      id: avaid,
       name: avaname,
-      path: "",
+      path: path,
       base64: dataURL,
       slot: num,
     };
@@ -58,7 +93,9 @@ export const CanvasPage: FC<IProps> = (props) => {
       return;
     }
 
-    canvasRef.current.loadSaveData(base64, true);
+    if(window.confirm("아바타를 불러오시겠습니까?")) {
+      canvasRef.current.loadSaveData(base64, true);
+    }
   };
 
   // 여기에 서버에서 준 아바타 리스트 넣어주세요.
