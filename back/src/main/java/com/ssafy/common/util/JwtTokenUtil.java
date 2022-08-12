@@ -9,6 +9,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 
+import java.time.Instant;
 import java.time.LocalDateTime;
 import java.time.ZoneId;
 import java.util.Date;
@@ -39,7 +40,8 @@ public class JwtTokenUtil {
     }
     
     public static String getToken(String name) {
-    		Date expires = JwtTokenUtil.getTokenExpiration(expirationTime);
+    		System.out.println("expirationTime " + expirationTime);
+    		Date expires = JwtTokenUtil.getTokenExpiration(expirationTime*5);
         return JWT.create()
                 .withSubject(name)
                 .withExpiresAt(expires)
@@ -47,6 +49,18 @@ public class JwtTokenUtil {
                 .withIssuedAt(Date.from(LocalDateTime.now().atZone(ZoneId.systemDefault()).toInstant()))
                 .sign(Algorithm.HMAC512(secretKey.getBytes()));
     }
+
+    
+
+    public static String getToken(Instant expires, String userId) {
+        return JWT.create()
+                .withSubject(userId)
+                .withExpiresAt(Date.from(expires))
+                .withIssuer(ISSUER)
+                .withIssuedAt(Date.from(LocalDateTime.now().atZone(ZoneId.systemDefault()).toInstant()))
+                .sign(Algorithm.HMAC512(secretKey.getBytes()));
+    }
+
     
     public static Date getTokenExpiration(Long expirationTime) {
     		Date now = new Date();
