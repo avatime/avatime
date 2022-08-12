@@ -36,7 +36,7 @@ const style = {
   width: 800,
   height: 400,
   bgcolor: "background.paper",
-  border: "2px solid #000",
+  border: "1px solid #000",
   boxShadow: 24,
   p: 4,
   borderRadius: "10px",
@@ -215,9 +215,9 @@ export const ProfileArea: FC<IProps> = (props) => {
 
   return (
     <>
-      <Box justifyContent="center" alignItems="center">
-        <Box display="flex" justifyContent="center" alignItems="center" marginLeft="10vw">
-          <IconButton onClick={handleOpen}>
+      <Stack>
+        <Box display="flex" justifyContent="center" alignItems="start" marginLeft="10vw">
+          <IconButton onClick={handleOpen} >
             <Avatar
               src={image}
               sx={{ width: 80, height: 80 }}
@@ -262,23 +262,22 @@ export const ProfileArea: FC<IProps> = (props) => {
               </Box>
             </Box>
           </Modal>
-          <Box display="inline" marginLeft="4vw">
-          <IconButton onClick={confirmInfo}>
-            <CheckIcon />
-          </IconButton>
-          <IconButton onClick={refreshForm}>
-            <RefreshIcon />
-          </IconButton>
+          <Box display="inline" marginLeft="5.5vw" sx={{ alignItems: "flex-start" }}>
+            <IconButton onClick={confirmInfo}>
+              <CheckIcon />
+            </IconButton>
+            <IconButton onClick={refreshForm}>
+              <RefreshIcon />
+            </IconButton>
+          </Box>
         </Box>
-        </Box>
-        
-      </Box>
+      </Stack>
       <Grid
         display="flex"
         justifyContent="center"
         alignItems="center"
-        marginTop="6vh"
-        marginBottom="4vh"
+        marginTop="7vh"
+        marginBottom="5vh"
       >
         <TextField
           id="inputName"

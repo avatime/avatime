@@ -16,7 +16,7 @@ export const Logo: FC<IProps> = (props) => {
   const isLogin = useSelector((state: any) => state.user.isLogin);
 
   return (
-    <Box marginTop="5vh" marginBottom="3vh">
+    <Box marginTop="5vh" marginBottom="4vh">
       <Link
         to = {isLogin? "/main" : "/"}
         style={{

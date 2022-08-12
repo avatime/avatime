@@ -11,7 +11,8 @@ export interface AvatarNameCheckReq {
 export interface SaveAvatarReq {
     name: string,
     user_id: number,
-    number: number,
+    slot: number,
+    base64: string,
 }
 
 export interface GetAvatarReq {

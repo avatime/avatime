@@ -7,7 +7,7 @@ const initialState = {
   userDesc: "",
   socialId: undefined,
   socialType: undefined,
-  profileImagePath: "https://img1.daumcdn.net/thumb/R1280x0/?scode=mtistory2&fname=https%3A%2F%2Fblog.kakaocdn.net%2Fdn%2FbjG0o2%2FbtrJlz5Xgi5%2F22KkMl1kDkBWLw7lI2t5MK%2Fimg.png",
+  profileImagePath: "https://avatimebucket2022.s3.ap-northeast-2.amazonaws.com/%ED%94%84%EB%A1%9C%ED%95%84/profile01.png",
   isLogin: false,
   token: "",
 };
