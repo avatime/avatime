@@ -22,4 +22,7 @@ public class Avatar extends BaseEntity {
 	
 	@Column(columnDefinition = "INT UNSIGNED DEFAULT 0")
 	private Long userId;
+	
+	@Column(columnDefinition = "INT UNSIGNED DEFAULT 0")
+	private Long slot;
 }
