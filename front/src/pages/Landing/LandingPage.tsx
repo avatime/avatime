@@ -19,11 +19,7 @@ interface IProps {}
 export const LandingPage: FC<IProps> = (props) => {
   const dispatch = useDispatch();
   useEffect(() => {
-    const token = localStorage.getItem("token");
     localStorage.clear();
-    if (token) {
-      localStorage.setItem("token", token);
-    }
     dispatch(reset());
     dispatch(resetWaiting());
     dispatch(resetMeeting());
