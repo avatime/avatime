@@ -6,10 +6,11 @@ import { CanvasTools } from "../components/canvas/CanvasTools";
 import { MainHeader } from "../components/main/MainHeader";
 import { useRef } from "react";
 import { AvatarProfile } from "../components/session/modal/AvatarProfile";
-import { GetAvatarRes } from '../apis/response/avatarRes';
-import { SaveAvatarReq } from '../apis/request/avatarReq';
-import { avatarNameCheckApi, getAvatarApi } from '../apis/avatarApis';
-import { useSelector } from 'react-redux';
+import { GetAvatarRes } from "../apis/response/avatarRes";
+import { SaveAvatarReq } from "../apis/request/avatarReq";
+import { useSelector } from "react-redux";
+import { AvatimeApi } from "../apis/avatimeApi";
+import { useNavigate } from 'react-router';
 
 // 아바타의 임시 타입
 // type TempAvatarRes = {
@@ -21,6 +22,7 @@ import { useSelector } from 'react-redux';
 interface IProps {}
 
 export const CanvasPage: FC<IProps> = (props) => {
+  const navigate = useNavigate();
   const userId: number = useSelector((state: any) => state.user.userId);
 
   const [brushColor, setBrushColor] = useState<string>("#000000");
@@ -31,9 +33,9 @@ export const CanvasPage: FC<IProps> = (props) => {
   // 서버 api도 num 번호에 따라 저장하도록 만들어 달라고 하시면 될 듯?
   const onSave = (num: number) => {
     const avaname = prompt("아바타 이름을 알려주세요.");
-    if(avaname === null) {
+    if (avaname === null) {
       alert("아바타 이름을 입력해주세요.");
-      return ;
+      return;
     }
 
     const dataURL = canvasRef.current.getDataURL();
@@ -64,10 +66,19 @@ export const CanvasPage: FC<IProps> = (props) => {
   const [avatarList, setAvatarList] = useState<GetAvatarRes[]>([]);
 
   useEffect(() => {
-    getAvatarApi.receive({user_id : userId}).then((res) => {
-      setAvatarList(res);
-    });
-  }, [userId]);
+    if (!userId) {
+      return;
+    }
+    AvatimeApi.getInstance().getAvatarList(
+      { user_id: userId },
+      {
+        onSuccess(data) {
+          setAvatarList(data);
+        },
+        navigate,
+      }
+    );
+  }, [navigate, userId]);
 
   return (
     <Box className="mainback" display="flex" flexDirection="column">

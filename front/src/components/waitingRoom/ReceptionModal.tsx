@@ -11,9 +11,10 @@ import {
 import React, { FC } from "react";
 import { WaitingUser } from "../../apis/response/waitingRoomRes";
 import { CandidateUser } from "./CandidateUser";
-import { requestEnterRoomApi } from "../../apis/waitingRoomApi";
 import { useSelector } from "react-redux";
 import CloseIcon from "@mui/icons-material/Close";
+import { AvatimeApi } from "../../apis/avatimeApi";
+import { useNavigate } from "react-router";
 
 interface IProps {
   open: boolean;
@@ -23,20 +24,27 @@ interface IProps {
 }
 
 export const ReceptionModal: FC<IProps> = ({ open, onClickClose, candidateList, isMaster }) => {
+  const navigate = useNavigate();
   const roomId = useSelector((state: any) => state.waiting.roomId);
-  const onClickAccept = async (userId: number) => {
-    await requestEnterRoomApi.requestEnterRoom({
-      room_id: roomId,
-      user_id: userId,
-      type: 1,
-    });
+  const onClickAccept = (userId: number) => {
+    AvatimeApi.getInstance().requestEnterRoom(
+      {
+        room_id: roomId,
+        user_id: userId,
+        type: 1,
+      },
+      { navigate }
+    );
   };
   const onClickRefuse = (userId: number) => {
-    requestEnterRoomApi.requestEnterRoom({
-      room_id: roomId,
-      user_id: userId,
-      type: 4,
-    });
+    AvatimeApi.getInstance().requestEnterRoom(
+      {
+        room_id: roomId,
+        user_id: userId,
+        type: 4,
+      },
+      { navigate }
+    );
   };
 
   return (

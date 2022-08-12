@@ -5,14 +5,12 @@ import MicIcon from "@mui/icons-material/Mic";
 import MicOffIcon from "@mui/icons-material/MicOff";
 import VideocamIcon from "@mui/icons-material/Videocam";
 import VideocamOffIcon from "@mui/icons-material/VideocamOff";
-import SettingsIcon from "@mui/icons-material/Settings";
 import ExitToAppIcon from "@mui/icons-material/ExitToApp";
 import PeopleIcon from "@mui/icons-material/People";
-import { Clock } from "./Clock";
 import { FinalPickModal } from "./modal/FinalPickModal";
 import { useNavigate } from "react-router";
-import sessionApi from "../../apis/sessionApi";
 import { useSelector } from "react-redux";
+import { AvatimeApi } from "../../apis/avatimeApi";
 
 type Type = "master" | "normal";
 interface IProps {
@@ -50,9 +48,14 @@ export const ControllBar: FC<IProps> = ({ type, lastPickModalOpen, ...callback }
   };
 
   const onClickPick = () => {
-    sessionApi.postStartFinalPick({
-      meetingroom_id: meetingRoomId,
-    });
+    AvatimeApi.getInstance().postStartFinalPick(
+      {
+        meetingroom_id: meetingRoomId,
+      },
+      {
+        navigate,
+      }
+    );
   };
 
   return (

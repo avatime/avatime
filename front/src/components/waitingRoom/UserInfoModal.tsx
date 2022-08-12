@@ -1,15 +1,9 @@
-import {
-  Box,
-  Modal,
-  Backdrop,
-  Avatar,
-  TextField,
-  IconButton,
-} from "@mui/material";
+import { Box, Modal, Backdrop, Avatar, TextField, IconButton } from "@mui/material";
 import React, { FC, useEffect, useState } from "react";
 import { UserInfoRes } from "../../apis/response/memberRes";
-import { userInfoApi } from "../../apis/userApi";
 import CancelIcon from "@mui/icons-material/Cancel";
+import { AvatimeApi } from "../../apis/avatimeApi";
+import { useNavigate } from "react-router";
 
 interface IProps {
   open: boolean;
@@ -35,16 +29,22 @@ const style = {
 };
 
 export const UserInfoModal: FC<IProps> = ({ open, onClose, userId }) => {
+  const navigate = useNavigate();
   const [userInfo, setUserInfo] = useState<UserInfoRes>();
 
   useEffect(() => {
     if (userId === -1) {
       return;
     }
-    userInfoApi.getUserInfo({ user_id: userId }).then((data) => setUserInfo(data));
-  }, [userId]);
 
-  
+    AvatimeApi.getInstance()
+      .getUserInfo({ user_id: userId }, {
+        onSuccess(data) {
+          setUserInfo(data)
+        },
+        navigate
+      })
+  }, [navigate, userId]);
 
   return (
     <Backdrop open={open}>

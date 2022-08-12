@@ -26,11 +26,10 @@ import { WaitingUser } from "../apis/response/waitingRoomRes";
 import { ReceptionModal } from "../components/waitingRoom/ReceptionModal";
 import { WaitingUserProfile } from "../components/waitingRoom/WaitingUserProfile";
 import { UserInfoModal } from "../components/waitingRoom/UserInfoModal";
-import { requestEnterRoomApi, waitingApi } from "../apis/waitingRoomApi";
 import { setMeetingRoomId } from "../stores/slices/meetingSlice";
-import { WS_BASE_URL } from "../apis/url";
 import { setMaster } from "../stores/slices/waitingSlice";
 import { useWebSocket } from "../hooks/useWebSocket";
+import { AvatimeApi } from "../apis/avatimeApi";
 
 interface IProps {}
 
@@ -90,11 +89,16 @@ export const WaitingPage: FC<IProps> = (props) => {
       client.publish({ destination: `/app/reception/${waitingState.roomId}` });
     },
     beforeDisconnected: function (frame, client): void {
-      requestEnterRoomApi.requestEnterRoom({
-        room_id: waitingState?.roomId,
-        user_id: userId,
-        type: 5,
-      });
+      AvatimeApi.getInstance().requestEnterRoom(
+        {
+          room_id: waitingState?.roomId,
+          user_id: userId,
+          type: 5,
+        },
+        {
+          navigate,
+        }
+      );
     },
   });
 
@@ -106,9 +110,14 @@ export const WaitingPage: FC<IProps> = (props) => {
   const onClickStart = () => {
     // eslint-disable-next-line no-restricted-globals
     if (confirm("정말 시작할건가요?")) {
-      waitingApi.startPickAvatar({
-        waiting_room_id: Number(waitingState.roomId),
-      });
+      AvatimeApi.getInstance().startPickAvatar(
+        {
+          waiting_room_id: Number(waitingState.roomId),
+        },
+        {
+          navigate,
+        }
+      );
     }
   };
   const onClickExit = async () => {

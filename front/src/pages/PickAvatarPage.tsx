@@ -7,11 +7,11 @@ import { GaugeBar } from "../components/pickAvatar/GaugeBar";
 import { AvatarPickInfoRes } from "../apis/response/avatarRes";
 import { Avatar } from "@mui/material";
 import { useSelector } from "react-redux";
-import { selectAvatarApi } from "../apis/avatarApis";
 import { AvatarProfile } from "../components/session/modal/AvatarProfile";
 import { useNavigate } from "react-router";
 import { useWebSocket } from "../hooks/useWebSocket";
 import DoDisturbIcon from "@mui/icons-material/DoDisturb";
+import { AvatimeApi } from "../apis/avatimeApi";
 
 interface IProps {}
 
@@ -75,11 +75,16 @@ export const PickAvatarPage: FC<IProps> = () => {
       return;
     }
 
-    selectAvatarApi.pickAvatar({
-      meetingroom_id: meetingRoomId,
-      user_id: userId,
-      avatar_id: avatarId,
-    });
+    AvatimeApi.getInstance().pickAvatar(
+      {
+        meetingroom_id: meetingRoomId,
+        user_id: userId,
+        avatar_id: avatarId,
+      },
+      {
+        navigate,
+      }
+    );
   };
 
   //----------------------------------------------------------------------------------
@@ -116,18 +121,24 @@ export const PickAvatarPage: FC<IProps> = () => {
                           avatarImagePath={originData.avatar_list[i].image_path}
                           canSelect={false}
                         />
-                        {avatarId !== originData.avatar_list[i].id && <Box
-                          position="absolute"
-                          left="16px"
-                          right="0"
-                          top="0"
-                          bottom="32px"
-                          display="flex"
-                          justifyContent="center"
-                          alignItems="center"
-                        >
-                          <DoDisturbIcon fontSize="inherit" color="error" sx={{fontSize: "10vw"}}/>
-                        </Box>}
+                        {avatarId !== originData.avatar_list[i].id && (
+                          <Box
+                            position="absolute"
+                            left="16px"
+                            right="0"
+                            top="0"
+                            bottom="32px"
+                            display="flex"
+                            justifyContent="center"
+                            alignItems="center"
+                          >
+                            <DoDisturbIcon
+                              fontSize="inherit"
+                              color="error"
+                              sx={{ fontSize: "10vw" }}
+                            />
+                          </Box>
+                        )}
                       </Grid>
                     );
                   }
