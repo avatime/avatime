@@ -49,6 +49,7 @@ export const NaverHandler: FC<Iprops> = (props) => {
           dispatch(setSocialType(data.social_type));
           dispatch(setIsLogin(true));
           dispatch(setToken(data.accessToken));
+          AvatimeApi.getInstance().login(data.accessToken);
           localStorage.setItem("token", data.accessToken);
           navigate("/main");
           alert("로그인 성공");

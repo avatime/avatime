@@ -16,6 +16,7 @@ import {
   setIsLogin,
   setToken,
 } from "../../stores/slices/userSlice";
+import { AvatimeApi } from "../../apis/avatimeApi";
 
 interface IProps {
   hideSettings?: boolean;
@@ -53,6 +54,7 @@ export const MainHeader: FC<IProps> = ({ hideSettings = false }) => {
     );
     dispatch(setIsLogin("false"));
     dispatch(setToken(""));
+    AvatimeApi.getInstance().logout();
     alert("로그아웃 완료");
     navigate("/");
   };
