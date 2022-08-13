@@ -186,6 +186,7 @@ const ChatRoomPresenter: FC<IPresenterProps> = ({
       expanded={!foldable || isOpened}
       onChange={onClickHeader}
       sx={{
+        width: "100%",
         flexGrow: isOpened ? 1 : 0,
         display: "flex",
         flexDirection: "column",

@@ -12,7 +12,7 @@ import { useNavigate } from "react-router";
 import { useWebSocket } from "../hooks/useWebSocket";
 import DoDisturbIcon from "@mui/icons-material/DoDisturb";
 import { AvatimeApi } from "../apis/avatimeApi";
-import { setBgmSrc } from "../stores/slices/bgmSlice";
+import { useBGM } from '../hooks/useBGM';
 
 interface IProps {}
 
@@ -88,13 +88,7 @@ export const PickAvatarPage: FC<IProps> = () => {
     );
   };
 
-  const dispatch = useDispatch();
-  useEffect(() => {
-    dispatch(setBgmSrc("bgm_select.mp3"));
-    return () => {
-      dispatch(setBgmSrc("bgm_main.mp3"));
-    };
-  }, [dispatch]);
+  useBGM("select");
 
   //----------------------------------------------------------------------------------
   //꼭 다시 봐

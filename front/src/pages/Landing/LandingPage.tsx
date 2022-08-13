@@ -1,18 +1,27 @@
 import { Box, Button } from "@mui/material";
 import React, { FC } from "react";
 import "./LandingPage.css";
-import { Link } from "react-router-dom";
 import "animate.css";
+import { useNavigate } from 'react-router';
+import { useDispatch } from 'react-redux';
+import { setBgmPlaying } from "../../stores/slices/bgmSlice";
 
 
 interface IProps {}
 
 /**
  * @author
- * @function @LandingPage
+ * @function @LandingPage 
  **/
 
 export const LandingPage: FC<IProps> = (props) => {
+  const navigate = useNavigate();
+  const dispatch = useDispatch();
+  const onClick = () => {
+    dispatch(setBgmPlaying(true));
+    navigate("/login");
+  }
+
   return (
     <div>
       <Box className="landing" sx={{flexDirection:"column"}}>
@@ -44,9 +53,7 @@ export const LandingPage: FC<IProps> = (props) => {
           <span className="landing--h2--span">자</span>
         </h2>
         <Box p={5} />
-        <Link to="/login">
-          <button className="start" style={{ textDecoration: "none"}}>START</button>
-        </Link>
+        <button className="start" style={{ textDecoration: "none"}} onClick={onClick}>START</button>
       </Box>
     </div>
   );
