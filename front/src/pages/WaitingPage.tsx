@@ -263,6 +263,7 @@ export const WaitingPage: FC<IProps> = (props) => {
         message={confirmMessage}
         type="confirm"
         onSuccess={showConfirm === 1 ? start : exit}
+        alertColor="warning"
       />
     </div>
   );

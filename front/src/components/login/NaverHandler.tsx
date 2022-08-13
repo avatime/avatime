@@ -32,7 +32,7 @@ export const NaverHandler: FC<Iprops> = (props) => {
   }
 
   const register = () => {
-    navigate("mypage");
+    navigate("/mypage");
   }
 
   AvatimeApi.getInstance().naverLogin(code as string, state as string, {

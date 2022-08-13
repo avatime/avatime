@@ -28,7 +28,7 @@ export const theme = createTheme({
 });
 
 function App() {
-  const isLogin = !!localStorage.getItem("token");
+  const isLogin = !!useSelector((state: any) => state.user.token);
   const socialId = useSelector((state: any) => state.user.socialId);
 
   return (

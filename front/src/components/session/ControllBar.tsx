@@ -149,6 +149,7 @@ export const ControllBarPresenter: FC<IPresenterProps> = ({
         message="정말 나가실 건가요?"
         type="confirm"
         onSuccess={exit}
+        alertColor="warning"
       />
     </>
   );
