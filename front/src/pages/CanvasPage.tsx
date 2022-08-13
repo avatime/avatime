@@ -1,4 +1,4 @@
-import { Box, Grid } from "@mui/material";
+import { Box, Grid, Button } from "@mui/material";
 import { grey } from "@mui/material/colors";
 import React, { FC, useState, useEffect } from "react";
 import CanvasDraw from "react-canvas-draw";
@@ -32,8 +32,9 @@ export const CanvasPage: FC<IProps> = (props) => {
 
   // 저장할 수 있는 아바타 칸이 4개라서 num이 1 ~ 4로 들어와요.
   // 서버 api도 num 번호에 따라 저장하도록 만들어 달라고 하시면 될 듯?
-  const onSave = (num: number) => {
+  const onSave = async (num: number) => {
     const avaname = prompt("아바타 이름을 알려주세요.");
+    var flag : boolean = false;
     if (avaname === null) {
       alert("아바타 이름을 입력해주세요.");
       return;
@@ -41,15 +42,16 @@ export const CanvasPage: FC<IProps> = (props) => {
       alert("4글자 이하로 이름을 지어주세요.");
       return;
     } else {
-      AvatimeApi.getInstance().checkAvatarName(
+      await AvatimeApi.getInstance().checkAvatarName(
         {
           name: avaname,
         },
         {
           onSuccess(data) {
+            console.log("중복체크");
             if(!data) {
               alert("중복된 아바타 이름입니다.")
-              return;
+              flag = true;
             }
           },
           navigate,
@@ -57,10 +59,12 @@ export const CanvasPage: FC<IProps> = (props) => {
       );
     }
 
+    if(flag) return;
+
     const dataURL = canvasRef.current.getDataURL();
     console.log(dataURL); // 이게 base64 어쩌구 데이터
 
-    AvatimeApi.getInstance().saveAvatar(
+    await AvatimeApi.getInstance().saveAvatar(
       {
         user_id: userId,
         name: avaname,
@@ -69,8 +73,10 @@ export const CanvasPage: FC<IProps> = (props) => {
       },
       {
         onSuccess(data) {
-          setPath(data.path);
+          console.log("DB 저장 성공");
+          console.log("data : "+data);
           setAvaid(data.id);
+          setPath(data.path);
         },
         navigate,
       }
@@ -86,6 +92,7 @@ export const CanvasPage: FC<IProps> = (props) => {
       slot: num,
     };
     setAvatarList((prev) => [...prev.slice(0, num - 1), newAvatar, ...prev.slice(num - 1)]);
+    console.log(avatarList);
   };
 
   const loadSavedAvatar = (base64: string | undefined) => {
@@ -101,6 +108,10 @@ export const CanvasPage: FC<IProps> = (props) => {
   // 여기에 서버에서 준 아바타 리스트 넣어주세요.
   // 대충 name, image path, 이미지로 변환하기 전의 base64 data가 있다고 가정하고 코드를 짰어요.
   const [avatarList, setAvatarList] = useState<GetAvatarRes[]>([]);
+
+  const test = () => {
+    console.log(avatarList);
+  }
 
   useEffect(() => {
     if (!userId) {
@@ -120,6 +131,7 @@ export const CanvasPage: FC<IProps> = (props) => {
   return (
     <Box className="mainback" display="flex" flexDirection="column">
       <MainHeader />
+      <Button onClick={test}>테스트</Button>
       <Box flex={1} p={5} display="flex" alignItems="stretch">
         <CanvasTools
           onChangeColor={setBrushColor}
@@ -158,6 +170,7 @@ export const CanvasPage: FC<IProps> = (props) => {
               {[0, 1].map((innerIdx) => {
                 const idx = outerIdx * 2 + innerIdx;
                 const avatar = idx < avatarList.length ? null : avatarList[idx];
+                console.log(avatar);
                 return (
                   <Grid item xs={6}>
                     <AvatarProfile
