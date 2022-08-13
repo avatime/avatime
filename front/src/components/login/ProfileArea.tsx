@@ -28,6 +28,8 @@ import {
 import { useNavigate } from "react-router";
 import { AvatimeApi } from "../../apis/avatimeApi";
 import { AvatimeWs } from "../../apis/avatimeWs";
+import { AlertSnackbar } from "../AlertSnackbar";
+import { useFaceMask } from '../../hooks/useFaceMesh';
 
 const style = {
   position: "absolute" as "absolute",
@@ -66,6 +68,7 @@ export const ProfileArea: FC<IProps> = (props) => {
   const [name, setName] = useState(userName);
   const [desc, setDesc] = useState(userDesc);
   const [image, setImage] = useState(profileImagePath);
+
   const [nameCheck, setNameCheck] = useState(true);
   const [nameText, setNameText] = useState("");
   const [overlap, setOverlap] = useState(true);
@@ -74,6 +77,10 @@ export const ProfileArea: FC<IProps> = (props) => {
   const [overContents, setOverContents] = useState(true);
   const [descSatis, setDescSatis] = useState(true);
   const [profileImages, setProfileImages] = useState<ProfileRes[]>([]);
+
+  const [showSnack, setShowSnack] = useState(false);
+  const [showSnack2, setShowSnack2] = useState(false);
+  const [msg, setMsg] = useState("");
 
   useEffect(() => {
     AvatimeApi.getInstance().getProfileList({
@@ -154,7 +161,7 @@ export const ProfileArea: FC<IProps> = (props) => {
   const confirmInfo = () => {
     // 만족했는지 조건 추가
     if (!nameCheck || !nameSatis || !descSatis) {
-      alert("잘못된 항목이 있습니다.");
+      setShowSnack(true);
     } else {
       console.log("user_id : " + userId);
       console.log("name : " + name);
@@ -172,11 +179,11 @@ export const ProfileArea: FC<IProps> = (props) => {
               onSuccess(data) {
                 console.log(data.statusCode);
                 console.log(data.message);
-                alert("회원수정 완료!");
+                setMsg("정보 수정 완료!");
+                setShowSnack2(true);
                 dispatch(setProfileImagePath(image));
                 dispatch(setUserName(name));
                 dispatch(setUserDesc(desc));
-                navigate("/main");
               },
               navigate,
             }
@@ -193,7 +200,8 @@ export const ProfileArea: FC<IProps> = (props) => {
             {
               onSuccess(data) {
                 console.log(data);
-                alert("회원가입 완료!");
+                setMsg("회원가입 완료!");
+                setTimeout(() => setShowSnack2(true), 2000);
                 dispatch(setUserId(data.user_id));
                 dispatch(setUserName(data.name));
                 dispatch(setUserGender(data.gender));
@@ -206,13 +214,16 @@ export const ProfileArea: FC<IProps> = (props) => {
                 AvatimeApi.getInstance().login(data.accessToken);
                 AvatimeWs.getInstance().login(data.accessToken);
                 localStorage.setItem("token", data.accessToken);
-                navigate("/main");
               },
               navigate,
             }
           );
     }
   };
+
+  const snackAfter = () => {
+    navigate("/main");
+  }
 
   const refreshForm = () => {
     setName(userName);
@@ -326,6 +337,21 @@ export const ProfileArea: FC<IProps> = (props) => {
           }}
         />
       </Grid>
+      <AlertSnackbar
+        open={showSnack}
+        onClose={() => setShowSnack(false)}
+        message="잘못된 항목이 있어요."
+        alertColor="warning"
+        type="alert"
+      />
+      <AlertSnackbar
+        open={showSnack2}
+        onClose={() => setShowSnack2(false)}
+        message={msg}
+        alertColor="success"
+        type="confirm"
+        onSuccess={snackAfter}
+      />
     </>
   );
 };
