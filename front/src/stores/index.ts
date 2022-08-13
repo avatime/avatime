@@ -4,11 +4,13 @@ import storage from "redux-persist/lib/storage/session";
 import userReducer from "./slices/userSlice";
 import meetingSlice from "./slices/meetingSlice";
 import waitingSlice from "./slices/waitingSlice";
+import bgmSlice from './slices/bgmSlice';
 
 const reducers = combineReducers({
   user: userReducer,
   meeting: meetingSlice,
   waiting: waitingSlice,
+  bgm: bgmSlice,
 });
 
 const persistConfig = {
