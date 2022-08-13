@@ -1,17 +1,10 @@
 import React, { FC } from "react";
 import "./style.css";
 import { KAKAO_AUTH_URL, NAVER_AUTH_URL } from "../../apis/Auth";
-import { Button } from '@mui/material';
-import { useDispatch } from 'react-redux';
-import { setIsLogin } from "../../stores/slices/userSlice"; 
 
 interface IProps {}
 
 export const SocialLogin: FC<IProps> = (props) => {
-  const dispatch = useDispatch();
-  const test = () => {
-    dispatch(setIsLogin(true));
-  }
   return (
     <div className="social_login">
       <a id="kakao-login-btn" href={KAKAO_AUTH_URL} style={{ marginBottom: "6vh" }}>
@@ -28,7 +21,6 @@ export const SocialLogin: FC<IProps> = (props) => {
           alt="네이버로그인"
         />
       </a>
-      <Button onClick={test}>테스트</Button>
     </div>
   );
 };
