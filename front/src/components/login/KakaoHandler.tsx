@@ -1,4 +1,4 @@
-import React, { FC } from "react";
+import React, { FC, useState } from "react";
 import { useDispatch } from "react-redux";
 import { KAKAO_AGREE_URL } from "../../apis/Auth";
 import {
@@ -16,6 +16,7 @@ import { Backdrop, CircularProgress } from "@mui/material";
 import { useNavigate } from "react-router";
 import { AvatimeApi } from "../../apis/avatimeApi";
 import { AvatimeWs } from '../../apis/avatimeWs';
+import { AlertSnackbar } from '../AlertSnackbar';
 
 interface Iprops {}
 
@@ -23,6 +24,21 @@ export const KakaoHandler: FC<Iprops> = (props) => {
   const dispatch = useDispatch();
   let code = new URL(window.location.href).searchParams.get("code");
   const navigate = useNavigate();
+  const [showLoginSnack, setShowLoginSnack] = useState(false);
+  const [showRegisterSnack, setShowRegisterSnack] = useState(false);
+  const [showReConfirmSnack, setShowReConfirmSnack] = useState(false);
+
+  const login = () => {
+    navigate("/main");
+  }
+
+  const register = () => {
+    navigate("/mypage");
+  }
+
+  const reconfirm = () => {
+    window.location.replace(KAKAO_AGREE_URL);
+  }
 
   AvatimeApi.getInstance().kakaoLogin(code as string, {
     onSuccess(data) {
@@ -34,8 +50,9 @@ export const KakaoHandler: FC<Iprops> = (props) => {
         console.log(data.socialType);
         dispatch(setSocialType(data.social_type));
         dispatch(setIsLogin(false));
-        navigate("/mypage");
-        alert("회원가입이 필요합니다.");
+        //navigate("/mypage");
+        //alert("회원가입이 필요합니다.");
+        setShowRegisterSnack(true);
       } else if (data.statusCode === 200) {
         console.log(data);
         dispatch(setUserId(data.user_id));
@@ -50,11 +67,11 @@ export const KakaoHandler: FC<Iprops> = (props) => {
         AvatimeApi.getInstance().login(data.accessToken);
         AvatimeWs.getInstance().login(data.accessToken);
         localStorage.setItem("token", data.accessToken);
-        navigate("/main");
-        alert("로그인 성공");
+        //navigate("/main");
+        //alert("로그인 성공");
+        setShowLoginSnack(true);
       } else if(data.statusCode === 205) {
-        alert("로그인 실패! 정보 제공 동의 후 다시 시도해주세요.");
-        window.location.replace(KAKAO_AGREE_URL);
+        setShowReConfirmSnack(true);
       }
     },
     navigate,
@@ -62,8 +79,34 @@ export const KakaoHandler: FC<Iprops> = (props) => {
   // 인가코드
 
   return (
+    <>
     <Backdrop open={true}>
       <CircularProgress />
     </Backdrop>
+    <AlertSnackbar
+        open={showLoginSnack}
+        onClose={() => setShowLoginSnack(false)}
+        message="로그인 성공"
+        alertColor="success"
+        type="confirm"
+        onSuccess={login}
+      />
+     <AlertSnackbar
+        open={showRegisterSnack}
+        onClose={() => setShowRegisterSnack(false)}
+        message="회원가입이 필요합니다."
+        alertColor="warning"
+        type="confirm"
+        onSuccess={register}
+      />
+      <AlertSnackbar
+        open={showReConfirmSnack}
+        onClose={() => setShowReConfirmSnack(false)}
+        message="로그인 실패! 정보 제공 동의 후 다시 시도해주세요."
+        alertColor="warning"
+        type="confirm"
+        onSuccess={reconfirm}
+      />
+    </>
   );
 };
