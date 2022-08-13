@@ -7,8 +7,10 @@ import com.ssafy.db.entity.Avatar;
 public interface AvatarService {
 
 	List<Avatar> findAll();
-	List<Avatar> findAllByUserId(Long UserId);
+	List<Avatar> findAllByUserId(Long userId);
 	Avatar findById(Long id);
+	Avatar findByUserIdAndSlot(Long userId, Long slot);
 	void saveAvatar(Avatar avatar);
+	boolean isExistAvatar(Long userId, Long slot);
 	boolean checkAvatarName(String name);
 }

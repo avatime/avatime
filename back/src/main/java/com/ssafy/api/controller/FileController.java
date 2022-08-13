@@ -1,5 +1,8 @@
 package com.ssafy.api.controller;
 
+import java.util.ArrayList;
+import java.util.List;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -7,17 +10,19 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestPart;
 import org.springframework.web.bind.annotation.RestController;
-import org.springframework.web.multipart.MultipartFile;
-
-import com.ssafy.api.dto.FileDetail;
 import com.ssafy.api.request.AvatarCustomReq;
+import com.ssafy.api.response.CustomAvatarRes;
 import com.ssafy.api.service.AvatarService;
 import com.ssafy.api.service.FileUploadService;
+import com.ssafy.common.model.response.BaseResponseBody;
+import com.ssafy.db.entity.Avatar;
 
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
+import io.swagger.annotations.ApiResponse;
+import io.swagger.annotations.ApiResponses;
+import lombok.RequiredArgsConstructor;
 
 /**
  * 파일 업로드 관련 API 요청 처리를 위한 컨트롤러 정의.
@@ -29,46 +34,55 @@ public class FileController {
 
 	@Autowired
 	FileUploadService fileUploadService;
-	AvatarService avatarService;
-//	@PostMapping("/custom")
-//	@ApiOperation(value = "커스텀 아바타 저장", notes = "")
-//	@ApiResponses({ @ApiResponse(code = 200, message = "성공", response = BaseResponseBody.class),
-//			@ApiResponse(code = 500, message = "서버 오류", response = BaseResponseBody.class) })
-//	public ResponseEntity<?> AvatarCustomUpload(
-//			@RequestBody @ApiParam(value = "커스텀 아바타 정보", required = true) AvatarCustomReq avatarCustomReq)
-//			throws Exception {
-//		try {
-//			Avatar avatar = new Avatar();
-//			avatar.setName(avatarCustomReq.getAvatar_name());
-//			avatar.setUserId(avatarCustomReq.getUser_id());
-//			Path currentPath = Paths.get("");
-//	        String path = currentPath.toAbsolutePath().toString();
-//
-//			System.out.println(avatarCustomReq.getImage_code());
-//			return ResponseEntity.status(201).body(decoder(avatarCustomReq)?path:path);
-//		} catch (Exception e) {
-//			return ResponseEntity.status(500).body("서버 오류");
-//		}
-//	}
 	
-	@PostMapping("/customTest")
-	@ApiOperation(value = "커스텀 아바타 저장", notes = "")
-	public ResponseEntity<?> avatarUpload(@RequestPart("file") MultipartFile multipartFile) {
-		FileDetail fileDetail = fileUploadService.save(multipartFile);
-//		String filepath = fileUploadService.save2(multipartFile);
-		return ResponseEntity.status(201).body("사진 올리기 성공!!!!!! >> ");
-	}
+	@Autowired
+	AvatarService avatarService;
 
 	@PostMapping("/custom")
 	@ApiOperation(value = "커스텀 아바타 저장", notes = "")
-//	public ResponseEntity<?> post(@RequestPart("file") MultipartFile multipartFile) {
-//		FileDetail fileDetail = fileUploadService.save(multipartFile);
-	public void post(@RequestBody AvatarCustomReq avatarCustomReq) {
+	@ApiResponses({
+        @ApiResponse(code = 200, message = "성공", response = BaseResponseBody.class),
+        @ApiResponse(code = 500, message = "서버 오류", response = BaseResponseBody.class)
+    })
+	public ResponseEntity<?> customAvatarUpload(@RequestBody AvatarCustomReq avatarCustomReq) {
 		try {
-			fileUploadService.saveAvatar(avatarCustomReq.getBase64());
+			Avatar avatar = avatarService.findByUserIdAndSlot(avatarCustomReq.getUser_id(), avatarCustomReq.getSlot());
+			avatar.setName(avatarCustomReq.getName());
+			avatar.setUserId(avatarCustomReq.getUser_id());
+			avatar.setImagePath(fileUploadService.saveAvatar(avatarCustomReq));
+			avatar.setSlot(avatarCustomReq.getSlot());
+			avatarService.saveAvatar(avatar);
+			return ResponseEntity.status(200).body("성공");
 		} catch (Exception e) {
 			// TODO Auto-generated catch block
-			e.printStackTrace();
+			return ResponseEntity.status(500).body("실패: 관리자에게 문의하세요");
+		}
+	}
+
+	@GetMapping("/load/{user_id}")
+	@ApiOperation(value = "커스텀 아바타 불러오기", notes = "")
+	@ApiResponses({
+        @ApiResponse(code = 200, message = "성공", response = CustomAvatarRes.class),
+        @ApiResponse(code = 500, message = "서버 오류", response = BaseResponseBody.class)
+    })
+	public ResponseEntity<?> getUserCustom(@PathVariable Long user_id) {
+		String address = "https://avatimebucket2022.s3.ap-northeast-2.amazonaws.com/";
+		List<CustomAvatarRes> list = new ArrayList<>();
+		try {
+			List<Avatar> avatarlist = avatarService.findAllByUserId(user_id);
+			for(Avatar avatar : avatarlist) {
+				CustomAvatarRes custom = CustomAvatarRes.builder()
+						.id(avatar.getId())
+						.name(avatar.getName())
+						.slot(avatar.getSlot())
+						.path(address + avatar.getImagePath())
+						.base64("data:image/png;base64," + fileUploadService.getAvatarByBase64(avatar.getImagePath()))
+						.build();
+				list.add(custom);
+			}
+			return ResponseEntity.status(200).body(list);
+		} catch(Exception e) {
+			return ResponseEntity.status(500).body("실패: 관리자에게 문의하세요");
 		}
 	}
 	
@@ -83,5 +97,6 @@ public class FileController {
 		}
 		return ResponseEntity.ok(!response);
 	}
+
 
 }
