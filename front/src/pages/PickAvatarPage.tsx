@@ -6,12 +6,13 @@ import grey from "@mui/material/colors/grey";
 import { GaugeBar } from "../components/pickAvatar/GaugeBar";
 import { AvatarPickInfoRes } from "../apis/response/avatarRes";
 import { Avatar } from "@mui/material";
-import { useSelector } from "react-redux";
+import { useSelector, useDispatch } from 'react-redux';
 import { AvatarProfile } from "../components/session/modal/AvatarProfile";
 import { useNavigate } from "react-router";
 import { useWebSocket } from "../hooks/useWebSocket";
 import DoDisturbIcon from "@mui/icons-material/DoDisturb";
 import { AvatimeApi } from "../apis/avatimeApi";
+import { setBgmSrc } from "../stores/slices/bgmSlice";
 
 interface IProps {}
 
@@ -86,6 +87,14 @@ export const PickAvatarPage: FC<IProps> = () => {
       }
     );
   };
+
+  const dispatch = useDispatch();
+  useEffect(() => {
+    dispatch(setBgmSrc("bgm_select.mp3"));
+    return () => {
+      dispatch(setBgmSrc("bgm_main.mp3"));
+    };
+  }, [dispatch]);
 
   //----------------------------------------------------------------------------------
   //꼭 다시 봐
