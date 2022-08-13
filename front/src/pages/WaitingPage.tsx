@@ -30,12 +30,9 @@ import { setMeetingRoomId } from "../stores/slices/meetingSlice";
 import { setMaster } from "../stores/slices/waitingSlice";
 import { useWebSocket } from "../hooks/useWebSocket";
 import { AvatimeApi } from "../apis/avatimeApi";
+import { AlertSnackbar } from "../components/AlertSnackbar";
 
 interface IProps {}
-
-function SlideTransition(props: SlideProps) {
-  return <Slide {...props} direction="down" />;
-}
 
 const StyledBadge = styled(Badge)<BadgeProps>(({ theme }) => ({
   "& .MuiBadge-badge": {
@@ -247,17 +244,12 @@ export const WaitingPage: FC<IProps> = (props) => {
         isMaster={!!isMaster}
       />
       <UserInfoModal open={openInfo} onClose={onCloseInfo} userId={infoUserId} />
-      <Snackbar
-        anchorOrigin={{ vertical: "top", horizontal: "center" }}
+      <AlertSnackbar
         open={showSnack}
         onClose={() => setShowSnack(false)}
-        TransitionComponent={SlideTransition}
-        autoHideDuration={2000}
-      >
-        <Alert onClose={() => setShowSnack(false)} severity="success" sx={{ width: "100%" }}>
-          누군가 참가 신청을 했어요!!
-        </Alert>
-      </Snackbar>
+        message="누군가 참가 신청을 했어요!!"
+        alertColor="info"
+      />
     </div>
   );
 };
