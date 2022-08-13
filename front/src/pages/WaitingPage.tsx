@@ -249,6 +249,7 @@ export const WaitingPage: FC<IProps> = (props) => {
         onClose={() => setShowSnack(false)}
         message="누군가 참가 신청을 했어요!!"
         alertColor="info"
+        type="alert"
       />
     </div>
   );
