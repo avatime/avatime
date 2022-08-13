@@ -1,27 +1,21 @@
-import React, { FC } from "react";
+import React, { FC, useContext } from "react";
 import Avatar from "@mui/material/Avatar";
 import logo from "../../assets/avartimeLogo.png";
-import { Box, IconButton, Menu, MenuItem, MenuList } from "@mui/material";
+import { Box, IconButton, Menu, MenuItem, Slider, Stack } from "@mui/material";
 import { Link } from "react-router-dom";
 import Tooltip from "@mui/material/Tooltip";
 import "../../style.css";
-import { padding } from "@mui/system";
 import { useSelector, useDispatch } from "react-redux";
 import { useNavigate } from "react-router";
-import {
-  reset,
-  setUserName,
-  setUserDesc,
-  setProfileImagePath,
-  setIsLogin,
-  setToken,
-  setSocialId,
-  setSocialType,
-} from "../../stores/slices/userSlice";
+import { reset } from "../../stores/slices/userSlice";
 import { AvatimeApi } from "../../apis/avatimeApi";
 import { AvatimeWs } from "../../apis/avatimeWs";
 import { resetMeeting } from "../../stores/slices/meetingSlice";
 import { resetWaiting } from "../../stores/slices/waitingSlice";
+import MusicNoteIcon from "@mui/icons-material/MusicNote";
+import MusicOffIcon from "@mui/icons-material/MusicOff";
+import { setPlaying, setVolume } from "../../stores/slices/bgmSlice";
+import VolumeUp from "@mui/icons-material/VolumeUp";
 
 interface IProps {
   hideSettings?: boolean;
@@ -58,6 +52,16 @@ export const MainHeader: FC<IProps> = ({ hideSettings = false }) => {
     navigate("/");
   };
 
+  const playing = useSelector((state: any) => state.bgm.playing);
+  const onClickPlaying = () => {
+    dispatch(setPlaying(!playing));
+  };
+  const volume = useSelector((state: any) => state.bgm.volume);
+  const onChangeVolume = (event: any, value: number | number[]) => {
+    dispatch(setVolume(value as number));
+    dispatch(setPlaying(!!value));
+  };
+
   return (
     <>
       <Box display="flex" justifyContent="right" alignItems="center" marginBottom="2%">
@@ -82,7 +86,12 @@ export const MainHeader: FC<IProps> = ({ hideSettings = false }) => {
               </IconButton>
             </Tooltip>
             <Menu
-              sx={{ mt: "60px" , justifyContent:"center", flexDirection:"center", textAlign:"center"}}
+              sx={{
+                mt: "60px",
+                justifyContent: "center",
+                flexDirection: "center",
+                textAlign: "center",
+              }}
               id="profilemenu"
               anchorEl={anchorElUser}
               anchorOrigin={{
@@ -96,20 +105,47 @@ export const MainHeader: FC<IProps> = ({ hideSettings = false }) => {
               }}
               open={open}
               onClose={handleCloseUserMenu}
-
             >
-              <MenuItem sx={{display:"flex",flexDirection:"center",justifyContent:"center"}}>
-                <Link to="/mypage" style={{ textDecoration: "none", color:"black" }}>
+              <MenuItem sx={{ display: "flex", flexDirection: "center", justifyContent: "center" }}>
+                <Link to="/mypage" style={{ textDecoration: "none", color: "black" }}>
                   마이페이지
                 </Link>
               </MenuItem>
-              <MenuItem  sx={{ flexDirection:"center",display:"flex",justifyContent:"center"}}>
-                <Link to="/canvas" style={{ textDecoration: "none", color:"black" }}>
+              <MenuItem sx={{ flexDirection: "center", display: "flex", justifyContent: "center" }}>
+                <Link to="/canvas" style={{ textDecoration: "none", color: "black" }}>
                   아바타룸
                 </Link>
-              </MenuItem >
-              <MenuItem onClick={logout} style={{color:"black"}} sx={{ display:"flex", flexDirection:"center", justifyContent:"center"}} >로그아웃</MenuItem>
-
+              </MenuItem>
+              <MenuItem
+                onClick={onClickPlaying}
+                sx={{ flexDirection: "center", display: "flex", justifyContent: "center" }}
+              >
+                배경음악 {playing ? <MusicNoteIcon /> : <MusicOffIcon />}
+              </MenuItem>
+              {volume !== undefined && (
+                <MenuItem>
+                  <Box sx={{ width: 100 }}>
+                    <Stack spacing={2} direction="row" alignItems="center">
+                      <VolumeUp />
+                      <Slider
+                        color="secondary"
+                        aria-label="Volume"
+                        value={volume}
+                        onChange={onChangeVolume}
+                        min={0}
+                        max={100}
+                      />
+                    </Stack>
+                  </Box>
+                </MenuItem>
+              )}
+              <MenuItem
+                onClick={logout}
+                style={{ color: "black" }}
+                sx={{ display: "flex", flexDirection: "center", justifyContent: "center" }}
+              >
+                로그아웃
+              </MenuItem>
             </Menu>
           </>
         )}
