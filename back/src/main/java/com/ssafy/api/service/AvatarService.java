@@ -10,7 +10,7 @@ public interface AvatarService {
 	List<Avatar> findAllByUserId(Long userId);
 	Avatar findById(Long id);
 	Avatar findByUserIdAndSlot(Long userId, Long slot);
-	void saveAvatar(Avatar avatar);
+	Avatar saveAvatar(Avatar avatar);
 	boolean isExistAvatar(Long userId, Long slot);
 	boolean checkAvatarName(String name);
 }
