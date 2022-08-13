@@ -40,7 +40,7 @@ import "../../style.css";
 import { useWebSocket } from "../../hooks/useWebSocket";
 import { AvatimeApi } from "../../apis/avatimeApi";
 import { Loading } from "./Loading";
-
+import { AlertSnackbar } from "../AlertSnackbar";
 
 interface IProps {}
 
@@ -131,6 +131,11 @@ const counts = [
 ];
 
 export const WaitingRoomList: FC<IProps> = (props) => {
+
+
+  const [showConfirm, setShowConfirm] = useState(0);
+  const [confirmMessage, setConfirmMessage] = useState("");
+
   const navigate = useNavigate();
   const [ageId, setAgeId] = useState(0);
   const [sidoId, setSidoId] = useState(0);
@@ -292,9 +297,11 @@ export const WaitingRoomList: FC<IProps> = (props) => {
 
   const setRoomData = async () => {
     if (!ageId || !headCounts || !sidoId || !name.length) {
-      alert("빈칸을 모두 채워주세요!");
+      setShowConfirm(1);
+      setConfirmMessage("빈 칸을 모두 채워주십쇼!");
     } else if (name.length >= 30) {
-      alert("방 제목 글자수를 30글자 이하로 해주세요!");
+      setShowConfirm(2);
+      setConfirmMessage("방 제목은 30자 이하로 부탁드려요");
     } else {
 
       AvatimeApi.getInstance().makeNewRoom({
@@ -515,6 +522,15 @@ export const WaitingRoomList: FC<IProps> = (props) => {
           </Button>
         </>
       </ResultWaitingModal>
+
+      <AlertSnackbar
+        open={showConfirm !== 0}
+        onClose={() => setShowConfirm(0)}
+        message={confirmMessage}
+        type="alert"
+        alertColor="warning"
+        onSuccess={() => setShowConfirm(0)}
+      />
 
 
     </div>
