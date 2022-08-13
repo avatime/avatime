@@ -6,7 +6,7 @@ import { VideoStream } from "../components/session/VideoStream";
 import { useOpenvidu } from "../hooks/useOpenvidu";
 import grey from "@mui/material/colors/grey";
 import { useWebSocket } from "../hooks/useWebSocket";
-import { setBgmSrc, setBgmVolume } from "../stores/slices/bgmSlice";
+import { useBGM } from "../hooks/useBGM";
 
 interface IProps {}
 
@@ -41,13 +41,7 @@ export const SubSessionPage: FC<IProps> = (props) => {
     },
   });
 
-  const dispatch = useDispatch();
-  useEffect(() => {
-    dispatch(setBgmSrc("bgm_meeting.mp3"));
-    return () => {
-      dispatch(setBgmSrc("bgm_main.mp3"));
-    };
-  }, [dispatch]);
+  useBGM("meeting");
 
   return (
     <div className="mainback">

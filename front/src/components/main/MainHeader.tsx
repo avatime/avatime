@@ -15,7 +15,7 @@ import { resetWaiting } from "../../stores/slices/waitingSlice";
 import MusicNoteIcon from "@mui/icons-material/MusicNote";
 import MusicOffIcon from "@mui/icons-material/MusicOff";
 import { setBgmPlaying, setBgmVolume } from "../../stores/slices/bgmSlice";
-import VolumeUp from "@mui/icons-material/VolumeUp";
+import { VolumeController } from "../VolumeController";
 
 interface IProps {
   hideSettings?: boolean;
@@ -55,11 +55,6 @@ export const MainHeader: FC<IProps> = ({ hideSettings = false }) => {
   const playing = useSelector((state: any) => state.bgm.playing);
   const onClickPlaying = () => {
     dispatch(setBgmPlaying(!playing));
-  };
-  const volume = useSelector((state: any) => state.bgm.volume);
-  const onChangeVolume = (event: any, value: number | number[]) => {
-    dispatch(setBgmVolume(value as number));
-    dispatch(setBgmPlaying(!!value));
   };
 
   const theme = useTheme();
@@ -124,23 +119,9 @@ export const MainHeader: FC<IProps> = ({ hideSettings = false }) => {
               >
                 배경음악 {playing ? <MusicNoteIcon /> : <MusicOffIcon />}
               </MenuItem>
-              {volume !== undefined && (
-                <MenuItem>
-                  <Box sx={{ width: 100 }}>
-                    <Stack spacing={2} direction="row" alignItems="center">
-                      <VolumeUp />
-                      <Slider
-                        color="secondary"
-                        aria-label="Volume"
-                        value={volume}
-                        onChange={onChangeVolume}
-                        min={0}
-                        max={100}
-                      />
-                    </Stack>
-                  </Box>
-                </MenuItem>
-              )}
+              <MenuItem>
+                <VolumeController />
+              </MenuItem>
               <MenuItem
                 onClick={logout}
                 style={{ color: "black" }}
