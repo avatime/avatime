@@ -3,11 +3,11 @@ import { ProfileRes, RegisterRes, UserInfoRes, UserModifyRes } from "./response/
 import { RequestConfig } from './avatimeApi';
 
 export interface UserApi {
-  checkName(nameCheckReq: NameCheckReq, requestConfig: RequestConfig<boolean>): void;
-  kakaoLogin(code: string, requestConfig: RequestConfig<any>): void;
-  naverLogin(code: string, state: string, requestConfig: RequestConfig<any>): void;
-  getProfileList(requestConfig: RequestConfig<ProfileRes[]>): void;
-  modifyUser(userModifyReq: UserModifyReq, requestConfig: RequestConfig<UserModifyRes>): void;
-  register(registerReq: RegisterReq, requestConfig: RequestConfig<RegisterRes>): void;
-  getUserInfo(userInfoReq: UserInfoReq, requestConfig: RequestConfig<UserInfoRes>): void;
+  checkName(nameCheckReq: NameCheckReq, requestConfig: RequestConfig<boolean>): Promise<void>;
+  kakaoLogin(code: string, requestConfig: RequestConfig<any>): Promise<void>;
+  naverLogin(code: string, state: string, requestConfig: RequestConfig<any>): Promise<void>;
+  getProfileList(requestConfig: RequestConfig<ProfileRes[]>): Promise<void>;
+  modifyUser(userModifyReq: UserModifyReq, requestConfig: RequestConfig<UserModifyRes>): Promise<void>;
+  register(registerReq: RegisterReq, requestConfig: RequestConfig<RegisterRes>): Promise<void>;
+  getUserInfo(userInfoReq: UserInfoReq, requestConfig: RequestConfig<UserInfoRes>): Promise<void>;
 }

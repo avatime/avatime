@@ -14,9 +14,9 @@ import { RequestConfig } from "./avatimeApi";
 //gender -> req 변경
 
 export interface WaitingApi {
-  getSidoList(requestConfig: RequestConfig<SidoRes[]>): void;
-  getAgeList(requestConfig: RequestConfig<AgeRes[]>): void;
-  makeNewRoom(waitingRoomMakeReq: WaitingRoomMakeReq, requestConfig: RequestConfig<RequestEnterRoomRes>): void;
-  startPickAvatar(startPickAvatarReq: StartPickAvatarReq, requestConfig: RequestConfig<void>): void;
-  requestEnterRoom(requestEnterRoomReq: RequestEnterRoomReq, requestConfig: RequestConfig<RequestEnterRoomRes>): void;
+  getSidoList(requestConfig: RequestConfig<SidoRes[]>): Promise<void>;
+  getAgeList(requestConfig: RequestConfig<AgeRes[]>): Promise<void>;
+  makeNewRoom(waitingRoomMakeReq: WaitingRoomMakeReq, requestConfig: RequestConfig<RequestEnterRoomRes>): Promise<void>;
+  startPickAvatar(startPickAvatarReq: StartPickAvatarReq, requestConfig: RequestConfig<void>): Promise<void>;
+  requestEnterRoom(requestEnterRoomReq: RequestEnterRoomReq, requestConfig: RequestConfig<RequestEnterRoomRes>): Promise<void>;
 }
