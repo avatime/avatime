@@ -35,6 +35,8 @@ export const CanvasPage: FC<IProps> = (props) => {
   const [showConfirmSnack, setShowConfirmSnack] = useState(false);
   const [showPromptSnack, setShowPromptSnack] = useState(false);
 
+  const [base, setBase] = useState("");
+
   // 저장할 수 있는 아바타 칸이 4개라서 num이 1 ~ 4로 들어와요.
   // 서버 api도 num 번호에 따라 저장하도록 만들어 달라고 하시면 될 듯?
   const onSave = async (num: number) => {
@@ -110,10 +112,9 @@ export const CanvasPage: FC<IProps> = (props) => {
     if (!base64) {
       return;
     }
-
-    if(window.confirm("아바타를 불러오시겠습니까?")) {
-      canvasRef.current.loadSaveData(base64, true);
-    }
+    
+    setBase(base64);
+    setShowConfirmSnack(true);
   };
 
   // 여기에 서버에서 준 아바타 리스트 넣어주세요.
@@ -125,7 +126,7 @@ export const CanvasPage: FC<IProps> = (props) => {
   }
 
   const afterConfirm = () => {
-    // 구현
+    canvasRef.current.loadSaveData(base, true);
   }
 
   const afterPrompt = () => {
