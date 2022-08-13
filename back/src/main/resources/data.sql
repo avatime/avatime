@@ -42,6 +42,9 @@ insert into waiting_room_user_relation(type, waiting_room_id, user_id) values (1
 
 insert into chatting_room (room_id, type) values (1, 2);
 
+insert into balance values ('1', '오이케이크 먹기', '김치케이크 먹기');
+insert into balance values ('2', '모르는 사람 집에 애인속옷', '애인집에 모르는 사람 속옷');
+
 insert into profile(image_path, name) values
 ("https://avatimebucket2022.s3.ap-northeast-2.amazonaws.com/%ED%94%84%EB%A1%9C%ED%95%84/profile01.png", "프로필 1"),
 ("https://avatimebucket2022.s3.ap-northeast-2.amazonaws.com/%ED%94%84%EB%A1%9C%ED%95%84/profile02.png", "프로필 2"),

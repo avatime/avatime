@@ -2,8 +2,10 @@ package com.ssafy.api.controller;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Random;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.messaging.handler.annotation.DestinationVariable;
 import org.springframework.messaging.handler.annotation.MessageMapping;
@@ -30,9 +32,11 @@ import com.ssafy.api.service.ChattingRoomService;
 import com.ssafy.api.service.MeetingRoomService;
 import com.ssafy.common.model.response.BaseResponseBody;
 import com.ssafy.db.entity.Avatar;
+import com.ssafy.db.entity.Balance;
 import com.ssafy.db.entity.ChattingRoom;
 import com.ssafy.db.entity.MeetingRoom;
 import com.ssafy.db.entity.MeetingRoomUserRelation;
+import com.ssafy.db.repository.BalanceRepository;
 import com.ssafy.db.repository.UserRepository;
 
 import io.swagger.annotations.Api;
@@ -50,7 +54,7 @@ import lombok.RequiredArgsConstructor;
 @RequiredArgsConstructor
 @RequestMapping("/api/v1/meeting")
 public class MeetingController {
-	private final SimpMessageSendingOperations sendingOperations;	
+	private final SimpMessageSendingOperations simp;	
 	
 	@Autowired
 	MeetingRoomService meetingRoomService;
@@ -59,11 +63,13 @@ public class MeetingController {
 	ChattingRoomService chattingRoomService;
 	
 	@Autowired
-//	UserService userService;
 	UserRepository userRepository;
 	
 	@Autowired
 	AvatarService avatarService;
+	
+	@Autowired
+	BalanceRepository balanceRepository;
 	
 	@PatchMapping("/selectAvatar")
 	@ApiOperation(value = "아바타 선택", notes = "<strong>유저별 아바타 선택</strong>") 
@@ -223,6 +229,22 @@ public class MeetingController {
 		MeetingRoom meetingRoom = meetingRoomService.findById(meetingRoomId);
 		LastPickStatusRes lastPickStatusRes = new LastPickStatusRes();
 		lastPickStatusRes.setLast_pick_status(meetingRoom.getStatus() == 1);
-		sendingOperations.convertAndSend("/topic/meeting/status/"+meetingRoomId, lastPickStatusRes);
+		simp.convertAndSend("/topic/meeting/status/"+meetingRoomId, lastPickStatusRes);
+	}
+	
+	@GetMapping("/balance")
+	@ApiOperation(value = "밸런스 게임", notes = "밸런스 게임 랜덤 하나 반환합니다")
+	public ResponseEntity<?> getBalance() {
+		Random r = new Random();
+		int range = (int) balanceRepository.count();
+		int x = r.nextInt(range) + 1;
+		System.out.println(x);
+		return new ResponseEntity<Balance>(balanceRepository.findById(x).get(), HttpStatus.OK);
+	}
+	
+	@MessageMapping("/meeting/balance")
+	public void balance() {
+		
+		simp.convertAndSend("topic/meeting/balance/");
 	}
 }
