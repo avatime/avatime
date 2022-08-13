@@ -29,6 +29,7 @@ export const CanvasPage: FC<IProps> = (props) => {
   const [brushRadius, setBrushRadius] = useState<number>(5);
   const canvasRef = useRef<any>();
 
+  const [showSuccessSnack, setShowSuccessSnack] = useState(false);
   const [showSnack, setShowSnack] = useState(false);
   const [msg, setMsg] = useState("");
   const [showConfirmSnack, setShowConfirmSnack] = useState(false);
@@ -87,6 +88,7 @@ export const CanvasPage: FC<IProps> = (props) => {
         onSuccess(data) {
           console.log("DB 저장 성공");
           console.log("data : "+data);
+          setShowSuccessSnack(true);
 
           const newAvatar: GetAvatarRes = {
             id: data.id,
@@ -95,6 +97,7 @@ export const CanvasPage: FC<IProps> = (props) => {
             base64: dataURL,
             slot: num,
           };
+          // 원래 슬롯에 있던 그림은 지워야함.
           setAvatarList((prev) => [...prev.slice(0, num - 1), newAvatar, ...prev.slice(num - 1)]);
         },
         navigate,
@@ -203,6 +206,13 @@ export const CanvasPage: FC<IProps> = (props) => {
           ))}
         </Box>
       </Box>
+      <AlertSnackbar
+        open={showSuccessSnack}
+        onClose={() => setShowSuccessSnack(false)}
+        message="저장 성공!"
+        alertColor="success"
+        type="alert"
+      />
       <AlertSnackbar
         open={showSnack}
         onClose={() => setShowSnack(false)}
