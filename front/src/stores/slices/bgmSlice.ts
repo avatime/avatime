@@ -3,19 +3,23 @@ import { createSlice } from "@reduxjs/toolkit";
 const bgmSlice = createSlice({
   name: "bgm",
   initialState: {
-    playing: false,
+    playing: true,
     volume: 50,
+    src: `bgm_main.mp3`
   },
   reducers: {
-    setPlaying(state, action) {
+    setBgmPlaying(state, action) {
       state.playing = action.payload;
     },
-    setVolume(state, action) {
+    setBgmVolume(state, action) {
       state.volume = action.payload;
     },
+    setBgmSrc(state, action) {
+      state.src = action.payload;
+    }
   },
 });
 
-export const { setPlaying, setVolume } = bgmSlice.actions;
+export const { setBgmPlaying, setBgmVolume, setBgmSrc } = bgmSlice.actions;
 
 export default bgmSlice.reducer;

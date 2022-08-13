@@ -1,7 +1,7 @@
 import React, { FC, useContext } from "react";
 import Avatar from "@mui/material/Avatar";
 import logo from "../../assets/avartimeLogo.png";
-import { Box, IconButton, Menu, MenuItem, Slider, Stack } from "@mui/material";
+import { Box, IconButton, Menu, MenuItem, Slider, Stack, useTheme } from "@mui/material";
 import { Link } from "react-router-dom";
 import Tooltip from "@mui/material/Tooltip";
 import "../../style.css";
@@ -14,7 +14,7 @@ import { resetMeeting } from "../../stores/slices/meetingSlice";
 import { resetWaiting } from "../../stores/slices/waitingSlice";
 import MusicNoteIcon from "@mui/icons-material/MusicNote";
 import MusicOffIcon from "@mui/icons-material/MusicOff";
-import { setPlaying, setVolume } from "../../stores/slices/bgmSlice";
+import { setBgmPlaying, setBgmVolume } from "../../stores/slices/bgmSlice";
 import VolumeUp from "@mui/icons-material/VolumeUp";
 
 interface IProps {
@@ -54,13 +54,15 @@ export const MainHeader: FC<IProps> = ({ hideSettings = false }) => {
 
   const playing = useSelector((state: any) => state.bgm.playing);
   const onClickPlaying = () => {
-    dispatch(setPlaying(!playing));
+    dispatch(setBgmPlaying(!playing));
   };
   const volume = useSelector((state: any) => state.bgm.volume);
   const onChangeVolume = (event: any, value: number | number[]) => {
-    dispatch(setVolume(value as number));
-    dispatch(setPlaying(!!value));
+    dispatch(setBgmVolume(value as number));
+    dispatch(setBgmPlaying(!!value));
   };
+
+  const theme = useTheme();
 
   return (
     <>
@@ -144,7 +146,7 @@ export const MainHeader: FC<IProps> = ({ hideSettings = false }) => {
                 style={{ color: "black" }}
                 sx={{ display: "flex", flexDirection: "center", justifyContent: "center" }}
               >
-                로그아웃
+                <p style={{ color: theme.palette.error.main }}>로그아웃</p>
               </MenuItem>
             </Menu>
           </>

@@ -19,20 +19,27 @@ export const BgmPlayer: FC<IProps> = ({ children }) => {
 
   const volume = useSelector((state: any) => state.bgm.volume);
   useEffect(() => {
-    console.log(volume);
     if (!volume) {
       return;
     }
-    console.log(volume / 100);
     ref.current.volume = volume / 100;
   }, [volume]);
 
-  const [bgm, setBgm] = useState("bgm_main.mp3");
-  
+  const src = useSelector((state: any) => state.bgm.src);
+  console.log(src);
+  useEffect(() => {
+    if (!src) {
+      return;
+    }
+
+    ref.current.src = src;
+  }, [src]);
+
   return (
     <Box>
       {children}
       <audio
+        autoPlay
         ref={ref}
         preload="auto"
         loop
@@ -41,7 +48,7 @@ export const BgmPlayer: FC<IProps> = ({ children }) => {
           top: 0,
         }}
       >
-        <source src={`${process.env.PUBLIC_URL}/${bgm}`} type="audio/mpeg" />
+        <source src={`${process.env.PUBLIC_URL}/${src}`} type="audio/mpeg" />
       </audio>
     </Box>
   );

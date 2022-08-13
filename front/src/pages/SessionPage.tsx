@@ -11,6 +11,7 @@ import { AvatarVideoStream } from "../components/session/AvatarVideoStream";
 import { useWebSocket } from "../hooks/useWebSocket";
 import { useNavigate } from "react-router";
 import { AvatimeApi } from "../apis/avatimeApi";
+import { setBgmSrc } from "../stores/slices/bgmSlice";
 
 interface IProps {}
 
@@ -81,6 +82,13 @@ export const SessionPage: FC<IProps> = (props) => {
     () => streamList.filter((it) => it.gender !== gender),
     [gender, streamList]
   );
+
+  useEffect(() => {
+    dispatch(setBgmSrc("bgm_meeting.mp3"));
+    return () => {
+      dispatch(setBgmSrc("bgm_main.mp3"));
+    };
+  }, [dispatch]);
 
   return (
     <div className="mainback">

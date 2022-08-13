@@ -1,11 +1,12 @@
 import { Box, Grid } from "@mui/material";
 import React, { FC, useEffect, useMemo } from "react";
-import { useSelector } from "react-redux";
+import { useSelector, useDispatch } from "react-redux";
 import { ControllBar } from "../components/session/ControllBar";
 import { VideoStream } from "../components/session/VideoStream";
 import { useOpenvidu } from "../hooks/useOpenvidu";
 import grey from "@mui/material/colors/grey";
 import { useWebSocket } from "../hooks/useWebSocket";
+import { setBgmSrc, setBgmVolume } from "../stores/slices/bgmSlice";
 
 interface IProps {}
 
@@ -39,6 +40,14 @@ export const SubSessionPage: FC<IProps> = (props) => {
       });
     },
   });
+
+  const dispatch = useDispatch();
+  useEffect(() => {
+    dispatch(setBgmSrc("bgm_meeting.mp3"));
+    return () => {
+      dispatch(setBgmSrc("bgm_main.mp3"));
+    };
+  }, [dispatch]);
 
   return (
     <div className="mainback">
