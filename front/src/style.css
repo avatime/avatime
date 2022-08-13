@@ -63,3 +63,10 @@ input[type="color"]::-webkit-color-swatch {
 	border: solid 1px #000; /*change color of the swatch border here*/
 	border-radius: 5px;
 }
+
+*{
+
+  cursor: url("./assets/cursor.cur"), auto;
+
+ 
+}
