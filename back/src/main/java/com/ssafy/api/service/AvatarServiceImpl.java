@@ -31,8 +31,8 @@ public class AvatarServiceImpl implements AvatarService {
 	}
 	
 	@Override
-	public void saveAvatar(Avatar avatar) {
-		avatarRepository.save(avatar);
+	public Avatar saveAvatar(Avatar avatar) {
+		return avatarRepository.save(avatar);
 	}
 
 	@Override
