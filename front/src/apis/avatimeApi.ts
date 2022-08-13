@@ -46,38 +46,38 @@ export class AvatimeApi implements SessionApi, ChatApi, WaitingApi, UserApi, Ava
   }
 
   // Avatar API ====================================================================
-  pickAvatar(selectAvatarReq: SelectAvatarReq, requestConfig: RequestConfig<SuccessRes>): void {
-    this.request<SelectAvatarReq, SuccessRes>({
+  async pickAvatar(selectAvatarReq: SelectAvatarReq, requestConfig: RequestConfig<SuccessRes>): Promise<void> {
+    await this.request<SelectAvatarReq, SuccessRes>({
       method: "patch",
       url: `/meeting/selectAvatar`,
       data: selectAvatarReq,
       ...requestConfig,
     });
   }
-  checkAvatarName(avatarNameCheckReq: AvatarNameCheckReq, requestConfig: RequestConfig<boolean>): void {
-    this.request<AvatarNameCheckReq, boolean>({
+  async checkAvatarName(avatarNameCheckReq: AvatarNameCheckReq, requestConfig: RequestConfig<boolean>): Promise<void> {
+    await this.request<AvatarNameCheckReq, boolean>({
       method: "get",
       url: `/auth/check/${avatarNameCheckReq.name}`,
       ...requestConfig,
     });
   }
-  getAvatarList(getAvatarAllReq: GetAvatarAllReq, requestConfig: RequestConfig<GetAvatarRes[]>): void {
-    this.request<GetAvatarAllReq, GetAvatarRes[]>({
+  async getAvatarList(getAvatarAllReq: GetAvatarAllReq, requestConfig: RequestConfig<GetAvatarRes[]>): Promise<void> {
+    await this.request<GetAvatarAllReq, GetAvatarRes[]>({
       method: "get",
       url: `/avatar/load/${getAvatarAllReq.user_id}`,
       ...requestConfig,
     });
   }
-  saveAvatar(saveAvatarReq: SaveAvatarReq, requestConfig: RequestConfig<SaveAvatarRes>): void {
-    this.request<SaveAvatarReq, SaveAvatarRes>({
+  async saveAvatar(saveAvatarReq: SaveAvatarReq, requestConfig: RequestConfig<SaveAvatarRes>): Promise<void> {
+    await this.request<SaveAvatarReq, SaveAvatarRes>({
       method: "post",
       url: `/avatar/custom`,
       data: saveAvatarReq,
       ...requestConfig,
     });
   }
-  getAvatar(getAvatarReq: GetAvatarReq, requestConfig: RequestConfig<GetAvatarRes>): void {
-    this.request<GetAvatarReq, GetAvatarRes>({
+  async getAvatar(getAvatarReq: GetAvatarReq, requestConfig: RequestConfig<GetAvatarRes>): Promise<void> {
+    await this.request<GetAvatarReq, GetAvatarRes>({
       method: "get",
       url: `/avatar/get/${getAvatarReq.user_id}/${getAvatarReq.slot}`,
       ...requestConfig,
@@ -85,52 +85,52 @@ export class AvatimeApi implements SessionApi, ChatApi, WaitingApi, UserApi, Ava
   }
 
   // User API ====================================================================
-  checkName(nameCheckReq: NameCheckReq, requestConfig: RequestConfig<boolean>): void {
-    this.request<NameCheckReq, boolean>({
+  async checkName(nameCheckReq: NameCheckReq, requestConfig: RequestConfig<boolean>): Promise<void> {
+    await this.request<NameCheckReq, boolean>({
       method: "get",
       url: `/auth/check/${nameCheckReq.name}`,
       ...requestConfig,
     });
   }
-  kakaoLogin(code: string, requestConfig: RequestConfig<any>): void {
-    this.request<NameCheckReq, boolean>({
+  async kakaoLogin(code: string, requestConfig: RequestConfig<any>): Promise<void> {
+    await this.request<NameCheckReq, boolean>({
       method: "get",
       url: `/auth/kakao?code=${code}`,
       ...requestConfig,
     });
   }
-  naverLogin(code: string, state: string, requestConfig: RequestConfig<any>): void {
-    this.request<NameCheckReq, boolean>({
+  async naverLogin(code: string, state: string, requestConfig: RequestConfig<any>): Promise<void> {
+    await this.request<NameCheckReq, boolean>({
       method: "get",
       url: `/auth/naver?code=${code}&state=${state}`,
       ...requestConfig,
     });
   }
-  getProfileList(requestConfig: RequestConfig<ProfileRes[]>): void {
-    this.request<void, ProfileRes[]>({
+  async getProfileList(requestConfig: RequestConfig<ProfileRes[]>): Promise<void> {
+    await this.request<void, ProfileRes[]>({
       method: "get",
       url: `/user/profile`,
       ...requestConfig,
     });
   }
-  modifyUser(userModifyReq: UserModifyReq, requestConfig: RequestConfig<UserModifyRes>): void {
-    this.request<UserModifyReq, UserModifyRes>({
+  async modifyUser(userModifyReq: UserModifyReq, requestConfig: RequestConfig<UserModifyRes>): Promise<void> {
+    await this.request<UserModifyReq, UserModifyRes>({
       method: "patch",
       url: `/user/${userModifyReq.id}`,
       data: userModifyReq,
       ...requestConfig,
     });
   }
-  register(registerReq: RegisterReq, requestConfig: RequestConfig<RegisterRes>): void {
-    this.request<RegisterReq, RegisterRes>({
+  async register(registerReq: RegisterReq, requestConfig: RequestConfig<RegisterRes>): Promise<void> {
+    await this.request<RegisterReq, RegisterRes>({
       method: "post",
       url: `/auth/register`,
       data: registerReq,
       ...requestConfig,
     });
   }
-  getUserInfo(userInfoReq: UserInfoReq, requestConfig: RequestConfig<UserInfoRes>): void {
-    this.request<UserInfoReq, UserInfoRes>({
+  async getUserInfo(userInfoReq: UserInfoReq, requestConfig: RequestConfig<UserInfoRes>): Promise<void> {
+    await this.request<UserInfoReq, UserInfoRes>({
       method: "get",
       url: `/user/${userInfoReq.user_id}`,
       ...requestConfig,
@@ -138,38 +138,38 @@ export class AvatimeApi implements SessionApi, ChatApi, WaitingApi, UserApi, Ava
   }
 
   // Waiting API ===========================================================
-  getSidoList(requestConfig: RequestConfig<SidoRes[]>): void {
-    this.request<void, SidoRes[]>({
+  async getSidoList(requestConfig: RequestConfig<SidoRes[]>): Promise<void> {
+    await this.request<void, SidoRes[]>({
       method: "get",
       url: `/waiting/sido`,
       ...requestConfig,
     });
   }
-  getAgeList(requestConfig: RequestConfig<AgeRes[]>): void {
-    this.request<void, AgeRes[]>({
+  async getAgeList(requestConfig: RequestConfig<AgeRes[]>): Promise<void> {
+    await this.request<void, AgeRes[]>({
       method: "get",
       url: `/waiting/age`,
       ...requestConfig,
     });
   }
-  makeNewRoom(waitingRoomMakeReq: WaitingRoomMakeReq, requestConfig: RequestConfig<RequestEnterRoomRes>): void {
-    this.request<WaitingRoomMakeReq, RequestEnterRoomRes>({
+  async makeNewRoom(waitingRoomMakeReq: WaitingRoomMakeReq, requestConfig: RequestConfig<RequestEnterRoomRes>): Promise<void> {
+    await this.request<WaitingRoomMakeReq, RequestEnterRoomRes>({
       method: "post",
       url: `/waiting/create`,
       data: waitingRoomMakeReq,
       ...requestConfig,
     });
   }
-  startPickAvatar(startPickAvatarReq: StartPickAvatarReq, requestConfig: RequestConfig<void>): void {
-    this.request<StartPickAvatarReq, void>({
+  async startPickAvatar(startPickAvatarReq: StartPickAvatarReq, requestConfig: RequestConfig<void>): Promise<void> {
+    await this.request<StartPickAvatarReq, void>({
       method: "patch",
       url: `/waiting/start`,
       data: startPickAvatarReq,
       ...requestConfig,
     });
   }
-  requestEnterRoom(requestEnterRoomReq: RequestEnterRoomReq, requestConfig: RequestConfig<RequestEnterRoomRes>): void {
-    this.request<RequestEnterRoomReq, RequestEnterRoomRes>({
+  async requestEnterRoom(requestEnterRoomReq: RequestEnterRoomReq, requestConfig: RequestConfig<RequestEnterRoomRes>): Promise<void> {
+    await this.request<RequestEnterRoomReq, RequestEnterRoomRes>({
       method: "post",
       url: `/waiting/state`,
       data: requestEnterRoomReq,
@@ -178,8 +178,8 @@ export class AvatimeApi implements SessionApi, ChatApi, WaitingApi, UserApi, Ava
   }
 
   // Chat API ===========================================================
-  sendMessage(chatMessageReq: ChatMessageReq, requestConfig: RequestConfig<void>) {
-    this.request<ChatMessageReq, void>({
+  async sendMessage(chatMessageReq: ChatMessageReq, requestConfig: RequestConfig<void>): Promise<void> {
+    await this.request<ChatMessageReq, void>({
       method: "post",
       url: `/chatting/send`,
       data: chatMessageReq,
@@ -188,30 +188,30 @@ export class AvatimeApi implements SessionApi, ChatApi, WaitingApi, UserApi, Ava
   }
 
   // Session API =========================================================
-  getMeetingRoomInfo(meetingRoomInfoReq: MeetingRoomInfoReq, requestConfig: RequestConfig<MeetingRoomInfoRes>) {
-    this.request<MeetingRoomInfoReq, MeetingRoomInfoRes>({
+  async getMeetingRoomInfo(meetingRoomInfoReq: MeetingRoomInfoReq, requestConfig: RequestConfig<MeetingRoomInfoRes>): Promise<void> {
+    await this.request<MeetingRoomInfoReq, MeetingRoomInfoRes>({
       method: "get",
       url: `/meeting/${meetingRoomInfoReq.meetingroom_id}`,
       ...requestConfig,
     });
   }
-  patchFinalPick(finalPickReq: FinalPickReq, requestConfig: RequestConfig<FinalPickRes>) {
-    this.request<FinalPickReq, FinalPickRes>({
+  async patchFinalPick(finalPickReq: FinalPickReq, requestConfig: RequestConfig<FinalPickRes>): Promise<void> {
+    await this.request<FinalPickReq, FinalPickRes>({
       method: "patch",
       url: `/meeting/pick`,
       data: finalPickReq,
       ...requestConfig,
     });
   }
-  getFinalPickResult(finalPickResultReq: FinalPickResultReq, requestConfig: RequestConfig<FinalPickResultRes>) {
-    this.request<FinalPickResultReq, FinalPickResultRes>({
+  async getFinalPickResult(finalPickResultReq: FinalPickResultReq, requestConfig: RequestConfig<FinalPickResultRes>): Promise<void> {
+    await this.request<FinalPickResultReq, FinalPickResultRes>({
       method: "get",
       url: `/meeting/pick/result/${finalPickResultReq.meetingroom_id}/${finalPickResultReq.user_id}`,
       ...requestConfig,
     });
   }
-  postStartFinalPick(startFinalPickReq: StartFinalPickReq, requestConfig: RequestConfig<void>): void {
-    this.request<StartFinalPickReq, void>({
+  async postStartFinalPick(startFinalPickReq: StartFinalPickReq, requestConfig: RequestConfig<void>): Promise<void> {
+    await this.request<StartFinalPickReq, void>({
       method: "post",
       url: `/meeting/pick/start`,
       data: startFinalPickReq,
@@ -265,7 +265,7 @@ export class AvatimeApi implements SessionApi, ChatApi, WaitingApi, UserApi, Ava
       }
     };
 
-    request();
+    await request();
   }
 
   private createAxiosInstance = (token?: string) => {
