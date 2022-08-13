@@ -28,7 +28,7 @@ interface IProps {
   open: boolean;
   onClose: () => void;
   message: string;
-  alertColor?: AlertColor;
+  alertColor: AlertColor;
   type: Type;
   onSuccess?: (value?: string) => void;
 }
@@ -42,10 +42,24 @@ export const AlertSnackbar: FC<IProps> = ({
   onSuccess,
 }) => {
   if (type === "prompt") {
-    return <Prompt open={open} onClose={onClose} message={message} onSuccess={onSuccess!} />;
+    return (
+      <Prompt
+        open={open}
+        onClose={onClose}
+        message={message}
+        onSuccess={onSuccess!}
+        alertColor={alertColor}
+      />
+    );
   } else if (type === "confirm") {
     return (
-      <Comfirm open={open} onClose={onClose} onSuccess={() => onSuccess?.()} message={message} />
+      <Comfirm
+        open={open}
+        onClose={onClose}
+        onSuccess={() => onSuccess?.()}
+        message={message}
+        alertColor={alertColor}
+      />
     );
   }
   return (
@@ -68,9 +82,10 @@ interface PromptProps {
   onClose: () => void;
   onSuccess: (value: string) => void;
   message: string;
+  alertColor: AlertColor;
 }
 
-const Prompt: FC<PromptProps> = ({ open, onClose, onSuccess, message }) => {
+const Prompt: FC<PromptProps> = ({ open, onClose, onSuccess, message, alertColor }) => {
   const [value, setValue] = useState<string>("");
   const onChange = (e: any) => {
     setValue(e.target.value);
@@ -83,7 +98,7 @@ const Prompt: FC<PromptProps> = ({ open, onClose, onSuccess, message }) => {
         TransitionComponent={SlideTransition}
       >
         <Alert
-          severity="info"
+          severity={alertColor}
           action={<></>}
           sx={{
             width: "550px",
@@ -125,9 +140,10 @@ interface ComfirmProps {
   onClose: () => void;
   onSuccess: () => void;
   message: string;
+  alertColor: AlertColor;
 }
 
-const Comfirm: FC<ComfirmProps> = ({ open, onClose, onSuccess, message }) => {
+const Comfirm: FC<ComfirmProps> = ({ open, onClose, onSuccess, message, alertColor }) => {
   return (
     <Backdrop open={open}>
       <Snackbar
@@ -136,7 +152,7 @@ const Comfirm: FC<ComfirmProps> = ({ open, onClose, onSuccess, message }) => {
         TransitionComponent={SlideTransition}
       >
         <Alert
-          severity="warning"
+          severity={alertColor}
           action={<></>}
           sx={{
             width: "450px",
@@ -148,9 +164,11 @@ const Comfirm: FC<ComfirmProps> = ({ open, onClose, onSuccess, message }) => {
           </AlertTitle>
           <Box p={1} />
           <Box width="400px" display="flex" justifyContent="end">
-            <Button color="inherit" onClick={onClose}>
-              취소
-            </Button>
+            {alertColor !== "success" && (
+              <Button color="inherit" onClick={onClose}>
+                취소
+              </Button>
+            )}
             <Button color="inherit" onClick={onSuccess}>
               확인
             </Button>

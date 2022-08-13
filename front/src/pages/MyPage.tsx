@@ -12,7 +12,6 @@ export const MyPage: FC<IProps> = (props) => {
   return (
     <div className="mainback">
       <React.Fragment>
-        <CssBaseline />
         <Container maxWidth="sm" sx={{ height: "100vh" }}>
           <Box display="flex" justifyContent="center" height="100%" alignItems="center">
             <Box
