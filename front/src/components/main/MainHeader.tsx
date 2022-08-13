@@ -82,7 +82,7 @@ export const MainHeader: FC<IProps> = ({ hideSettings = false }) => {
               </IconButton>
             </Tooltip>
             <Menu
-              sx={{ mt: "60px" }}
+              sx={{ mt: "60px" , justifyContent:"center", flexDirection:"center", textAlign:"center"}}
               id="profilemenu"
               anchorEl={anchorElUser}
               anchorOrigin={{
@@ -96,18 +96,20 @@ export const MainHeader: FC<IProps> = ({ hideSettings = false }) => {
               }}
               open={open}
               onClose={handleCloseUserMenu}
+
             >
-              <MenuItem>
-                <Link to="/mypage" style={{ textDecoration: "none" }}>
+              <MenuItem sx={{display:"flex",flexDirection:"center",justifyContent:"center"}}>
+                <Link to="/mypage" style={{ textDecoration: "none", color:"black" }}>
                   마이페이지
                 </Link>
               </MenuItem>
-              <MenuItem>
-                <Link to="/canvas" style={{ textDecoration: "none" }}>
+              <MenuItem  sx={{ flexDirection:"center",display:"flex",justifyContent:"center"}}>
+                <Link to="/canvas" style={{ textDecoration: "none", color:"black" }}>
                   아바타룸
                 </Link>
-              </MenuItem>
-              <MenuItem onClick={logout}>로그아웃</MenuItem>
+              </MenuItem >
+              <MenuItem onClick={logout} style={{color:"black"}} sx={{ display:"flex", flexDirection:"center", justifyContent:"center"}} >로그아웃</MenuItem>
+
             </Menu>
           </>
         )}
