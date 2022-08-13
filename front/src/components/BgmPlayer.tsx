@@ -8,6 +8,7 @@ interface IProps {
 
 export const BgmPlayer: FC<IProps> = ({ children }) => {
   const ref = useRef<any>();
+  const number = useSelector((state: any) => state.bgm.number);
   const playing = useSelector((state: any) => state.bgm.playing);
   useEffect(() => {
     if (playing) {
@@ -15,7 +16,7 @@ export const BgmPlayer: FC<IProps> = ({ children }) => {
     } else {
       ref.current.pause();
     }
-  }, [playing]);
+  }, [playing, number]);
 
   const volume = useSelector((state: any) => state.bgm.volume);
   useEffect(() => {
