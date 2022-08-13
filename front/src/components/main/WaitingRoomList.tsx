@@ -41,6 +41,7 @@ import { useWebSocket } from "../../hooks/useWebSocket";
 import { AvatimeApi } from "../../apis/avatimeApi";
 import { Loading } from "./Loading";
 
+
 interface IProps {}
 
 /**
@@ -514,6 +515,8 @@ export const WaitingRoomList: FC<IProps> = (props) => {
           </Button>
         </>
       </ResultWaitingModal>
+
+
     </div>
   );
 };
