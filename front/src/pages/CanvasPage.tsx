@@ -235,6 +235,7 @@ export const CanvasPage: FC<IProps> = (props) => {
         message="아바타 이름을 알려주세요."
         type="prompt"
         onSuccess={afterPrompt}
+        alertColor="warning"
       />
     </Box>
   );
