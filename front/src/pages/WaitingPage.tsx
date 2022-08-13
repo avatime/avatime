@@ -104,24 +104,30 @@ export const WaitingPage: FC<IProps> = (props) => {
     setOpenReception((prev) => !prev);
   };
 
+  const [showConfirm, setShowConfirm] = useState(0);
+  const [confirmMessage, setConfirmMessage] = useState("");
+
   const onClickStart = () => {
-    // eslint-disable-next-line no-restricted-globals
-    if (confirm("정말 시작할건가요?")) {
-      AvatimeApi.getInstance().startPickAvatar(
-        {
-          waiting_room_id: Number(waitingState.roomId),
-        },
-        {
-          navigate,
-        }
-      );
-    }
+    setShowConfirm(1);
+    setConfirmMessage("정말 시작하실 건가요?");
   };
-  const onClickExit = async () => {
-    // eslint-disable-next-line no-restricted-globals
-    if (confirm("정말 나가실건가요?")) {
-      navigate("/main", { replace: true });
-    }
+  const start = () => {
+    AvatimeApi.getInstance().startPickAvatar(
+      {
+        waiting_room_id: Number(waitingState.roomId),
+      },
+      {
+        navigate,
+      }
+    );
+  };
+
+  const onClickExit = () => {
+    setShowConfirm(2);
+    setConfirmMessage("정말 나가실 건가요?");
+  };
+  const exit = () => {
+    navigate("/main", { replace: true });
   };
 
   const [openInfo, setOpenInfo] = useState<boolean>(false);
@@ -250,6 +256,13 @@ export const WaitingPage: FC<IProps> = (props) => {
         message="누군가 참가 신청을 했어요!!"
         alertColor="info"
         type="alert"
+      />
+      <AlertSnackbar
+        open={showConfirm !== 0}
+        onClose={() => setShowConfirm(0)}
+        message={confirmMessage}
+        type="confirm"
+        onSuccess={showConfirm === 1 ? start : exit}
       />
     </div>
   );

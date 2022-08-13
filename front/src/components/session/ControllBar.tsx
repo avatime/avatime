@@ -11,6 +11,7 @@ import { FinalPickModal } from "./modal/FinalPickModal";
 import { useNavigate } from "react-router";
 import { useSelector } from "react-redux";
 import { AvatimeApi } from "../../apis/avatimeApi";
+import { AlertSnackbar } from "../AlertSnackbar";
 
 type Type = "master" | "normal";
 interface IProps {
@@ -40,13 +41,6 @@ export const ControllBar: FC<IProps> = ({ type, lastPickModalOpen, ...callback }
   }, [cameraStatus, callback]);
 
   const navigate = useNavigate();
-  const onClickExit = () => {
-    // eslint-disable-next-line no-restricted-globals
-    if (confirm("정말 나가시겠습니까?")) {
-      navigate("/main", { replace: true });
-    }
-  };
-
   const onClickPick = () => {
     AvatimeApi.getInstance().postStartFinalPick(
       {
@@ -66,7 +60,6 @@ export const ControllBar: FC<IProps> = ({ type, lastPickModalOpen, ...callback }
       cameraStatus={cameraStatus}
       onChangeCameraStatus={onChangeCameraStatus}
       onClickPick={onClickPick}
-      onClickExit={onClickExit}
       lastPickModalOpen={lastPickModalOpen}
     />
   );
@@ -79,7 +72,6 @@ interface IPresenterProps {
   cameraStatus: boolean;
   onChangeCameraStatus: () => void;
   onClickPick: () => void;
-  onClickExit: () => void;
   lastPickModalOpen: boolean;
 }
 
@@ -90,9 +82,15 @@ export const ControllBarPresenter: FC<IPresenterProps> = ({
   cameraStatus,
   onChangeCameraStatus,
   onClickPick,
-  onClickExit,
   lastPickModalOpen,
 }) => {
+  const [showSnack, setShowSnack] = useState(false);
+
+  const navigate = useNavigate();
+  const exit = () => {
+    navigate("/main", { replace: true });
+  };
+
   return (
     <>
       <Box sx={{ display: "flex" }}>
@@ -136,7 +134,7 @@ export const ControllBarPresenter: FC<IPresenterProps> = ({
           <Button
             variant="contained"
             startIcon={<ExitToAppIcon />}
-            onClick={onClickExit}
+            onClick={() => setShowSnack(true)}
             color="error"
             sx={{ flex: 1 }}
           >
@@ -145,6 +143,13 @@ export const ControllBarPresenter: FC<IPresenterProps> = ({
         </Box>
       </Box>
       {lastPickModalOpen && <FinalPickModal isOpened={lastPickModalOpen} />}
+      <AlertSnackbar
+        open={showSnack}
+        onClose={() => setShowSnack(false)}
+        message="정말 나가실 건가요?"
+        type="confirm"
+        onSuccess={exit}
+      />
     </>
   );
 };
