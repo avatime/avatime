@@ -54,7 +54,7 @@ export const AlertSnackbar: FC<IProps> = ({
       open={open}
       onClose={onClose}
       TransitionComponent={SlideTransition}
-      autoHideDuration={2000}
+      autoHideDuration={4000}
     >
       <Alert onClose={onClose} severity={alertColor} sx={alertStyle}>
         <Typography variant="subtitle2">{message}</Typography>
