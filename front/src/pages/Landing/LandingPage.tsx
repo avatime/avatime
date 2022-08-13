@@ -3,7 +3,7 @@ import React, { FC } from "react";
 import "./LandingPage.css";
 import { Link } from "react-router-dom";
 import "animate.css";
-import "aos/dist/aos.css";
+
 
 interface IProps {}
 
@@ -43,9 +43,9 @@ export const LandingPage: FC<IProps> = (props) => {
           <span className="landing--h2--span">하</span>
           <span className="landing--h2--span">자</span>
         </h2>
-        <Box p={3} />
+        <Box p={5} />
         <Link to="/login">
-          <Button variant="outlined">start</Button>
+          <button className="start" style={{ textDecoration: "none"}}>START</button>
         </Link>
       </Box>
     </div>
