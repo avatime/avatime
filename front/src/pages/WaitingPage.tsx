@@ -31,6 +31,7 @@ import { setMaster } from "../stores/slices/waitingSlice";
 import { useWebSocket } from "../hooks/useWebSocket";
 import { AvatimeApi } from "../apis/avatimeApi";
 import { AlertSnackbar } from "../components/AlertSnackbar";
+import { SoundButton, SoundIconButton } from '../components/SoundButton';
 
 interface IProps {}
 
@@ -198,11 +199,11 @@ export const WaitingPage: FC<IProps> = (props) => {
         </Grid>
         <Grid item xs={3} sx={{ float: "left", display: "flex", flexDirection: "column" }}>
           <Stack width="100%" direction="row-reverse">
-            <IconButton onClick={onClickReception}>
+            <SoundIconButton onClick={onClickReception}>
               <StyledBadge color="primary" badgeContent={candidateList.length} overlap="circular">
                 <PeopleAltIcon />
               </StyledBadge>
-            </IconButton>
+            </SoundIconButton>
           </Stack>
           <Box flex={1}>
             <ChatRoom
@@ -217,7 +218,7 @@ export const WaitingPage: FC<IProps> = (props) => {
           <Grid container spacing={2} alignItems="end">
             {isMaster && (
               <Grid item xs>
-                <Button
+                <SoundButton
                   variant="contained"
                   startIcon={<PlayCircleOutlineIcon />}
                   sx={{ width: "100%" }}
@@ -226,11 +227,11 @@ export const WaitingPage: FC<IProps> = (props) => {
                   // disabled={waitingUserList.length !== waitingState.headCount}
                 >
                   시작
-                </Button>
+                </SoundButton>
               </Grid>
             )}
             <Grid item xs>
-              <Button
+              <SoundButton
                 variant="contained"
                 color="error"
                 startIcon={<ExitToAppIcon />}
@@ -238,7 +239,7 @@ export const WaitingPage: FC<IProps> = (props) => {
                 onClick={onClickExit}
               >
                 나가기
-              </Button>
+              </SoundButton>
             </Grid>
           </Grid>
         </Grid>

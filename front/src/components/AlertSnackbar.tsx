@@ -4,7 +4,6 @@ import {
   AlertTitle,
   Backdrop,
   Box,
-  Button,
   Slide,
   SlideProps,
   Snackbar,
@@ -12,6 +11,7 @@ import {
   Typography,
 } from "@mui/material";
 import React, { FC, useState } from "react";
+import { SoundButton } from './SoundButton';
 
 function SlideTransition(props: SlideProps) {
   return <Slide {...props} direction="down" />;
@@ -121,12 +121,12 @@ const Prompt: FC<PromptProps> = ({ open, onClose, onSuccess, message, alertColor
             />
             <Box p={1} />
             <Box width="100%" display="flex" justifyContent="end">
-              <Button color="inherit" onClick={onClose}>
+              <SoundButton color="inherit" onClick={onClose}>
                 취소
-              </Button>
-              <Button color="inherit" onClick={() => onSuccess(value)}>
+              </SoundButton>
+              <SoundButton color="inherit" onClick={() => onSuccess(value)}>
                 확인
-              </Button>
+              </SoundButton>
             </Box>
           </Box>
         </Alert>
@@ -165,13 +165,13 @@ const Comfirm: FC<ComfirmProps> = ({ open, onClose, onSuccess, message, alertCol
           <Box p={1} />
           <Box width="400px" display="flex" justifyContent="end">
             {alertColor !== "success" && (
-              <Button color="inherit" onClick={onClose}>
+              <SoundButton color="inherit" onClick={onClose}>
                 취소
-              </Button>
+              </SoundButton>
             )}
-            <Button color="inherit" onClick={onSuccess}>
+            <SoundButton color="inherit" onClick={onSuccess}>
               확인
-            </Button>
+            </SoundButton>
           </Box>
         </Alert>
       </Snackbar>
