@@ -8,6 +8,8 @@ import {
   StartFinalPickReq,
   StartBalanceGameReq,
   PostBalanceGameReq,
+  PatchPickStuffReq,
+  StartPickStuffReq,
 } from "./request/sessionReq";
 import { NavigateFunction } from "react-router";
 import { ChatApi } from "./chatApi";
@@ -300,6 +302,27 @@ export class AvatimeApi implements SessionApi, ChatApi, WaitingApi, UserApi, Ava
       method: "post",
       url: `/meeting/balance/result`,
       data: postBalanceGameReq,
+      ...requestConfig,
+    });
+  }
+  async getStartPickStuff(
+    startPickStuffReq: StartPickStuffReq,
+    requestConfig: RequestConfig<void>
+  ): Promise<void> {
+    await this.request<StartPickStuffReq, void>({
+      method: "get",
+      url: `/meeting/stuff/start/${startPickStuffReq.meetingroom_id}`,
+      ...requestConfig,
+    });
+  }
+  async patchPickStuff(
+    patchPickStuffReq: PatchPickStuffReq,
+    requestConfig: RequestConfig<void>
+  ): Promise<void> {
+    await this.request<PatchPickStuffReq, void>({
+      method: "patch",
+      url: `/meeting/selectStuff`,
+      data: patchPickStuffReq,
       ...requestConfig,
     });
   }

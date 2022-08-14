@@ -2,12 +2,13 @@ import {
   FinalPickReq,
   FinalPickResultReq,
   MeetingRoomInfoReq,
+  PatchPickStuffReq,
   PostBalanceGameReq,
   StartFinalPickReq,
 } from "./request/sessionReq";
 import { RequestConfig } from "./avatimeApi";
 import { MeetingRoomInfoRes, FinalPickRes, FinalPickResultRes } from "./response/sessionRes";
-import { StartBalanceGameReq } from "./request/sessionReq";
+import { StartBalanceGameReq, StartPickStuffReq } from "./request/sessionReq";
 
 export interface SessionApi {
   getMeetingRoomInfo(
@@ -32,6 +33,14 @@ export interface SessionApi {
   ): Promise<void>;
   postResultBalanceGame(
     postBalanceGameReq: PostBalanceGameReq,
+    requestConfig: RequestConfig<void>
+  ): Promise<void>;
+  getStartPickStuff(
+    startPickStuffReq: StartPickStuffReq,
+    requestConfig: RequestConfig<void>
+  ): Promise<void>;
+  patchPickStuff(
+    patchPickStuffReq: PatchPickStuffReq,
     requestConfig: RequestConfig<void>
   ): Promise<void>;
 }
