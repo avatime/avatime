@@ -383,6 +383,7 @@ public class MeetingRoomServiceImpl implements MeetingRoomService {
 			subUser.setMeetingRoom(meetingRoom);
 			meetingRoomUserRelationRepository.saveAndFlush(subUser);
 		}
+		timer(meetingRoom.getId(), 120, "stuffSubSession");
 	}
 
 }
