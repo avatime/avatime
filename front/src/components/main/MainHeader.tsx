@@ -54,23 +54,28 @@ export const MainHeader: FC<IProps> = ({ hideSettings = false }) => {
     navigate("/");
   };
 
-  const playing = useSelector((state: any) => state.bgm.playing);
-  const onClickPlaying = () => {
-    dispatch(setBgmPlaying(!playing));
-  };
-
   const theme = useTheme();
   const ref = useSound();
 
   return (
     <>
-      <Box display="flex" justifyContent="right" alignItems="center" marginBottom="2%">
-        <Link ref={ref} to="/main">
+      <Box display="flex" justifyContent="center" alignItems="center" marginBottom="2%">
+        <Link
+          ref={ref}
+          to="/main"
+          style={{
+            display: "flex",
+            justifyContent: "center",
+          }}
+        >
           <img src={logo} alt="로고" style={{ width: "70%", paddingTop: "2%" }} />
         </Link>
 
         {!hideSettings && (
-          <>
+          <Stack direction="row" position="absolute" right="80px">
+            <Stack width="100px" justifyContent="center">
+              <VolumeController />
+            </Stack>
             <Tooltip title="설정">
               <SoundIconButton
                 onClick={handleOpenUserMenu}
@@ -117,15 +122,6 @@ export const MainHeader: FC<IProps> = ({ hideSettings = false }) => {
                 </Link>
               </MenuItem>
               <MenuItem
-                onClick={onClickPlaying}
-                sx={{ flexDirection: "center", display: "flex", justifyContent: "center" }}
-              >
-                배경음악 {playing ? <MusicNoteIcon /> : <MusicOffIcon />}
-              </MenuItem>
-              <MenuItem>
-                <VolumeController />
-              </MenuItem>
-              <MenuItem
                 onClick={logout}
                 style={{ color: "black" }}
                 sx={{ display: "flex", flexDirection: "center", justifyContent: "center" }}
@@ -133,7 +129,7 @@ export const MainHeader: FC<IProps> = ({ hideSettings = false }) => {
                 <p style={{ color: theme.palette.error.main }}>로그아웃</p>
               </MenuItem>
             </Menu>
-          </>
+          </Stack>
         )}
       </Box>
     </>
