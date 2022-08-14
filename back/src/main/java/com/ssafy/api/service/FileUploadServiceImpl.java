@@ -33,4 +33,18 @@ public class FileUploadServiceImpl implements FileUploadService {
 		// TODO Auto-generated method stub
 		return amazonS3ResourceStorage.getImageByBase64(imagePath);
 	}
+
+	@Override
+	public String savePicInfo(AvatarCustomReq avatarCustomReq) throws Exception {
+		// TODO Auto-generated method stub
+		String fullPath = MultipartUtil.createPath(MultipartUtil.createFileId(), "txt");
+		amazonS3ResourceStorage.storePicInfo(fullPath, avatarCustomReq.getPic_info());
+		return fullPath;
+	}
+
+	@Override
+	public String getPicInfo(String picInfoPath) throws Exception {
+		// TODO Auto-generated method stub
+		return amazonS3ResourceStorage.getPicInfo(picInfoPath);
+	}
 }
