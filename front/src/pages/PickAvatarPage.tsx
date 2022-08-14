@@ -167,7 +167,7 @@ export const PickAvatarPage: FC<IProps> = () => {
       <AlertSnackbar
         open={showalertAvatar}
         onClose={() => setShowalertAvatar(false)}
-        message="로그인 성공"
+        message="중복선택이예요!! 다른 걸 선택하십쇼"
         alertColor="warning"
         type="alert"
       />
