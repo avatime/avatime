@@ -16,3 +16,14 @@ export interface FinalPickResultReq {
 export interface StartFinalPickReq {
   meetingroom_id: number;
 }
+
+export interface StartBalanceGameReq {
+  meetingroom_id: number;
+}
+
+export interface PostBalanceGameReq {
+  meetingroom_id: number;
+  balance_id: number;
+  user_id: number;
+  result: boolean;
+}
