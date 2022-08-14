@@ -15,6 +15,7 @@ import { useSelector } from "react-redux";
 import CloseIcon from "@mui/icons-material/Close";
 import { AvatimeApi } from "../../apis/avatimeApi";
 import { useNavigate } from "react-router";
+import { SoundIconButton } from '../SoundButton';
 
 interface IProps {
   open: boolean;
@@ -69,9 +70,9 @@ export const ReceptionModal: FC<IProps> = ({ open, onClickClose, candidateList, 
           }}
         >
           <Box position="relative">
-            <IconButton onClick={onClickClose} sx={{ right: "0", position: "absolute" }}>
+            <SoundIconButton onClick={onClickClose} sx={{ right: "0", position: "absolute" }}>
               <CloseIcon />
-            </IconButton>
+            </SoundIconButton>
             <Typography variant="h5">접수처</Typography>
             <Box p={1} />
             {candidateList.length === 0 ? (

@@ -30,6 +30,7 @@ import { AvatimeApi } from "../../apis/avatimeApi";
 import { AvatimeWs } from "../../apis/avatimeWs";
 import { AlertSnackbar } from "../AlertSnackbar";
 import { useFaceMask } from '../../hooks/useFaceMesh';
+import { SoundIconButton } from "../SoundButton";
 
 const style = {
   position: "absolute" as "absolute",
@@ -242,7 +243,7 @@ export const ProfileArea: FC<IProps> = (props) => {
     <>
       <Stack>
         <Box display="flex" justifyContent="center" alignItems="start" marginLeft="10vw">
-          <IconButton onClick={handleOpen}>
+          <SoundIconButton onClick={handleOpen}>
             <Avatar
               src={image}
               sx={{ width: 80, height: 80 }}
@@ -252,7 +253,7 @@ export const ProfileArea: FC<IProps> = (props) => {
                 alignItems: "center",
               }}
             />
-          </IconButton>
+          </SoundIconButton>
           <Modal
             open={open}
             onClose={handleClose}
@@ -267,7 +268,7 @@ export const ProfileArea: FC<IProps> = (props) => {
               <Box>
                 {profileImages?.map((ProfileRes, idx) => {
                   return (
-                    <IconButton
+                    <SoundIconButton
                       key={idx}
                       onClick={() => getProfile(ProfileRes.image_path)}
                       sx={{ margin: 3 }}
@@ -281,19 +282,19 @@ export const ProfileArea: FC<IProps> = (props) => {
                           alignItems: "center",
                         }}
                       />
-                    </IconButton>
+                    </SoundIconButton>
                   );
                 })}
               </Box>
             </Box>
           </Modal>
           <Box display="inline" marginLeft="5.5vw" sx={{ alignItems: "flex-start" }}>
-            <IconButton onClick={confirmInfo}>
+            <SoundIconButton onClick={confirmInfo}>
               <CheckIcon />
-            </IconButton>
-            <IconButton onClick={refreshForm}>
+            </SoundIconButton>
+            <SoundIconButton onClick={refreshForm}>
               <RefreshIcon />
-            </IconButton>
+            </SoundIconButton>
           </Box>
         </Box>
       </Stack>

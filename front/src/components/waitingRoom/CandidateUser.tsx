@@ -3,6 +3,7 @@ import React, { FC } from "react";
 import { WaitingUser } from "../../apis/response/waitingRoomRes";
 import CheckCircleIcon from "@mui/icons-material/CheckCircle";
 import CancelIcon from "@mui/icons-material/Cancel";
+import { SoundIconButton } from "../SoundButton";
 
 interface IProps {
   waitingUser: WaitingUser;
@@ -34,12 +35,12 @@ export const CandidateUser: FC<IProps> = ({
       </Typography>
       {isMaster && (
         <>
-          <IconButton color="success" onClick={() => onClickAccept(waitingUser.id)}>
+          <SoundIconButton color="success" onClick={() => onClickAccept(waitingUser.id)}>
             <CheckCircleIcon />
-          </IconButton>
-          <IconButton color="error" onClick={() => onClickRefuse(waitingUser.id)}>
+          </SoundIconButton>
+          <SoundIconButton color="error" onClick={() => onClickRefuse(waitingUser.id)}>
             <CancelIcon />
-          </IconButton>
+          </SoundIconButton>
         </>
       )}
     </Box>
