@@ -16,6 +16,8 @@ import MusicNoteIcon from "@mui/icons-material/MusicNote";
 import MusicOffIcon from "@mui/icons-material/MusicOff";
 import { setBgmPlaying, setBgmVolume } from "../../stores/slices/bgmSlice";
 import { VolumeController } from "../VolumeController";
+import { SoundIconButton } from "../SoundButton";
+import { useSound } from "../../hooks/useSound";
 
 interface IProps {
   hideSettings?: boolean;
@@ -58,18 +60,19 @@ export const MainHeader: FC<IProps> = ({ hideSettings = false }) => {
   };
 
   const theme = useTheme();
+  const ref = useSound();
 
   return (
     <>
       <Box display="flex" justifyContent="right" alignItems="center" marginBottom="2%">
-        <Link to="/main">
+        <Link ref={ref} to="/main">
           <img src={logo} alt="로고" style={{ width: "70%", paddingTop: "2%" }} />
         </Link>
 
         {!hideSettings && (
           <>
             <Tooltip title="설정">
-              <IconButton
+              <SoundIconButton
                 onClick={handleOpenUserMenu}
                 style={{ marginLeft: "27%", marginRight: "3%" }}
               >
@@ -80,7 +83,7 @@ export const MainHeader: FC<IProps> = ({ hideSettings = false }) => {
                   aria-controls={open ? "composition-menu" : undefined}
                   aria-expanded={open ? "true" : undefined}
                 />
-              </IconButton>
+              </SoundIconButton>
             </Tooltip>
             <Menu
               sx={{

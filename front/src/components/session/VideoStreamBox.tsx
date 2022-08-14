@@ -51,9 +51,9 @@ export const VideoStreamBox: FC<IProps> = ({
         </Typography>
       </Box>
 
-      <Box position="absolute" top="5px" right="5px">
-        {!micStatus && <MicOffIcon style={{ width: "12px", color: "red" }} />}
-        {!videoStatus && <VideocamOffIcon style={{ width: "12px", color: "red" }} />}
+      <Box position="absolute" top="10px" left="10px">
+        {!micStatus && <MicOffIcon style={{ width: "32px", color: "red" }} />}
+        {!videoStatus && <VideocamOffIcon style={{ width: "32px", color: "red" }} />}
       </Box>
     </Box>
   );

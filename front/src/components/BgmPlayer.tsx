@@ -27,7 +27,6 @@ export const BgmPlayer: FC<IProps> = ({ children }) => {
   }, [volume]);
 
   const src = useSelector((state: any) => state.bgm.src);
-  console.log(src);
   useEffect(() => {
     if (!src) {
       return;

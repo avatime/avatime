@@ -1,6 +1,7 @@
 import { Box, Button } from "@mui/material";
 import { grey } from "@mui/material/colors";
 import React, { FC, useState } from "react";
+import { SoundButton } from "../SoundButton";
 
 
 interface SliderProps {
@@ -47,13 +48,13 @@ export const GaugeBar: FC<SliderProps> = ({ current, total, finishSelectingAvata
             borderBottomRightRadius: width === 100 ? "10px" : "0px",
           }}
         ></Box>
-        <Button
+        <SoundButton
           variant="text"
           onClick={handleChangeSelect }
           sx={{ position: "absolute", left: "0", right: "0", top: "0", bottom: "0" }}
         >
           선택하기
-        </Button>
+        </SoundButton>
       </Box>
     </Box>
   );

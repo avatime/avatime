@@ -12,6 +12,7 @@ import { useNavigate } from "react-router";
 import { useSelector } from "react-redux";
 import { AvatimeApi } from "../../apis/avatimeApi";
 import { AlertSnackbar } from "../AlertSnackbar";
+import { SoundButton } from "../SoundButton";
 
 type Type = "master" | "normal";
 interface IProps {
@@ -99,7 +100,7 @@ export const ControllBarPresenter: FC<IPresenterProps> = ({
         </Box> */}
 
         <Box flex={1} display="flex" flexDirection="row" justifyContent="space-around">
-          <Button
+          <SoundButton
             variant="contained"
             color={micStatus ? "secondary" : "error"}
             startIcon={micStatus ? <MicIcon /> : <MicOffIcon />}
@@ -107,9 +108,9 @@ export const ControllBarPresenter: FC<IPresenterProps> = ({
             sx={{ flex: 1 }}
           >
             마이크
-          </Button>
+          </SoundButton>
           <Box p={1} />
-          <Button
+          <SoundButton
             variant="contained"
             color={cameraStatus ? "secondary" : "error"}
             startIcon={cameraStatus ? <VideocamIcon /> : <VideocamOffIcon />}
@@ -117,10 +118,10 @@ export const ControllBarPresenter: FC<IPresenterProps> = ({
             sx={{ flex: 1 }}
           >
             카메라
-          </Button>
+          </SoundButton>
           <Box p={1} />
           {type === "master" && (
-            <Button
+            <SoundButton
               variant="contained"
               startIcon={<PeopleIcon />}
               onClick={onClickPick}
@@ -128,10 +129,10 @@ export const ControllBarPresenter: FC<IPresenterProps> = ({
               sx={{ flex: 1 }}
             >
               최종 선택
-            </Button>
+            </SoundButton>
           )}
           <Box p={1} />
-          <Button
+          <SoundButton
             variant="contained"
             startIcon={<ExitToAppIcon />}
             onClick={() => setShowSnack(true)}
@@ -139,7 +140,7 @@ export const ControllBarPresenter: FC<IPresenterProps> = ({
             sx={{ flex: 1 }}
           >
             나가기
-          </Button>
+          </SoundButton>
         </Box>
       </Box>
       {lastPickModalOpen && <FinalPickModal isOpened={lastPickModalOpen} />}
