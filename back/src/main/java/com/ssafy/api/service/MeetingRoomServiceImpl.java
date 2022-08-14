@@ -10,14 +10,19 @@ import org.springframework.messaging.simp.SimpMessageSendingOperations;
 import org.springframework.stereotype.Service;
 
 import com.ssafy.api.response.AvatarChoiceRes;
+import com.ssafy.api.response.BalanceResultRes;
 import com.ssafy.api.response.StuffChoiceRes;
 import com.ssafy.api.response.entity.AvatarStatus;
+import com.ssafy.api.response.entity.BalanceResult;
 import com.ssafy.api.response.entity.StuffStatus;
 import com.ssafy.db.entity.Avatar;
+import com.ssafy.db.entity.Balance;
+import com.ssafy.db.entity.BalanceRelation;
 import com.ssafy.db.entity.MeetingRoom;
 import com.ssafy.db.entity.MeetingRoomUserRelation;
 import com.ssafy.db.entity.Stuff;
 import com.ssafy.db.entity.WaitingRoomUserRelation;
+import com.ssafy.db.repository.BalanceRelationRepository;
 import com.ssafy.db.repository.ChattingRoomRepository;
 import com.ssafy.db.repository.MeetingRoomRepository;
 import com.ssafy.db.repository.MeetingRoomUserRelationRepository;
@@ -60,6 +65,9 @@ public class MeetingRoomServiceImpl implements MeetingRoomService {
 	
 	@Autowired
 	UserRepository userRepository;
+	
+	@Autowired
+	BalanceRelationRepository balanceRelationRepository;
 	
 	private final SimpMessageSendingOperations sendingOperations;
 	
@@ -189,9 +197,6 @@ public class MeetingRoomServiceImpl implements MeetingRoomService {
 						} catch (Exception e) {
 							// TODO Auto-generated catch block	
 						}
-					else if (type.equals("stuff")) {
-
-					}
 					else if (type.equals("stuffSubSession")) {
 						List<MeetingRoomUserRelation> list = meetingRoomUserRelationRepository.findAllByMeetingRoomId(meetingRoomId);
 						for(MeetingRoomUserRelation user : list) {
@@ -215,6 +220,7 @@ public class MeetingRoomServiceImpl implements MeetingRoomService {
 					}
 				}
 			}
+
 		};
 		
 		timer.schedule(task, 1000, 1000);
@@ -366,4 +372,21 @@ public class MeetingRoomServiceImpl implements MeetingRoomService {
 		return stuff;
 	}
 
+	@Override
+	public void sendBalanceResult(Long meetingRoomId, Balance balance) throws Exception {
+		// TODO Auto-generated method stub
+		timer(meetingRoomId, 15, "balance");
+		List<BalanceRelation> list = balanceRelationRepository.findAllByMeetingRoomIdAndBalance(meetingRoomId, balance);
+		BalanceResultRes response = new BalanceResultRes();
+		List<BalanceResult> resultList = new ArrayList<>();
+		for(BalanceRelation b : list) {
+			BalanceResult result = BalanceResult.builder()
+					.user_id(b.getUserId())
+					.result(b.isResult())
+					.build();
+			resultList.add(result);
+		}
+		response.setBalance_result(resultList);
+		sendingOperations.convertAndSend("/topic/meeting/balance/result/"+meetingRoomId, response);
+	}
 }

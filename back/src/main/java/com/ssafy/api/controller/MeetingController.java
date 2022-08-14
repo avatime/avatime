@@ -2,8 +2,10 @@ package com.ssafy.api.controller;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Random;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.messaging.handler.annotation.DestinationVariable;
 import org.springframework.messaging.handler.annotation.MessageMapping;
@@ -16,6 +18,8 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
+import com.ssafy.api.request.BalancePostReq;
+import com.ssafy.api.request.BalanceStartReq;
 import com.ssafy.api.request.FinalChoiceUserReq;
 import com.ssafy.api.request.LeavingMeetingRoomReq;
 import com.ssafy.api.request.MeetingRoomIdReq;
@@ -31,9 +35,13 @@ import com.ssafy.api.service.ChattingRoomService;
 import com.ssafy.api.service.MeetingRoomService;
 import com.ssafy.common.model.response.BaseResponseBody;
 import com.ssafy.db.entity.Avatar;
+import com.ssafy.db.entity.Balance;
+import com.ssafy.db.entity.BalanceRelation;
 import com.ssafy.db.entity.ChattingRoom;
 import com.ssafy.db.entity.MeetingRoom;
 import com.ssafy.db.entity.MeetingRoomUserRelation;
+import com.ssafy.db.repository.BalanceRelationRepository;
+import com.ssafy.db.repository.BalanceRepository;
 import com.ssafy.db.repository.UserRepository;
 
 import io.swagger.annotations.Api;
@@ -65,6 +73,12 @@ public class MeetingController {
 	
 	@Autowired
 	AvatarService avatarService;
+	
+	@Autowired
+	BalanceRepository balanceRepository;
+	
+	@Autowired
+	BalanceRelationRepository balanceRelationRepository;
 	
 	@PatchMapping("/selectAvatar")
 	@ApiOperation(value = "아바타 선택", notes = "<strong>유저별 아바타 선택</strong>") 
@@ -273,4 +287,50 @@ public class MeetingController {
 	public void startStuffChoice(@DestinationVariable Long meetingRoomId) throws Exception {
 		meetingRoomService.sendStuffInfo(meetingRoomId);
 	}
+	
+	@PostMapping("/balance/start")
+	@ApiOperation(value = "밸런스 게임", notes = "밸런스 게임을 랜덤으로 하나 반환합니다")
+	public ResponseEntity<?> getBalance(@RequestBody BalanceStartReq balanceStart) {
+		try {
+			MeetingRoom meetingRoom = meetingRoomService.findById(balanceStart.getMeetingroomId());
+
+			if (meetingRoom.getBalance() > 2) {
+				return ResponseEntity.status(409).body("횟수 초과");
+			}
+			
+			int range, balanceId = 0;
+			boolean check = true;
+			while (check) {
+				Random r = new Random();
+				range = (int) balanceRepository.count();
+				balanceId = r.nextInt(range) + 1;
+				check = balanceRelationRepository.existsByMeetingRoomIdAndBalanceId(balanceStart.getMeetingroomId(), balanceId);
+			}
+			meetingRoom.setBalance(meetingRoom.getBalance()+1);
+			meetingRoomService.save(meetingRoom);
+			Balance balance = balanceRepository.findById(balanceId).get();
+			sendingOperations.convertAndSend("/topic/meeting/balance/"+balanceStart.getMeetingroomId(), balance);
+			meetingRoomService.sendBalanceResult(balanceStart.getMeetingroomId(), balance);
+			return ResponseEntity.status(200).body("성공");
+		} catch(Exception e) {
+			return ResponseEntity.status(500).body("관리자에게 문의하세요");
+		}
+	}
+	
+	// 밸런스 게임 결과 입력
+	@PostMapping("/balance/result")
+	public ResponseEntity<?> balance(@RequestBody BalancePostReq balance) {
+		// 해당 미팅방에 balance 게임 횟수 1 증가
+		Balance newBalance = balanceRepository.findById(balance.getBalanceId()).get();
+		BalanceRelation balanceRelation = new BalanceRelation();
+
+		balanceRelation.setMeetingRoomId(balance.getMeetingroomId());
+		balanceRelation.setBalance(newBalance);
+		balanceRelation.setUserId(balance.getUserId());
+		balanceRelation.setResult(balance.isResult());
+		
+		balanceRelationRepository.save(balanceRelation);
+		return ResponseEntity.status(201).body("성공");
+	}
+
 }

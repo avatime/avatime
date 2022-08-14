@@ -54,6 +54,10 @@ insert into profile(image_path, name) values
 ("https://avatimebucket2022.s3.ap-northeast-2.amazonaws.com/%ED%94%84%EB%A1%9C%ED%95%84/profile09.png", "프로필 9"),
 ("https://avatimebucket2022.s3.ap-northeast-2.amazonaws.com/%ED%94%84%EB%A1%9C%ED%95%84/profile10.png", "프로필 10");
 
+insert into balance (a, b) values 
+ ('오이케이크 먹기', '김치케이크 먹기'),
+ ('모르는 사람 집에 애인속옷', '애인집에 모르는 사람 속옷');
+
 insert into stuff(image_path, name) values
 ("", "당근"),
 ("", "오이"),
