@@ -3,12 +3,13 @@ import React, { FC, useEffect, useState, useCallback } from "react";
 import { Timer } from "../../timer/Timer";
 import { SessionModal } from "./SessionModal";
 import { useWebSocket } from "../../../hooks/useWebSocket";
-import { useSelector } from "react-redux";
+import { useSelector, useDispatch } from "react-redux";
 import { AvatarProfile } from "./AvatarProfile";
 import { StuffRes } from "../../../apis/response/sessionRes";
 import { AvatimeApi } from "../../../apis/avatimeApi";
 import { useNavigate } from "react-router";
 import { SoundButton } from "../../SoundButton";
+import { setSubMeetingRoomId } from "../../../stores/slices/meetingSlice";
 
 interface IProps {
   isOpened: boolean;
@@ -22,6 +23,7 @@ export const PickStuffModal: FC<IProps> = ({ isOpened }) => {
   const [timer, setTimer] = useState(15);
   const [stuffList, setStuffList] = useState<StuffRes[]>([]);
   const [selectedStuffId, setSelectedStuffId] = useState(-1);
+  const [selected, setSelected] = useState(false);
 
   useWebSocket({
     onConnect(frame, client) {
@@ -30,7 +32,7 @@ export const PickStuffModal: FC<IProps> = ({ isOpened }) => {
       });
       client.publish({ destination: `/app/meeting/stuff/timer/${meetingRoomId}` });
 
-      client.subscribe(`/topic/meeting/pick/${meetingRoomId}`, function (response) {
+      client.subscribe(`/topic/meeting/stuff/${meetingRoomId}`, function (response) {
         const res = JSON.parse(response.body);
 
         if (selectedStuffId === -1) {
@@ -39,6 +41,7 @@ export const PickStuffModal: FC<IProps> = ({ isOpened }) => {
 
         setStuffList(res.stuff_list);
       });
+      client.publish({ destination: `/app/meeting/stuff/${meetingRoomId}` });
     },
     beforeDisconnected(frame, client) {},
   });
@@ -48,6 +51,7 @@ export const PickStuffModal: FC<IProps> = ({ isOpened }) => {
   };
 
   const navigate = useNavigate();
+  const dispatch = useDispatch();
   const onSelectStuff = useCallback(() => {
     AvatimeApi.getInstance().patchPickStuff(
       {
@@ -56,11 +60,15 @@ export const PickStuffModal: FC<IProps> = ({ isOpened }) => {
         stuff_id: selectedStuffId,
       },
       {
-        onSuccess() {},
+        onSuccess() {
+          setSelected(true);
+          dispatch(setSubMeetingRoomId(`${meetingRoomId}-stuff-${selectedStuffId}`));
+          navigate("/subSession", { state: { stuff: true } });
+        },
         navigate,
       }
     );
-  }, [meetingRoomId, navigate, selectedStuffId, userId]);
+  }, [dispatch, meetingRoomId, navigate, selectedStuffId, userId]);
 
   useEffect(() => {
     if (timer === 0) {
@@ -100,6 +108,7 @@ export const PickStuffModal: FC<IProps> = ({ isOpened }) => {
           fullWidth
           variant="contained"
           color="secondary"
+          disabled={selected}
         >
           선택하기
         </SoundButton>

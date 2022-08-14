@@ -90,7 +90,7 @@ export const SessionPage: FC<IProps> = (props) => {
         }
       });
 
-      client.subscribe(`/topic/meeting/balance/${roomId}`, function (response) {
+      client.subscribe(`/topic/meeting/stuff/${roomId}`, function (response) {
         console.log(response.body);
         if (pickStuffModalOpen === 0) {
           setSnackMessage("3초 후 물건 고르기 게임이 시작돼요!!");

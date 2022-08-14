@@ -16,9 +16,9 @@ const initialState: MeetingState = {
   subRoomId: undefined,
   userInfoList: [] as any[],
   pickUserName: undefined,
-  balanceId: 1,
-  balanceA: "부먹",
-  balanceB: "찍먹",
+  balanceId: undefined,
+  balanceA: undefined,
+  balanceB: undefined,
 };
 
 const meetingSlice = createSlice({
