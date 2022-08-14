@@ -249,6 +249,25 @@ public class MeetingController {
 		return ResponseEntity.status(201).body("");
 	}
 	
+	@GetMapping("stuff/start/{meetingroomId}")
+	@ApiOperation(value = "물건 고르기 시작", notes = "<strong>meeting room id</strong>에 따른 미팅방 물건 고르기 시작") 
+    @ApiResponses({
+        @ApiResponse(code = 201, message = "성공", response = BaseResponseBody.class),
+        @ApiResponse(code = 409, message = "횟수 제한", response = BaseResponseBody.class),
+        @ApiResponse(code = 500, message = "서버 오류", response = BaseResponseBody.class)
+    })
+	public ResponseEntity<?> startSelectStuff(@PathVariable Long meetingroomId) {
+		try {
+			// 횟수 제한 
+			if(meetingRoomService.selectStuffNum(meetingroomId) > 3) return ResponseEntity.status(409).body("");
+			meetingRoomService.sendStuffInfo(meetingroomId);
+			meetingRoomService.timer(meetingroomId, 15, "stuff");
+			return ResponseEntity.status(201).body("");
+		} catch(Exception e) {
+			return ResponseEntity.status(500).body("");
+		}
+	}
+	
 	@MessageMapping("/meeting/stuff/{meetingRoomId}")
 	public void startStuffChoice(@DestinationVariable Long meetingRoomId) throws Exception {
 		meetingRoomService.sendAvatarInfo(meetingRoomId);

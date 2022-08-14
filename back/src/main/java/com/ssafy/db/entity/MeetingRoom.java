@@ -34,6 +34,12 @@ public class MeetingRoom  extends BaseEntity {
     
     @Column(length = 1, columnDefinition = "TINYINT(1) DEFAULT 0")
    	private int status;
+    
+    @Column(columnDefinition = "INT DEFAULT 0")
+   	private int balance;
+    
+    @Column(columnDefinition = "INT DEFAULT 0")
+   	private int stuff;
 	
 	@Temporal(TemporalType.TIMESTAMP)
     @Column(updatable = false, columnDefinition = "TIMESTAMP DEFAULT CURRENT_TIMESTAMP")

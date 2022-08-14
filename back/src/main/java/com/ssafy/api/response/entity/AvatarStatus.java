@@ -11,7 +11,7 @@ import lombok.Setter;
  */
 @Getter
 @Setter
-@ApiModel("ResultEntity")
+@ApiModel("AvatarStatusEntity")
 public class AvatarStatus {
 	private Long id;
 	private String name;
