@@ -79,7 +79,6 @@ export const SubSessionPage: FC<IProps> = (props) => {
           type="normal"
           onChangeMicStatus={onChangeMicStatus}
           onChangeCameraStatus={onChangeCameraStatus}
-          lastPickModalOpen={false}
         />
       </Box>
     </div>
