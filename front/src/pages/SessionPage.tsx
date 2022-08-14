@@ -13,6 +13,7 @@ import { useNavigate } from "react-router";
 import { AvatimeApi } from "../apis/avatimeApi";
 import { VolumeController } from "../components/VolumeController";
 import { useBGM } from "../hooks/useBGM";
+import { AlertSnackbar } from "../components/AlertSnackbar";
 
 interface IProps {}
 
@@ -47,13 +48,19 @@ export const SessionPage: FC<IProps> = (props) => {
   const cntOpened = opened.filter((it) => it).length;
 
   const [lastPickModalOpen, setLastPickModalOpen] = useState(false);
-
+  const [showSnack, setShowSnack] = useState(false);
+  const [snackMessage, setSnackMessage] = useState("");
   useWebSocket({
     onConnect(frame, client) {
       client.subscribe(`/topic/meeting/status/${roomId}`, function (response) {
         console.log(response.body);
         if (JSON.parse(response.body).last_pick_status) {
-          setLastPickModalOpen(true);
+          setSnackMessage("3초 후 최종 선택이 시작돼요!!");
+          setShowSnack(true);
+          setTimeout(()=> {
+            setLastPickModalOpen(true);
+          }, 3000);
+
         }
       });
     },
@@ -146,17 +153,17 @@ export const SessionPage: FC<IProps> = (props) => {
           >
             <VolumeController />
             <Box p={1} />
-              {meetingRoomInfo && (
-                <ChatRoom
-                  chatType="all"
-                  isOpened={opened[0]}
-                  onClickHeader={() => {
-                    setOpened((prev) => [!prev[0], prev[1]]);
-                  }}
-                  maxHeight={opened[0] && cntOpened === 1 ? "100%" : "50%"}
-                  chattingRoomId={meetingRoomInfo.chattingroom_id}
-                />
-              )}
+            {meetingRoomInfo && (
+              <ChatRoom
+                chatType="all"
+                isOpened={opened[0]}
+                onClickHeader={() => {
+                  setOpened((prev) => [!prev[0], prev[1]]);
+                }}
+                maxHeight={opened[0] && cntOpened === 1 ? "100%" : "50%"}
+                chattingRoomId={meetingRoomInfo.chattingroom_id}
+              />
+            )}
             {meetingRoomInfo && (
               <ChatRoom
                 chatType="gender"
@@ -175,6 +182,13 @@ export const SessionPage: FC<IProps> = (props) => {
           </Box>
         </Grid>
       </Grid>
+      <AlertSnackbar
+        open={showSnack}
+        onClose={() => setShowSnack(false)}
+        message={snackMessage}
+        alertColor="info"
+        type="alert"
+      />
     </div>
   );
 };

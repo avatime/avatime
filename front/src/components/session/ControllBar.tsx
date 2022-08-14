@@ -23,8 +23,6 @@ interface IProps {
 }
 
 export const ControllBar: FC<IProps> = ({ type, lastPickModalOpen, ...callback }) => {
-  const meetingRoomId = useSelector((state: any) => state.meeting.roomId);
-
   const [micStatus, setMicStatus] = useState(true);
   const onChangeMicStatus = () => {
     setMicStatus((prev) => !prev);
@@ -41,18 +39,6 @@ export const ControllBar: FC<IProps> = ({ type, lastPickModalOpen, ...callback }
     callback.onChangeCameraStatus(cameraStatus);
   }, [cameraStatus, callback]);
 
-  const navigate = useNavigate();
-  const onClickPick = () => {
-    AvatimeApi.getInstance().postStartFinalPick(
-      {
-        meetingroom_id: meetingRoomId,
-      },
-      {
-        navigate,
-      }
-    );
-  };
-
   return (
     <ControllBarPresenter
       type={type}
@@ -60,7 +46,6 @@ export const ControllBar: FC<IProps> = ({ type, lastPickModalOpen, ...callback }
       onChangeMicStatus={onChangeMicStatus}
       cameraStatus={cameraStatus}
       onChangeCameraStatus={onChangeCameraStatus}
-      onClickPick={onClickPick}
       lastPickModalOpen={lastPickModalOpen}
     />
   );
@@ -72,7 +57,6 @@ interface IPresenterProps {
   onChangeMicStatus: () => void;
   cameraStatus: boolean;
   onChangeCameraStatus: () => void;
-  onClickPick: () => void;
   lastPickModalOpen: boolean;
 }
 
@@ -82,14 +66,37 @@ export const ControllBarPresenter: FC<IPresenterProps> = ({
   onChangeMicStatus,
   cameraStatus,
   onChangeCameraStatus,
-  onClickPick,
   lastPickModalOpen,
 }) => {
-  const [showSnack, setShowSnack] = useState(false);
+  const meetingRoomId = useSelector((state: any) => state.meeting.roomId);
+  const [showSnack, setShowSnack] = useState(0);
+  const [snackMessage, setSnackMessage] = useState("");
 
   const navigate = useNavigate();
   const exit = () => {
     navigate("/main", { replace: true });
+  };
+
+  const pick = () => {
+    setShowSnack(0);
+    AvatimeApi.getInstance().postStartFinalPick(
+      {
+        meetingroom_id: meetingRoomId,
+      },
+      {
+        navigate,
+      }
+    );
+  };
+
+  const onClickPick = () => {
+    setShowSnack(1);
+    setSnackMessage("정말 최종 선택을 하실 건가요?");
+  };
+
+  const onClickExit = () => {
+    setShowSnack(2);
+    setSnackMessage("정말 나가실 건가요?");
   };
 
   return (
@@ -135,7 +142,7 @@ export const ControllBarPresenter: FC<IPresenterProps> = ({
           <SoundButton
             variant="contained"
             startIcon={<ExitToAppIcon />}
-            onClick={() => setShowSnack(true)}
+            onClick={onClickExit}
             color="error"
             sx={{ flex: 1 }}
           >
@@ -145,11 +152,11 @@ export const ControllBarPresenter: FC<IPresenterProps> = ({
       </Box>
       {lastPickModalOpen && <FinalPickModal isOpened={lastPickModalOpen} />}
       <AlertSnackbar
-        open={showSnack}
-        onClose={() => setShowSnack(false)}
-        message="정말 나가실 건가요?"
+        open={showSnack !== 0}
+        onClose={() => setShowSnack(0)}
+        message={snackMessage}
         type="confirm"
-        onSuccess={exit}
+        onSuccess={showSnack === 1 ? pick : exit}
         alertColor="warning"
       />
     </>
