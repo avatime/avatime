@@ -191,20 +191,17 @@ public class MeetingRoomServiceImpl implements MeetingRoomService {
 						}
 					else if (type.equals("stuff")) {
 						try {
-							makeStuffSubsession(meetingRoomId);
+							timer(meetingRoomId, 120, "stuffSubSession");
 						} catch (Exception e) {
 							// TODO Auto-generated catch block
 						}
 					}
 					else if (type.equals("stuffSubSession")) {
-						MeetingRoom meetingRoom = findById(meetingRoomId);
-						List<MeetingRoomUserRelation> list = meetingRoomUserRelationRepository.findAllByMeetingRoomId(meetingRoom.getMainSessionId());
+						List<MeetingRoomUserRelation> list = meetingRoomUserRelationRepository.findAllByMeetingRoomId(meetingRoomId);
 						for(MeetingRoomUserRelation user : list) {
 							user.setStuffId(0L);
 							meetingRoomUserRelationRepository.saveAndFlush(user);
 						}
-						meetingRoom.setStatus(1);
-						meetingRoomRepository.save(meetingRoom);
 					}
 					else if(type.equals("pick")) {
 						List<MeetingRoomUserRelation> userList = meetingRoomUserRelationRepository.findAllByMeetingRoomIdAndLeftMeeting(meetingRoomId, false);
@@ -370,35 +367,6 @@ public class MeetingRoomServiceImpl implements MeetingRoomService {
 		meetingRoom.setStuff(stuff+1);
 		meetingRoomRepository.saveAndFlush(meetingRoom);
 		return stuff;
-	}
-	
-	// subsession 배정하는 함수
-	public void makeStuffSubsession(Long mainMeetingRoomId) throws Exception {
-		List<MeetingRoomUserRelation> list = meetingRoomUserRelationRepository.findAllByMeetingRoomIdOrderByStuffId(mainMeetingRoomId);
-		List<MeetingRoomUserRelation> left = new ArrayList<>();
-		int i = 0;
-		for(i = 0; i<list.size();) {
-			if(list.get(i).getStuffId() == list.get(i+1).getStuffId()) {
-				createStuffSession(list.subList(i, i+2), mainMeetingRoomId);
-				i+=2;
-			} else {
-				left.add(list.get(i));
-				i++;
-			}
-		}
-		createStuffSession(left, mainMeetingRoomId);
-	}
-	
-	// subsession 만드는 함수
-	public void createStuffSession(List<MeetingRoomUserRelation> list, Long mainMeetingRoomId) throws Exception {
-		MeetingRoom meetingRoom = createMeetingRoomSession(1, mainMeetingRoomId);
-		for(MeetingRoomUserRelation user : list) {
-			MeetingRoomUserRelation subUser = new MeetingRoomUserRelation();
-			subUser.setUser(user.getUser());
-			subUser.setMeetingRoom(meetingRoom);
-			meetingRoomUserRelationRepository.saveAndFlush(subUser);
-		}
-		timer(meetingRoom.getId(), 120, "stuffSubSession");
 	}
 
 }
