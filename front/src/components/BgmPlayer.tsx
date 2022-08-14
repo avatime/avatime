@@ -10,15 +10,16 @@ export const BgmPlayer: FC<IProps> = ({ children }) => {
   const ref = useRef<any>();
   const number = useSelector((state: any) => state.bgm.number);
   const playing = useSelector((state: any) => state.bgm.playing);
+  const volume = useSelector((state: any) => state.bgm.volume);
   useEffect(() => {
     if (playing) {
+      ref.current.volume = volume / 100;
       ref.current.play();
     } else {
       ref.current.pause();
     }
-  }, [playing, number]);
+  }, [playing, number, volume]);
 
-  const volume = useSelector((state: any) => state.bgm.volume);
   useEffect(() => {
     if (!volume) {
       return;

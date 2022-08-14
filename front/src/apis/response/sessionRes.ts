@@ -36,3 +36,11 @@ export interface PickResultRes {
   avatar_image_path: string;
   pick_user_id: number;
 }
+
+export interface StuffRes {
+  id: number;
+  name: string;
+  image_path: string;
+  men_selected: boolean;
+  women_selected: boolean;
+}

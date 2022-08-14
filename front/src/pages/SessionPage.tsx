@@ -4,7 +4,12 @@ import { Box, Grid } from "@mui/material";
 import { ControllBar } from "../components/session/ControllBar";
 import { grey } from "@mui/material/colors";
 import { useDispatch, useSelector } from "react-redux";
-import { setBalanceA, setBalanceB, setBalanceId, setUserInfoList } from "../stores/slices/meetingSlice";
+import {
+  setBalanceA,
+  setBalanceB,
+  setBalanceId,
+  setUserInfoList,
+} from "../stores/slices/meetingSlice";
 import { MeetingRoomInfoRes } from "../apis/response/sessionRes";
 import { useOpenvidu } from "../hooks/useOpenvidu";
 import { AvatarVideoStream } from "../components/session/AvatarVideoStream";
@@ -14,6 +19,9 @@ import { AvatimeApi } from "../apis/avatimeApi";
 import { VolumeController } from "../components/VolumeController";
 import { useBGM } from "../hooks/useBGM";
 import { AlertSnackbar } from "../components/AlertSnackbar";
+import { FinalPickModal } from "../components/session/modal/FinalPickModal";
+import { BalanceGameModal } from "../components/session/modal/BalanceGameModal";
+import { PickStuffModal } from "../components/session/modal/PickStuffModal";
 
 interface IProps {}
 
@@ -50,6 +58,7 @@ export const SessionPage: FC<IProps> = (props) => {
   const [lastPickModalOpen, setLastPickModalOpen] = useState(false);
   const [balanceGameModalOpen, setBalanceGameModalOpen] = useState(false);
   const [balanceResult, setBalanceResult] = useState<any[]>([]);
+  const [pickStuffModalOpen, setPickStuffModalOpen] = useState(0);
   const [showSnack, setShowSnack] = useState(false);
   const [snackMessage, setSnackMessage] = useState("");
 
@@ -60,10 +69,9 @@ export const SessionPage: FC<IProps> = (props) => {
         if (JSON.parse(response.body).last_pick_status) {
           setSnackMessage("3초 후 최종 선택이 시작돼요!!");
           setShowSnack(true);
-          setTimeout(()=> {
+          setTimeout(() => {
             setLastPickModalOpen(true);
           }, 3000);
-
         }
       });
 
@@ -76,8 +84,20 @@ export const SessionPage: FC<IProps> = (props) => {
           dispatch(setBalanceId(res.balance_id));
           dispatch(setBalanceA(res.a));
           dispatch(setBalanceB(res.b));
-          setTimeout(()=> {
+          setTimeout(() => {
             setBalanceGameModalOpen(true);
+          }, 3000);
+        }
+      });
+
+      client.subscribe(`/topic/meeting/stuff/${roomId}`, function (response) {
+        console.log(response.body);
+        if (pickStuffModalOpen === 0) {
+          setSnackMessage("3초 후 물건 고르기 게임이 시작돼요!!");
+          setShowSnack(true);
+          setPickStuffModalOpen(1);
+          setTimeout(() => {
+            setPickStuffModalOpen(2);
           }, 3000);
         }
       });
@@ -147,7 +167,10 @@ export const SessionPage: FC<IProps> = (props) => {
                                   avatarPath={userInfo!.avatar_image_path}
                                   gender={userInfo!.gender}
                                   me={userInfo!.user_id === userId}
-                                  balance={balanceResult.find((it) => it.user_id === userInfo!.user_id)?.result}
+                                  balance={
+                                    balanceResult.find((it) => it.user_id === userInfo!.user_id)
+                                      ?.result
+                                  }
                                 />
                               </Grid>
                             );
@@ -163,9 +186,6 @@ export const SessionPage: FC<IProps> = (props) => {
               type={isMaster ? "master" : "normal"}
               onChangeMicStatus={onChangeMicStatus}
               onChangeCameraStatus={onChangeCameraStatus}
-              lastPickModalOpen={lastPickModalOpen}
-              balanceGameModalOpen={balanceGameModalOpen}
-              onCloseBalanceGame={() => setBalanceGameModalOpen(false)}
             />
           </Box>
         </Grid>
@@ -216,6 +236,14 @@ export const SessionPage: FC<IProps> = (props) => {
         alertColor="info"
         type="alert"
       />
+      {lastPickModalOpen && <FinalPickModal isOpened={lastPickModalOpen} />}
+      {balanceGameModalOpen && (
+        <BalanceGameModal
+          isOpened={balanceGameModalOpen}
+          onClose={() => setBalanceGameModalOpen(false)}
+        />
+      )}
+      {pickStuffModalOpen && <PickStuffModal isOpened={pickStuffModalOpen === 2} />}
     </div>
   );
 };
