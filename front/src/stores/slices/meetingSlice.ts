@@ -1,5 +1,5 @@
 import { createSlice } from "@reduxjs/toolkit";
-import { MeetingUserInfoRes } from "../../apis/response/sessionRes";
+import { MeetingUserInfoRes } from '../../apis/response/sessionRes';
 
 export interface MeetingState {
   roomId: number | undefined;
