@@ -36,4 +36,3 @@ export interface PickResultRes {
   avatar_image_path: string;
   pick_user_id: number;
 }
-
