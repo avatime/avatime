@@ -276,7 +276,7 @@ public class MeetingController {
 			// 횟수 제한 
 			if(meetingRoomService.selectStuffNum(meetingroomId) > 3) return ResponseEntity.status(409).body("");
 			meetingRoomService.sendStuffInfo(meetingroomId);
-//			meetingRoomService.timer(meetingroomId, 15, "stuff");
+			meetingRoomService.timer(meetingroomId, 15, "stuff");
 			return ResponseEntity.status(201).body("");
 		} catch(Exception e) {
 			return ResponseEntity.status(500).body(e);
