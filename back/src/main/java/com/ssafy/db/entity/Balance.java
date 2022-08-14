@@ -6,17 +6,22 @@ import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
 
+import org.hibernate.annotations.DynamicInsert;
+import org.hibernate.annotations.DynamicUpdate;
+
+import lombok.AllArgsConstructor;
 import lombok.Getter;
+import lombok.NoArgsConstructor;
+import lombok.Setter;
 
 
+@DynamicInsert @DynamicUpdate
 @Entity
 @Getter
-public class Balance {
-	
-	@Id
-	@GeneratedValue(strategy = GenerationType.IDENTITY)
-	@Column(updatable = false, nullable = false)
-	private long id;
+@Setter
+@NoArgsConstructor
+@AllArgsConstructor
+public class Balance extends BaseEntity {
 	
 	@Column(updatable = false, nullable = false)
 	private String a;

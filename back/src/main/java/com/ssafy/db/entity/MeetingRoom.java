@@ -44,7 +44,7 @@ public class MeetingRoom  extends BaseEntity {
     	createdTime = Timestamp.valueOf(LocalDateTime.now());
     }
     
-    @Column(nullable = false)
+    @Column(nullable = false, columnDefinition = "INT UNSIGNED DEFAULT 0")
     private long balance;
     
     @Builder

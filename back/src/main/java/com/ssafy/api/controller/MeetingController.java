@@ -20,6 +20,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.ssafy.api.request.BalancePostReq;
+import com.ssafy.api.request.BalanceStartReq;
 import com.ssafy.api.request.FinalChoiceUserReq;
 import com.ssafy.api.request.LeavingMeetingRoomReq;
 import com.ssafy.api.request.MeetingRoomIdReq;
@@ -81,7 +82,7 @@ public class MeetingController {
 	
 	@Autowired
 	MeetingRoomRepository meetingRoomRepository;
-	
+
 	@PatchMapping("/selectAvatar")
 	@ApiOperation(value = "아바타 선택", notes = "<strong>유저별 아바타 선택</strong>") 
     @ApiResponses({
@@ -243,16 +244,18 @@ public class MeetingController {
 		simp.convertAndSend("/topic/meeting/status/"+meetingRoomId, lastPickStatusRes);
 	}
 	
-	@PostMapping("/balance")
+	@PostMapping("/balance/start")
 	@ApiOperation(value = "밸런스 게임", notes = "밸런스 게임 랜덤 하나 반환합니다")
-	public ResponseEntity<?> getBalance(@RequestBody long meetingRoomId) {
-		MeetingRoom meetingRoom = meetingRoomRepository.findById(meetingRoomId).get();
-		if (meetingRoom.getBalance() > 3) {
+	public ResponseEntity<?> getBalance(@RequestBody BalanceStartReq balanceStart) {
+		MeetingRoom meetingRoom = meetingRoomRepository.findById(balanceStart.getMeetingroomId()).get();
+
+		if (meetingRoom.getBalance() > 2) {
 			return ResponseEntity.status(409).body("횟수 초과");
 		}
 		
 		// 미팅룸 ID에 해당하는 값이 없다면, 처음으로 밸런스게임 생성한 것이기 때문에 무조건 만들어 준다.
-		boolean first = balanceRelationRepository.existsByMeetingRoomId(meetingRoomId);
+		boolean first = balanceRelationRepository.existsByMeetingRoomId(balanceStart.getMeetingroomId());
+
 		int x = 0;
 		// 처음 밸런스 게임 생선한 거라면, 밸런스 게임 만들어주기
 		if (first == false) {
@@ -268,7 +271,7 @@ public class MeetingController {
 				Random r = new Random();
 				int range = (int) balanceRepository.count();
 				int balanceId = r.nextInt(range) + 1;
-				check = balanceRelationRepository.existsByMeetingRoomIdAndBalanceId(meetingRoomId, balanceId);
+				check = balanceRelationRepository.existsByMeetingRoomIdAndBalanceId(balanceStart.getMeetingroomId(), balanceId);
 				x = balanceId;
 			}
 			return new ResponseEntity<Balance>(balanceRepository.findById(x).get(), HttpStatus.OK);
@@ -276,14 +279,53 @@ public class MeetingController {
 		
 	}
 	
+	
+	@MessageMapping("/meeting/balance/{meetingRoomId}")
+	public ResponseEntity<?> getBalanceGameInfo(@DestinationVariable BalanceStartReq balanceStart) throws Exception {
+		
+		// 미팅룸 ID에 해당하는 값이 없다면, 처음으로 밸런스게임 생성한 것이기 때문에 무조건 만들어 준다.
+		boolean first = balanceRelationRepository.existsByMeetingRoomId(balanceStart.getMeetingroomId());
+
+		int x = 0;
+		// 처음 밸런스 게임 생선한 거라면, 밸런스 게임 만들어주기
+		if (first == false) {
+			Random r = new Random();
+			int range = (int) balanceRepository.count();
+			int balanceId = r.nextInt(range) + 1;
+			return new ResponseEntity<Balance>(balanceRepository.findById(balanceId).get(), HttpStatus.OK);
+		} 
+		// 2번째 밸런스 게임 생성이라면, 미팅룽 ID와 밸런스 ID를 이용해 테이블에 조회할 때 false가 나올때까지 반복
+		else {
+			boolean check = true;
+			while (check) {
+				Random r = new Random();
+				int range = (int) balanceRepository.count();
+				int balanceId = r.nextInt(range) + 1;
+				check = balanceRelationRepository.existsByMeetingRoomIdAndBalanceId(balanceStart.getMeetingroomId(), balanceId);
+				x = balanceId;
+			}
+			return new ResponseEntity<Balance>(balanceRepository.findById(x).get(), HttpStatus.OK);
+		}
+	}
+	
+	
 	// 밸런스 게임 결과 입력
-	@PostMapping("/meeting/balance")
-	public void balance(@RequestBody BalancePostReq balance) {
-		BalanceRelation balanceRelation = balanceRelationRepository.findById(balance.getBalanceId()).get();
-		balanceRelation.setMeetingRoomId(balance.getBalanceId());
-		balanceRelation.setBalanceId(balance.getBalanceId());
+	@PostMapping("/balance/result")
+	public ResponseEntity<?> balance(@RequestBody BalancePostReq balance) {
+		// 해당 미팅방에 balance 게임 횟수 1 증가
+		MeetingRoom meetingRoom = meetingRoomRepository.findById(balance.getMeetingroomId()).get();
+
+		meetingRoom.setBalance(meetingRoom.getBalance()+1);
+
+		Balance newBalance = balanceRepository.findById(balance.getBalanceId()).get();
+		BalanceRelation balanceRelation = new BalanceRelation();
+
+		balanceRelation.setMeetingRoomId(balance.getMeetingroomId());
+		balanceRelation.setBalance(newBalance);
 		balanceRelation.setUserId(balance.getUserId());
 		balanceRelation.setResult(balance.isResult());
+		
 		balanceRelationRepository.save(balanceRelation);
+		return ResponseEntity.status(201).body("성공");
 	}
 }
