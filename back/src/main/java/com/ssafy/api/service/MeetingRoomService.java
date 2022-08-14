@@ -26,4 +26,6 @@ public interface MeetingRoomService {
 	public List<MeetingRoomUserRelation> findAllByMeetingRoomId(Long meetingRoomId) throws Exception;
 	int sendAvatarInfo(Long meetingRoomId) throws Exception;
 	MeetingRoom findSubMeetingRoom(Long mainMeetingRoomId, Long userId) throws Exception;
+	public boolean isSelectedStuff(Long meetingRoomId, Long avatarId) throws Exception;
+	public void choiceStuff(Long meetingRoomId, Long userId, Long avatarId) throws Exception;
 }
