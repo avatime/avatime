@@ -298,39 +298,48 @@ public class MeetingController {
 				return ResponseEntity.status(409).body("횟수 초과");
 			}
 			
-			int range, balanceId = 0;
+			int range = 0;
+			Long balanceId = 0L;
 			boolean check = true;
 			while (check) {
 				Random r = new Random();
 				range = (int) balanceRepository.count();
-				balanceId = r.nextInt(range) + 1;
+				balanceId = (Long) ((long) r.nextInt(range) + 1);
 				check = balanceRelationRepository.existsByMeetingRoomIdAndBalanceId(balanceStart.getMeetingroomId(), balanceId);
 			}
 			meetingRoom.setBalance(meetingRoom.getBalance()+1);
 			meetingRoomService.save(meetingRoom);
 			Balance balance = balanceRepository.findById(balanceId).get();
+
+			meetingRoomService.timer(balanceStart.getMeetingroomId(), 15, "balance");
 			sendingOperations.convertAndSend("/topic/meeting/balance/"+balanceStart.getMeetingroomId(), balance);
-			meetingRoomService.sendBalanceResult(balanceStart.getMeetingroomId(), balance);
 			return ResponseEntity.status(200).body("성공");
 		} catch(Exception e) {
+			e.printStackTrace();
 			return ResponseEntity.status(500).body("관리자에게 문의하세요");
 		}
 	}
 	
 	// 밸런스 게임 결과 입력
 	@PostMapping("/balance/result")
-	public ResponseEntity<?> balance(@RequestBody BalancePostReq balance) {
-		// 해당 미팅방에 balance 게임 횟수 1 증가
-		Balance newBalance = balanceRepository.findById(balance.getBalanceId()).get();
-		BalanceRelation balanceRelation = new BalanceRelation();
-
-		balanceRelation.setMeetingRoomId(balance.getMeetingroomId());
-		balanceRelation.setBalance(newBalance);
-		balanceRelation.setUserId(balance.getUserId());
-		balanceRelation.setResult(balance.isResult());
-		
-		balanceRelationRepository.save(balanceRelation);
-		return ResponseEntity.status(201).body("성공");
+	public ResponseEntity<?> balance(@RequestBody BalancePostReq balance) throws Exception {
+		try {
+			// 해당 미팅방에 balance 게임 횟수 1 증가
+			Balance newBalance = balanceRepository.findById(balance.getBalanceId()).get();
+			BalanceRelation balanceRelation = new BalanceRelation();
+	
+			balanceRelation.setMeetingRoomId(balance.getMeetingroomId());
+			balanceRelation.setBalance(newBalance);
+			balanceRelation.setUserId(balance.getUserId());
+			balanceRelation.setResult(balance.isResult());
+			
+			balanceRelationRepository.save(balanceRelation);
+			meetingRoomService.sendBalanceResult(balance.getMeetingroomId(), newBalance);
+			return ResponseEntity.status(201).body("성공");
+		} catch(Exception e) {
+			e.printStackTrace();
+			return ResponseEntity.status(500).body("관리자에게 문의하세요");
+		}
 	}
 
 }

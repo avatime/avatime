@@ -375,7 +375,6 @@ public class MeetingRoomServiceImpl implements MeetingRoomService {
 	@Override
 	public void sendBalanceResult(Long meetingRoomId, Balance balance) throws Exception {
 		// TODO Auto-generated method stub
-		timer(meetingRoomId, 15, "balance");
 		List<BalanceRelation> list = balanceRelationRepository.findAllByMeetingRoomIdAndBalance(meetingRoomId, balance);
 		BalanceResultRes response = new BalanceResultRes();
 		List<BalanceResult> resultList = new ArrayList<>();
