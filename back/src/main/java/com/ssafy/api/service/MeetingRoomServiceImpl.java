@@ -287,4 +287,42 @@ public class MeetingRoomServiceImpl implements MeetingRoomService {
 		return null;
 	}
 
+	@Override
+	public boolean isSelectedStuff(Long meetingRoomId, Long avatarId) throws Exception {
+		// TODO Auto-generated method stub
+		return meetingRoomUserRelationRepository.existsByMeetingRoomIdAndAvatarId(meetingRoomId, avatarId);
+	}
+
+	@Override
+	public void choiceStuff(Long meetingRoomId, Long userId, Long avatarId) throws Exception {
+		// TODO Auto-generated method stub
+		MeetingRoomUserRelation meetingRoomUserRelation = meetingRoomUserRelationRepository.findByMeetingRoomIdAndUserId(meetingRoomId, userId).orElse(null);
+		if(meetingRoomUserRelation != null) {
+			meetingRoomUserRelation.setAvatarId(avatarId);
+			meetingRoomUserRelationRepository.saveAndFlush(meetingRoomUserRelation);
+			sendAvatarInfo(meetingRoomId);
+		}
+	}
+	
+	public int sendStuffInfo(Long meetingRoomId) throws Exception {
+		int num = 0;
+		AvatarChoiceRes avatarChoiceRes = new AvatarChoiceRes();
+		List<Avatar> avatarList = avatarService.findAllByUserId(0L);
+		List<AvatarStatus> list = new ArrayList<>();
+		for(Avatar ava : avatarList) {
+			AvatarStatus avasta = new AvatarStatus(ava);
+			if(isSelectedAvatar(meetingRoomId, ava.getId())) {
+				avasta.setSelected(true);
+				num++;
+			}
+			else avasta.setSelected(false);
+			list.add(avasta);
+		}
+		avatarChoiceRes.setStatus(num == userNumber(meetingRoomId) ? 1 : 0);
+		avatarChoiceRes.setAvatar_list(list);
+		
+    	sendingOperations.convertAndSend("/topic/meeting/avatar/"+meetingRoomId, avatarChoiceRes);
+    	return avatarChoiceRes.getStatus();
+	}
+
 }

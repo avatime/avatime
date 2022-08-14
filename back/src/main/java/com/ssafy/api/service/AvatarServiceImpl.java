@@ -32,7 +32,7 @@ public class AvatarServiceImpl implements AvatarService {
 	
 	@Override
 	public Avatar saveAvatar(Avatar avatar) {
-		return avatarRepository.save(avatar);
+		return avatarRepository.saveAndFlush(avatar);
 	}
 
 	@Override

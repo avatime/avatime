@@ -20,6 +20,7 @@ import com.ssafy.api.request.FinalChoiceUserReq;
 import com.ssafy.api.request.LeavingMeetingRoomReq;
 import com.ssafy.api.request.MeetingRoomIdReq;
 import com.ssafy.api.request.UserSelectAvatarReq;
+import com.ssafy.api.request.UserSelectStuffReq;
 import com.ssafy.api.response.FinalChoiceRes;
 import com.ssafy.api.response.LastPickStatusRes;
 import com.ssafy.api.response.MeetingRoomInfoRes;
@@ -224,5 +225,32 @@ public class MeetingController {
 		LastPickStatusRes lastPickStatusRes = new LastPickStatusRes();
 		lastPickStatusRes.setLast_pick_status(meetingRoom.getStatus() == 1);
 		sendingOperations.convertAndSend("/topic/meeting/status/"+meetingRoomId, lastPickStatusRes);
+	}
+	
+	@PatchMapping("/selectStuff")
+	@ApiOperation(value = "물건 선택", notes = "<strong>유저별 물건 선택</strong>") 
+    @ApiResponses({
+        @ApiResponse(code = 201, message = "성공", response = BaseResponseBody.class),
+        @ApiResponse(code = 409, message = "다른 유저가 먼저 선택한 물건입니다", response = BaseResponseBody.class),
+        @ApiResponse(code = 500, message = "서버 오류", response = BaseResponseBody.class)
+    })
+	public ResponseEntity<?> choiceStuff(@RequestBody @ApiParam(value="유저 아이디와 물건 아이디", required = true) UserSelectStuffReq userSelectStuff) {
+		Long meetingRoomId = userSelectStuff.getMeetingRoomId();
+		Long userId = userSelectStuff.getUserId();
+		Long avatarId = userSelectStuff.getStuffId();
+		
+		try {
+			if(meetingRoomService.isSelectedStuff(meetingRoomId, avatarId)) return ResponseEntity.status(409).body("");
+			else meetingRoomService.choiceStuff(meetingRoomId, userId, avatarId);
+		} catch(Exception e) {
+			return ResponseEntity.status(500).body("");
+		}
+		
+		return ResponseEntity.status(201).body("");
+	}
+	
+	@MessageMapping("/meeting/stuff/{meetingRoomId}")
+	public void startStuffChoice(@DestinationVariable Long meetingRoomId) throws Exception {
+		meetingRoomService.sendAvatarInfo(meetingRoomId);
 	}
 }
