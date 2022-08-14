@@ -38,7 +38,7 @@ public class FileUploadServiceImpl implements FileUploadService {
 	public String savePicInfo(AvatarCustomReq avatarCustomReq) throws Exception {
 		// TODO Auto-generated method stub
 		String fullPath = MultipartUtil.createPath(MultipartUtil.createFileId(), "txt");
-		amazonS3ResourceStorage.storePicInfo(fullPath, avatarCustomReq.getPic_info());
+		amazonS3ResourceStorage.storePicInfo(fullPath, avatarCustomReq.getPic_info().toString());
 		return fullPath;
 	}
 

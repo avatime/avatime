@@ -72,7 +72,6 @@ public class AmazonS3ResourceStorage {
 	public void storePicInfo(String fullPath, String picInfo) {
 		try {
 			InputStream image = new StringInputStream(picInfo);
-			InputStream stream = new ByteArrayInputStream(picInfo.getBytes(StandardCharsets.UTF_8));
 			ObjectMetadata metadata = new ObjectMetadata();
 			metadata.setContentLength(picInfo.length());
 			metadata.setContentType(org.springframework.http.MediaType.TEXT_PLAIN_VALUE);
@@ -86,12 +85,11 @@ public class AmazonS3ResourceStorage {
 	public String getPicInfo(String picInfoPath) {
 
 		try {
-			S3Object object = amazonS3Client.getObject(new GetObjectRequest(bucket, picInfoPath));
+			S3Object object = amazonS3Client.getObject(bucket, picInfoPath);
 			S3ObjectInputStream objectInputStream = object.getObjectContent();
-//			byte[] base64 = IOUtils.toByteArray(objectInputStream);
+			String text = new String(IOUtils.toByteArray(objectInputStream), StandardCharsets.UTF_8);
 
-			return objectInputStream.toString();
-//			return Base64.getEncoder().encodeToString(base64);
+			return text;
 		} catch (Exception e) {
 			throw new RuntimeException();
 		}
