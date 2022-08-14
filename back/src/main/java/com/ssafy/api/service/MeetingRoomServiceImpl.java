@@ -190,11 +190,7 @@ public class MeetingRoomServiceImpl implements MeetingRoomService {
 							// TODO Auto-generated catch block	
 						}
 					else if (type.equals("stuff")) {
-						try {
-							timer(meetingRoomId, 120, "stuffSubSession");
-						} catch (Exception e) {
-							// TODO Auto-generated catch block
-						}
+
 					}
 					else if (type.equals("stuffSubSession")) {
 						List<MeetingRoomUserRelation> list = meetingRoomUserRelationRepository.findAllByMeetingRoomId(meetingRoomId);
@@ -269,7 +265,7 @@ public class MeetingRoomServiceImpl implements MeetingRoomService {
 	
 	@Override
 	public int sendAvatarInfo(Long meetingRoomId) throws Exception {
-		int num = 0;
+//		int num = 0;
 		AvatarChoiceRes avatarChoiceRes = new AvatarChoiceRes();
 		List<Avatar> avatarList = avatarService.findAllByUserId(0L);
 		List<AvatarStatus> list = new ArrayList<>();
@@ -277,12 +273,12 @@ public class MeetingRoomServiceImpl implements MeetingRoomService {
 			AvatarStatus avasta = new AvatarStatus(ava);
 			if(isSelectedAvatar(meetingRoomId, ava.getId())) {
 				avasta.setSelected(true);
-				num++;
+//				num++;
 			}
 			else avasta.setSelected(false);
 			list.add(avasta);
 		}
-		avatarChoiceRes.setStatus(num == userNumber(meetingRoomId) ? 1 : 0);
+		avatarChoiceRes.setStatus(meetingRoomUserRelationRepository.countByMeetingRoomIdAndAvatarIdNotNull(meetingRoomId) == userNumber(meetingRoomId) ? 1 : 0);
 		avatarChoiceRes.setAvatar_list(list);
 		
     	sendingOperations.convertAndSend("/topic/meeting/avatar/"+meetingRoomId, avatarChoiceRes);
@@ -356,6 +352,7 @@ public class MeetingRoomServiceImpl implements MeetingRoomService {
 		stuffChoiceRes.setStuff_list(list);
 		
     	sendingOperations.convertAndSend("/topic/meeting/stuff/"+meetingRoomId, stuffChoiceRes);
+    	if(stuffChoiceRes.getStatus() == 1) timer(meetingRoomId, 120, "stuffSubSession");
     	return stuffChoiceRes.getStatus();
 	}
 
