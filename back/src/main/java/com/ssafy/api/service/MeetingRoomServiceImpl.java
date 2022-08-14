@@ -318,7 +318,7 @@ public class MeetingRoomServiceImpl implements MeetingRoomService {
 	public boolean isSelectedStuff(Long meetingRoomId, String gender, Long stuffId) throws Exception {
 		// TODO Auto-generated method stub
 		List<MeetingRoomUserRelation> list = meetingRoomUserRelationRepository.findByMeetingRoomIdAndStuffId(meetingRoomId, stuffId).orElse(null);
-		if(list == null) return false;
+		if(list == null || list.size() == 0) return false;
 		else if(list.size() == 2) return true;
 		else return list.get(0).getUser().getGender().equals(gender);
 	}
@@ -339,9 +339,10 @@ public class MeetingRoomServiceImpl implements MeetingRoomService {
 		int num = 0;
 		MeetingRoom meetingRoom = meetingRoomRepository.findById(meetingRoomId).get();
 		StuffChoiceRes stuffChoiceRes = new StuffChoiceRes();
-		List<Stuff> stuffList = stuffService.findAll().subList(0, meetingRoom.getHeadCount()/2);
+		List<Stuff> stuffList = stuffService.findAll();
 		List<StuffStatus> list = new ArrayList<>();
-		for(Stuff stuff : stuffList) {
+		for(int i = 0; i<meetingRoom.getHeadCount()/2; i++) {
+			Stuff stuff = stuffList.get(i);
 			StuffStatus stuffsta = new StuffStatus(stuff);
 			if(isSelectedStuff(meetingRoomId, "F", stuff.getId())) {
 				stuffsta.setMen_selected(true);

@@ -16,7 +16,6 @@ public class AvatarStatus {
 	private Long id;
 	private String name;
 	private String image_path;
-	private String pic_info;
 	private boolean selected;
 	
 	public AvatarStatus(Avatar avatar) {

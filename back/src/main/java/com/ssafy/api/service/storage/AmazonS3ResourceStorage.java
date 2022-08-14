@@ -2,6 +2,7 @@ package com.ssafy.api.service.storage;
 
 import java.io.ByteArrayInputStream;
 import java.io.InputStream;
+import java.nio.charset.StandardCharsets;
 import java.util.Base64;
 
 import org.springframework.beans.factory.annotation.Value;
@@ -71,6 +72,7 @@ public class AmazonS3ResourceStorage {
 	public void storePicInfo(String fullPath, String picInfo) {
 		try {
 			InputStream image = new StringInputStream(picInfo);
+			InputStream stream = new ByteArrayInputStream(picInfo.getBytes(StandardCharsets.UTF_8));
 			ObjectMetadata metadata = new ObjectMetadata();
 			metadata.setContentLength(picInfo.length());
 			metadata.setContentType(org.springframework.http.MediaType.TEXT_PLAIN_VALUE);
