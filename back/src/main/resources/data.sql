@@ -53,3 +53,9 @@ insert into profile(image_path, name) values
 ("https://avatimebucket2022.s3.ap-northeast-2.amazonaws.com/%ED%94%84%EB%A1%9C%ED%95%84/profile08.png", "프로필 8"),
 ("https://avatimebucket2022.s3.ap-northeast-2.amazonaws.com/%ED%94%84%EB%A1%9C%ED%95%84/profile09.png", "프로필 9"),
 ("https://avatimebucket2022.s3.ap-northeast-2.amazonaws.com/%ED%94%84%EB%A1%9C%ED%95%84/profile10.png", "프로필 10");
+
+insert into stuff(image_path, name) values
+("", "당근"),
+("", "오이"),
+("", "가지"),
+("", "새우");
