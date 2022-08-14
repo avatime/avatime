@@ -2,6 +2,7 @@ import { Avatar, Box, Typography, IconButton, useTheme } from "@mui/material";
 import React, { FC } from "react";
 import { WaitingUser } from "../../apis/response/waitingRoomRes";
 import Crown from "../../assets/crown.png";
+import { SoundIconButton } from "../SoundButton";
 
 interface IProps {
   waitingUser: WaitingUser | null;
@@ -19,7 +20,6 @@ export const WaitingUserProfile: FC<IProps> = ({ waitingUser, onClickAvatar, me 
       position="relative"
       display="flex"
       justifyContent="center"
-      border={me ? "solid 2px black" : ""}
     >
       {waitingUser && (
         <>
@@ -34,7 +34,7 @@ export const WaitingUserProfile: FC<IProps> = ({ waitingUser, onClickAvatar, me 
             position="absolute"
             borderRadius="50%"
           >
-            <IconButton
+            <SoundIconButton
               onClick={() => onClickAvatar!(waitingUser.id)}
               sx={{
                 position: "absolute",
@@ -54,7 +54,7 @@ export const WaitingUserProfile: FC<IProps> = ({ waitingUser, onClickAvatar, me 
                   height: "100%",
                 }}
               />
-            </IconButton>
+            </SoundIconButton>
             {waitingUser.type === 0 && (
               <img
                 src={Crown}
@@ -76,7 +76,7 @@ export const WaitingUserProfile: FC<IProps> = ({ waitingUser, onClickAvatar, me 
             p={1}
             borderRadius="25px"
           >
-            <Typography color="white">{waitingUser.name}</Typography>
+            <Typography color="white">{waitingUser.name} {me && " (나)"}</Typography>
           </Box>
         </>
       )}

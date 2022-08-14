@@ -496,8 +496,8 @@ export const WaitingRoomList: FC<IProps> = (props) => {
               </TextField>
 
               <Box>
-                <Button onClick={handleClose}>취소</Button>
-                <Button onClick={setRoomData}>확인</Button>
+                <SoundButton onClick={handleClose}>취소</SoundButton>
+                <SoundButton onClick={setRoomData}>확인</SoundButton>
               </Box>
             </Box>
           </Typography>
