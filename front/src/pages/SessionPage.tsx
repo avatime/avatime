@@ -48,7 +48,7 @@ export const SessionPage: FC<IProps> = (props) => {
   const cntOpened = opened.filter((it) => it).length;
 
   const [lastPickModalOpen, setLastPickModalOpen] = useState(false);
-  const [balanceGameModalOpen, setBalanceGameModalOpen] = useState(true);
+  const [balanceGameModalOpen, setBalanceGameModalOpen] = useState(false);
   const [balanceResult, setBalanceResult] = useState<any[]>([]);
   const [showSnack, setShowSnack] = useState(false);
   const [snackMessage, setSnackMessage] = useState("");
