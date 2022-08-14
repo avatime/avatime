@@ -98,11 +98,11 @@ export const ProfileArea: FC<IProps> = (props) => {
       setNameText(" ");
       setOverlap(false);
     } else if (name.trim() === userName) {
-      setNameText("현재 이름과 같습니다.");
+      setNameText("현재 이름과 같아요.");
       setOverlap(true);
     } else {
       // 생성불가능
-      setNameText("중복된 이름입니다.");
+      setNameText("중복된 이름이예요");
       setOverlap(true);
     }
   }, [nameCheck]);

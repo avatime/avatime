@@ -1,4 +1,4 @@
-import React, { FC, useContext } from "react";
+import React, { FC, useContext, useState } from "react";
 import Avatar from "@mui/material/Avatar";
 import logo from "../../assets/avartimeLogo.png";
 import { Box, IconButton, Menu, MenuItem, Slider, Stack, useTheme } from "@mui/material";
@@ -12,12 +12,10 @@ import { AvatimeApi } from "../../apis/avatimeApi";
 import { AvatimeWs } from "../../apis/avatimeWs";
 import { resetMeeting } from "../../stores/slices/meetingSlice";
 import { resetWaiting } from "../../stores/slices/waitingSlice";
-import MusicNoteIcon from "@mui/icons-material/MusicNote";
-import MusicOffIcon from "@mui/icons-material/MusicOff";
-import { setBgmPlaying, setBgmVolume } from "../../stores/slices/bgmSlice";
 import { VolumeController } from "../VolumeController";
 import { SoundIconButton } from "../SoundButton";
 import { useSound } from "../../hooks/useSound";
+import { AlertSnackbar } from "../AlertSnackbar";
 
 interface IProps {
   hideSettings?: boolean;
@@ -43,6 +41,8 @@ export const MainHeader: FC<IProps> = ({ hideSettings = false }) => {
     setAnchorElUser(null);
   };
 
+  const [showSnack, setShowSnack] = useState(false);
+
   const logout = () => {
     localStorage.clear();
     dispatch(reset());
@@ -50,7 +50,7 @@ export const MainHeader: FC<IProps> = ({ hideSettings = false }) => {
     dispatch(resetMeeting());
     AvatimeApi.getInstance().logout();
     AvatimeWs.getInstance().logout();
-    alert("로그아웃 완료");
+    setShowSnack(true);
     navigate("/");
   };
 
@@ -122,7 +122,7 @@ export const MainHeader: FC<IProps> = ({ hideSettings = false }) => {
                 </Link>
               </MenuItem>
               <MenuItem
-                onClick={logout}
+                onClick={() => setShowSnack(true)}
                 style={{ color: "black" }}
                 sx={{ display: "flex", flexDirection: "center", justifyContent: "center" }}
               >
@@ -132,6 +132,14 @@ export const MainHeader: FC<IProps> = ({ hideSettings = false }) => {
           </Stack>
         )}
       </Box>
+      <AlertSnackbar
+        open={showSnack}
+        onClose={() => setShowSnack(false)}
+        message="정말 로그아웃 하시겠어요?"
+        alertColor="warning"
+        type="confirm"
+        onSuccess={logout}
+      />
     </>
   );
 };
