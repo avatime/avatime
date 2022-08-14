@@ -11,6 +11,6 @@ import com.ssafy.db.entity.BalanceRelation;
 public interface BalanceRelationRepository extends JpaRepository<BalanceRelation, Integer>{
 	Optional<BalanceRelation> findById(Long id);
 	boolean existsByMeetingRoomId(Long meetingRoomId);
-	boolean existsByMeetingRoomIdAndBalanceId(Long meetingRoomId, long balanceId);
+	boolean existsByMeetingRoomIdAndBalanceId(Long meetingRoomId, Long balanceId);
 	List<BalanceRelation> findAllByMeetingRoomIdAndBalance(Long meetingRoomId, Balance balance);
 }
