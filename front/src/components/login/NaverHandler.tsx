@@ -78,7 +78,7 @@ export const NaverHandler: FC<Iprops> = (props) => {
       <AlertSnackbar
         open={showLoginSnack}
         onClose={() => setShowLoginSnack(false)}
-        message="로그인 성공"
+        message="로그인에 성공했어요!"
         alertColor="success"
         type="confirm"
         onSuccess={login}
@@ -86,7 +86,7 @@ export const NaverHandler: FC<Iprops> = (props) => {
      <AlertSnackbar
         open={showRegisterSnack}
         onClose={() => setShowRegisterSnack(false)}
-        message="회원가입이 필요합니다."
+        message="회원가입이 필요해요!!"
         alertColor="warning"
         type="confirm"
         onSuccess={register}

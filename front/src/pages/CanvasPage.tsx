@@ -36,12 +36,39 @@ export const CanvasPage: FC<IProps> = (props) => {
   const [showPromptSnack, setShowPromptSnack] = useState(false);
 
   const [base, setBase] = useState("");
+  const [num, setNum] = useState(0);
 
   // 저장할 수 있는 아바타 칸이 4개라서 num이 1 ~ 4로 들어와요.
   // 서버 api도 num 번호에 따라 저장하도록 만들어 달라고 하시면 될 듯?
   const onSave = async (num: number) => {
-    var flag : boolean = false;
-    const avaname = prompt("아바타 이름을 알려주세요.");
+    setNum(num);
+    setShowPromptSnack(true);
+  };
+
+  const loadSavedAvatar = (base64: string | undefined) => {
+    if (!base64) {
+      return;
+    }
+    
+    setBase(base64);
+    setShowConfirmSnack(true);
+  };
+
+  // 여기에 서버에서 준 아바타 리스트 넣어주세요.
+  // 대충 name, image path, 이미지로 변환하기 전의 base64 data가 있다고 가정하고 코드를 짰어요.
+  const [avatarList, setAvatarList] = useState<GetAvatarRes[]>([]);
+
+  const test = () => {
+    console.log(avatarList);
+  }
+
+  const afterConfirm = () => {
+    canvasRef.current.loadSaveData(base, true);
+  }
+
+  const afterPrompt = async (avaname?: string) => {
+    setShowPromptSnack(false);
+    let flag = false;
     console.log("avaname : "+avaname);
     if (!avaname) {
       console.log("이름없다.")
@@ -61,7 +88,7 @@ export const CanvasPage: FC<IProps> = (props) => {
           onSuccess(data) {
             console.log("중복체크");
             if(!data) {
-              setMsg("중복된 아바타 이름입니다.");
+              setMsg("중복된 아바타 이름이예요");
               setShowSnack(true);
               flag = true;
             }
@@ -105,32 +132,6 @@ export const CanvasPage: FC<IProps> = (props) => {
         navigate,
       }
     );
-
-  };
-
-  const loadSavedAvatar = (base64: string | undefined) => {
-    if (!base64) {
-      return;
-    }
-    
-    setBase(base64);
-    setShowConfirmSnack(true);
-  };
-
-  // 여기에 서버에서 준 아바타 리스트 넣어주세요.
-  // 대충 name, image path, 이미지로 변환하기 전의 base64 data가 있다고 가정하고 코드를 짰어요.
-  const [avatarList, setAvatarList] = useState<GetAvatarRes[]>([]);
-
-  const test = () => {
-    console.log(avatarList);
-  }
-
-  const afterConfirm = () => {
-    canvasRef.current.loadSaveData(base, true);
-  }
-
-  const afterPrompt = () => {
-    // 구현
   }
 
   useEffect(() => {
@@ -189,7 +190,7 @@ export const CanvasPage: FC<IProps> = (props) => {
             <Grid container spacing={2} flex="1">
               {[0, 1].map((innerIdx) => {
                 const idx = outerIdx * 2 + innerIdx;
-                const avatar = idx < avatarList.length ? null : avatarList[idx];
+                const avatar = idx < avatarList.length ? avatarList[idx] : null;
                 console.log(avatar);
                 return (
                   <Grid item xs={6}>
@@ -224,7 +225,7 @@ export const CanvasPage: FC<IProps> = (props) => {
       <AlertSnackbar
         open={showConfirmSnack}
         onClose={() => setShowConfirmSnack(false)}
-        message="아바타를 불러오시겠습니까?"
+        message="아바타를 불러오시겠어요??"
         alertColor="info"
         type="confirm"
         onSuccess={afterConfirm}
@@ -235,7 +236,7 @@ export const CanvasPage: FC<IProps> = (props) => {
         message="아바타 이름을 알려주세요."
         type="prompt"
         onSuccess={afterPrompt}
-        alertColor="warning"
+        alertColor="info"
       />
     </Box>
   );
