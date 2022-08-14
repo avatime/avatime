@@ -4,7 +4,7 @@ import { Box, Grid } from "@mui/material";
 import { ControllBar } from "../components/session/ControllBar";
 import { grey } from "@mui/material/colors";
 import { useDispatch, useSelector } from "react-redux";
-import { setUserInfoList } from "../stores/slices/meetingSlice";
+import { setBalanceA, setBalanceB, setBalanceId, setUserInfoList } from "../stores/slices/meetingSlice";
 import { MeetingRoomInfoRes } from "../apis/response/sessionRes";
 import { useOpenvidu } from "../hooks/useOpenvidu";
 import { AvatarVideoStream } from "../components/session/AvatarVideoStream";
@@ -48,8 +48,11 @@ export const SessionPage: FC<IProps> = (props) => {
   const cntOpened = opened.filter((it) => it).length;
 
   const [lastPickModalOpen, setLastPickModalOpen] = useState(false);
+  const [balanceGameModalOpen, setBalanceGameModalOpen] = useState(false);
+  const [balanceResult, setBalanceResult] = useState<any[]>([]);
   const [showSnack, setShowSnack] = useState(false);
   const [snackMessage, setSnackMessage] = useState("");
+
   useWebSocket({
     onConnect(frame, client) {
       client.subscribe(`/topic/meeting/status/${roomId}`, function (response) {
@@ -62,6 +65,27 @@ export const SessionPage: FC<IProps> = (props) => {
           }, 3000);
 
         }
+      });
+
+      client.subscribe(`/topic/meeting/balance/${roomId}`, function (response) {
+        console.log(response.body);
+        const res = JSON.parse(response.body);
+        if (res.balance_id) {
+          setSnackMessage("3초 후 밸런스 게임이 시작돼요!!");
+          setShowSnack(true);
+          dispatch(setBalanceId(res.balance_id));
+          dispatch(setBalanceA(res.a));
+          dispatch(setBalanceB(res.b));
+          setTimeout(()=> {
+            setBalanceGameModalOpen(true);
+          }, 3000);
+        }
+      });
+
+      client.subscribe(`/topic/meeting/balance/result/${roomId}`, function (response) {
+        console.log(response.body);
+        const res = JSON.parse(response.body).balance_result;
+        setBalanceResult(res);
       });
     },
     beforeDisconnected(frame, client) {
@@ -123,6 +147,7 @@ export const SessionPage: FC<IProps> = (props) => {
                                   avatarPath={userInfo!.avatar_image_path}
                                   gender={userInfo!.gender}
                                   me={userInfo!.user_id === userId}
+                                  balance={balanceResult.find((it) => it.user_id === userInfo!.user_id)?.result}
                                 />
                               </Grid>
                             );
@@ -139,6 +164,8 @@ export const SessionPage: FC<IProps> = (props) => {
               onChangeMicStatus={onChangeMicStatus}
               onChangeCameraStatus={onChangeCameraStatus}
               lastPickModalOpen={lastPickModalOpen}
+              balanceGameModalOpen={balanceGameModalOpen}
+              onCloseBalanceGame={() => setBalanceGameModalOpen(false)}
             />
           </Box>
         </Grid>

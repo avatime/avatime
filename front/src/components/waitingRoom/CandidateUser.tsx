@@ -10,6 +10,7 @@ interface IProps {
   onClickAccept: (userId: number) => void;
   onClickRefuse: (userId: number) => void;
   isMaster: boolean;
+  onClickAvatar: (userId: number) => void;
 }
 
 export const CandidateUser: FC<IProps> = ({
@@ -17,18 +18,21 @@ export const CandidateUser: FC<IProps> = ({
   onClickAccept,
   onClickRefuse,
   isMaster,
+  onClickAvatar,
 }) => {
   const theme = useTheme();
   return (
     <Box display="flex" flexDirection="row" alignItems="center" width="100%">
-      <Avatar
-        sx={{
-          border: `solid 3px ${
-            waitingUser.gender === "M" ? theme.palette.primary.light : theme.palette.error.light
-          }`,
-        }}
-        src={waitingUser.profile_img_path}
-      />
+      <SoundIconButton onClick={() => onClickAvatar(waitingUser.id)}>
+        <Avatar
+          sx={{
+            border: `solid 3px ${
+              waitingUser.gender === "M" ? theme.palette.primary.light : theme.palette.error.light
+            }`,
+          }}
+          src={waitingUser.profile_img_path}
+        />
+      </SoundIconButton>
       <Box p={1} />
       <Typography variant="subtitle2" flex={1}>
         {waitingUser.name}

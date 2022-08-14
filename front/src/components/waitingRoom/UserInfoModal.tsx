@@ -4,11 +4,13 @@ import { UserInfoRes } from "../../apis/response/memberRes";
 import CancelIcon from "@mui/icons-material/Cancel";
 import { AvatimeApi } from "../../apis/avatimeApi";
 import { useNavigate } from "react-router";
+import { SoundIconButton } from "../SoundButton";
 
 interface IProps {
   open: boolean;
   onClose: () => void;
   userId: number;
+  useBackdrop: boolean;
 }
 
 const style = {
@@ -16,8 +18,8 @@ const style = {
   top: "50%",
   left: "50%",
   transform: "translate(-50%, -50%)",
-  height: "90vh",
-  width: "50vw",
+  height: "50vh",
+  width: "30vw",
   borderRadius: "20px",
   bgcolor: "background.paper",
   border: "2px solid #000",
@@ -28,7 +30,7 @@ const style = {
   alignItems: "center",
 };
 
-export const UserInfoModal: FC<IProps> = ({ open, onClose, userId }) => {
+export const UserInfoModal: FC<IProps> = ({ open, onClose, userId, useBackdrop }) => {
   const navigate = useNavigate();
   const [userInfo, setUserInfo] = useState<UserInfoRes>();
 
@@ -47,24 +49,24 @@ export const UserInfoModal: FC<IProps> = ({ open, onClose, userId }) => {
   }, [navigate, userId]);
 
   return (
-    <Backdrop open={open}>
+    <Backdrop open={useBackdrop}>
       <Modal open={open}>
         <Box sx={style}>
-          <IconButton onClick={onClose} sx={{ position: "absolute", right: "30px" }}>
+          <SoundIconButton onClick={onClose} sx={{ position: "absolute", right: "30px" }}>
             <CancelIcon />
-          </IconButton>
+          </SoundIconButton>
           <Avatar src={userInfo?.profile_image_path} sx={{ width: "200px", height: "200px" }} />
           <Box p={1} />
-          <TextField label="아이디" variant="outlined" value={userInfo?.name} disabled />
-          <Box p={1} />
+          <TextField label="닉네임" variant="outlined" value={userInfo?.name} disabled />
+          <Box p={3} />
           <TextField
             multiline
             label="자기소개"
             variant="outlined"
             value={userInfo?.description}
             disabled
-            minRows={4}
-            maxRows={6}
+            minRows={5}
+            maxRows={5}
             fullWidth
           />
         </Box>

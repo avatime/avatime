@@ -22,9 +22,10 @@ interface IProps {
   onClickClose: () => void;
   candidateList: WaitingUser[];
   isMaster: boolean;
+  onClickAvatar: (userId: number) => void;
 }
 
-export const ReceptionModal: FC<IProps> = ({ open, onClickClose, candidateList, isMaster }) => {
+export const ReceptionModal: FC<IProps> = ({ open, onClickClose, candidateList, isMaster, onClickAvatar }) => {
   const navigate = useNavigate();
   const roomId = useSelector((state: any) => state.waiting.roomId);
   const onClickAccept = (userId: number) => {
@@ -89,6 +90,7 @@ export const ReceptionModal: FC<IProps> = ({ open, onClickClose, candidateList, 
                         onClickAccept={onClickAccept}
                         onClickRefuse={onClickRefuse}
                         isMaster={isMaster}
+                        onClickAvatar={onClickAvatar}
                       />
                     </ListItem>
                     <Box m={1}>

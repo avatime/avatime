@@ -1,4 +1,4 @@
-import React, { FC, useContext } from "react";
+import React, { FC, useContext, useState } from "react";
 import Avatar from "@mui/material/Avatar";
 import logo from "../../assets/avartimeLogo.png";
 import { Box, IconButton, Menu, MenuItem, Slider, Stack, useTheme } from "@mui/material";
@@ -12,12 +12,10 @@ import { AvatimeApi } from "../../apis/avatimeApi";
 import { AvatimeWs } from "../../apis/avatimeWs";
 import { resetMeeting } from "../../stores/slices/meetingSlice";
 import { resetWaiting } from "../../stores/slices/waitingSlice";
-import MusicNoteIcon from "@mui/icons-material/MusicNote";
-import MusicOffIcon from "@mui/icons-material/MusicOff";
-import { setBgmPlaying, setBgmVolume } from "../../stores/slices/bgmSlice";
 import { VolumeController } from "../VolumeController";
 import { SoundIconButton } from "../SoundButton";
 import { useSound } from "../../hooks/useSound";
+import { AlertSnackbar } from "../AlertSnackbar";
 
 interface IProps {
   hideSettings?: boolean;
@@ -43,6 +41,8 @@ export const MainHeader: FC<IProps> = ({ hideSettings = false }) => {
     setAnchorElUser(null);
   };
 
+  const [showSnack, setShowSnack] = useState(false);
+
   const logout = () => {
     localStorage.clear();
     dispatch(reset());
@@ -50,13 +50,8 @@ export const MainHeader: FC<IProps> = ({ hideSettings = false }) => {
     dispatch(resetMeeting());
     AvatimeApi.getInstance().logout();
     AvatimeWs.getInstance().logout();
-    alert("로그아웃 완료");
+    setShowSnack(true);
     navigate("/");
-  };
-
-  const playing = useSelector((state: any) => state.bgm.playing);
-  const onClickPlaying = () => {
-    dispatch(setBgmPlaying(!playing));
   };
 
   const theme = useTheme();
@@ -64,13 +59,23 @@ export const MainHeader: FC<IProps> = ({ hideSettings = false }) => {
 
   return (
     <>
-      <Box display="flex" justifyContent="right" alignItems="center" marginBottom="2%">
-        <Link ref={ref} to="/main">
+      <Box display="flex" justifyContent="center" alignItems="center" marginBottom="2%">
+        <Link
+          ref={ref}
+          to="/main"
+          style={{
+            display: "flex",
+            justifyContent: "center",
+          }}
+        >
           <img src={logo} alt="로고" style={{ width: "70%", paddingTop: "2%" }} />
         </Link>
 
         {!hideSettings && (
-          <>
+          <Stack direction="row" position="absolute" right="80px">
+            <Stack width="100px" justifyContent="center">
+              <VolumeController />
+            </Stack>
             <Tooltip title="설정">
               <SoundIconButton
                 onClick={handleOpenUserMenu}
@@ -117,25 +122,24 @@ export const MainHeader: FC<IProps> = ({ hideSettings = false }) => {
                 </Link>
               </MenuItem>
               <MenuItem
-                onClick={onClickPlaying}
-                sx={{ flexDirection: "center", display: "flex", justifyContent: "center" }}
-              >
-                배경음악 {playing ? <MusicNoteIcon /> : <MusicOffIcon />}
-              </MenuItem>
-              <MenuItem>
-                <VolumeController />
-              </MenuItem>
-              <MenuItem
-                onClick={logout}
+                onClick={() => setShowSnack(true)}
                 style={{ color: "black" }}
                 sx={{ display: "flex", flexDirection: "center", justifyContent: "center" }}
               >
                 <p style={{ color: theme.palette.error.main }}>로그아웃</p>
               </MenuItem>
             </Menu>
-          </>
+          </Stack>
         )}
       </Box>
+      <AlertSnackbar
+        open={showSnack}
+        onClose={() => setShowSnack(false)}
+        message="정말 로그아웃 하시겠어요?"
+        alertColor="warning"
+        type="confirm"
+        onSuccess={logout}
+      />
     </>
   );
 };
