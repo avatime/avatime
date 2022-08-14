@@ -23,6 +23,7 @@ import { formatDate } from "../../utils/day";
 import { useWebSocket } from "../../hooks/useWebSocket";
 import { useNavigate } from "react-router";
 import { AvatimeApi } from "../../apis/avatimeApi";
+import { SoundButton } from '../SoundButton';
 
 type ChatType = "all" | "gender";
 
@@ -186,6 +187,7 @@ const ChatRoomPresenter: FC<IPresenterProps> = ({
       expanded={!foldable || isOpened}
       onChange={onClickHeader}
       sx={{
+        width: "100%",
         flexGrow: isOpened ? 1 : 0,
         display: "flex",
         flexDirection: "column",
@@ -253,9 +255,9 @@ const ChatRoomPresenter: FC<IPresenterProps> = ({
             onKeyUp={onKeyUp}
             onKeyDown={onKeyDown}
           />
-          <Button variant="contained" onClick={sendMessage} disabled={!message} color="secondary">
+          <SoundButton variant="contained" onClick={sendMessage} disabled={!message} color="secondary">
             <SendIcon />
-          </Button>
+          </SoundButton>
         </Stack>
       </CardContent>
     </Accordion>

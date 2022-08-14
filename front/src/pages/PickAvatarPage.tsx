@@ -6,12 +6,13 @@ import grey from "@mui/material/colors/grey";
 import { GaugeBar } from "../components/pickAvatar/GaugeBar";
 import { AvatarPickInfoRes } from "../apis/response/avatarRes";
 import { Avatar } from "@mui/material";
-import { useSelector } from "react-redux";
+import { useSelector, useDispatch } from 'react-redux';
 import { AvatarProfile } from "../components/session/modal/AvatarProfile";
 import { useNavigate } from "react-router";
 import { useWebSocket } from "../hooks/useWebSocket";
 import DoDisturbIcon from "@mui/icons-material/DoDisturb";
 import { AvatimeApi } from "../apis/avatimeApi";
+import { useBGM } from '../hooks/useBGM';
 
 interface IProps {}
 
@@ -86,6 +87,8 @@ export const PickAvatarPage: FC<IProps> = () => {
       }
     );
   };
+
+  useBGM("select");
 
   //----------------------------------------------------------------------------------
   //꼭 다시 봐

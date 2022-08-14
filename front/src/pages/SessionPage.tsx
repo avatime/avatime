@@ -11,6 +11,8 @@ import { AvatarVideoStream } from "../components/session/AvatarVideoStream";
 import { useWebSocket } from "../hooks/useWebSocket";
 import { useNavigate } from "react-router";
 import { AvatimeApi } from "../apis/avatimeApi";
+import { VolumeController } from "../components/VolumeController";
+import { useBGM } from "../hooks/useBGM";
 
 interface IProps {}
 
@@ -82,6 +84,8 @@ export const SessionPage: FC<IProps> = (props) => {
     [gender, streamList]
   );
 
+  useBGM("meeting");
+
   return (
     <div className="mainback">
       <Grid container spacing={3} sx={{ float: "left" }} p={2}>
@@ -132,18 +136,27 @@ export const SessionPage: FC<IProps> = (props) => {
           </Box>
         </Grid>
         <Grid item xs={3}>
-          <Box display="flex" flexDirection="column" height="95vh" sx={{ overflow: "hidden" }}>
-            {meetingRoomInfo && (
-              <ChatRoom
-                chatType="all"
-                isOpened={opened[0]}
-                onClickHeader={() => {
-                  setOpened((prev) => [!prev[0], prev[1]]);
-                }}
-                maxHeight={opened[0] && cntOpened === 1 ? "100%" : "50%"}
-                chattingRoomId={meetingRoomInfo.chattingroom_id}
-              />
-            )}
+          <Box
+            width="100%"
+            display="flex"
+            flexDirection="column"
+            height="95vh"
+            sx={{ overflow: "hidden" }}
+            alignItems="end"
+          >
+            <VolumeController />
+            <Box p={1} />
+              {meetingRoomInfo && (
+                <ChatRoom
+                  chatType="all"
+                  isOpened={opened[0]}
+                  onClickHeader={() => {
+                    setOpened((prev) => [!prev[0], prev[1]]);
+                  }}
+                  maxHeight={opened[0] && cntOpened === 1 ? "100%" : "50%"}
+                  chattingRoomId={meetingRoomInfo.chattingroom_id}
+                />
+              )}
             {meetingRoomInfo && (
               <ChatRoom
                 chatType="gender"

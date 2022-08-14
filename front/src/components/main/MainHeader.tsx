@@ -1,27 +1,23 @@
-import React, { FC } from "react";
+import React, { FC, useContext } from "react";
 import Avatar from "@mui/material/Avatar";
 import logo from "../../assets/avartimeLogo.png";
-import { Box, IconButton, Menu, MenuItem, MenuList } from "@mui/material";
+import { Box, IconButton, Menu, MenuItem, Slider, Stack, useTheme } from "@mui/material";
 import { Link } from "react-router-dom";
 import Tooltip from "@mui/material/Tooltip";
 import "../../style.css";
-import { padding } from "@mui/system";
 import { useSelector, useDispatch } from "react-redux";
 import { useNavigate } from "react-router";
-import {
-  reset,
-  setUserName,
-  setUserDesc,
-  setProfileImagePath,
-  setIsLogin,
-  setToken,
-  setSocialId,
-  setSocialType,
-} from "../../stores/slices/userSlice";
+import { reset } from "../../stores/slices/userSlice";
 import { AvatimeApi } from "../../apis/avatimeApi";
 import { AvatimeWs } from "../../apis/avatimeWs";
 import { resetMeeting } from "../../stores/slices/meetingSlice";
 import { resetWaiting } from "../../stores/slices/waitingSlice";
+import MusicNoteIcon from "@mui/icons-material/MusicNote";
+import MusicOffIcon from "@mui/icons-material/MusicOff";
+import { setBgmPlaying, setBgmVolume } from "../../stores/slices/bgmSlice";
+import { VolumeController } from "../VolumeController";
+import { SoundIconButton } from "../SoundButton";
+import { useSound } from "../../hooks/useSound";
 
 interface IProps {
   hideSettings?: boolean;
@@ -58,17 +54,25 @@ export const MainHeader: FC<IProps> = ({ hideSettings = false }) => {
     navigate("/");
   };
 
+  const playing = useSelector((state: any) => state.bgm.playing);
+  const onClickPlaying = () => {
+    dispatch(setBgmPlaying(!playing));
+  };
+
+  const theme = useTheme();
+  const ref = useSound();
+
   return (
     <>
       <Box display="flex" justifyContent="right" alignItems="center" marginBottom="2%">
-        <Link to="/main">
+        <Link ref={ref} to="/main">
           <img src={logo} alt="로고" style={{ width: "70%", paddingTop: "2%" }} />
         </Link>
 
         {!hideSettings && (
           <>
             <Tooltip title="설정">
-              <IconButton
+              <SoundIconButton
                 onClick={handleOpenUserMenu}
                 style={{ marginLeft: "27%", marginRight: "3%" }}
               >
@@ -79,10 +83,15 @@ export const MainHeader: FC<IProps> = ({ hideSettings = false }) => {
                   aria-controls={open ? "composition-menu" : undefined}
                   aria-expanded={open ? "true" : undefined}
                 />
-              </IconButton>
+              </SoundIconButton>
             </Tooltip>
             <Menu
-              sx={{ mt: "60px" , justifyContent:"center", flexDirection:"center", textAlign:"center"}}
+              sx={{
+                mt: "60px",
+                justifyContent: "center",
+                flexDirection: "center",
+                textAlign: "center",
+              }}
               id="profilemenu"
               anchorEl={anchorElUser}
               anchorOrigin={{
@@ -96,20 +105,33 @@ export const MainHeader: FC<IProps> = ({ hideSettings = false }) => {
               }}
               open={open}
               onClose={handleCloseUserMenu}
-
             >
-              <MenuItem sx={{display:"flex",flexDirection:"center",justifyContent:"center"}}>
-                <Link to="/mypage" style={{ textDecoration: "none", color:"black" }}>
+              <MenuItem sx={{ display: "flex", flexDirection: "center", justifyContent: "center" }}>
+                <Link to="/mypage" style={{ textDecoration: "none", color: "black" }}>
                   마이페이지
                 </Link>
               </MenuItem>
-              <MenuItem  sx={{ flexDirection:"center",display:"flex",justifyContent:"center"}}>
-                <Link to="/canvas" style={{ textDecoration: "none", color:"black" }}>
+              <MenuItem sx={{ flexDirection: "center", display: "flex", justifyContent: "center" }}>
+                <Link to="/canvas" style={{ textDecoration: "none", color: "black" }}>
                   아바타룸
                 </Link>
-              </MenuItem >
-              <MenuItem onClick={logout} style={{color:"black"}} sx={{ display:"flex", flexDirection:"center", justifyContent:"center"}} >로그아웃</MenuItem>
-
+              </MenuItem>
+              <MenuItem
+                onClick={onClickPlaying}
+                sx={{ flexDirection: "center", display: "flex", justifyContent: "center" }}
+              >
+                배경음악 {playing ? <MusicNoteIcon /> : <MusicOffIcon />}
+              </MenuItem>
+              <MenuItem>
+                <VolumeController />
+              </MenuItem>
+              <MenuItem
+                onClick={logout}
+                style={{ color: "black" }}
+                sx={{ display: "flex", flexDirection: "center", justifyContent: "center" }}
+              >
+                <p style={{ color: theme.palette.error.main }}>로그아웃</p>
+              </MenuItem>
             </Menu>
           </>
         )}

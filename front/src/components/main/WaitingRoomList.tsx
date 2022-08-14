@@ -41,6 +41,7 @@ import { useWebSocket } from "../../hooks/useWebSocket";
 import { AvatimeApi } from "../../apis/avatimeApi";
 import { Loading } from "./Loading";
 import { AlertSnackbar } from "../AlertSnackbar";
+import { SoundButton } from "../SoundButton";
 
 interface IProps {}
 
@@ -409,7 +410,7 @@ export const WaitingRoomList: FC<IProps> = (props) => {
         <Loading loading={!connected} />
       <Box p={1} />
       <Box sx={{ flex: 1, marginLeft: "5%", marginRight: "5%" }}>
-        <Button
+        <SoundButton
           variant="contained"
           aria-label="makenewroom"
           sx={{ float: "right" }}
@@ -418,7 +419,7 @@ export const WaitingRoomList: FC<IProps> = (props) => {
           color="secondary"
         >
           새로운 방 만들기
-        </Button>
+        </SoundButton>
       </Box>
 
       <Modal

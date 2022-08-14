@@ -4,6 +4,7 @@ import BorderColorIcon from "@mui/icons-material/BorderColor";
 import UndoIcon from "@mui/icons-material/Undo";
 import SaveAltIcon from "@mui/icons-material/SaveAlt";
 import DeleteIcon from "@mui/icons-material/Delete";
+import { SoundIconButton } from "../SoundButton";
 
 interface IProps {
   onChangeColor: (color: string) => void;
@@ -39,9 +40,9 @@ export const CanvasTools: FC<IProps> = ({
   return (
     <Stack direction="column" alignItems="center" spacing={1}>
       <Box bgcolor="white" p={1} borderRadius="10px" position="relative">
-        <IconButton sx={{ padding: 0 }}>
+        <SoundIconButton sx={{ padding: 0 }}>
           <input ref={picker} type="color" />
-        </IconButton>
+        </SoundIconButton>
       </Box>
       <Stack bgcolor="white" alignItems="center" p={1} borderRadius="10px" spacing={1}>
         <Slider
@@ -56,14 +57,14 @@ export const CanvasTools: FC<IProps> = ({
         />
       </Stack>
       <Box bgcolor="white" p={1} borderRadius="10px">
-        <IconButton onClick={onUndo}>
+        <SoundIconButton onClick={onUndo}>
           <UndoIcon />
-        </IconButton>
+        </SoundIconButton>
       </Box>
       <Box bgcolor="white" p={1} borderRadius="10px">
-        <IconButton onClick={onEraseAll}>
+        <SoundIconButton onClick={onEraseAll}>
           <DeleteIcon />
-        </IconButton>
+        </SoundIconButton>
       </Box>
       {[1, 2, 3, 4].map((it) => (
         <Stack
@@ -75,9 +76,9 @@ export const CanvasTools: FC<IProps> = ({
           alignItems="center"
         >
           {it}번
-          <IconButton onClick={() => onSave(it)}>
+          <SoundIconButton onClick={() => onSave(it)}>
             <SaveAltIcon />
-          </IconButton>
+          </SoundIconButton>
         </Stack>
       ))}
     </Stack>

@@ -1,6 +1,7 @@
 import { Button, ButtonBase, styled, Typography, useTheme } from "@mui/material";
 import { Box } from "@mui/system";
 import React, { FC } from "react";
+import { useSound } from "../../../hooks/useSound";
 
 const ImageButton = styled(ButtonBase)(({ theme }) => ({
   position: "relative",
@@ -63,6 +64,8 @@ export const AvatarProfile: FC<IProps> = ({
   const selectedColor = theme.palette.info.light;
   const cantSelectColor = theme.palette.error.main;
 
+  const ref = useSound();
+
   return (
     <Box
       display="flex"
@@ -74,6 +77,7 @@ export const AvatarProfile: FC<IProps> = ({
       borderRadius="10px"
     >
       <ImageButton
+        ref={ref}
         focusRipple
         style={{
           width: "100%",
