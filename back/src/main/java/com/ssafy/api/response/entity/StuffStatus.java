@@ -16,7 +16,8 @@ public class StuffStatus {
 	private Long id;
 	private String name;
 	private String image_path;
-	private boolean selected;
+	private boolean men_selected;
+	private boolean women_selected;
 	
 	public StuffStatus(Stuff stuff) {
 		this.id = stuff.getId();

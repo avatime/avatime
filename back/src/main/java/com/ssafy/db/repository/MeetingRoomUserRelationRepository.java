@@ -20,4 +20,5 @@ public interface MeetingRoomUserRelationRepository extends JpaRepository<Meeting
     List<MeetingRoomUserRelation> findAllByMeetingRoomIdAndLeftMeeting(Long meetingRoomId, boolean leftMeeting);
     int countByMeetingRoomIdAndLeftMeeting(Long meetingRoomId, boolean leftMeeting);
     boolean existsByMeetingRoomIdAndStuffId(Long meetingRoomId, Long stuffId);
+    Optional<List<MeetingRoomUserRelation>> findByMeetingRoomIdAndStuffId(Long meetingRoomId, Long stuffId);
 }
