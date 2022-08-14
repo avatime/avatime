@@ -47,6 +47,9 @@ public class MeetingRoomUserRelation  extends BaseEntity {
     @Column
     private String streamId;
     
+    @Column(columnDefinition = "INT UNSIGNED DEFAULT 0")
+    private Long stuffId;
+    
     @Builder
     public MeetingRoomUserRelation(MeetingRoom meetingRoom, User user) {
     	this.meetingRoom = meetingRoom;
