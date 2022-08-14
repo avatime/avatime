@@ -28,6 +28,7 @@ export const PickStuffModal: FC<IProps> = ({ isOpened }) => {
   useWebSocket({
     onConnect(frame, client) {
       client.subscribe(`/topic/meeting/stuff/timer/${meetingRoomId}`, function (response) {
+        console.log("ASDASD", JSON.parse(response.body));
         setTimer(JSON.parse(response.body));
       });
       client.publish({ destination: `/app/meeting/stuff/timer/${meetingRoomId}` });

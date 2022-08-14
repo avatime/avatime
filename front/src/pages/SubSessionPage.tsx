@@ -7,10 +7,11 @@ import { useOpenvidu } from "../hooks/useOpenvidu";
 import grey from "@mui/material/colors/grey";
 import { useWebSocket } from "../hooks/useWebSocket";
 import { useBGM } from "../hooks/useBGM";
-import { useLocation, useNavigate } from 'react-router';
+import { useLocation, useNavigate } from "react-router";
 import { AvatarVideoStream } from "../components/session/AvatarVideoStream";
 import { MeetingUserInfoRes } from "../apis/response/sessionRes";
 import { Timer } from "../components/timer/Timer";
+import { VolumeController } from "../components/VolumeController";
 
 interface IProps {}
 
@@ -68,6 +69,9 @@ export const SubSessionPage: FC<IProps> = (props) => {
   return (
     <div className="mainback">
       <Box p={3} display="flex" flexDirection="column" alignItems="stretch" position="relative">
+        <Box ml="auto" mb={3}>
+          <VolumeController />
+        </Box>
         <Box
           p={5}
           borderRadius="10px"
@@ -78,14 +82,18 @@ export const SubSessionPage: FC<IProps> = (props) => {
           flexDirection="column"
           justifyContent="center"
         >
-          {(state as any).stuff && <Timer duration={120} remainingTime={timer}/>}
+          {(state as any).stuff && (
+            <Box mr="auto" mb={5}>
+              <Timer duration={120} remainingTime={timer} />
+            </Box>
+          )}
           <Grid container height="100%" direction="row" alignItems="center" spacing={5}>
-            <Grid item sx={{ position: "relative", height: "100%" }}>
+            <Grid item xs>
               {publisher &&
                 ((state as any).stuff ? (
                   <AvatarVideoStream
                     streamManager={publisher}
-                    name={userName}
+                    name={userInfoList.find((it) => it.user_id === userId)!.avatar_name}
                     avatarPath={userInfoList.find((it) => it.user_id === userId)!.avatar_image_path}
                     gender={gender}
                     me={true}
@@ -105,12 +113,15 @@ export const SubSessionPage: FC<IProps> = (props) => {
                 ((state as any).stuff ? (
                   <AvatarVideoStream
                     streamManager={pickUserStreamManager.streamManager}
-                    name={pickUserName}
+                    name={
+                      userInfoList.find((it) => it.user_id === pickUserStreamManager.userId)!
+                        .avatar_name
+                    }
                     avatarPath={
                       userInfoList.find((it) => it.user_id === pickUserStreamManager.userId)!
                         .avatar_image_path
                     }
-                    gender={gender}
+                    gender={gender === "M" ? "F" : "M"}
                     me={false}
                   />
                 ) : (
