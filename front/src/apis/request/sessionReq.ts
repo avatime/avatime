@@ -27,3 +27,13 @@ export interface PostBalanceGameReq {
   user_id: number;
   result: boolean;
 }
+
+export interface StartPickStuffReq {
+  meetingroom_id: number;
+}
+
+export interface PatchPickStuffReq {
+  meetingroom_id: number;
+  user_id: number;
+  stuff_id: number;
+}
