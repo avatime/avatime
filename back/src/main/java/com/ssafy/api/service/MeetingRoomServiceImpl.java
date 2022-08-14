@@ -9,12 +9,14 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.messaging.simp.SimpMessageSendingOperations;
 import org.springframework.stereotype.Service;
 
-import com.ssafy.api.controller.MeetingController;
 import com.ssafy.api.response.AvatarChoiceRes;
+import com.ssafy.api.response.StuffChoiceRes;
 import com.ssafy.api.response.entity.AvatarStatus;
+import com.ssafy.api.response.entity.StuffStatus;
 import com.ssafy.db.entity.Avatar;
 import com.ssafy.db.entity.MeetingRoom;
 import com.ssafy.db.entity.MeetingRoomUserRelation;
+import com.ssafy.db.entity.Stuff;
 import com.ssafy.db.entity.WaitingRoomUserRelation;
 import com.ssafy.db.repository.ChattingRoomRepository;
 import com.ssafy.db.repository.MeetingRoomRepository;
@@ -50,6 +52,9 @@ public class MeetingRoomServiceImpl implements MeetingRoomService {
 	AvatarService avatarService;
 	
 	@Autowired
+	StuffService stuffService;
+	
+	@Autowired
 	UserRepository userRepository;
 	
 	private final SimpMessageSendingOperations sendingOperations;
@@ -62,14 +67,14 @@ public class MeetingRoomServiceImpl implements MeetingRoomService {
 		try {
 			meetingRoom.setType(type);
 			if(type == 0) {
-				mainSessionId = meetingRoomRepository.save(meetingRoom).getId();
+				mainSessionId = meetingRoomRepository.saveAndFlush(meetingRoom).getId();
 				chattingRoomService.createRoomInMeetingRoom(mainSessionId);
 			}
 			else if(type == 1) {
 				
 			}
 			meetingRoom.setMainSessionId(mainSessionId);
-//			meetingRoomRepository.save(meetingRoom);
+			meetingRoomRepository.save(meetingRoom);
 		} catch (Exception e) {
 		}
 		
@@ -176,10 +181,26 @@ public class MeetingRoomServiceImpl implements MeetingRoomService {
 						try {
 							pickAvatar(meetingRoomId);
 						} catch (Exception e) {
-							// TODO Auto-generated catch block
-							
+							// TODO Auto-generated catch block	
 						}
-					if(type.equals("pick")) {
+					else if (type.equals("stuff")) {
+						try {
+							makeStuffSubsession(meetingRoomId);
+						} catch (Exception e) {
+							// TODO Auto-generated catch block
+						}
+					}
+					else if (type.equals("stuffSubSession")) {
+						MeetingRoom meetingRoom = findById(meetingRoomId);
+						List<MeetingRoomUserRelation> list = meetingRoomUserRelationRepository.findAllByMeetingRoomId(meetingRoom.getMainSessionId());
+						for(MeetingRoomUserRelation user : list) {
+							user.setStuffId(0L);
+							meetingRoomUserRelationRepository.saveAndFlush(user);
+						}
+						meetingRoom.setStatus(1);
+						meetingRoomRepository.save(meetingRoom);
+					}
+					else if(type.equals("pick")) {
 						List<MeetingRoomUserRelation> userList = meetingRoomUserRelationRepository.findAllByMeetingRoomIdAndLeftMeeting(meetingRoomId, false);
 						for(MeetingRoomUserRelation user : userList) {
 							if(userRepository.findById(user.getId()).get().getGender().equals("M")) continue;
@@ -288,41 +309,80 @@ public class MeetingRoomServiceImpl implements MeetingRoomService {
 	}
 
 	@Override
-	public boolean isSelectedStuff(Long meetingRoomId, Long avatarId) throws Exception {
+	public boolean isSelectedStuff(Long meetingRoomId, Long stuffId) throws Exception {
 		// TODO Auto-generated method stub
-		return meetingRoomUserRelationRepository.existsByMeetingRoomIdAndAvatarId(meetingRoomId, avatarId);
+		return meetingRoomUserRelationRepository.existsByMeetingRoomIdAndStuffId(meetingRoomId, stuffId);
 	}
 
 	@Override
-	public void choiceStuff(Long meetingRoomId, Long userId, Long avatarId) throws Exception {
+	public void choiceStuff(Long meetingRoomId, Long userId, Long stuffId) throws Exception {
 		// TODO Auto-generated method stub
 		MeetingRoomUserRelation meetingRoomUserRelation = meetingRoomUserRelationRepository.findByMeetingRoomIdAndUserId(meetingRoomId, userId).orElse(null);
 		if(meetingRoomUserRelation != null) {
-			meetingRoomUserRelation.setAvatarId(avatarId);
+			meetingRoomUserRelation.setStuffId(stuffId);
 			meetingRoomUserRelationRepository.saveAndFlush(meetingRoomUserRelation);
 			sendAvatarInfo(meetingRoomId);
 		}
 	}
 	
+	@Override
 	public int sendStuffInfo(Long meetingRoomId) throws Exception {
 		int num = 0;
-		AvatarChoiceRes avatarChoiceRes = new AvatarChoiceRes();
-		List<Avatar> avatarList = avatarService.findAllByUserId(0L);
-		List<AvatarStatus> list = new ArrayList<>();
-		for(Avatar ava : avatarList) {
-			AvatarStatus avasta = new AvatarStatus(ava);
-			if(isSelectedAvatar(meetingRoomId, ava.getId())) {
-				avasta.setSelected(true);
+		StuffChoiceRes stuffChoiceRes = new StuffChoiceRes();
+		List<Stuff> stuffList = stuffService.findAll();
+		List<StuffStatus> list = new ArrayList<>();
+		for(Stuff stuff : stuffList) {
+			StuffStatus stuffsta = new StuffStatus(stuff);
+			if(isSelectedStuff(meetingRoomId, stuff.getId())) {
+				stuffsta.setSelected(true);
 				num++;
 			}
-			else avasta.setSelected(false);
-			list.add(avasta);
+			else stuffsta.setSelected(false);
+			list.add(stuffsta);
 		}
-		avatarChoiceRes.setStatus(num == userNumber(meetingRoomId) ? 1 : 0);
-		avatarChoiceRes.setAvatar_list(list);
+		stuffChoiceRes.setStatus(num == userNumber(meetingRoomId) ? 1 : 0);
+		stuffChoiceRes.setStuff_list(list);
 		
-    	sendingOperations.convertAndSend("/topic/meeting/avatar/"+meetingRoomId, avatarChoiceRes);
-    	return avatarChoiceRes.getStatus();
+    	sendingOperations.convertAndSend("/topic/meeting/stuff/"+meetingRoomId, stuffChoiceRes);
+    	return stuffChoiceRes.getStatus();
+	}
+
+	@Override
+	public int selectStuffNum(Long meetingRoomId) throws Exception {
+		// TODO Auto-generated method stub
+		MeetingRoom meetingRoom = meetingRoomRepository.findById(meetingRoomId).get();
+		int stuff = meetingRoom.getStuff();
+		meetingRoom.setStuff(stuff+1);
+		meetingRoomRepository.saveAndFlush(meetingRoom);
+		return stuff;
+	}
+	
+	// subsession 배정하는 함수
+	public void makeStuffSubsession(Long mainMeetingRoomId) throws Exception {
+		List<MeetingRoomUserRelation> list = meetingRoomUserRelationRepository.findAllByMeetingRoomIdOrderByStuffId(mainMeetingRoomId);
+		List<MeetingRoomUserRelation> left = new ArrayList<>();
+		int i = 0;
+		for(i = 0; i<list.size();) {
+			if(list.get(i).getStuffId() == list.get(i+1).getStuffId()) {
+				createStuffSession(list.subList(i, i+2), mainMeetingRoomId);
+				i+=2;
+			} else {
+				left.add(list.get(i));
+				i++;
+			}
+		}
+		createStuffSession(left, mainMeetingRoomId);
+	}
+	
+	// subsession 만드는 함수
+	public void createStuffSession(List<MeetingRoomUserRelation> list, Long mainMeetingRoomId) throws Exception {
+		MeetingRoom meetingRoom = createMeetingRoomSession(1, mainMeetingRoomId);
+		for(MeetingRoomUserRelation user : list) {
+			MeetingRoomUserRelation subUser = new MeetingRoomUserRelation();
+			subUser.setUser(user.getUser());
+			subUser.setMeetingRoom(meetingRoom);
+			meetingRoomUserRelationRepository.saveAndFlush(subUser);
+		}
 	}
 
 }
