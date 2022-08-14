@@ -31,7 +31,7 @@ import { setMaster } from "../stores/slices/waitingSlice";
 import { useWebSocket } from "../hooks/useWebSocket";
 import { AvatimeApi } from "../apis/avatimeApi";
 import { AlertSnackbar } from "../components/AlertSnackbar";
-import { SoundButton, SoundIconButton } from '../components/SoundButton';
+import { SoundButton, SoundIconButton } from "../components/SoundButton";
 
 interface IProps {}
 
@@ -247,10 +247,24 @@ export const WaitingPage: FC<IProps> = (props) => {
       <ReceptionModal
         open={openReception}
         onClickClose={onClickReception}
-        candidateList={candidateList}
+        candidateList={[
+          {
+            id: 1,
+            type: 3,
+            name: "string",
+            gender: "M",
+            profile_img_path: "string",
+          },
+        ]}
         isMaster={!!isMaster}
+        onClickAvatar={onOpenInfo}
       />
-      <UserInfoModal open={openInfo} onClose={onCloseInfo} userId={infoUserId} />
+      <UserInfoModal
+        open={openInfo}
+        onClose={onCloseInfo}
+        userId={infoUserId}
+        useBackdrop={!openReception && openInfo}
+      />
       <AlertSnackbar
         open={showSnack}
         onClose={() => setShowSnack(false)}
