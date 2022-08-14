@@ -90,6 +90,10 @@ const Prompt: FC<PromptProps> = ({ open, onClose, onSuccess, message, alertColor
   const onChange = (e: any) => {
     setValue(e.target.value);
   };
+  const onClickOk = () => {
+    onSuccess(value);
+    setValue("");
+  }
   return (
     <Backdrop open={open}>
       <Snackbar
@@ -124,7 +128,7 @@ const Prompt: FC<PromptProps> = ({ open, onClose, onSuccess, message, alertColor
               <SoundButton color="inherit" onClick={onClose}>
                 취소
               </SoundButton>
-              <SoundButton color="inherit" onClick={() => onSuccess(value)}>
+              <SoundButton color="inherit" onClick={onClickOk}>
                 확인
               </SoundButton>
             </Box>
