@@ -250,7 +250,7 @@ public class MeetingController {
 		return ResponseEntity.status(201).body("");
 	}
 	
-	@GetMapping("stuff/start/{meetingroomId}")
+	@GetMapping("/stuff/start/{meetingroomId}")
 	@ApiOperation(value = "물건 고르기 시작", notes = "<strong>meeting room id</strong>에 따른 미팅방 물건 고르기 시작") 
     @ApiResponses({
         @ApiResponse(code = 201, message = "성공", response = BaseResponseBody.class),
