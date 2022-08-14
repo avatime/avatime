@@ -40,6 +40,9 @@ public class MeetingRoom  extends BaseEntity {
     
     @Column(columnDefinition = "INT DEFAULT 0")
    	private int stuff;
+    
+	@Column(nullable = false)
+	private int headCount;
 	
 	@Temporal(TemporalType.TIMESTAMP)
     @Column(updatable = false, columnDefinition = "TIMESTAMP DEFAULT CURRENT_TIMESTAMP")
