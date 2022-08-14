@@ -2,6 +2,7 @@ package com.ssafy.api.service;
 
 import java.util.List;
 
+import com.ssafy.db.entity.Balance;
 import com.ssafy.db.entity.MeetingRoom;
 import com.ssafy.db.entity.MeetingRoomUserRelation;
 
@@ -30,4 +31,5 @@ public interface MeetingRoomService {
 	public void choiceStuff(Long meetingRoomId, Long userId, Long stuffId) throws Exception;
 	public int selectStuffNum(Long meetingRoomId) throws Exception;
 	int sendStuffInfo(Long meetingRoomId) throws Exception;
+	public void sendBalanceResult(Long meetingRoomId, Balance balance) throws Exception;
 }
