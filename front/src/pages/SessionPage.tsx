@@ -76,12 +76,12 @@ export const SessionPage: FC<IProps> = (props) => {
       });
 
       client.subscribe(`/topic/meeting/balance/${roomId}`, function (response) {
-        console.log(response.body);
+        console.log("asdasd", response.body);
         const res = JSON.parse(response.body);
-        if (res.balance_id) {
+        if (res.id) {
           setSnackMessage("3초 후 밸런스 게임이 시작돼요!!");
           setShowSnack(true);
-          dispatch(setBalanceId(res.balance_id));
+          dispatch(setBalanceId(res.id));
           dispatch(setBalanceA(res.a));
           dispatch(setBalanceB(res.b));
           setTimeout(() => {
