@@ -61,7 +61,7 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
 																									// 추가
 				.authorizeRequests()
 				.antMatchers("/api/v1/user/check/*", "/api/v1/user/profile", "/api/v1/auth/register",
-						"/api/v1/auth/naver/**", "/api/v1/auth/kakao/**", "/v2/api-docs/**", "/swagger*/**", "/ws/ava/**")
+						"/api/v1/auth/naver/**", "/api/v1/auth/kakao/**", "/v2/api-docs/**", "/swagger*/**", "/ws/ava/**", "/api/**")
 				.permitAll().anyRequest().authenticated() // 인증이 필요한 URL과 필요하지 않은 URL에 대하여 설정
 				.and().cors();
 		http.headers().xssProtection().and().contentSecurityPolicy("script-src 'self'");

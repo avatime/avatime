@@ -44,6 +44,9 @@ public class MeetingRoom  extends BaseEntity {
     	createdTime = Timestamp.valueOf(LocalDateTime.now());
     }
     
+    @Column(nullable = false)
+    private long balance;
+    
     @Builder
     public MeetingRoom() {
     	this.type = 0;

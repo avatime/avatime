@@ -7,5 +7,5 @@ import org.springframework.data.jpa.repository.JpaRepository;
 import com.ssafy.db.entity.Balance;
 
 public interface BalanceRepository extends JpaRepository<Balance, Integer>{
-	Optional<Balance> findById(int id);
+	Optional<Balance> findById(long id);
 }
