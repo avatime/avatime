@@ -1,17 +1,17 @@
 import { Box, Button } from "@mui/material";
-import React, { FC } from "react";
+import React, { FC, useEffect, useRef } from "react";
 import "./LandingPage.css";
 import "animate.css";
-import { useNavigate } from 'react-router';
-import { useDispatch } from 'react-redux';
+import { useNavigate } from "react-router";
+import { useDispatch } from "react-redux";
 import { setBgmPlaying } from "../../stores/slices/bgmSlice";
-
+import Sound from "../../assets/audio/bgm_start.mp3";
 
 interface IProps {}
 
 /**
  * @author
- * @function @LandingPage 
+ * @function @LandingPage
  **/
 
 export const LandingPage: FC<IProps> = (props) => {
@@ -20,11 +20,20 @@ export const LandingPage: FC<IProps> = (props) => {
   const onClick = () => {
     dispatch(setBgmPlaying(true));
     navigate("/login");
-  }
+  };
+
+  const ref = useRef<any>();
+  useEffect(() => {
+    const audio = new Audio(Sound);
+    ref.current.addEventListener("mouseenter", () => {
+      audio.load();
+      audio.play();
+    });
+  }, []);
 
   return (
     <div>
-      <Box className="landing" sx={{flexDirection:"column"}}>
+      <Box className="landing" sx={{ flexDirection: "column" }}>
         <h1 className="landing--h1">
           <span className="landing--h1--span">A</span>
           <span className="landing--h1--span">V</span>
@@ -53,7 +62,9 @@ export const LandingPage: FC<IProps> = (props) => {
           <span className="landing--h2--span">자</span>
         </h2>
         <Box p={5} />
-        <button className="start" style={{ textDecoration: "none"}} onClick={onClick}>START</button>
+        <button ref={ref} className="start" style={{ textDecoration: "none" }} onClick={onClick}>
+          START
+        </button>
       </Box>
     </div>
   );

@@ -1,11 +1,12 @@
 import { createSlice } from "@reduxjs/toolkit";
+import bgmMain from "../../assets/audio/bgm_main.mp3";
 
 const bgmSlice = createSlice({
   name: "bgm",
   initialState: {
     playing: false,
     volume: 50,
-    src: `bgm_main.mp3`,
+    src: bgmMain,
     number: 0
   },
   reducers: {
