@@ -7,14 +7,12 @@ import VideocamIcon from "@mui/icons-material/Videocam";
 import VideocamOffIcon from "@mui/icons-material/VideocamOff";
 import ExitToAppIcon from "@mui/icons-material/ExitToApp";
 import PeopleIcon from "@mui/icons-material/People";
-import { FinalPickModal } from "./modal/FinalPickModal";
 import { useNavigate } from "react-router";
 import { useSelector } from "react-redux";
 import { AvatimeApi } from "../../apis/avatimeApi";
 import { AlertSnackbar } from "../AlertSnackbar";
 import { SoundButton } from "../SoundButton";
 import VideogameAssetIcon from "@mui/icons-material/VideogameAsset";
-import { BalanceGameModal } from "./modal/BalanceGameModal";
 import BalanceIcon from "@mui/icons-material/Balance";
 import FavoriteIcon from "@mui/icons-material/Favorite";
 
@@ -23,18 +21,10 @@ interface IProps {
   type: Type;
   onChangeMicStatus: (status: boolean) => void;
   onChangeCameraStatus: (status: boolean) => void;
-  lastPickModalOpen?: boolean;
-  balanceGameModalOpen?: boolean;
-  onCloseBalanceGame?: () => void;
-  pickStuffModalOpen?: boolean;
 }
 
 export const ControllBar: FC<IProps> = ({
   type,
-  lastPickModalOpen = false,
-  balanceGameModalOpen = false,
-  pickStuffModalOpen = false,
-  onCloseBalanceGame,
   ...callback
 }) => {
   const [micStatus, setMicStatus] = useState(true);
@@ -60,9 +50,6 @@ export const ControllBar: FC<IProps> = ({
       onChangeMicStatus={onChangeMicStatus}
       cameraStatus={cameraStatus}
       onChangeCameraStatus={onChangeCameraStatus}
-      lastPickModalOpen={lastPickModalOpen}
-      balanceGameModalOpen={balanceGameModalOpen}
-      pickStuffModalOpen={pickStuffModalOpen}
     />
   );
 };
@@ -73,10 +60,6 @@ interface IPresenterProps {
   onChangeMicStatus: () => void;
   cameraStatus: boolean;
   onChangeCameraStatus: () => void;
-  lastPickModalOpen: boolean;
-  balanceGameModalOpen: boolean;
-  onCloseBalanceGame?: () => void;
-  pickStuffModalOpen: boolean;
 }
 
 export const ControllBarPresenter: FC<IPresenterProps> = ({
@@ -85,10 +68,6 @@ export const ControllBarPresenter: FC<IPresenterProps> = ({
   onChangeMicStatus,
   cameraStatus,
   onChangeCameraStatus,
-  lastPickModalOpen,
-  balanceGameModalOpen,
-  onCloseBalanceGame,
-  pickStuffModalOpen,
 }) => {
   const meetingRoomId = useSelector((state: any) => state.meeting.roomId);
   const [showSnack, setShowSnack] = useState(0);
@@ -146,6 +125,18 @@ export const ControllBarPresenter: FC<IPresenterProps> = ({
 
   const onClickPickStuff = () => {
     setShowMenu(false);
+    AvatimeApi.getInstance().getStartPickStuff(
+      {
+        meetingroom_id: meetingRoomId,
+      },
+      {
+        onFailure(error) {
+          setShowAlert(true);
+          setAlertMessage("더 이상 물건 고르기 게임을 할 수 없어요 !!");
+        },
+        navigate,
+      }
+    );
   };
 
   return (
@@ -211,11 +202,7 @@ export const ControllBarPresenter: FC<IPresenterProps> = ({
           </SoundButton>
         </Box>
       </Box>
-      {lastPickModalOpen && <FinalPickModal isOpened={lastPickModalOpen} />}
-      {balanceGameModalOpen && (
-        <BalanceGameModal isOpened={balanceGameModalOpen} onClose={onCloseBalanceGame!} />
-      )}
-      {pickStuffModalOpen && <></>}
+
       <AlertSnackbar
         open={showSnack !== 0}
         onClose={() => setShowSnack(0)}
