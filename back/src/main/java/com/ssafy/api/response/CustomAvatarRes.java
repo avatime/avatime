@@ -18,4 +18,5 @@ public class CustomAvatarRes {
 	String path;
 	String base64;
 	Long slot;
+	String pic_info;
 }

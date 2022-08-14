@@ -237,11 +237,12 @@ public class MeetingController {
 	public ResponseEntity<?> choiceStuff(@RequestBody @ApiParam(value="유저 아이디와 물건 아이디", required = true) UserSelectStuffReq userSelectStuff) {
 		Long meetingRoomId = userSelectStuff.getMeetingRoomId();
 		Long userId = userSelectStuff.getUserId();
-		Long avatarId = userSelectStuff.getStuffId();
+		Long stuffId = userSelectStuff.getStuffId();
+		String gender = userRepository.findById(userId).get().getGender();
 		
 		try {
-			if(meetingRoomService.isSelectedStuff(meetingRoomId, avatarId)) return ResponseEntity.status(409).body("");
-			else meetingRoomService.choiceStuff(meetingRoomId, userId, avatarId);
+			if(meetingRoomService.isSelectedStuff(meetingRoomId, gender, stuffId)) return ResponseEntity.status(409).body("");
+			else meetingRoomService.choiceStuff(meetingRoomId, userId, stuffId);
 		} catch(Exception e) {
 			return ResponseEntity.status(500).body("");
 		}

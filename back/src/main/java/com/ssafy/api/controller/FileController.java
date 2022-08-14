@@ -53,11 +53,13 @@ public class FileController {
 			avatar.setName(avatarCustomReq.getName());
 			avatar.setUserId(avatarCustomReq.getUser_id());
 			avatar.setImagePath(fileUploadService.saveAvatar(avatarCustomReq));
+			avatar.setPicPath(fileUploadService.savePicInfo(avatarCustomReq));
 			avatar.setSlot(avatarCustomReq.getSlot());
 			avatar = avatarService.saveAvatar(avatar);
 			CustomAvatarUploadRes customAvatarUploadRes = new CustomAvatarUploadRes();
 			customAvatarUploadRes.setId(avatar.getId());
 			customAvatarUploadRes.setPath(address + avatar.getImagePath());
+			System.out.println(">>>>>>>>>>>>>>>>>>>>>>>>>"+avatar.getPicPath());
 			return ResponseEntity.status(200).body(customAvatarUploadRes);
 		} catch (Exception e) {
 			// TODO Auto-generated catch block
@@ -82,6 +84,7 @@ public class FileController {
 						.slot(avatar.getSlot())
 						.path(address + avatar.getImagePath())
 						.base64("data:image/png;base64," + fileUploadService.getAvatarByBase64(avatar.getImagePath()))
+						.pic_info(fileUploadService.getPicInfo(avatar.getPicPath()))
 						.build();
 				list[avatar.getSlot().intValue() - 1] = custom;
 			}

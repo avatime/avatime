@@ -13,4 +13,5 @@ public class AvatarCustomReq {
 	String name;
 	String base64;
 	Long slot;
+	String pic_info;
 }

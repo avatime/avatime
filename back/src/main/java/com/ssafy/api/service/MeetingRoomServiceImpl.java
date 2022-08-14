@@ -22,6 +22,7 @@ import com.ssafy.db.repository.ChattingRoomRepository;
 import com.ssafy.db.repository.MeetingRoomRepository;
 import com.ssafy.db.repository.MeetingRoomUserRelationRepository;
 import com.ssafy.db.repository.UserRepository;
+import com.ssafy.db.repository.WaitingRoomRepository;
 import com.ssafy.db.repository.WaitingRoomUserRelationRepository;
 
 import lombok.RequiredArgsConstructor;
@@ -38,6 +39,9 @@ public class MeetingRoomServiceImpl implements MeetingRoomService {
 	
 	@Autowired
 	MeetingRoomUserRelationRepository meetingRoomUserRelationRepository;
+	
+	@Autowired
+	WaitingRoomRepository waitingRoomRepository;
 	
 	@Autowired
 	WaitingRoomUserRelationRepository waitingRoomUserRelationRepository;
@@ -141,6 +145,8 @@ public class MeetingRoomServiceImpl implements MeetingRoomService {
 	public Long createMeetingRoom(Long waitingRoomId) throws Exception {
 		// meeting room 생성
 		MeetingRoom meetingRoom = createMeetingRoomSession(0, waitingRoomId);
+		meetingRoom.setHeadCount(waitingRoomRepository.findById(waitingRoomId).get().getHeadCount());
+		meetingRoomRepository.saveAndFlush(meetingRoom);
 		Long meetingRoomId = meetingRoom.getId();
 		// meetingroomuserrelation 삽입
 		List<WaitingRoomUserRelation> list = waitingRoomUserRelationRepository.findByWaitingRoomId(waitingRoomId);
@@ -309,9 +315,12 @@ public class MeetingRoomServiceImpl implements MeetingRoomService {
 	}
 
 	@Override
-	public boolean isSelectedStuff(Long meetingRoomId, Long stuffId) throws Exception {
+	public boolean isSelectedStuff(Long meetingRoomId, String gender, Long stuffId) throws Exception {
 		// TODO Auto-generated method stub
-		return meetingRoomUserRelationRepository.existsByMeetingRoomIdAndStuffId(meetingRoomId, stuffId);
+		List<MeetingRoomUserRelation> list = meetingRoomUserRelationRepository.findByMeetingRoomIdAndStuffId(meetingRoomId, stuffId).orElse(null);
+		if(list == null) return false;
+		else if(list.size() == 2) return true;
+		else return list.get(0).getUser().getGender().equals(gender);
 	}
 
 	@Override
@@ -328,16 +337,21 @@ public class MeetingRoomServiceImpl implements MeetingRoomService {
 	@Override
 	public int sendStuffInfo(Long meetingRoomId) throws Exception {
 		int num = 0;
+		MeetingRoom meetingRoom = meetingRoomRepository.findById(meetingRoomId).get();
 		StuffChoiceRes stuffChoiceRes = new StuffChoiceRes();
-		List<Stuff> stuffList = stuffService.findAll();
+		List<Stuff> stuffList = stuffService.findAll().subList(0, meetingRoom.getHeadCount()/2);
 		List<StuffStatus> list = new ArrayList<>();
 		for(Stuff stuff : stuffList) {
 			StuffStatus stuffsta = new StuffStatus(stuff);
-			if(isSelectedStuff(meetingRoomId, stuff.getId())) {
-				stuffsta.setSelected(true);
+			if(isSelectedStuff(meetingRoomId, "F", stuff.getId())) {
+				stuffsta.setMen_selected(true);
 				num++;
-			}
-			else stuffsta.setSelected(false);
+			} else stuffsta.setMen_selected(false);
+			if(isSelectedStuff(meetingRoomId, "M", stuff.getId())) {
+				stuffsta.setWomen_selected(true);
+				num++;
+			} else stuffsta.setWomen_selected(false);
+			
 			list.add(stuffsta);
 		}
 		stuffChoiceRes.setStatus(num == userNumber(meetingRoomId) ? 1 : 0);

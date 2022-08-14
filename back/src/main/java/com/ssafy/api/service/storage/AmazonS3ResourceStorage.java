@@ -17,6 +17,7 @@ import com.amazonaws.services.s3.model.PutObjectRequest;
 import com.amazonaws.services.s3.model.S3Object;
 import com.amazonaws.services.s3.model.S3ObjectInputStream;
 import com.amazonaws.util.IOUtils;
+import com.amazonaws.util.StringInputStream;
 
 import lombok.RequiredArgsConstructor;
 
@@ -62,6 +63,33 @@ public class AmazonS3ResourceStorage {
 			byte[] base64 = IOUtils.toByteArray(objectInputStream);
 
 			return Base64.getEncoder().encodeToString(base64);
+		} catch (Exception e) {
+			throw new RuntimeException();
+		}
+	}
+	
+	public void storePicInfo(String fullPath, String picInfo) {
+		try {
+			InputStream image = new StringInputStream(picInfo);
+			ObjectMetadata metadata = new ObjectMetadata();
+			metadata.setContentLength(picInfo.length());
+			metadata.setContentType(org.springframework.http.MediaType.TEXT_PLAIN_VALUE);
+			amazonS3Client.putObject(new PutObjectRequest(bucket, fullPath, image, metadata)
+					.withCannedAcl(CannedAccessControlList.PublicRead));
+		} catch (Exception e) {
+			throw new RuntimeException();
+		}
+	}
+	
+	public String getPicInfo(String picInfoPath) {
+
+		try {
+			S3Object object = amazonS3Client.getObject(new GetObjectRequest(bucket, picInfoPath));
+			S3ObjectInputStream objectInputStream = object.getObjectContent();
+//			byte[] base64 = IOUtils.toByteArray(objectInputStream);
+
+			return objectInputStream.toString();
+//			return Base64.getEncoder().encodeToString(base64);
 		} catch (Exception e) {
 			throw new RuntimeException();
 		}
