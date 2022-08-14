@@ -28,4 +28,6 @@ public interface MeetingRoomService {
 	MeetingRoom findSubMeetingRoom(Long mainMeetingRoomId, Long userId) throws Exception;
 	public boolean isSelectedStuff(Long meetingRoomId, Long avatarId) throws Exception;
 	public void choiceStuff(Long meetingRoomId, Long userId, Long avatarId) throws Exception;
+	public int selectStuffNum(Long meetingRoomId) throws Exception;
+	int sendStuffInfo(Long meetingRoomId) throws Exception;
 }
