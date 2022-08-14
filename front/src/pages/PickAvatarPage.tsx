@@ -6,13 +6,14 @@ import grey from "@mui/material/colors/grey";
 import { GaugeBar } from "../components/pickAvatar/GaugeBar";
 import { AvatarPickInfoRes } from "../apis/response/avatarRes";
 import { Avatar } from "@mui/material";
-import { useSelector, useDispatch } from 'react-redux';
+import { useSelector, useDispatch } from "react-redux";
 import { AvatarProfile } from "../components/session/modal/AvatarProfile";
 import { useNavigate } from "react-router";
 import { useWebSocket } from "../hooks/useWebSocket";
 import DoDisturbIcon from "@mui/icons-material/DoDisturb";
 import { AvatimeApi } from "../apis/avatimeApi";
-import { useBGM } from '../hooks/useBGM';
+import { useBGM } from "../hooks/useBGM";
+import { AlertSnackbar } from "../components/AlertSnackbar";
 
 interface IProps {}
 
@@ -36,6 +37,7 @@ export const PickAvatarPage: FC<IProps> = () => {
 
   const meetingRoomId = useSelector((state: any) => state.meeting.roomId);
   const userId = useSelector((state: any) => state.user.userId);
+  const [showalertAvatar, setShowalertAvatar] = useState(false);
 
   useWebSocket({
     onConnect: (frame, client) => {
@@ -82,7 +84,11 @@ export const PickAvatarPage: FC<IProps> = () => {
         user_id: userId,
         avatar_id: avatarId,
       },
+
       {
+        onFailure(error) {
+          setShowalertAvatar(true);
+        },
         navigate,
       }
     );
@@ -157,6 +163,13 @@ export const PickAvatarPage: FC<IProps> = () => {
         finishSelectingAvatar={finishSelectingAvatar}
         selected={selected}
         handleChangeSelect={handleChangeSelect}
+      />
+      <AlertSnackbar
+        open={showalertAvatar}
+        onClose={() => setShowalertAvatar(false)}
+        message="로그인 성공"
+        alertColor="warning"
+        type="alert"
       />
     </div>
   );
