@@ -161,10 +161,10 @@ public class AuthController {
 			
 				UserRegisterPostRes registerInfo = new UserRegisterPostRes();
 				registerInfo.setGender(userInfo.getAsJsonObject().get("gender").toString().replaceAll("\"", ""));
-				if (registerInfo.getGender().contains("male")) {
-					registerInfo.setGender("M");
-				}else if(registerInfo.getGender().contains("female")) {
+				if (registerInfo.getGender().contains("female")) {
 					registerInfo.setGender("F");
+				}else if(registerInfo.getGender().contains("male")) {
+					registerInfo.setGender("M");
 				}
 				
 				registerInfo.setSocialId(userInfo.getAsJsonObject().get("email").toString().replaceAll("\"", ""));
