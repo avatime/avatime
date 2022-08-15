@@ -55,14 +55,14 @@ public class FileController {
 			avatar.setName(avatarCustomReq.getName());
 			avatar.setUserId(avatarCustomReq.getUser_id());
 			avatar.setPicPath(fileUploadService.savePicInfo(avatarCustomReq));
-			avatar.setImagePath(fileUploadService.saveAvatar(avatarCustomReq));
+			avatar.setImagePath(address + fileUploadService.saveAvatar(avatarCustomReq));
 			avatar.setSlot(avatarCustomReq.getSlot());
 			avatar = avatarService.saveAvatar(avatar);
 			System.out.println("avatar: " + avatar);
 			CustomAvatarUploadRes customAvatarUploadRes = new CustomAvatarUploadRes();
 			System.out.println("customAvatarUploadRes: "+customAvatarUploadRes);
 			customAvatarUploadRes.setId(avatar.getId());
-			customAvatarUploadRes.setPath(address + avatar.getImagePath());
+			customAvatarUploadRes.setPath(avatar.getImagePath());
 			System.out.println("customAvatarUploadRes: "+customAvatarUploadRes);
 			return ResponseEntity.status(200).body(customAvatarUploadRes);
 		} catch (Exception e) {
@@ -86,14 +86,15 @@ public class FileController {
 						.id(avatar.getId())
 						.name(avatar.getName())
 						.slot(avatar.getSlot())
-						.path(address + avatar.getImagePath())
-						.base64("data:image/png;base64," + fileUploadService.getAvatarByBase64(avatar.getImagePath()))
+						.path(avatar.getImagePath())
+						.base64("data:image/png;base64," + fileUploadService.getAvatarByBase64(avatar.getImagePath().replace(address, "")))
 						.pic_info(fileUploadService.getPicInfo(avatar.getPicPath()))
 						.build();
 				list[avatar.getSlot().intValue() - 1] = custom;
 			}
 			return ResponseEntity.status(200).body(list);
 		} catch(Exception e) {
+			e.printStackTrace();
 			return ResponseEntity.status(500).body("실패: 관리자에게 문의하세요");
 		}
 	}
