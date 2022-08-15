@@ -26,8 +26,11 @@ export const NaverHandler: FC<Iprops> = (props) => {
   const navigate = useNavigate();
   const [showLoginSnack, setShowLoginSnack] = useState(false);
   const [showRegisterSnack, setShowRegisterSnack] = useState(false);
+  const [tempToken, setTempToken] = useState("");
 
   const login = () => {
+    localStorage.setItem("token", tempToken);
+    dispatch(setToken(tempToken));
     navigate("/main");
   }
 
@@ -40,9 +43,7 @@ export const NaverHandler: FC<Iprops> = (props) => {
       if (data.statusCode === 201) {
         console.log(data);
         dispatch(setUserGender(data.gender));
-        console.log(data.social_id);
         dispatch(setSocialId(data.social_id));
-        console.log(data.social_type);
         dispatch(setSocialType(data.social_type));
         dispatch(setIsLogin(false));
         //navigate("/mypage");
@@ -57,14 +58,13 @@ export const NaverHandler: FC<Iprops> = (props) => {
         dispatch(setProfileImagePath(data.profile_image_path));
         dispatch(setSocialId(data.social_id));
         dispatch(setSocialType(data.social_type));
-        dispatch(setToken(data.accessToken));
         dispatch(setIsLogin(true));
+        setTempToken(data.accessToken);
+        setShowLoginSnack(true);
         AvatimeApi.getInstance().login(data.accessToken);
         AvatimeWs.getInstance().login(data.accessToken);
-        localStorage.setItem("token", data.accessToken);
         //navigate("/main");
         //alert("로그인 성공");
-        setShowLoginSnack(true);
       }
     },
     navigate,
