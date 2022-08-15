@@ -52,46 +52,64 @@ public class UserController {
 	// 프로필 사진 목록 조회
 	@GetMapping("/profile")
 	@ApiOperation(value = "프로필 이미지 목록 조회", notes = "서버 내 모든 프로필 이미지 제공")
-	public ResponseEntity<List<Profile>> profileAll(){
-		List<Profile> profileList = profileService.getProfileAll();
-		return new ResponseEntity<List<Profile>>(profileList, HttpStatus.OK);
-	
+	public ResponseEntity<?> profileAll(){
+		try {
+			List<Profile> profileList = profileService.getProfileAll();
+			return new ResponseEntity<List<Profile>>(profileList, HttpStatus.OK);
+		} catch (Exception e) {
+			return ResponseEntity.status(500).body(e);
+		}
 	}
 	
 	// 프로필 단일 사진 조회
 	@GetMapping("/profile/{profileId}")
 	public ResponseEntity<?> profile(@PathVariable Long profileId){
-		Profile profile = profileService.getProfile(profileId);
-		if (profile != null) {
-			return ResponseEntity.status(200).body(profile);
-		}else {
-			return ResponseEntity.status(404).body(null);
+		
+		try {
+			Profile profile = profileService.getProfile(profileId);
+			if (profile != null) {
+				return ResponseEntity.status(200).body(profile);
+			}else {
+				return ResponseEntity.status(404).body(null);
+			}
+		} catch (Exception e) {
+			return ResponseEntity.status(500).body(e);
 		}
 	}
 	// 유저 정보 조회
 	@GetMapping("/{userId}")
 	public ResponseEntity<?> getUserInfo(@PathVariable Long userId){
-
-		User user = userService.getUserByUserId(userId);
-		if (user != null) {
-			return ResponseEntity.status(201).body(user);
-		}else {
-			return ResponseEntity.status(404).body(null);
+		try {
+			User user = userService.getUserByUserId(userId);
+			if (user != null) {
+				return ResponseEntity.status(201).body(user);
+			}else {
+				return ResponseEntity.status(404).body(null);
+			}
+		} catch (Exception e) {
+			return ResponseEntity.status(500).body(e);
 		}
-		
 	}
 	
 	// 유저 정보 수정
 	@PatchMapping("/{id}")
 	public ResponseEntity<?> modifyUserInfo(@PathVariable Long id, @RequestBody UserUpdatePostReq updateInfo){
-		userService.updateUserInfo(id, updateInfo);
-		return ResponseEntity.status(200).body("");
+		try {
+			userService.updateUserInfo(id, updateInfo);
+			return ResponseEntity.status(200).body("");
+		} catch (Exception e) {
+			return ResponseEntity.status(500).body(e);
+		}
 	}
 	
 	// 유저 정보 삭제
 	@DeleteMapping("/{userId}")
 	public ResponseEntity<?> deleteUserInfo(@PathVariable Long userId){
-		userService.deleteUserInfo(userId);
-		return ResponseEntity.status(204).body(BaseResponseBody.of(204, "회원 정보를 삭제했습니다."));
+		try {
+			userService.deleteUserInfo(userId);
+			return ResponseEntity.status(204).body(BaseResponseBody.of(204, "회원 정보를 삭제했습니다."));
+		} catch (Exception e) {
+			return ResponseEntity.status(500).body(e);
+		}
 	}
 }
