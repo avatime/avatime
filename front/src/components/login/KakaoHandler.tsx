@@ -40,13 +40,11 @@ export const KakaoHandler: FC<Iprops> = (props) => {
   }
 
   const reconfirm = () => {
-    alert("리컨펌함수");
     window.location.replace(KAKAO_AGREE_URL);
   }
 
   AvatimeApi.getInstance().kakaoLogin(code as string, {
     onSuccess(data) {
-      alert(data.statusCode);
       console.log(data.statusCode);
       if (data.statusCode === 201) {
         console.log(data);
@@ -76,7 +74,6 @@ export const KakaoHandler: FC<Iprops> = (props) => {
         //navigate("/main");
         //alert("로그인 성공");
       } else if(data.statusCode === 202) {
-        alert("재동의받아야함");
         setShowReConfirmSnack(true);
       }
     },
