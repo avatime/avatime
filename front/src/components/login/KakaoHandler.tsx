@@ -75,7 +75,7 @@ export const KakaoHandler: FC<Iprops> = (props) => {
         AvatimeWs.getInstance().login(data.accessToken);
         //navigate("/main");
         //alert("로그인 성공");
-      } else if(data.statusCode === 205) {
+      } else if(data.statusCode === 202) {
         alert("재동의받아야함");
         setShowReConfirmSnack(true);
       }
