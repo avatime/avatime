@@ -10,7 +10,6 @@ import org.hibernate.annotations.Synchronize;
 
 import lombok.Getter;
 import lombok.Setter;
-import lombok.ToString;
 
 @Entity
 @Getter
