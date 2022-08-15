@@ -96,7 +96,7 @@ insert into balance (a, b) values
  ('닭이 먼저!', '계란이 먼저!');
 
 insert into stuff(image_path, name) values
-("", "당근"),
-("", "오이"),
-("", "가지"),
-("", "새우");
+("https://avatimebucket2022.s3.ap-northeast-2.amazonaws.com/stuff/cookie.png", "쿠키"),
+("https://avatimebucket2022.s3.ap-northeast-2.amazonaws.com/stuff/hamburger.png", "햄버거"),
+("https://avatimebucket2022.s3.ap-northeast-2.amazonaws.com/stuff/donut.png", "도넛"),
+("https://avatimebucket2022.s3.ap-northeast-2.amazonaws.com/stuff/pizza.png", "피자");
