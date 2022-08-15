@@ -115,7 +115,6 @@ public class MeetingController {
         @ApiResponse(code = 500, message = "서버 오류", response = BaseResponseBody.class)
     })
 	public ResponseEntity<?> getMeetingRoomInfo(@PathVariable Long meetingroom_id) {
-		String address = "https://avatimebucket2022.s3.ap-northeast-2.amazonaws.com/";
 		try {
 			MeetingRoom meetingRoom = meetingRoomService.findById(meetingroom_id);
 			List<ChattingRoom> chatList = chattingRoomService.findAllByRoomId(meetingroom_id);
@@ -135,7 +134,7 @@ public class MeetingController {
 						.user_name(meetingRoomUserRelation.getUser().getName())
 						.avatar_id(avatar.getId())
 						.avatar_name(avatar.getName())
-						.avatar_image_path(address + avatar.getImagePath())
+						.avatar_image_path(avatar.getImagePath())
 						.gender(meetingRoomUserRelation.getUser().getGender())
 						.build();
 				meetingRoomInfoRes.getMeeting_user_info_list().add(meetingRoomUserRes);
