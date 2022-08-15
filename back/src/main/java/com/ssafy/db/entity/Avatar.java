@@ -14,10 +14,10 @@ import lombok.Setter;
 @Setter
 public class Avatar extends BaseEntity {
 
-	@Column(updatable = false, nullable = false)
+	@Column(nullable = false)
 	private String imagePath;
 	
-	@Column(updatable = false, nullable = false)
+	@Column(nullable = false)
 	private String name;
 	
 	// 제작자
