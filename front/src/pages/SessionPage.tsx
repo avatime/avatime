@@ -155,12 +155,7 @@ export const SessionPage: FC<IProps> = (props) => {
                             );
                             console.log(userInfo);
                             return (
-                              <Grid
-                                item
-                                xs
-                                key={idx}
-                                maxHeight="42vh"
-                              >
+                              <Grid item key={idx} xs={24 / headCount} maxHeight="42vh">
                                 <AvatarVideoStream
                                   streamManager={stream.streamManager}
                                   name={userInfo!.avatar_name}

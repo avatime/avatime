@@ -35,7 +35,7 @@ export const CanvasPage: FC<IProps> = (props) => {
   const [showConfirmSnack, setShowConfirmSnack] = useState(false);
   const [showPromptSnack, setShowPromptSnack] = useState(false);
 
-  const [base, setBase] = useState("");
+  const [data, setData] = useState<string>();
   const [num, setNum] = useState(0);
 
   // 저장할 수 있는 아바타 칸이 4개라서 num이 1 ~ 4로 들어와요.
@@ -45,12 +45,11 @@ export const CanvasPage: FC<IProps> = (props) => {
     setShowPromptSnack(true);
   };
 
-  const loadSavedAvatar = (base64: string | undefined) => {
-    if (!base64) {
+  const loadSavedAvatar = (data: string | undefined) => {
+    if (!data) {
       return;
     }
-    
-    setBase(base64);
+    setData(data);
     setShowConfirmSnack(true);
   };
 
@@ -58,20 +57,15 @@ export const CanvasPage: FC<IProps> = (props) => {
   // 대충 name, image path, 이미지로 변환하기 전의 base64 data가 있다고 가정하고 코드를 짰어요.
   const [avatarList, setAvatarList] = useState<GetAvatarRes[]>([]);
 
-  const test = () => {
-    console.log(avatarList);
-  }
-
   const afterConfirm = () => {
-    canvasRef.current.loadSaveData(base, true);
+    canvasRef.current.loadSaveData(data, true);
+    setShowConfirmSnack(false);
   }
 
   const afterPrompt = async (avaname?: string) => {
     setShowPromptSnack(false);
     let flag = false;
-    console.log("avaname : "+avaname);
     if (!avaname) {
-      console.log("이름없다.")
       setMsg("아바타 이름을 입력해주세요.");
       setShowSnack(true);
       return;
@@ -86,7 +80,6 @@ export const CanvasPage: FC<IProps> = (props) => {
         },
         {
           onSuccess(data) {
-            console.log("중복체크");
             if(!data) {
               setMsg("중복된 아바타 이름이예요");
               setShowSnack(true);
@@ -101,10 +94,7 @@ export const CanvasPage: FC<IProps> = (props) => {
     if(flag) return;
 
     const dataURL = canvasRef.current.getDataURL();
-    console.log(dataURL); // 이게 base64 어쩌구 데이터
-
-    // 여기서 저장하는 API 호출하고, 응답으로 변환된 이미지 data를 받으세요.
-    // 여기서 타입은 아래 avatarList의 요소 타입과 같아야 해요!
+    const saveData = canvasRef.current.getSaveData();
 
     await AvatimeApi.getInstance().saveAvatar(
       {
@@ -112,11 +102,10 @@ export const CanvasPage: FC<IProps> = (props) => {
         name: avaname,
         slot: num,
         base64: dataURL,
+        pic_info: saveData,
       },
       {
         onSuccess(data) {
-          console.log("DB 저장 성공");
-          console.log("data : "+data);
           setShowSuccessSnack(true);
 
           const newAvatar: GetAvatarRes = {
@@ -125,6 +114,7 @@ export const CanvasPage: FC<IProps> = (props) => {
             path: data.path,
             base64: dataURL,
             slot: num,
+            pic_info: saveData,
           };
           // 원래 슬롯에 있던 그림은 지워야함.
           setAvatarList((prev) => [...prev.slice(0, num - 1), newAvatar, ...prev.slice(num - 1)]);
@@ -152,7 +142,6 @@ export const CanvasPage: FC<IProps> = (props) => {
   return (
     <Box className="mainback" display="flex" flexDirection="column">
       <MainHeader />
-      <Button onClick={test}>테스트</Button>
       <Box flex={1} p={5} display="flex" alignItems="stretch">
         <CanvasTools
           onChangeColor={setBrushColor}
@@ -187,16 +176,15 @@ export const CanvasPage: FC<IProps> = (props) => {
           flexDirection="column"
         >
           {[0, 1].map((outerIdx) => (
-            <Grid container spacing={2} flex="1">
+            <Grid container spacing={2} flex="1" key={outerIdx}>
               {[0, 1].map((innerIdx) => {
                 const idx = outerIdx * 2 + innerIdx;
                 const avatar = idx < avatarList.length ? avatarList[idx] : null;
-                console.log(avatar);
                 return (
-                  <Grid item xs={6}>
+                  <Grid item xs={6} key={innerIdx}>
                     <AvatarProfile
                       selected={false}
-                      onClick={() => loadSavedAvatar(avatar?.base64)}
+                      onClick={() => loadSavedAvatar(avatar?.pic_info)}
                       avatarName={avatar ? avatar.name : "비어 있음"}
                       avatarImagePath={avatar ? avatar.path : ""}
                       opacity={0.1}
