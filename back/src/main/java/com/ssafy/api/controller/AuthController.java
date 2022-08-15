@@ -148,7 +148,7 @@ public class AuthController {
 	 		
 	 		// socialId랑 성별에 동의하지 않았으면 리턴
 	 		if (userInfo.getAsJsonObject().get("email_needs_agreement").getAsBoolean() || userInfo.getAsJsonObject().get("gender_needs_agreement").getAsBoolean()) {
-	 			return ResponseEntity.status(205).body(UserRegisterPostRes.of(205, "E-mail과 성별에 동의해주세요."));
+	 			return ResponseEntity.status(202).body(UserRegisterPostRes.of(202, "E-mail과 성별에 동의해주세요."));
 	 		}
 	 		
 			String socialId = userInfo.getAsJsonObject().get("email").toString().replaceAll("\"", "");
