@@ -76,11 +76,11 @@ export const MainHeader: FC<IProps> = ({ hideSettings = false }) => {
             <Stack width="100px" justifyContent="center">
               <VolumeController />
             </Stack>
-            <Tooltip title="설정">
               <SoundIconButton
                 onClick={handleOpenUserMenu}
                 style={{ marginLeft: "27%", marginRight: "3%" }}
               >
+            <Tooltip title="설정">
                 <Avatar
                   alt="프로필 사진"
                   src={profileImagePath}
@@ -88,8 +88,8 @@ export const MainHeader: FC<IProps> = ({ hideSettings = false }) => {
                   aria-controls={open ? "composition-menu" : undefined}
                   aria-expanded={open ? "true" : undefined}
                 />
-              </SoundIconButton>
             </Tooltip>
+              </SoundIconButton>
             <Menu
               sx={{
                 mt: "60px",
