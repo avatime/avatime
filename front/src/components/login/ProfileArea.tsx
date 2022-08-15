@@ -159,7 +159,7 @@ export const ProfileArea: FC<IProps> = (props) => {
 
   const confirmInfo = () => {
     // 만족했는지 조건 추가
-    if ((!nameCheck || !nameSatis || !descSatis) && name.length > 1) {
+    if (!nameCheck || !nameSatis || !descSatis || !(!!name)) {
       setShowSnack(true);
     } else {
       console.log("user_id : " + userId);
