@@ -5,6 +5,7 @@ import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
+import org.springframework.messaging.handler.annotation.MessageExceptionHandler;
 import org.springframework.messaging.handler.annotation.MessageMapping;
 import org.springframework.messaging.simp.SimpMessageSendingOperations;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -77,28 +78,24 @@ public class MessageController {
     }
     
     // 테스트용 코드
+    @MessageExceptionHandler
     @MessageMapping("/chat/message")
-    public ResponseEntity<?> enter(ChatMessage message) {
-    	try {
-    		if (ChatMessage.MessageType.ENTER.equals(message.getType())) {
-                message.setMessage(message.getUserName()+"님이 입장하였습니다.");
-            }
-            if (ChatMessage.MessageType.LEAVE.equals(message.getType())) {
-                message.setMessage(message.getUserName()+"님이 퇴장하였습니다.");
-            }
-            ChattingMessage chat = ChattingMessage.builder()
-            		.type(message.getType().toString())
-            		.user(userService.getUserByUserId(1L))
-            		.chattingRoom(chattingRoomService.findByChatId(message.getChatRoomId()))
-            		.content(message.getMessage())
-            		.build();
-            chattingMessageRepository.save(chat);
-            
-            sendingOperations.convertAndSend("/topic/chatting/receive/"+message.getChatRoomId(),message);
-            return ResponseEntity.status(200).body("");
-    	}
-    	catch(Exception e) {
-    		return ResponseEntity.status(500).body(e);
-    	}
+    public void enter(ChatMessage message) {
+		if (ChatMessage.MessageType.ENTER.equals(message.getType())) {
+            message.setMessage(message.getUserName()+"님이 입장하였습니다.");
+        }
+        if (ChatMessage.MessageType.LEAVE.equals(message.getType())) {
+            message.setMessage(message.getUserName()+"님이 퇴장하였습니다.");
+        }
+        ChattingMessage chat = ChattingMessage.builder()
+        		.type(message.getType().toString())
+        		.user(userService.getUserByUserId(1L))
+        		.chattingRoom(chattingRoomService.findByChatId(message.getChatRoomId()))
+        		.content(message.getMessage())
+        		.build();
+        chattingMessageRepository.save(chat);
+        
+        sendingOperations.convertAndSend("/topic/chatting/receive/"+message.getChatRoomId(),message);
+
     }
 }
