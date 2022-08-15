@@ -247,15 +247,7 @@ export const WaitingPage: FC<IProps> = (props) => {
       <ReceptionModal
         open={openReception}
         onClickClose={onClickReception}
-        candidateList={[
-          {
-            id: 1,
-            type: 3,
-            name: "string",
-            gender: "M",
-            profile_img_path: "string",
-          },
-        ]}
+        candidateList={candidateList}
         isMaster={!!isMaster}
         onClickAvatar={onOpenInfo}
       />
