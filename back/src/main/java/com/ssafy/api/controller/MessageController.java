@@ -4,6 +4,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.ResponseEntity;
 import org.springframework.messaging.handler.annotation.MessageMapping;
 import org.springframework.messaging.simp.SimpMessageSendingOperations;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -39,54 +40,65 @@ public class MessageController {
     private final UserService userService;
     
     @PostMapping("/send")
-    public void sendMessage(@RequestBody ChattingMessagePostReq messageReq) throws Exception {
-    	
-    	if (ChattingMessagePostReq.MessageType.ENTER.equals(messageReq.getChat_type())) {
-    		messageReq.setMessage(chattingMessageService.findUserName(chattingRoomService.findByChatId(messageReq.getChattingroom_id()), messageReq.getUser_id())+"님이 입장하였습니다.");
-        } 
-    	else if (ChattingMessagePostReq.MessageType.LEAVE.equals(messageReq.getChat_type())) {
-    		messageReq.setMessage(chattingMessageService.findUserName(chattingRoomService.findByChatId(messageReq.getChattingroom_id()), messageReq.getUser_id())+"님이 퇴장하였습니다.");
-        }
-    	ChattingMessage message = ChattingMessage.builder()
-    			.user(userService.getUserByUserId(messageReq.getUser_id()))
-                .type(messageReq.getChat_type().toString())
-    			.content(messageReq.getMessage())
-    			.chattingRoom(chattingRoomService.findByChatId(messageReq.getChattingroom_id()))
-    			.build();
-    	message = chattingMessageRepository.save(message);
-    	
-    	List<ChattingMessage> messages = chattingMessageService.findAllByChattingRoom(message.getChattingRoom());
-    	List<ChattingMessageRes> list = new ArrayList<>();
-    	for(ChattingMessage m : messages) {
-    		ChattingMessageRes chat = ChattingMessageRes.builder()
-    				.chat_type(m.getType())
-        			.user_id(m.getUser().getId())
-        			.name(chattingMessageService.findUserName(message.getChattingRoom(), m.getUser().getId()))
-        			.message(m.getContent())
-        			.created_time(m.getCreatedTime().toString())
+    public ResponseEntity<?> sendMessage(@RequestBody ChattingMessagePostReq messageReq) throws Exception {
+    	try {
+    		if (ChattingMessagePostReq.MessageType.ENTER.equals(messageReq.getChat_type())) {
+        		messageReq.setMessage(chattingMessageService.findUserName(chattingRoomService.findByChatId(messageReq.getChattingroom_id()), messageReq.getUser_id())+"님이 입장하였습니다.");
+            } 
+        	else if (ChattingMessagePostReq.MessageType.LEAVE.equals(messageReq.getChat_type())) {
+        		messageReq.setMessage(chattingMessageService.findUserName(chattingRoomService.findByChatId(messageReq.getChattingroom_id()), messageReq.getUser_id())+"님이 퇴장하였습니다.");
+            }
+        	ChattingMessage message = ChattingMessage.builder()
+        			.user(userService.getUserByUserId(messageReq.getUser_id()))
+                    .type(messageReq.getChat_type().toString())
+        			.content(messageReq.getMessage())
+        			.chattingRoom(chattingRoomService.findByChatId(messageReq.getChattingroom_id()))
         			.build();
-    		list.add(chat);
+        	message = chattingMessageRepository.save(message);
+        	
+        	List<ChattingMessage> messages = chattingMessageService.findAllByChattingRoom(message.getChattingRoom());
+        	List<ChattingMessageRes> list = new ArrayList<>();
+        	for(ChattingMessage m : messages) {
+        		ChattingMessageRes chat = ChattingMessageRes.builder()
+        				.chat_type(m.getType())
+            			.user_id(m.getUser().getId())
+            			.name(chattingMessageService.findUserName(message.getChattingRoom(), m.getUser().getId()))
+            			.message(m.getContent())
+            			.created_time(m.getCreatedTime().toString())
+            			.build();
+        		list.add(chat);
+        	}
+        	sendingOperations.convertAndSend("/topic/chatting/receive/"+message.getChattingRoom().getId(), list);
+        	return ResponseEntity.status(200).body("");
     	}
-    	sendingOperations.convertAndSend("/topic/chatting/receive/"+message.getChattingRoom().getId(), list);
+    	catch(Exception e) {
+    		return ResponseEntity.status(500).body(e);
+    	}
     }
     
     // 테스트용 코드
     @MessageMapping("/chat/message")
-    public void enter(ChatMessage message) {
-        if (ChatMessage.MessageType.ENTER.equals(message.getType())) {
-            message.setMessage(message.getUserName()+"님이 입장하였습니다.");
-        }
-        if (ChatMessage.MessageType.LEAVE.equals(message.getType())) {
-            message.setMessage(message.getUserName()+"님이 퇴장하였습니다.");
-        }
-        ChattingMessage chat = ChattingMessage.builder()
-        		.type(message.getType().toString())
-        		.user(userService.getUserByUserId(1L))
-        		.chattingRoom(chattingRoomService.findByChatId(message.getChatRoomId()))
-        		.content(message.getMessage())
-        		.build();
-        chattingMessageRepository.save(chat);
-        
-        sendingOperations.convertAndSend("/topic/chatting/receive/"+message.getChatRoomId(),message);
+    public ResponseEntity<?> enter(ChatMessage message) {
+    	try {
+    		if (ChatMessage.MessageType.ENTER.equals(message.getType())) {
+                message.setMessage(message.getUserName()+"님이 입장하였습니다.");
+            }
+            if (ChatMessage.MessageType.LEAVE.equals(message.getType())) {
+                message.setMessage(message.getUserName()+"님이 퇴장하였습니다.");
+            }
+            ChattingMessage chat = ChattingMessage.builder()
+            		.type(message.getType().toString())
+            		.user(userService.getUserByUserId(1L))
+            		.chattingRoom(chattingRoomService.findByChatId(message.getChatRoomId()))
+            		.content(message.getMessage())
+            		.build();
+            chattingMessageRepository.save(chat);
+            
+            sendingOperations.convertAndSend("/topic/chatting/receive/"+message.getChatRoomId(),message);
+            return ResponseEntity.status(200).body("");
+    	}
+    	catch(Exception e) {
+    		return ResponseEntity.status(500).body(e);
+    	}
     }
 }
