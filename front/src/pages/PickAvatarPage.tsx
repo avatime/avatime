@@ -1,10 +1,10 @@
-                                import React, { FC, useEffect, useState } from "react";
+import React, { FC, useEffect, useState } from "react";
 import Grid from "@mui/material/Grid";
 import { MainHeader } from "../components/main/MainHeader";
 import { Box } from "@mui/system";
 import grey from "@mui/material/colors/grey";
 import { GaugeBar } from "../components/pickAvatar/GaugeBar";
-import { AvatarPickInfoRes } from "../apis/response/avatarRes";
+import { AvatarPickInfoRes, GetAvatarRes } from "../apis/response/avatarRes";
 import { Avatar } from "@mui/material";
 import { useSelector, useDispatch } from "react-redux";
 import { AvatarProfile } from "../components/session/modal/AvatarProfile";
@@ -62,6 +62,40 @@ export const PickAvatarPage: FC<IProps> = () => {
     },
     beforeDisconnected: (frame, client) => {},
   });
+
+  // 커스텀 아바타 불러오기
+  const [customList, setCustomList] = useState<GetAvatarRes[]>();
+  useEffect(() => {
+    AvatimeApi.getInstance().getAvatarList(
+      {
+        user_id: userId,
+      },
+      {
+        onSuccess(data) {
+          setCustomList(data);
+        },
+        navigate,
+      }
+    );
+  }, [navigate, userId]);
+  useEffect(() => {
+    if (!customList || !originData) {
+      return;
+    }
+    console.log("ASD", customList)
+
+    setOriginData((prev) => {
+      prev?.avatar_list.push(
+        ...customList.filter((it) => it).map((it) => ({
+          id: it.id,
+          name: it.name,
+          image_path: it.path,
+          selected: false,
+        }))
+      );
+      return prev;
+    });
+  }, [originData, customList]);
 
   //아바타 선택
   const [avatarId, setAvatarId] = useState(0);
