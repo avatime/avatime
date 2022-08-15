@@ -5,7 +5,6 @@ import java.util.List;
 import java.util.Random;
 
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.messaging.handler.annotation.DestinationVariable;
 import org.springframework.messaging.handler.annotation.MessageMapping;
@@ -96,7 +95,7 @@ public class MeetingController {
 			if(meetingRoomService.isSelectedAvatar(meetingRoomId, avatarId)) return ResponseEntity.status(409).body("");
 			else meetingRoomService.choiceAvatar(meetingRoomId, userId, avatarId);
 		} catch(Exception e) {
-			return ResponseEntity.status(500).body("");
+			return ResponseEntity.status(500).body(e);
 		}
 		
 		return ResponseEntity.status(201).body("");
@@ -141,8 +140,7 @@ public class MeetingController {
 				
 			return ResponseEntity.status(200).body(meetingRoomInfoRes);
 		} catch (Exception e) {
-			// TODO Auto-generated catch block
-			return ResponseEntity.status(500).body("");
+			return ResponseEntity.status(500).body(e);
 		}
 	}
 
@@ -196,7 +194,7 @@ public class MeetingController {
 			}
 			finalChoiceRes.setResult_list(list);
 		} catch (Exception e) {
-			return ResponseEntity.status(500).body("");
+			return ResponseEntity.status(500).body(e);
 		}
 		return ResponseEntity.status(200).body(FinalChoiceRes.of(200, "최종 결과 불러오기 성공", finalChoiceRes));
 	}
@@ -215,18 +213,24 @@ public class MeetingController {
 			meetingRoomService.save(meetingRoom);
 			sendLastPickStatus(meetingRoomId);
 			meetingRoomService.timer(meetingRoomId, 15, "pick");
-			return ResponseEntity.status(201).body("성공");
+			return ResponseEntity.status(201).body("");
 		}
 		catch(Exception e) {
-			return ResponseEntity.status(500).body("서버 오류");
+			return ResponseEntity.status(500).body(e);
 		}
 	}
 	
 	@MessageMapping("/meeting/leave")
-	public void leavingMeeting(LeavingMeetingRoomReq leavingMeetingRoomReq) throws Exception {
-		MeetingRoomUserRelation meetingRoomUser = meetingRoomService.findUser(leavingMeetingRoomReq.getMeetingRoomId(), leavingMeetingRoomReq.getUserId());
-		meetingRoomUser.setLeftMeeting(true);
-		meetingRoomService.save(meetingRoomUser);
+	public ResponseEntity<?> leavingMeeting(LeavingMeetingRoomReq leavingMeetingRoomReq) throws Exception {
+		try {
+			MeetingRoomUserRelation meetingRoomUser = meetingRoomService.findUser(leavingMeetingRoomReq.getMeetingRoomId(), leavingMeetingRoomReq.getUserId());
+			meetingRoomUser.setLeftMeeting(true);
+			meetingRoomService.save(meetingRoomUser);
+			return ResponseEntity.status(200).body("");
+		}
+		catch(Exception e) {
+			return ResponseEntity.status(500).body(e);
+		}
 	}
 	
 	@MessageMapping("/meeting/status")
@@ -234,11 +238,17 @@ public class MeetingController {
 		sendLastPickStatus(meetingRoomId);
 	}
 	
-	public void sendLastPickStatus(Long meetingRoomId) {
-		MeetingRoom meetingRoom = meetingRoomService.findById(meetingRoomId);
-		LastPickStatusRes lastPickStatusRes = new LastPickStatusRes();
-		lastPickStatusRes.setLast_pick_status(meetingRoom.getStatus() == 1);
-		sendingOperations.convertAndSend("/topic/meeting/status/"+meetingRoomId, lastPickStatusRes);
+	public ResponseEntity<?> sendLastPickStatus(Long meetingRoomId) {
+		try {
+			MeetingRoom meetingRoom = meetingRoomService.findById(meetingRoomId);
+			LastPickStatusRes lastPickStatusRes = new LastPickStatusRes();
+			lastPickStatusRes.setLast_pick_status(meetingRoom.getStatus() == 1);
+			sendingOperations.convertAndSend("/topic/meeting/status/"+meetingRoomId, lastPickStatusRes);
+			return ResponseEntity.status(200).body("");
+		}
+		catch(Exception e) {
+			return ResponseEntity.status(500).body(e);
+		}
 	}
 	
 	@PatchMapping("/selectStuff")
@@ -258,7 +268,7 @@ public class MeetingController {
 			if(meetingRoomService.isSelectedStuff(meetingRoomId, gender, stuffId)) return ResponseEntity.status(409).body("");
 			else meetingRoomService.choiceStuff(meetingRoomId, userId, stuffId);
 		} catch(Exception e) {
-			return ResponseEntity.status(500).body("");
+			return ResponseEntity.status(500).body(e);
 		}
 		
 		return ResponseEntity.status(201).body("");
@@ -316,7 +326,7 @@ public class MeetingController {
 			return ResponseEntity.status(200).body("성공");
 		} catch(Exception e) {
 			e.printStackTrace();
-			return ResponseEntity.status(500).body("관리자에게 문의하세요");
+			return ResponseEntity.status(500).body("관리자에게 문의하세요" + e);
 		}
 	}
 	
@@ -338,7 +348,7 @@ public class MeetingController {
 			return ResponseEntity.status(201).body("성공");
 		} catch(Exception e) {
 			e.printStackTrace();
-			return ResponseEntity.status(500).body("관리자에게 문의하세요");
+			return ResponseEntity.status(500).body("관리자에게 문의하세요" + e);
 		}
 	}
 
