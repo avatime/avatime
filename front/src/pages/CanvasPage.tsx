@@ -108,16 +108,25 @@ export const CanvasPage: FC<IProps> = (props) => {
         onSuccess(data) {
           setShowSuccessSnack(true);
 
-          const newAvatar: GetAvatarRes = {
-            id: data.id,
-            name: avaname,
-            path: data.path,
-            base64: dataURL,
-            slot: num,
-            pic_info: saveData,
-          };
-          // 원래 슬롯에 있던 그림은 지워야함.
-          setAvatarList((prev) => [...prev.slice(0, num - 1), newAvatar, ...prev.slice(num - 1)]);
+          // const newAvatar: GetAvatarRes = {
+          //   id: data.id,
+          //   name: avaname,
+          //   path: data.path,
+          //   base64: dataURL,
+          //   slot: num,
+          //   pic_info: saveData,
+          // };
+          // // 원래 슬롯에 있던 그림은 지워야함.
+          // setAvatarList((prev) => [...prev.slice(0, num - 1), newAvatar, ...prev.slice(num - 1)]);
+          AvatimeApi.getInstance().getAvatarList(
+            { user_id: userId },
+            {
+              onSuccess(data) {
+                setAvatarList(data);
+              },
+              navigate,
+            }
+          );
         },
         navigate,
       }

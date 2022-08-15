@@ -40,6 +40,7 @@ export const KakaoHandler: FC<Iprops> = (props) => {
   }
 
   const reconfirm = () => {
+    console.log("여기까진 잘 되나?");
     window.location.replace(KAKAO_AGREE_URL);
   }
 
