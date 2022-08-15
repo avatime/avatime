@@ -38,7 +38,8 @@ import lombok.RequiredArgsConstructor;
 @RequiredArgsConstructor
 @Service("meetingService")
 public class MeetingRoomServiceImpl implements MeetingRoomService {
-
+	private final String address = "https://avatimebucket2022.s3.ap-northeast-2.amazonaws.com/";
+	
 	@Autowired
 	MeetingRoomRepository meetingRoomRepository;
 	
@@ -271,7 +272,6 @@ public class MeetingRoomServiceImpl implements MeetingRoomService {
 	
 	@Override
 	public int sendAvatarInfo(Long meetingRoomId) throws Exception {
-//		int num = 0;
 		AvatarChoiceRes avatarChoiceRes = new AvatarChoiceRes();
 		List<Avatar> avatarList = avatarService.findAllByUserId(0L);
 		List<AvatarStatus> list = new ArrayList<>();
@@ -279,7 +279,6 @@ public class MeetingRoomServiceImpl implements MeetingRoomService {
 			AvatarStatus avasta = new AvatarStatus(ava);
 			if(isSelectedAvatar(meetingRoomId, ava.getId())) {
 				avasta.setSelected(true);
-//				num++;
 			}
 			else avasta.setSelected(false);
 			list.add(avasta);
