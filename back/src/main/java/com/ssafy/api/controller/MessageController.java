@@ -18,7 +18,6 @@ import com.ssafy.api.service.ChatService;
 import com.ssafy.api.service.ChattingMessageService;
 import com.ssafy.api.service.UserService;
 import com.ssafy.db.entity.ChattingMessage;
-import com.ssafy.db.entity.User;
 import com.ssafy.db.repository.ChattingMessageRepository;
 
 import lombok.RequiredArgsConstructor;
@@ -68,36 +67,6 @@ public class MessageController {
         			.build();
     		list.add(chat);
     	}
-    	
-    	// 테스트용 코드
-//    	User userNow = userService.getUserByUserId(messageReq.getUser_id());
-//    	if (ChattingMessagePostReq.MessageType.ENTER.equals(messageReq.getChat_type())) {
-//    		messageReq.setMessage(userNow.getName() + "님이 입장하였습니다.");
-//    	} 
-//    	else if (ChattingMessagePostReq.MessageType.LEAVE.equals(messageReq.getChat_type())) {
-//    		messageReq.setMessage(userNow.getName() + "님이 퇴장하였습니다.");        
-//    		}
-//    	ChattingMessage message = ChattingMessage.builder()
-//    			.user(userNow)
-//    			.type(messageReq.getChat_type().toString())
-//    			.content(messageReq.getMessage())
-//    			.chattingRoom(chattingRoomService.findByChatId(messageReq.getChattingroom_id()))
-//    			.build();
-//    	message = chattingMessageRepository.save(message);
-//    	
-//    	List<ChattingMessage> messages = chattingMessageService.findAllByChattingRoom(message.getChattingRoom());
-//    	List<ChattingMessageRes> list = new ArrayList<>();
-//    	for(ChattingMessage m : messages) {
-//    		System.out.println(m.getUser().getId() +": "+ m.getContent());
-//    		ChattingMessageRes chat = ChattingMessageRes.builder()
-//    				.chat_type(m.getType())
-//        			.user_id(m.getUser().getId())
-//        			.name(m.getUser().getName())
-//        			.message(m.getContent())
-//        			.created_time(m.getCreatedTime().toString())
-//        			.build();
-//    		list.add(chat);
-//    	}
     	sendingOperations.convertAndSend("/topic/chatting/receive/"+message.getChattingRoom().getId(), list);
     }
     
