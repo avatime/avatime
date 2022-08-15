@@ -9,6 +9,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.messaging.handler.annotation.DestinationVariable;
+import org.springframework.messaging.handler.annotation.MessageExceptionHandler;
 import org.springframework.messaging.handler.annotation.MessageMapping;
 import org.springframework.messaging.simp.SimpMessageSendingOperations;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -85,39 +86,36 @@ public class WaitingRoomController {
 	private final SimpMessageSendingOperations simp;
 	
 	// 대기방 목록 갱신
+	@MessageExceptionHandler
 	@MessageMapping("/getList")
-	public ResponseEntity<?> waitingRoom() {
-		try {
-			List<WaitingRoom> waitingRoom = waitingRoomService.findAll();
-			List<WaitingRoomRes> waitingRoomList = new ArrayList<>();
-			for (WaitingRoom wr : waitingRoom) {
-				Gender gender = genderService.findById(wr.getId()).orElse(null);
-				if (gender != null) {
-					User user = waitingRoomUserRelationService.findByWaitingRoomIdAndType(wr.getId(), 0).get(0).getUser();
-					WaitingRoomRes w = WaitingRoomRes.builder()
-							.id(wr.getId())
-							.name(wr.getName())
-							.headCount(wr.getHeadCount())
-							.status(wr.getStatus())
-							.cntMan(gender.getM())
-							.cntWoman(gender.getF())
-							.sido(sidoService.findById(wr.getSidoId()).get().getName())
-							.age(ageService.findById(wr.getAgeId()).get().getName())
-							.imagePath(user.getProfileImagePath())
-							.createdTime(wr.getCreatedTime())
-							.build();
-					waitingRoomList.add(w);
-				}
+	public void waitingRoom() {
+
+		List<WaitingRoom> waitingRoom = waitingRoomService.findAll();
+		List<WaitingRoomRes> waitingRoomList = new ArrayList<>();
+		for (WaitingRoom wr : waitingRoom) {
+			Gender gender = genderService.findById(wr.getId()).orElse(null);
+			if (gender != null) {
+				User user = waitingRoomUserRelationService.findByWaitingRoomIdAndType(wr.getId(), 0).get(0).getUser();
+				WaitingRoomRes w = WaitingRoomRes.builder()
+						.id(wr.getId())
+						.name(wr.getName())
+						.headCount(wr.getHeadCount())
+						.status(wr.getStatus())
+						.cntMan(gender.getM())
+						.cntWoman(gender.getF())
+						.sido(sidoService.findById(wr.getSidoId()).get().getName())
+						.age(ageService.findById(wr.getAgeId()).get().getName())
+						.imagePath(user.getProfileImagePath())
+						.createdTime(wr.getCreatedTime())
+						.build();
+				waitingRoomList.add(w);
 			}
-			simp.convertAndSend("/topic/getList", waitingRoomList);
-			return ResponseEntity.status(200).body("");
 		}
-		catch(Exception e) {
-    		return ResponseEntity.status(500).body(e);
-    	}
+		simp.convertAndSend("/topic/getList", waitingRoomList);
+	
 	}
 	
-
+	@MessageExceptionHandler
 	@MessageMapping("/waiting/info/{wrId}")
 	public void info(@DestinationVariable Long wrId) {
 		info(wrId, -1L);
@@ -154,26 +152,22 @@ public class WaitingRoomController {
     	}
 	}
 	
+	@MessageExceptionHandler
 	@MessageMapping("/reception/{wrId}")
-	public ResponseEntity<?> reception(@DestinationVariable Long wrId) {
-		try {
-			List<WaitingRoomUserRelation> wrur = waitingRoomUserRelationService.findByWaitingRoomIdAndType(wrId, 2);
-			List<WaitingUserRes> wu = new ArrayList<>();
-			for(WaitingRoomUserRelation wr : wrur) {
-				User user = wr.getUser();
-				WaitingUserRes wur = WaitingUserRes.builder()
-						.id(user.getId())
-						.name(user.getName())
-						.gender(user.getGender())
-						.profileImgPath(user.getProfileImagePath()).build();
-				wu.add(wur);
-			}
-			simp.convertAndSend("/topic/reception/" + wrId, wu);
-			return ResponseEntity.status(200).body("");
+	public void reception(@DestinationVariable Long wrId) {
+
+		List<WaitingRoomUserRelation> wrur = waitingRoomUserRelationService.findByWaitingRoomIdAndType(wrId, 2);
+		List<WaitingUserRes> wu = new ArrayList<>();
+		for(WaitingRoomUserRelation wr : wrur) {
+			User user = wr.getUser();
+			WaitingUserRes wur = WaitingUserRes.builder()
+					.id(user.getId())
+					.name(user.getName())
+					.gender(user.getGender())
+					.profileImgPath(user.getProfileImagePath()).build();
+			wu.add(wur);
 		}
-		catch(Exception e) {
-    		return ResponseEntity.status(500).body(e);
-    	}
+		simp.convertAndSend("/topic/reception/" + wrId, wu);
 	}
 
 	@GetMapping("/sido")
@@ -302,28 +296,19 @@ public class WaitingRoomController {
     	}
 	}
 	
-	public ResponseEntity<?> result(Long userId, Boolean x, long chatRoomId) {
-		try {
-			HashMap<String, Object> map = new HashMap<>();
-			map.put("success", x);
-			map.put("chatting_room_id", chatRoomId);
-			simp.convertAndSend("/topic/enter/result/" + userId, map);
-			return ResponseEntity.status(200).body("");
-		}
-		catch(Exception e) {
-    		return ResponseEntity.status(500).body(e);
-    	}
+	@MessageExceptionHandler
+	public void result(Long userId, Boolean x, long chatRoomId) {
+
+		HashMap<String, Object> map = new HashMap<>();
+		map.put("success", x);
+		map.put("chatting_room_id", chatRoomId);
+		simp.convertAndSend("/topic/enter/result/" + userId, map);
 	}
 	
-	public ResponseEntity<?> result(Long userId, Boolean x) {
-		try {
-			HashMap<String, Boolean> success = new HashMap<>();
-			success.put("success", x);
-			simp.convertAndSend("/topic/enter/result/" + userId, success);
-			return ResponseEntity.status(200).body("");
-		}
-		catch(Exception e) {
-    		return ResponseEntity.status(500).body(e);
-    	}
+	@MessageExceptionHandler
+	public void result(Long userId, Boolean x) {
+		HashMap<String, Boolean> success = new HashMap<>();
+		success.put("success", x);
+		simp.convertAndSend("/topic/enter/result/" + userId, success);
 	}
 }

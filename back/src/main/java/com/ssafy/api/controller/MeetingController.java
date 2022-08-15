@@ -7,6 +7,7 @@ import java.util.Random;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.messaging.handler.annotation.DestinationVariable;
+import org.springframework.messaging.handler.annotation.MessageExceptionHandler;
 import org.springframework.messaging.handler.annotation.MessageMapping;
 import org.springframework.messaging.simp.SimpMessageSendingOperations;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -101,6 +102,7 @@ public class MeetingController {
 		return ResponseEntity.status(201).body("");
 	}
 	
+	@MessageExceptionHandler
 	@MessageMapping("/meeting/avatar/{meetingRoomId}")
 	public void startAvatarChoice(@DestinationVariable Long meetingRoomId) throws Exception {
 		meetingRoomService.sendAvatarInfo(meetingRoomId);
@@ -220,35 +222,26 @@ public class MeetingController {
 		}
 	}
 	
+	@MessageExceptionHandler
 	@MessageMapping("/meeting/leave")
-	public ResponseEntity<?> leavingMeeting(LeavingMeetingRoomReq leavingMeetingRoomReq) throws Exception {
-		try {
-			MeetingRoomUserRelation meetingRoomUser = meetingRoomService.findUser(leavingMeetingRoomReq.getMeetingRoomId(), leavingMeetingRoomReq.getUserId());
-			meetingRoomUser.setLeftMeeting(true);
-			meetingRoomService.save(meetingRoomUser);
-			return ResponseEntity.status(200).body("");
-		}
-		catch(Exception e) {
-			return ResponseEntity.status(500).body(e);
-		}
+	public void leavingMeeting(LeavingMeetingRoomReq leavingMeetingRoomReq) throws Exception {
+		MeetingRoomUserRelation meetingRoomUser = meetingRoomService.findUser(leavingMeetingRoomReq.getMeetingRoomId(), leavingMeetingRoomReq.getUserId());
+		meetingRoomUser.setLeftMeeting(true);
+		meetingRoomService.save(meetingRoomUser);
 	}
 	
+	@MessageExceptionHandler
 	@MessageMapping("/meeting/status")
 	public void LastPickStatus(@DestinationVariable Long meetingRoomId) {
 		sendLastPickStatus(meetingRoomId);
 	}
 	
-	public ResponseEntity<?> sendLastPickStatus(Long meetingRoomId) {
-		try {
-			MeetingRoom meetingRoom = meetingRoomService.findById(meetingRoomId);
-			LastPickStatusRes lastPickStatusRes = new LastPickStatusRes();
-			lastPickStatusRes.setLast_pick_status(meetingRoom.getStatus() == 1);
-			sendingOperations.convertAndSend("/topic/meeting/status/"+meetingRoomId, lastPickStatusRes);
-			return ResponseEntity.status(200).body("");
-		}
-		catch(Exception e) {
-			return ResponseEntity.status(500).body(e);
-		}
+	@MessageExceptionHandler
+	public void sendLastPickStatus(Long meetingRoomId) {
+		MeetingRoom meetingRoom = meetingRoomService.findById(meetingRoomId);
+		LastPickStatusRes lastPickStatusRes = new LastPickStatusRes();
+		lastPickStatusRes.setLast_pick_status(meetingRoom.getStatus() == 1);
+		sendingOperations.convertAndSend("/topic/meeting/status/"+meetingRoomId, lastPickStatusRes);
 	}
 	
 	@PatchMapping("/selectStuff")
@@ -293,6 +286,7 @@ public class MeetingController {
 		}
 	}
 	
+	@MessageExceptionHandler
 	@MessageMapping("/meeting/stuff/{meetingRoomId}")
 	public void startStuffChoice(@DestinationVariable Long meetingRoomId) throws Exception {
 		meetingRoomService.sendStuffInfo(meetingRoomId);
