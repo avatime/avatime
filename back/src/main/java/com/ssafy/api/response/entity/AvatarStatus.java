@@ -21,6 +21,6 @@ public class AvatarStatus {
 	public AvatarStatus(Avatar avatar) {
 		this.id = avatar.getId();
 		this.name = avatar.getName();
-		this.image_path = avatar.getImagePath();
+		this.image_path = "https://avatimebucket2022.s3.ap-northeast-2.amazonaws.com/" + avatar.getImagePath();
 	}
 }
