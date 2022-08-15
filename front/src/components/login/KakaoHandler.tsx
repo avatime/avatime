@@ -40,7 +40,7 @@ export const KakaoHandler: FC<Iprops> = (props) => {
   }
 
   const reconfirm = () => {
-    console.log("여기까진 잘 되나?");
+    alert("리컨펌함수");
     window.location.replace(KAKAO_AGREE_URL);
   }
 
@@ -75,6 +75,7 @@ export const KakaoHandler: FC<Iprops> = (props) => {
         //navigate("/main");
         //alert("로그인 성공");
       } else if(data.statusCode === 205) {
+        alert("재동의받아야함");
         setShowReConfirmSnack(true);
       }
     },
