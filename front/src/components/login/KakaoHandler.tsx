@@ -27,8 +27,11 @@ export const KakaoHandler: FC<Iprops> = (props) => {
   const [showLoginSnack, setShowLoginSnack] = useState(false);
   const [showRegisterSnack, setShowRegisterSnack] = useState(false);
   const [showReConfirmSnack, setShowReConfirmSnack] = useState(false);
+  const [tempToken, setTempToken] = useState("");
 
   const login = () => {
+    localStorage.setItem("token", tempToken);
+    dispatch(setToken(tempToken));
     navigate("/main");
   }
 
@@ -42,6 +45,7 @@ export const KakaoHandler: FC<Iprops> = (props) => {
 
   AvatimeApi.getInstance().kakaoLogin(code as string, {
     onSuccess(data) {
+      console.log(data.statusCode);
       if (data.statusCode === 201) {
         console.log(data);
         dispatch(setUserGender(data.gender));
@@ -63,13 +67,12 @@ export const KakaoHandler: FC<Iprops> = (props) => {
         dispatch(setSocialId(data.social_id));
         dispatch(setSocialType(data.social_type));
         dispatch(setIsLogin(true));
-        dispatch(setToken(data.accessToken));
+        setTempToken(data.accessToken);
+        setShowLoginSnack(true);
         AvatimeApi.getInstance().login(data.accessToken);
         AvatimeWs.getInstance().login(data.accessToken);
-        localStorage.setItem("token", data.accessToken);
         //navigate("/main");
         //alert("로그인 성공");
-        setShowLoginSnack(true);
       } else if(data.statusCode === 205) {
         setShowReConfirmSnack(true);
       }
