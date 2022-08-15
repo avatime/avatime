@@ -157,9 +157,9 @@ export const SessionPage: FC<IProps> = (props) => {
                             return (
                               <Grid
                                 item
-                                xs={24 / headCount}
+                                xs
                                 key={idx}
-                                sx={{ position: "relative", height: "100%" }}
+                                maxHeight="42vh"
                               >
                                 <AvatarVideoStream
                                   streamManager={stream.streamManager}
