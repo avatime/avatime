@@ -49,21 +49,16 @@ public class FileController {
     })
 	public ResponseEntity<?> customAvatarUpload(@RequestBody AvatarCustomReq avatarCustomReq) {
 		try {
-			System.out.println("여기들어와!?!?!?!?!?!?!!?!?!?!?!?!?!?!?");
 			Avatar avatar = avatarService.findByUserIdAndSlot(avatarCustomReq.getUser_id(), avatarCustomReq.getSlot());
-			System.out.println("avatar: " + avatar);
 			avatar.setName(avatarCustomReq.getName());
 			avatar.setUserId(avatarCustomReq.getUser_id());
 			avatar.setPicPath(fileUploadService.savePicInfo(avatarCustomReq));
 			avatar.setImagePath(address + fileUploadService.saveAvatar(avatarCustomReq));
 			avatar.setSlot(avatarCustomReq.getSlot());
 			avatar = avatarService.saveAvatar(avatar);
-			System.out.println("avatar: " + avatar);
 			CustomAvatarUploadRes customAvatarUploadRes = new CustomAvatarUploadRes();
-			System.out.println("customAvatarUploadRes: "+customAvatarUploadRes);
 			customAvatarUploadRes.setId(avatar.getId());
 			customAvatarUploadRes.setPath(avatar.getImagePath());
-			System.out.println("customAvatarUploadRes: "+customAvatarUploadRes);
 			return ResponseEntity.status(200).body(customAvatarUploadRes);
 		} catch (Exception e) {
 			// TODO Auto-generated catch block
