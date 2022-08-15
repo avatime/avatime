@@ -354,7 +354,7 @@ public class MeetingRoomServiceImpl implements MeetingRoomService {
 			
 			list.add(stuffsta);
 		}
-		stuffChoiceRes.setStatus(num == userNumber(meetingRoomId) ? 1 : 0);
+		stuffChoiceRes.setStatus(num == userNumber(meetingRoomId) / 2 ? 1 : 0);
 		stuffChoiceRes.setStuff_list(list);
 		
     	sendingOperations.convertAndSend("/topic/meeting/stuff/"+meetingRoomId, stuffChoiceRes);
