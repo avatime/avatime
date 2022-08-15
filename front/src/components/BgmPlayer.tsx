@@ -21,8 +21,10 @@ export const BgmPlayer: FC<IProps> = ({ children }) => {
   }, [playing, number, volume]);
 
   useEffect(() => {
-    if (!volume) {
+    if (volume === undefined) {
       return;
+    } else if (volume === 0) {
+      ref.current.pause();
     }
     ref.current.volume = volume / 100;
   }, [volume]);
