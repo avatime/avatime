@@ -19,6 +19,7 @@ import { LandingPage } from "./pages/Landing/LandingPage";
 import ProtectedRoute from "./ProtectedRoute";
 import { useSelector } from "react-redux";
 import { BgmPlayer } from "./components/BgmPlayer";
+import { NotFoundPage } from "./pages/NotFoundPage";
 
 export const theme = createTheme({
   palette: {
@@ -104,6 +105,7 @@ function App() {
                 path="/subSession"
                 element={<ProtectedRoute outlet={<SubSessionPage />} isAuthentication={isLogin} />}
               />
+              <Route path="/*" element={<NotFoundPage />} />
             </Routes>
           </BgmPlayer>
         </BrowserRouter>
