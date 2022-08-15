@@ -27,7 +27,10 @@ insert into avatar (image_path, name) values ("액션가면.jpg", "액션가면"
 ("햄찌우먼.png", "햄찌우먼"),
 ("수박맨.png", "수박맨"),
 ("파인잼민.png", "파인잼민"),
-("뚱이.png", "뚱이");
+("뚱이.png", "뚱이"),
+("알린.png", "알린"),
+("보노보노.png", "보노보노"),
+("갈매기곰.png", "갈매기곰");
 
 insert into user (description, gender, name, profile_image_path, social_id, social_type) values
 ("testing3", "F", "채윤선", "https://avatimebucket2022.s3.ap-northeast-2.amazonaws.com/%ED%94%84%EB%A1%9C%ED%95%84/profile01.png", "5524137@naver.com", 1),
