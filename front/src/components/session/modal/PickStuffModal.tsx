@@ -104,6 +104,7 @@ export const PickStuffModal: FC<IProps> = ({ isOpened }) => {
             </Grid>
           ))}
         </Grid>
+        <Box p={2} />
         <SoundButton
           onClick={() => onSelectStuff()}
           fullWidth

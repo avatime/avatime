@@ -87,8 +87,8 @@ export const SubSessionPage: FC<IProps> = (props) => {
               <Timer duration={120} remainingTime={timer} />
             </Box>
           )}
-          <Grid container height="100%" direction="row" alignItems="center" spacing={5}>
-            <Grid item xs>
+          <Grid container  height="60vh" direction="row" alignItems="center" spacing={5}>
+            <Grid item xs height="100%">
               {publisher &&
                 ((state as any)?.stuff ? (
                   <AvatarVideoStream
