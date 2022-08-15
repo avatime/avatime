@@ -25,6 +25,8 @@ insert into avatar (image_path, name) values ("지니.jpg", "지니");
 insert into avatar (image_path, name) values ("아기조커.jpg", "아기조커");
 insert into avatar (image_path, name) values ("햄찌우먼.png", "햄찌우먼");
 insert into avatar (image_path, name) values ("수박맨.png", "수박맨");
+insert into avatar (image_path, name) values ("파인잼민.png", "파인잼민");
+insert into avatar (image_path, name) values ("뚱이.png", "뚱이");
 
 insert into user (description, gender, name, profile_image_path, social_id, social_type) values ("testing3", "F", "채윤선", "https://avatimebucket2022.s3.ap-northeast-2.amazonaws.com/%ED%94%84%EB%A1%9C%ED%95%84/profile01.png", "5524137@naver.com", 1);
 insert into user (description, gender, name, profile_image_path, social_id, social_type) values ("testing", "M", "정건우", "https://avatimebucket2022.s3.ap-northeast-2.amazonaws.com/%ED%94%84%EB%A1%9C%ED%95%84/profile01.png", "abcxj123@naver.com", 1);
