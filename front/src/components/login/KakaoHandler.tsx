@@ -46,6 +46,7 @@ export const KakaoHandler: FC<Iprops> = (props) => {
 
   AvatimeApi.getInstance().kakaoLogin(code as string, {
     onSuccess(data) {
+      alert(data.statusCode);
       console.log(data.statusCode);
       if (data.statusCode === 201) {
         console.log(data);
