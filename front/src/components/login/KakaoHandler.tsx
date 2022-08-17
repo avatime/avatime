@@ -43,6 +43,11 @@ export const KakaoHandler: FC<Iprops> = (props) => {
     window.location.replace(KAKAO_AGREE_URL);
   }
 
+  const cancelconfirm = () => {
+    setShowRegisterSnack(false);
+    navigate("/main");
+  }
+
   AvatimeApi.getInstance().kakaoLogin(code as string, {
     onSuccess(data) {
       console.log(data.statusCode);
@@ -96,7 +101,7 @@ export const KakaoHandler: FC<Iprops> = (props) => {
       />
      <AlertSnackbar
         open={showRegisterSnack}
-        onClose={() => setShowRegisterSnack(false)}
+        onClose={cancelconfirm}
         message="회원가입이 필요해요!!"
         alertColor="warning"
         type="confirm"
