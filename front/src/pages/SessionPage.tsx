@@ -159,6 +159,11 @@ export const SessionPage: FC<IProps> = (props) => {
                         <Grid container height="100%" spacing={2} alignItems="stretch">
                           {(idx ? diffGenderUserList : sameGenderUserList).map(
                             (stream: any, idx: number) => {
+                              console.log("ASDASD", meetingRoomInfo.meeting_user_info_list);
+                              console.log("ASDASD", idx ? diffGenderUserList : sameGenderUserList);
+                              if (!stream?.userId) {
+                                return null;
+                              }
                               const userInfo = meetingRoomInfo.meeting_user_info_list.find(
                                 (it) => it.user_id === stream.userId
                               );
