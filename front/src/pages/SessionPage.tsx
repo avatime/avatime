@@ -10,7 +10,7 @@ import {
   setBalanceId,
   setUserInfoList,
 } from "../stores/slices/meetingSlice";
-import { MeetingRoomInfoRes } from "../apis/response/sessionRes";
+import { MeetingRoomInfoRes, MeetingUserInfoRes } from "../apis/response/sessionRes";
 import { useOpenvidu } from "../hooks/useOpenvidu";
 import { AvatarVideoStream } from "../components/session/AvatarVideoStream";
 import { useWebSocket } from "../hooks/useWebSocket";
@@ -126,14 +126,21 @@ export const SessionPage: FC<IProps> = (props) => {
     gender
   );
 
+  const userInfoList = useSelector((state: any) => state.meeting.userInfoList);
   const sameGenderUserList = useMemo(
-    () => streamList.filter((it) => it.gender === gender),
-    [gender, streamList]
+    () =>
+      userInfoList
+        .filter((it: MeetingUserInfoRes) => it.gender === gender)
+        .map((it: MeetingUserInfoRes) => streamList.find((i) => i.userId === it.user_id)),
+    [gender, streamList, userInfoList]
   );
 
   const diffGenderUserList = useMemo(
-    () => streamList.filter((it) => it.gender !== gender),
-    [gender, streamList]
+    () =>
+      userInfoList
+        .filter((it: MeetingUserInfoRes) => it.gender !== gender)
+        .map((it: MeetingUserInfoRes) => streamList.find((i) => i.userId === it.user_id)),
+    [gender, streamList, userInfoList]
   );
 
   useBGM("meeting");
@@ -150,27 +157,29 @@ export const SessionPage: FC<IProps> = (props) => {
                     [0, 1].map((it, idx) => (
                       <Box flex={1} key={idx} height="50%">
                         <Grid container height="100%" spacing={2} alignItems="stretch">
-                          {(idx ? diffGenderUserList : sameGenderUserList).map((stream, idx) => {
-                            const userInfo = meetingRoomInfo.meeting_user_info_list.find(
-                              (it) => it.user_id === stream.userId
-                            );
-                            console.log(userInfo);
-                            return (
-                              <Grid item key={idx} xs={24 / headCount} maxHeight="42vh">
-                                <AvatarVideoStream
-                                  streamManager={stream.streamManager}
-                                  name={userInfo!.avatar_name}
-                                  avatarPath={userInfo!.avatar_image_path}
-                                  gender={userInfo!.gender}
-                                  me={userInfo!.user_id === userId}
-                                  balance={
-                                    balanceResult.find((it) => it.user_id === userInfo!.user_id)
-                                      ?.result
-                                  }
-                                />
-                              </Grid>
-                            );
-                          })}
+                          {(idx ? diffGenderUserList : sameGenderUserList).map(
+                            (stream: any, idx: number) => {
+                              const userInfo = meetingRoomInfo.meeting_user_info_list.find(
+                                (it) => it.user_id === stream.userId
+                              );
+                              console.log(userInfo);
+                              return (
+                                <Grid item key={idx} xs={24 / headCount} maxHeight="42vh">
+                                  <AvatarVideoStream
+                                    streamManager={stream.streamManager}
+                                    name={userInfo!.avatar_name}
+                                    avatarPath={userInfo!.avatar_image_path}
+                                    gender={userInfo!.gender}
+                                    me={userInfo!.user_id === userId}
+                                    balance={
+                                      balanceResult.find((it) => it.user_id === userInfo!.user_id)
+                                        ?.result
+                                    }
+                                  />
+                                </Grid>
+                              );
+                            }
+                          )}
                         </Grid>
                       </Box>
                     ))}
