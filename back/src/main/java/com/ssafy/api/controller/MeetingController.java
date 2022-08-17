@@ -204,7 +204,7 @@ public class MeetingController {
 	@PostMapping("/pick/start")
 	@ApiOperation(value = "최종 선택 시작", notes = "<strong>meeting room id</strong>방에서 최종 선택 시작") 
     @ApiResponses({
-        @ApiResponse(code = 200, message = "성공", response = BaseResponseBody.class),
+        @ApiResponse(code = 201, message = "성공", response = BaseResponseBody.class),
         @ApiResponse(code = 500, message = "서버 오류", response = BaseResponseBody.class)
     })
 	public ResponseEntity<?> finalPickStart(@RequestBody @ApiParam(value="미팅방 정보", required = true) MeetingRoomIdReq meetingRoomIdReq) throws Exception {
@@ -215,19 +215,29 @@ public class MeetingController {
 			meetingRoomService.save(meetingRoom);
 			sendLastPickStatus(meetingRoomId);
 			meetingRoomService.timer(meetingRoomId, 15, "pick");
-			return ResponseEntity.status(201).body("");
+			return ResponseEntity.status(201).body("성공");
 		}
 		catch(Exception e) {
-			return ResponseEntity.status(500).body(e);
+			return ResponseEntity.status(500).body("관리자에게 문의하세요");
 		}
 	}
 	
-	@MessageExceptionHandler
-	@MessageMapping("/meeting/leave")
-	public void leavingMeeting(LeavingMeetingRoomReq leavingMeetingRoomReq) throws Exception {
-		MeetingRoomUserRelation meetingRoomUser = meetingRoomService.findUser(leavingMeetingRoomReq.getMeetingRoomId(), leavingMeetingRoomReq.getUserId());
-		meetingRoomUser.setLeftMeeting(true);
-		meetingRoomService.save(meetingRoomUser);
+	@PostMapping("/leave")
+	@ApiOperation(value = "미팅방 나가기", notes = "<strong>meeting room id</strong>방에서 나가기") 
+    @ApiResponses({
+        @ApiResponse(code = 200, message = "성공", response = BaseResponseBody.class),
+        @ApiResponse(code = 500, message = "서버 오류", response = BaseResponseBody.class)
+    })
+	public ResponseEntity<?> leavingMeeting(@RequestBody LeavingMeetingRoomReq leavingMeetingRoomReq) throws Exception {
+		try {
+			MeetingRoomUserRelation meetingRoomUser = meetingRoomService.findUser(leavingMeetingRoomReq.getMeetingRoomId(), leavingMeetingRoomReq.getUserId());
+			meetingRoomUser.setLeftMeeting(true);
+			meetingRoomService.save(meetingRoomUser);
+			return ResponseEntity.status(201).body("성공");
+		}
+		catch (Exception e) {
+			return ResponseEntity.status(500).body("관리자에게 문의하세요");
+		}
 	}
 	
 	@MessageExceptionHandler
