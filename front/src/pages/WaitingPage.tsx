@@ -32,6 +32,7 @@ import { useWebSocket } from "../hooks/useWebSocket";
 import { AvatimeApi } from "../apis/avatimeApi";
 import { AlertSnackbar } from "../components/AlertSnackbar";
 import { SoundButton, SoundIconButton } from "../components/SoundButton";
+import { VolumeController } from "../components/VolumeController";
 
 interface IProps {}
 
@@ -198,12 +199,15 @@ export const WaitingPage: FC<IProps> = (props) => {
           </Box>
         </Grid>
         <Grid item xs={3} sx={{ float: "left", display: "flex", flexDirection: "column" }}>
-          <Stack width="100%" direction="row-reverse">
-            <SoundIconButton onClick={onClickReception}>
+          <Stack width="100%" direction="row" alignItems="center">
+            <SoundIconButton onClick={onClickReception} sx={{ mr: "auto" }}>
               <StyledBadge color="primary" badgeContent={candidateList.length} overlap="circular">
                 <PeopleAltIcon />
               </StyledBadge>
             </SoundIconButton>
+            <Box ml="auto">
+              <VolumeController />
+            </Box>
           </Stack>
           <Box flex={1}>
             <ChatRoom

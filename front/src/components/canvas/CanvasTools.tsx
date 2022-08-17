@@ -6,6 +6,11 @@ import SaveAltIcon from "@mui/icons-material/SaveAlt";
 import DeleteIcon from "@mui/icons-material/Delete";
 import { SoundIconButton } from "../SoundButton";
 
+const buttonStyle = {
+  width: "28px",
+  height: "28px"
+};
+
 interface IProps {
   onChangeColor: (color: string) => void;
   brushRadius: number;
@@ -40,8 +45,8 @@ export const CanvasTools: FC<IProps> = ({
   return (
     <Stack direction="column" alignItems="center" spacing={1}>
       <Box bgcolor="white" p={1} borderRadius="10px" position="relative">
-        <SoundIconButton sx={{ padding: 0 }}>
-          <input ref={picker} type="color" />
+        <SoundIconButton sx={{ padding: 0, ...buttonStyle }} >
+          <input ref={picker} type="color" style={buttonStyle} />
         </SoundIconButton>
       </Box>
       <Stack bgcolor="white" alignItems="center" p={1} borderRadius="10px" spacing={1}>
@@ -50,19 +55,19 @@ export const CanvasTools: FC<IProps> = ({
           valueLabelDisplay="auto"
           value={brushRadius}
           onChange={(_, v, __) => onChangeRadius(v as number)}
-          sx={{ height: 150 }}
+          sx={{ height: 100 }}
           min={1}
           max={80}
           color="secondary"
         />
       </Stack>
       <Box bgcolor="white" p={1} borderRadius="10px">
-        <SoundIconButton onClick={onUndo}>
+        <SoundIconButton onClick={onUndo} sx={buttonStyle}>
           <UndoIcon />
         </SoundIconButton>
       </Box>
       <Box bgcolor="white" p={1} borderRadius="10px">
-        <SoundIconButton onClick={onEraseAll}>
+        <SoundIconButton onClick={onEraseAll} sx={buttonStyle}>
           <DeleteIcon />
         </SoundIconButton>
       </Box>
@@ -76,7 +81,7 @@ export const CanvasTools: FC<IProps> = ({
           alignItems="center"
         >
           {it}번
-          <SoundIconButton onClick={() => onSave(it)}>
+          <SoundIconButton onClick={() => onSave(it)} sx={buttonStyle}>
             <SaveAltIcon />
           </SoundIconButton>
         </Stack>
