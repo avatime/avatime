@@ -81,7 +81,7 @@ export const useOpenvidu = (userId: number, meetingRoomId: number, gender: strin
       setPublisher(null);
       setSubscribers([]);
     };
-  }, [gender, meetingRoomId, userId]);
+  }, [gender, meetingRoomId, subscribers, userId]);
 
   useEffect(() => {
     window.addEventListener("beforeunload", () => leaveSession());
