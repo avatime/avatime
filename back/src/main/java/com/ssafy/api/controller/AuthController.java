@@ -72,9 +72,9 @@ public class AuthController {
 		try {
 			//임의로 리턴된 User 인스턴스. 현재 코드는 회원 가입 성공 여부만 판단하기 때문에 굳이 Insert 된 유저 정보를 응답하지 않음.
 			User user = userService.createUser(registerInfo);
-			
+			System.out.println("체크체크: "+ Long.toString(user.getId()));
 			// 여기서 토큰 발행
-			return ResponseEntity.ok(UserLoginPostRes.of(200, "Success", user, JwtTokenUtil.getToken(user.getId().toString())));
+			return ResponseEntity.ok(UserLoginPostRes.of(200, "Success", user, JwtTokenUtil.getToken(Long.toString(user.getId()))));
 		} catch (Exception e) {
 			return ResponseEntity.status(500).body(e);
 		}
@@ -117,7 +117,7 @@ public class AuthController {
 			}
 			
 			else {
-				return ResponseEntity.ok(UserLoginPostRes.of(200, "Success", user, JwtTokenUtil.getToken(user.getId().toString())));
+				return ResponseEntity.ok(UserLoginPostRes.of(200, "Success", user, JwtTokenUtil.getToken(Long.toString(user.getId()))));
 			}
 		} catch (Exception e) {
 			return ResponseEntity.status(500).body(e);
@@ -174,7 +174,8 @@ public class AuthController {
 			}
 			
 			else {
-				return ResponseEntity.ok(UserLoginPostRes.of(200, "Success", user, JwtTokenUtil.getToken(user.getId().toString())));
+
+				return ResponseEntity.ok(UserLoginPostRes.of(200, "Success", user, JwtTokenUtil.getToken(Long.toString(user.getId()))));
 			}
 		} catch (Exception e) {
 			return ResponseEntity.status(500).body(e);
