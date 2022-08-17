@@ -22,6 +22,7 @@ import { AlertSnackbar } from "../components/AlertSnackbar";
 import { FinalPickModal } from "../components/session/modal/FinalPickModal";
 import { BalanceGameModal } from "../components/session/modal/BalanceGameModal";
 import { PickStuffModal } from "../components/session/modal/PickStuffModal";
+import { StreamManager } from 'openvidu-browser';
 
 interface IProps {}
 
@@ -126,24 +127,29 @@ export const SessionPage: FC<IProps> = (props) => {
     gender
   );
 
-  const userInfoList = useSelector((state: any) => state.meeting.userInfoList);
-  const sameGenderUserList = useMemo(
-    () =>
-      userInfoList
-        .filter((it: MeetingUserInfoRes) => it.gender === gender)
-        .map((it: MeetingUserInfoRes) => streamList.find((i) => i.userId === it.user_id)),
-    [gender, streamList, userInfoList]
-  );
+  const userInfoList: MeetingUserInfoRes[] = useSelector((state: any) => state.meeting.userInfoList);
+  const [sameGenderList, setSameGenderList] = useState<any[]>();
+  useEffect(() => {
+    console.log("AAAAABB", streamList);
+    setSameGenderList(
+      userInfoList.filter((it) => it.gender === gender)
+      .map((it) => streamList.find((i) => i.userId === it.user_id))
+      .filter((it) => it?.streamManager)
+    )
+  }, [gender, streamList, userInfoList]);
 
-  const diffGenderUserList = useMemo(
-    () =>
-      userInfoList
-        .filter((it: MeetingUserInfoRes) => it.gender !== gender)
-        .map((it: MeetingUserInfoRes) => streamList.find((i) => i.userId === it.user_id)),
-    [gender, streamList, userInfoList]
-  );
+  const [diffGenderList, setDiffGenderList] = useState<any[]>();
+  useEffect(() => {
+    console.log("AAAAACCC", streamList);
+    setDiffGenderList(
+      userInfoList.filter((it) => it.gender !== gender)
+      .map((it) => streamList.find((i) => i.userId === it.user_id))
+      .filter((it) => it?.streamManager)
+    )
+  }, [gender, streamList, userInfoList]);
 
   useBGM("meeting");
+  console.log("AAAAA", sameGenderList, diffGenderList);
 
   return (
     <div className="mainback">
@@ -157,34 +163,26 @@ export const SessionPage: FC<IProps> = (props) => {
                     [0, 1].map((it, idx) => (
                       <Box flex={1} key={idx} height="50%">
                         <Grid container height="100%" spacing={2} alignItems="stretch">
-                          {(idx ? diffGenderUserList : sameGenderUserList).map(
-                            (stream: any, idx: number) => {
-                              console.log("ASDASD", meetingRoomInfo.meeting_user_info_list);
-                              console.log("ASDASD", idx ? diffGenderUserList : sameGenderUserList);
-                              if (!stream?.userId) {
-                                return null;
-                              }
-                              const userInfo = meetingRoomInfo.meeting_user_info_list.find(
-                                (it) => it.user_id === stream.userId
-                              );
-                              console.log(userInfo);
-                              return (
-                                <Grid item key={idx} xs={24 / headCount} maxHeight="42vh">
-                                  <AvatarVideoStream
-                                    streamManager={stream.streamManager}
-                                    name={userInfo!.avatar_name}
-                                    avatarPath={userInfo!.avatar_image_path}
-                                    gender={userInfo!.gender}
-                                    me={userInfo!.user_id === userId}
-                                    balance={
-                                      balanceResult.find((it) => it.user_id === userInfo!.user_id)
-                                        ?.result
-                                    }
-                                  />
-                                </Grid>
-                              );
-                            }
-                          )}
+                          {(idx ? diffGenderList : sameGenderList)?.map((stream, idx) => {
+                            const userInfo = meetingRoomInfo.meeting_user_info_list.find(
+                              (it) => it.user_id === stream.userId
+                            );
+                            return (
+                              <Grid item key={idx} xs={24 / headCount} maxHeight="42vh">
+                                <AvatarVideoStream
+                                  streamManager={stream.streamManager}
+                                  name={userInfo!.avatar_name}
+                                  avatarPath={userInfo!.avatar_image_path}
+                                  gender={userInfo!.gender}
+                                  me={userInfo!.user_id === userId}
+                                  balance={
+                                    balanceResult.find((it) => it.user_id === userInfo!.user_id)
+                                      ?.result
+                                  }
+                                />
+                              </Grid>
+                            );
+                          })}
                         </Grid>
                       </Box>
                     ))}
