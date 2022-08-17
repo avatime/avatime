@@ -108,7 +108,7 @@ export const SubSessionPage: FC<IProps> = (props) => {
                 ))}
             </Grid>
             <Box p={2} />
-            <Grid item xs>
+            <Grid item xs height="100%">
               {pickUserStreamManager &&
                 ((state as any)?.stuff ? (
                   <AvatarVideoStream
