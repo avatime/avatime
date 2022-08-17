@@ -242,7 +242,7 @@ public class MeetingRoomServiceImpl implements MeetingRoomService {
 	@Override
 	public void save(MeetingRoomUserRelation meetingRoomUserRelation) {
 		// TODO Auto-generated method stub
-		meetingRoomUserRelationRepository.save(meetingRoomUserRelation);
+		meetingRoomUserRelationRepository.saveAndFlush(meetingRoomUserRelation);
 	}
 	
 	@Override
