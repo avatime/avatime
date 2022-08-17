@@ -8,7 +8,6 @@ export const useOpenvidu = (userId: number, meetingRoomId: number, gender: strin
   const [session, setSession] = useState<any>();
 
   const leaveSession = useCallback(() => {
-    console.log("AAAA", session);
     if (session) {
       session.disconnect();
     }
