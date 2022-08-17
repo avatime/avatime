@@ -328,7 +328,7 @@ public class MeetingRoomServiceImpl implements MeetingRoomService {
 		if(meetingRoomUserRelation != null) {
 			meetingRoomUserRelation.setStuffId(stuffId);
 			meetingRoomUserRelationRepository.saveAndFlush(meetingRoomUserRelation);
-			sendAvatarInfo(meetingRoomId);
+			sendStuffInfo(meetingRoomId);
 		}
 	}
 	
@@ -344,16 +344,20 @@ public class MeetingRoomServiceImpl implements MeetingRoomService {
 			StuffStatus stuffsta = new StuffStatus(stuff);
 			if(isSelectedStuff(meetingRoomId, "F", stuff.getId())) {
 				stuffsta.setMen_selected(true);
+			} else {
 				num++;
-			} else stuffsta.setMen_selected(false);
+				stuffsta.setMen_selected(false);
+			}
 			if(isSelectedStuff(meetingRoomId, "M", stuff.getId())) {
 				stuffsta.setWomen_selected(true);
+			} else {
 				num++;
-			} else stuffsta.setWomen_selected(false);
+				stuffsta.setWomen_selected(false);
+			}
 			
 			list.add(stuffsta);
 		}
-		stuffChoiceRes.setStatus(num == userNumber(meetingRoomId) / 2 ? 1 : 0);
+		stuffChoiceRes.setStatus(num == userNumber(meetingRoomId) ? 1 : 0);
 		stuffChoiceRes.setStuff_list(list);
 		
     	sendingOperations.convertAndSend("/topic/meeting/stuff/"+meetingRoomId, stuffChoiceRes);
