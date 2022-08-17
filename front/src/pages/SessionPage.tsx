@@ -154,7 +154,6 @@ export const SessionPage: FC<IProps> = (props) => {
                             const userInfo = meetingRoomInfo.meeting_user_info_list.find(
                               (it) => it.user_id === stream.userId
                             );
-                            console.log("AAAA", streamList);
                             return (
                               <Grid item key={idx} xs={24 / headCount} maxHeight="42vh">
                                 <AvatarVideoStream
