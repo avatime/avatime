@@ -15,6 +15,7 @@ import { SoundButton } from "../SoundButton";
 import VideogameAssetIcon from "@mui/icons-material/VideogameAsset";
 import BalanceIcon from "@mui/icons-material/Balance";
 import FavoriteIcon from "@mui/icons-material/Favorite";
+import { useWebSocket } from "../../hooks/useWebSocket";
 
 type Type = "master" | "normal";
 interface IProps {
@@ -23,10 +24,7 @@ interface IProps {
   onChangeCameraStatus: (status: boolean) => void;
 }
 
-export const ControllBar: FC<IProps> = ({
-  type,
-  ...callback
-}) => {
+export const ControllBar: FC<IProps> = ({ type, ...callback }) => {
   const [micStatus, setMicStatus] = useState(true);
   const onChangeMicStatus = () => {
     setMicStatus((prev) => !prev);
@@ -69,12 +67,22 @@ export const ControllBarPresenter: FC<IPresenterProps> = ({
   cameraStatus,
   onChangeCameraStatus,
 }) => {
+  const userId = useSelector((state: any) => state.user.userId);
   const meetingRoomId = useSelector((state: any) => state.meeting.roomId);
   const [showSnack, setShowSnack] = useState(0);
   const [snackMessage, setSnackMessage] = useState("");
 
   const navigate = useNavigate();
   const exit = () => {
+    AvatimeApi.getInstance().postLeaveMeeting(
+      {
+        user_id: userId,
+        meetingroom_id: meetingRoomId,
+      },
+      {
+        navigate,
+      }
+    );
     navigate("/main", { replace: true });
   };
 

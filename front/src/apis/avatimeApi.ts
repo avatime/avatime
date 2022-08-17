@@ -10,6 +10,7 @@ import {
   PostBalanceGameReq,
   PatchPickStuffReq,
   StartPickStuffReq,
+  PostLeaveMeetingReq,
 } from "./request/sessionReq";
 import { NavigateFunction } from "react-router";
 import { ChatApi } from "./chatApi";
@@ -326,6 +327,15 @@ export class AvatimeApi implements SessionApi, ChatApi, WaitingApi, UserApi, Ava
       ...requestConfig,
     });
   }
+  async postLeaveMeeting(postLeaveMeetingReq: PostLeaveMeetingReq, requestConfig: RequestConfig<void>): Promise<void> {
+    await this.request<PostLeaveMeetingReq, void>({
+      method: "post",
+      url: `/meeting/leave`,
+      data: postLeaveMeetingReq,
+      ...requestConfig,
+    });
+  }
+
 
   static getInstance(): AvatimeApi {
     return this.instance || (this.instance = new this());
