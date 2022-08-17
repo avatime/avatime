@@ -8,7 +8,7 @@ export const useOpenvidu = (userId: number, meetingRoomId: number, gender: strin
   const [session, setSession] = useState<any>();
 
   const leaveSession = useCallback(() => {
-    console.log("AAAA", session)
+    console.log("AAAA", session);
     if (session) {
       session.disconnect();
     }
@@ -24,21 +24,19 @@ export const useOpenvidu = (userId: number, meetingRoomId: number, gender: strin
     session.on("streamCreated", (event) => {
       const subscriber = session.subscribe(event.stream, "");
       const data = JSON.parse(event.stream.connection.data);
-      setSubscribers((prev) => [
-        ...prev,
-        { streamManager: subscriber, userId: +data.userId, gender: data.gender },
-      ]);
+      setSubscribers((prev) => {
+        return [
+          ...(prev.filter((it) => it.userId !== +data.userId)),
+          { streamManager: subscriber, userId: +data.userId, gender: data.gender },
+        ];
+      });
     });
 
     session.on("streamDestroyed", (event) => {
       event.preventDefault();
 
-      let index = subscribers.findIndex(
-        (it) => it.userId === +JSON.parse(event.stream.connection.data).userId
-      );
-      if (-1 < index) {
-        setSubscribers((prev) => prev.splice(index, 1));
-      }
+      const data = JSON.parse(event.stream.connection.data);
+      setSubscribers((prev) => prev.filter((it) => it.userId !== +data.userId));
     });
 
     session.on("exception", (exception) => {
@@ -81,7 +79,7 @@ export const useOpenvidu = (userId: number, meetingRoomId: number, gender: strin
       setPublisher(null);
       setSubscribers([]);
     };
-  }, [gender, meetingRoomId, subscribers, userId]);
+  }, [gender, meetingRoomId, userId]);
 
   useEffect(() => {
     window.addEventListener("beforeunload", () => leaveSession());
