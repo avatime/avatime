@@ -306,7 +306,7 @@ public class MeetingRoomServiceImpl implements MeetingRoomService {
 	public MeetingRoom findSubMeetingRoom(Long mainMeetingRoomId, Long userId) throws Exception {
 		List<MeetingRoom> list = meetingRoomRepository.findAllBymainSessionIdAndTypeAndStatus(mainMeetingRoomId, 1, 0).get();
 		for(MeetingRoom meetingRoom : list) {
-			if(meetingRoomUserRelationRepository.existsByMeetingRoomIdAndUserId(mainMeetingRoomId, userId)) return meetingRoom;
+			if(meetingRoomUserRelationRepository.existsByMeetingRoomIdAndUserId(meetingRoom.getId(), userId)) return meetingRoom;
 		}
 		
 		return null;
