@@ -1,4 +1,4 @@
-import { Box, Grid, Button } from "@mui/material";
+import { Box, Grid, Button, Typography } from '@mui/material';
 import { grey } from "@mui/material/colors";
 import React, { FC, useState, useEffect } from "react";
 import CanvasDraw from "react-canvas-draw";
@@ -9,8 +9,8 @@ import { AvatarProfile } from "../components/session/modal/AvatarProfile";
 import { GetAvatarRes } from "../apis/response/avatarRes";
 import { useSelector } from "react-redux";
 import { AvatimeApi } from "../apis/avatimeApi";
-import { useNavigate } from 'react-router';
-import { AlertSnackbar } from '../components/AlertSnackbar';
+import { useNavigate } from "react-router";
+import { AlertSnackbar } from "../components/AlertSnackbar";
 
 // 아바타의 임시 타입
 // type TempAvatarRes = {
@@ -60,7 +60,7 @@ export const CanvasPage: FC<IProps> = (props) => {
   const afterConfirm = () => {
     canvasRef.current.loadSaveData(data, true);
     setShowConfirmSnack(false);
-  }
+  };
 
   const afterPrompt = async (avaname?: string) => {
     setShowPromptSnack(false);
@@ -69,7 +69,7 @@ export const CanvasPage: FC<IProps> = (props) => {
       setMsg("아바타 이름을 입력해주세요.");
       setShowSnack(true);
       return;
-    } else if(avaname.length > 4) {
+    } else if (avaname.length > 4) {
       setMsg("4글자 이하로 이름을 지어주세요.");
       setShowSnack(true);
       return;
@@ -80,7 +80,7 @@ export const CanvasPage: FC<IProps> = (props) => {
         },
         {
           onSuccess(data) {
-            if(!data) {
+            if (!data) {
               setMsg("중복된 아바타 이름이예요");
               setShowSnack(true);
               flag = true;
@@ -91,7 +91,7 @@ export const CanvasPage: FC<IProps> = (props) => {
       );
     }
 
-    if(flag) return;
+    if (flag) return;
 
     const dataURL = canvasRef.current.getDataURL();
     const saveData = canvasRef.current.getSaveData();
@@ -131,7 +131,7 @@ export const CanvasPage: FC<IProps> = (props) => {
         navigate,
       }
     );
-  }
+  };
 
   useEffect(() => {
     if (!userId) {
@@ -161,19 +161,24 @@ export const CanvasPage: FC<IProps> = (props) => {
           onSave={onSave}
         />
         <Box p={1} />
-        <CanvasDraw
-          ref={canvasRef}
-          style={{
-            flex: 1,
-            height: "100%",
-            borderRadius: "20px",
-          }}
-          imgSrc={process.env.PUBLIC_URL + "/canvasBg.png"}
-          brushColor={brushColor}
-          brushRadius={brushRadius}
-          lazyRadius={1}
-          hideGrid={true}
-        />
+        <Box flex={1} display="flex" flexDirection="column" alignItems="stretch" >
+          <Typography color="error">
+            처음 배경색은 투명이예요!!
+          </Typography>
+          <CanvasDraw
+            ref={canvasRef}
+            style={{
+              flex: 1,
+              width: "100%",
+              height: "100%",
+              borderRadius: "20px",
+            }}
+            imgSrc={process.env.PUBLIC_URL + "/canvasBg.png"}
+            brushColor={brushColor}
+            brushRadius={brushRadius}
+            lazyRadius={1}
+          />
+        </Box>
 
         <Box p={1} />
         <Box
