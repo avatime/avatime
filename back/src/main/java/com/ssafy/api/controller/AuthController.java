@@ -74,7 +74,7 @@ public class AuthController {
 			User user = userService.createUser(registerInfo);
 			
 			// 여기서 토큰 발행
-			return ResponseEntity.ok(UserLoginPostRes.of(200, "Success", user, JwtTokenUtil.getToken(user.getName())));
+			return ResponseEntity.ok(UserLoginPostRes.of(200, "Success", user, JwtTokenUtil.getToken(user.getId().toString())));
 		} catch (Exception e) {
 			return ResponseEntity.status(500).body(e);
 		}
@@ -117,7 +117,7 @@ public class AuthController {
 			}
 			
 			else {
-				return ResponseEntity.ok(UserLoginPostRes.of(200, "Success", user, JwtTokenUtil.getToken(user.getName())));
+				return ResponseEntity.ok(UserLoginPostRes.of(200, "Success", user, JwtTokenUtil.getToken(user.getId().toString())));
 			}
 		} catch (Exception e) {
 			return ResponseEntity.status(500).body(e);
@@ -174,8 +174,7 @@ public class AuthController {
 			}
 			
 			else {
-				System.out.println("user: " + user.getName());
-				return ResponseEntity.ok(UserLoginPostRes.of(200, "Success", user, JwtTokenUtil.getToken(user.getName())));
+				return ResponseEntity.ok(UserLoginPostRes.of(200, "Success", user, JwtTokenUtil.getToken(user.getId().toString())));
 			}
 		} catch (Exception e) {
 			return ResponseEntity.status(500).body(e);
