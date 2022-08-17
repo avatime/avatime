@@ -17,7 +17,7 @@ insert into age values ('0', '20대'),
 ('0', '40대'),
 ('0', '50대 이상');
 
-insert into waiting_room values ('0', '1', now(), '6', '파이썬 초보만', '1', '0');
+insert into waiting_room values ('0', '1', now(), '6', '파이썬 초보만', '1', '1');
 
 insert into avatar (image_path, name) values ("액션가면.jpg", "액션가면"),
 ("헐크.jpg", "헐크"),
