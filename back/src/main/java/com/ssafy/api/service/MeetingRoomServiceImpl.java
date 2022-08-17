@@ -312,6 +312,10 @@ public class MeetingRoomServiceImpl implements MeetingRoomService {
 		return null;
 	}
 
+	/**
+	 * true : gender에 해당하는 사람이 선택 불가능
+	 * false : gender에 해당하는 사람이 선택 가능
+	 */
 	@Override
 	public boolean isSelectedStuff(Long meetingRoomId, String gender, Long stuffId) throws Exception {
 		// TODO Auto-generated method stub
@@ -342,18 +346,14 @@ public class MeetingRoomServiceImpl implements MeetingRoomService {
 		for(int i = 0; i<meetingRoom.getHeadCount()/2; i++) {
 			Stuff stuff = stuffList.get(i);
 			StuffStatus stuffsta = new StuffStatus(stuff);
-			if(isSelectedStuff(meetingRoomId, "F", stuff.getId())) {
-				stuffsta.setMen_selected(true);
-			} else {
-				num++;
-				stuffsta.setMen_selected(false);
-			}
 			if(isSelectedStuff(meetingRoomId, "M", stuff.getId())) {
-				stuffsta.setWomen_selected(true);
-			} else {
+				stuffsta.setMen_selected(true);
 				num++;
-				stuffsta.setWomen_selected(false);
-			}
+			} else stuffsta.setMen_selected(false);
+			if(isSelectedStuff(meetingRoomId, "F", stuff.getId())) {
+				stuffsta.setWomen_selected(true);
+				num++;
+			} else stuffsta.setWomen_selected(false);
 			
 			list.add(stuffsta);
 		}
