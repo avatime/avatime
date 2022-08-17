@@ -58,12 +58,13 @@ export const SessionPage: FC<IProps> = (props) => {
   const [lastPickModalOpen, setLastPickModalOpen] = useState(false);
   const [balanceGameModalOpen, setBalanceGameModalOpen] = useState(false);
   const [balanceResult, setBalanceResult] = useState<any[]>([]);
-  const [pickStuffModalOpen, setPickStuffModalOpen] = useState(0);
+  const [pickStuffModalOpen, setPickStuffModalOpen] = useState(false);
   const [showSnack, setShowSnack] = useState(false);
   const [snackMessage, setSnackMessage] = useState("");
 
   useWebSocket({
     onConnect(frame, client) {
+      let flag = true;
       client.subscribe(`/topic/meeting/status/${roomId}`, function (response) {
         console.log(response.body);
         if (JSON.parse(response.body).last_pick_status) {
@@ -92,12 +93,12 @@ export const SessionPage: FC<IProps> = (props) => {
 
       client.subscribe(`/topic/meeting/stuff/${roomId}`, function (response) {
         console.log(response.body);
-        if (pickStuffModalOpen === 0) {
+        if (flag) {
+          flag = false;
           setSnackMessage("3초 후 물건 고르기 게임이 시작돼요!!");
           setShowSnack(true);
-          setPickStuffModalOpen(1);
           setTimeout(() => {
-            setPickStuffModalOpen(2);
+            setPickStuffModalOpen(true);
           }, 3000);
         }
       });
@@ -238,7 +239,7 @@ export const SessionPage: FC<IProps> = (props) => {
           onClose={() => setBalanceGameModalOpen(false)}
         />
       )}
-      {pickStuffModalOpen && <PickStuffModal isOpened={pickStuffModalOpen === 2} />}
+      {pickStuffModalOpen && <PickStuffModal isOpened={pickStuffModalOpen} />}
     </div>
   );
 };
