@@ -31,16 +31,16 @@ export const NaverHandler: FC<Iprops> = (props) => {
   const login = () => {
     localStorage.setItem("token", tempToken);
     dispatch(setToken(tempToken));
-    navigate("/main");
+    navigate("/main", { replace: true });
   }
 
   const register = () => {
-    navigate("/mypage");
+    navigate("/mypage", { replace: true });
   }
 
   const cancelconfirm = () => {
     setShowRegisterSnack(false);
-    navigate("/login");
+    navigate("/login", { replace: true });
   }
 
   AvatimeApi.getInstance().naverLogin(code as string, state as string, {

@@ -32,11 +32,11 @@ export const KakaoHandler: FC<Iprops> = (props) => {
   const login = () => {
     localStorage.setItem("token", tempToken);
     dispatch(setToken(tempToken));
-    navigate("/main");
+    navigate("/main", { replace: true });
   }
 
   const register = () => {
-    navigate("/mypage");
+    navigate("/mypage", { replace: true });
   }
 
   const reconfirm = () => {
@@ -45,7 +45,7 @@ export const KakaoHandler: FC<Iprops> = (props) => {
 
   const cancelconfirm = () => {
     setShowRegisterSnack(false);
-    navigate("/main");
+    navigate("/main", { replace: true });
   }
 
   AvatimeApi.getInstance().kakaoLogin(code as string, {
