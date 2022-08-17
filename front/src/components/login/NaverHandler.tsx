@@ -38,6 +38,11 @@ export const NaverHandler: FC<Iprops> = (props) => {
     navigate("/mypage");
   }
 
+  const cancelconfirm = () => {
+    setShowRegisterSnack(false);
+    navigate("/login");
+  }
+
   AvatimeApi.getInstance().naverLogin(code as string, state as string, {
     onSuccess(data) {
       if (data.statusCode === 201) {
@@ -85,7 +90,7 @@ export const NaverHandler: FC<Iprops> = (props) => {
       />
      <AlertSnackbar
         open={showRegisterSnack}
-        onClose={() => setShowRegisterSnack(false)}
+        onClose={cancelconfirm}
         message="회원가입이 필요해요!!"
         alertColor="warning"
         type="confirm"
