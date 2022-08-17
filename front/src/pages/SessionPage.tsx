@@ -10,7 +10,7 @@ import {
   setBalanceId,
   setUserInfoList,
 } from "../stores/slices/meetingSlice";
-import { MeetingRoomInfoRes, MeetingUserInfoRes } from "../apis/response/sessionRes";
+import { MeetingRoomInfoRes } from "../apis/response/sessionRes";
 import { useOpenvidu } from "../hooks/useOpenvidu";
 import { AvatarVideoStream } from "../components/session/AvatarVideoStream";
 import { useWebSocket } from "../hooks/useWebSocket";
@@ -22,7 +22,6 @@ import { AlertSnackbar } from "../components/AlertSnackbar";
 import { FinalPickModal } from "../components/session/modal/FinalPickModal";
 import { BalanceGameModal } from "../components/session/modal/BalanceGameModal";
 import { PickStuffModal } from "../components/session/modal/PickStuffModal";
-import { StreamManager } from 'openvidu-browser';
 
 interface IProps {}
 
@@ -127,29 +126,17 @@ export const SessionPage: FC<IProps> = (props) => {
     gender
   );
 
-  const userInfoList: MeetingUserInfoRes[] = useSelector((state: any) => state.meeting.userInfoList);
-  const [sameGenderList, setSameGenderList] = useState<any[]>();
-  useEffect(() => {
-    console.log("AAAAABB", streamList);
-    setSameGenderList(
-      userInfoList.filter((it) => it.gender === gender)
-      .map((it) => streamList.find((i) => i.userId === it.user_id))
-      .filter((it) => it?.streamManager)
-    )
-  }, [gender, streamList, userInfoList]);
+  const sameGenderUserList = useMemo(
+    () => streamList.filter((it) => it.gender === gender),
+    [gender, streamList]
+  );
 
-  const [diffGenderList, setDiffGenderList] = useState<any[]>();
-  useEffect(() => {
-    console.log("AAAAACCC", streamList);
-    setDiffGenderList(
-      userInfoList.filter((it) => it.gender !== gender)
-      .map((it) => streamList.find((i) => i.userId === it.user_id))
-      .filter((it) => it?.streamManager)
-    )
-  }, [gender, streamList, userInfoList]);
+  const diffGenderUserList = useMemo(
+    () => streamList.filter((it) => it.gender !== gender),
+    [gender, streamList]
+  );
 
   useBGM("meeting");
-  console.log("AAAAA", sameGenderList, diffGenderList);
 
   return (
     <div className="mainback">
@@ -163,10 +150,11 @@ export const SessionPage: FC<IProps> = (props) => {
                     [0, 1].map((it, idx) => (
                       <Box flex={1} key={idx} height="50%">
                         <Grid container height="100%" spacing={2} alignItems="stretch">
-                          {(idx ? diffGenderList : sameGenderList)?.map((stream, idx) => {
+                          {(idx ? diffGenderUserList : sameGenderUserList).map((stream, idx) => {
                             const userInfo = meetingRoomInfo.meeting_user_info_list.find(
                               (it) => it.user_id === stream.userId
                             );
+                            console.log("AAAA", streamList);
                             return (
                               <Grid item key={idx} xs={24 / headCount} maxHeight="42vh">
                                 <AvatarVideoStream
