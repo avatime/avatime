@@ -23,7 +23,7 @@ import { formatDate } from "../../utils/day";
 import { useWebSocket } from "../../hooks/useWebSocket";
 import { useNavigate } from "react-router";
 import { AvatimeApi } from "../../apis/avatimeApi";
-import { SoundButton } from '../SoundButton';
+import { SoundButton } from "../SoundButton";
 
 type ChatType = "all" | "gender";
 
@@ -48,24 +48,10 @@ export const ChatRoom: FC<IProps> = ({
   const [chatList, setChatList] = useState<ChatMessageRes[]>([]);
   const userId = useSelector((state: any) => state.user.userId);
 
-  useWebSocket({
-    onConnect(frame, client) {
-      client.subscribe(`/topic/chatting/receive/${chattingRoomId}`, (res) => {
-        setChatList(JSON.parse(res.body));
-      });
-      AvatimeApi.getInstance().sendMessage(
-        {
-          chattingroom_id: chattingRoomId,
-          chat_type: "ENTER",
-          user_id: userId,
-          message: "ENTER",
-        },
-        {
-          navigate,
-        }
-      );
-    },
-    beforeDisconnected(frame, client) {
+  const [enter, setEnter] = useState(false);
+
+  useEffect(() => {
+    return () => {
       AvatimeApi.getInstance().sendMessage(
         {
           chattingroom_id: chattingRoomId,
@@ -77,7 +63,34 @@ export const ChatRoom: FC<IProps> = ({
           navigate,
         }
       );
+    };
+  }, [chattingRoomId, navigate, userId]);
+
+  useWebSocket({
+    onConnect(frame, client) {
+      client.subscribe(`/topic/chatting/receive/${chattingRoomId}`, (res) => {
+        setChatList(JSON.parse(res.body));
+      });
+
+      if (enter) {
+        return;
+      }
+      AvatimeApi.getInstance().sendMessage(
+        {
+          chattingroom_id: chattingRoomId,
+          chat_type: "ENTER",
+          user_id: userId,
+          message: "ENTER",
+        },
+        {
+          onSuccess() {
+            setEnter(true);
+          },
+          navigate,
+        }
+      );
     },
+    beforeDisconnected(frame, client) {},
   });
 
   const chatBodyRef = useScrollToBottomRef();
@@ -255,7 +268,12 @@ const ChatRoomPresenter: FC<IPresenterProps> = ({
             onKeyUp={onKeyUp}
             onKeyDown={onKeyDown}
           />
-          <SoundButton variant="contained" onClick={sendMessage} disabled={!message} color="secondary">
+          <SoundButton
+            variant="contained"
+            onClick={sendMessage}
+            disabled={!message}
+            color="secondary"
+          >
             <SendIcon />
           </SoundButton>
         </Stack>
