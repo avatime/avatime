@@ -37,3 +37,8 @@ export interface PatchPickStuffReq {
   user_id: number;
   stuff_id: number;
 }
+
+export interface PostLeaveMeetingReq {
+  user_id: number;
+  meetingroom_id: number;
+}
