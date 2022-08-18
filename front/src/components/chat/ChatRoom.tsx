@@ -48,9 +48,18 @@ export const ChatRoom: FC<IProps> = ({
   const [chatList, setChatList] = useState<ChatMessageRes[]>([]);
   const userId = useSelector((state: any) => state.user.userId);
 
-  const [enter, setEnter] = useState(false);
-
   useEffect(() => {
+    AvatimeApi.getInstance().sendMessage(
+      {
+        chattingroom_id: chattingRoomId,
+        chat_type: "ENTER",
+        user_id: userId,
+        message: "ENTER",
+      },
+      {
+        navigate,
+      }
+    );
     return () => {
       AvatimeApi.getInstance().sendMessage(
         {
@@ -71,24 +80,6 @@ export const ChatRoom: FC<IProps> = ({
       client.subscribe(`/topic/chatting/receive/${chattingRoomId}`, (res) => {
         setChatList(JSON.parse(res.body));
       });
-
-      if (enter) {
-        return;
-      }
-      AvatimeApi.getInstance().sendMessage(
-        {
-          chattingroom_id: chattingRoomId,
-          chat_type: "ENTER",
-          user_id: userId,
-          message: "ENTER",
-        },
-        {
-          onSuccess() {
-            setEnter(true);
-          },
-          navigate,
-        }
-      );
     },
     beforeDisconnected(frame, client) {},
   });
@@ -114,7 +105,7 @@ export const ChatRoom: FC<IProps> = ({
       return;
     }
 
-    AvatimeApi.getInstance().sendMessage(
+    AvatimeApi.getInstance().sendMessage( 
       {
         chattingroom_id: chattingRoomId,
         chat_type: "TALK",
