@@ -29,7 +29,7 @@ public class QWaitingRoomUserRelation extends EntityPathBase<WaitingRoomUserRela
 
     public final NumberPath<Integer> type = createNumber("type", Integer.class);
 
-    public final NumberPath<Long> user_id = createNumber("user_id", Long.class);
+    public final QUser user;
 
     public final QWaitingRoom waitingRoom;
 
@@ -51,6 +51,7 @@ public class QWaitingRoomUserRelation extends EntityPathBase<WaitingRoomUserRela
 
     public QWaitingRoomUserRelation(Class<? extends WaitingRoomUserRelation> type, PathMetadata metadata, PathInits inits) {
         super(type, metadata, inits);
+        this.user = inits.isInitialized("user") ? new QUser(forProperty("user")) : null;
         this.waitingRoom = inits.isInitialized("waitingRoom") ? new QWaitingRoom(forProperty("waitingRoom")) : null;
     }
 

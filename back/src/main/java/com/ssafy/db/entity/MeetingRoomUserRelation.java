@@ -1,5 +1,6 @@
 package com.ssafy.db.entity;
 
+import javax.persistence.CascadeType;
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.ManyToOne;
@@ -7,8 +8,10 @@ import javax.persistence.ManyToOne;
 import org.hibernate.annotations.DynamicInsert;
 import org.hibernate.annotations.DynamicUpdate;
 
+import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
+import lombok.NoArgsConstructor;
 import lombok.Setter;
 
 /**
@@ -18,9 +21,12 @@ import lombok.Setter;
 @Entity
 @Getter
 @Setter
+@NoArgsConstructor
+@AllArgsConstructor
+@Builder
 public class MeetingRoomUserRelation  extends BaseEntity {
 
-	@ManyToOne
+	@ManyToOne(cascade = CascadeType.ALL)
 	private MeetingRoom meetingRoom;
 	
     @ManyToOne
@@ -32,7 +38,17 @@ public class MeetingRoomUserRelation  extends BaseEntity {
     @Column(columnDefinition = "INT UNSIGNED")
     private Long pickUserId;
     
+    @Column(columnDefinition = "BOOLEAN DEFAULT FALSE")
     private boolean matched;
+    
+    @Column(columnDefinition = "BOOLEAN DEFAULT FALSE")
+    private boolean leftMeeting;
+    
+    @Column
+    private String streamId;
+    
+    @Column(columnDefinition = "INT UNSIGNED DEFAULT 0")
+    private Long stuffId;
     
     @Builder
     public MeetingRoomUserRelation(MeetingRoom meetingRoom, User user) {
@@ -40,5 +56,6 @@ public class MeetingRoomUserRelation  extends BaseEntity {
     	this.user = user;
     	this.avatarId = null;
     	this.pickUserId = null;
+    	this.streamId = null;
     }
 }

@@ -36,16 +36,20 @@ public class User extends BaseEntity{
     @Column(columnDefinition = "TEXT")
     private String description;
 	
-    @Column(updatable = false, nullable = false)
+    @JsonProperty("profile_image_path")
+    @Column(nullable = false)
     private String profileImagePath;
 	
+    @JsonProperty("social_type")
     @Column(updatable = false, nullable = false)
     private int socialType;
 	
+    @JsonProperty("social_id")
     @Column(updatable = false, nullable = false)
     private String socialId;
     
     @Temporal(TemporalType.TIMESTAMP)
+    @JsonProperty("created_time")
     @Column(updatable = false, columnDefinition = "TIMESTAMP DEFAULT CURRENT_TIMESTAMP")
     private Date createdTime;
     

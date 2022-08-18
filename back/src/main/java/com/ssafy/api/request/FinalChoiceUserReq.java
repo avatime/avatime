@@ -14,7 +14,7 @@ import lombok.Setter;
 @ApiModel("FinalChoiceUserRequest")
 public class FinalChoiceUserReq {
 
-	@JsonProperty("meeting_room_id")
+	@JsonProperty("meetingroom_id")
 	Long meetingRoomId;
 	
 	@JsonProperty("user_id")

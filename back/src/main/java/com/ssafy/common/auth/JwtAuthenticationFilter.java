@@ -1,30 +1,21 @@
 package com.ssafy.common.auth;
 
 import java.io.IOException;
-import java.time.LocalDateTime;
-import java.util.Base64;
-import java.util.Objects;
 
 import javax.servlet.FilterChain;
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.http.HttpStatus;
-import org.springframework.http.ResponseEntity;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
-import org.springframework.security.web.authentication.WebAuthenticationDetailsSource;
-import org.springframework.security.web.authentication.logout.SecurityContextLogoutHandler;
 import org.springframework.security.web.authentication.www.BasicAuthenticationFilter;
 import org.springframework.transaction.annotation.Transactional;
-import org.springframework.web.bind.annotation.RequestHeader;
-import org.springframework.web.filter.OncePerRequestFilter;
 
 import com.auth0.jwt.JWTVerifier;
+import com.auth0.jwt.exceptions.TokenExpiredException;
 import com.auth0.jwt.interfaces.DecodedJWT;
 import com.ssafy.api.service.UserService;
 import com.ssafy.common.util.JwtTokenUtil;
@@ -47,7 +38,6 @@ public class JwtAuthenticationFilter extends BasicAuthenticationFilter {
 			throws ServletException, IOException {
 		// Read the Authorization header, where the JWT Token should be
         String header = request.getHeader(JwtTokenUtil.HEADER_STRING);
-
         // If header does not contain BEARER or is null delegate to Spring impl and exit
         if (header == null || !header.startsWith(JwtTokenUtil.TOKEN_PREFIX)) {
             filterChain.doFilter(request, response);
@@ -63,7 +53,8 @@ public class JwtAuthenticationFilter extends BasicAuthenticationFilter {
             ResponseBodyWriteUtil.sendError(request, response, ex);
             return;
         }
-        
+
+        System.out.println("여기 나오는지 봐바");
         filterChain.doFilter(request, response);
 	}
 	
@@ -82,7 +73,7 @@ public class JwtAuthenticationFilter extends BasicAuthenticationFilter {
             // If so, then grab user details and create spring auth token using name, pass, authorities/roles
             if (name != null) {
                     // jwt 토큰에 포함된 계정 정보(name) 통해 실제 디비에 해당 정보의 계정이 있는지 조회.
-            		User user = userService.getUserByUserName(name);
+            		User user = userService.getUserByUserId(Long.parseLong(name));
                 if(user != null) {
                         // 식별된 정상 유저인 경우, 요청 context 내에서 참조 가능한 인증 정보(jwtAuthentication) 생성.
                 		SsafyUserDetails userDetails = new SsafyUserDetails(user);

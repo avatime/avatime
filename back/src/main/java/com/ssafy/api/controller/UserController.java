@@ -22,6 +22,7 @@ import com.ssafy.api.request.UserUpdatePostReq;
 import com.ssafy.api.response.UserRes;
 import com.ssafy.api.service.ProfileService;
 import com.ssafy.api.service.UserService;
+import com.ssafy.common.auth.SsafyUserDetails;
 //import com.ssafy.common.auth.SsafyUserDetails;
 import com.ssafy.common.model.response.BaseResponseBody;
 import com.ssafy.db.entity.Profile;
@@ -47,90 +48,68 @@ public class UserController {
 	
 	@Autowired
 	UserService userService;
-//	
-//	@PostMapping()
-//	@ApiOperation(value = "회원 가입", notes = "<strong>아이디와 패스워드</strong>를 통해 회원가입 한다.") 
-//    @ApiResponses({
-//        @ApiResponse(code = 200, message = "성공"),
-//        @ApiResponse(code = 401, message = "인증 실패"),
-//        @ApiResponse(code = 404, message = "사용자 없음"),
-//        @ApiResponse(code = 500, message = "서버 오류")
-//    })
-//	public ResponseEntity<? extends BaseResponseBody> register(
-//			@RequestBody @ApiParam(value="회원가입 정보", required = true) UserRegisterPostReq registerInfo) {
-//		
-//		//임의로 리턴된 User 인스턴스. 현재 코드는 회원 가입 성공 여부만 판단하기 때문에 굳이 Insert 된 유저 정보를 응답하지 않음.
-//		User user = userService.createUser(registerInfo);
-//		
-//		return ResponseEntity.status(200).body(BaseResponseBody.of(200, "Success"));
-//	}
-//	
-//	@GetMapping("/me")
-//	@ApiOperation(value = "회원 본인 정보 조회", notes = "로그인한 회원 본인의 정보를 응답한다.") 
-//    @ApiResponses({
-//        @ApiResponse(code = 200, message = "성공"),
-//        @ApiResponse(code = 401, message = "인증 실패"),
-//        @ApiResponse(code = 404, message = "사용자 없음"),
-//        @ApiResponse(code = 500, message = "서버 오류")
-//    })
-//	public ResponseEntity<UserRes> getUserInfo(@ApiIgnore Authentication authentication) {
-//		/**
-//		 * 요청 헤더 액세스 토큰이 포함된 경우에만 실행되는 인증 처리이후, 리턴되는 인증 정보 객체(authentication) 통해서 요청한 유저 식별.
-//		 * 액세스 토큰이 없이 요청하는 경우, 403 에러({"error": "Forbidden", "message": "Access Denied"}) 발생.
-//		 */
-//		SsafyUserDetails userDetails = (SsafyUserDetails)authentication.getDetails();
-//		String userId = userDetails.getUsername();
-//		User user = userService.getUserByUserId(userId);
-//		
-//		return ResponseEntity.status(200).body(UserRes.of(user));
-//	}
-	
+
 	// 프로필 사진 목록 조회
 	@GetMapping("/profile")
 	@ApiOperation(value = "프로필 이미지 목록 조회", notes = "서버 내 모든 프로필 이미지 제공")
-	public ResponseEntity<List<Profile>> profileAll(){
-		List<Profile> profileList = profileService.getProfileAll();
-		return new ResponseEntity<List<Profile>>(profileList, HttpStatus.OK);
-	
+	public ResponseEntity<?> profileAll(){
+		try {
+			List<Profile> profileList = profileService.getProfileAll();
+			return new ResponseEntity<List<Profile>>(profileList, HttpStatus.OK);
+		} catch (Exception e) {
+			return ResponseEntity.status(500).body(e);
+		}
 	}
 	
 	// 프로필 단일 사진 조회
 	@GetMapping("/profile/{profileId}")
 	public ResponseEntity<?> profile(@PathVariable Long profileId){
-		Profile profile = profileService.getProfile(profileId);
-		if (profile != null) {
-			return ResponseEntity.status(200).body(profile);
-		}else {
-			return ResponseEntity.status(404).body(null);
+		
+		try {
+			Profile profile = profileService.getProfile(profileId);
+			if (profile != null) {
+				return ResponseEntity.status(200).body(profile);
+			}else {
+				return ResponseEntity.status(404).body(null);
+			}
+		} catch (Exception e) {
+			return ResponseEntity.status(500).body(e);
 		}
 	}
 	// 유저 정보 조회
 	@GetMapping("/{userId}")
 	public ResponseEntity<?> getUserInfo(@PathVariable Long userId){
-		User user = userService.getUserByUserId(userId);
-		if (user != null) {
-			return ResponseEntity.status(201).body(user);
-		}else {
-			return ResponseEntity.status(404).body(null);
+		try {
+			User user = userService.getUserByUserId(userId);
+			if (user != null) {
+				return ResponseEntity.status(201).body(user);
+			}else {
+				return ResponseEntity.status(404).body(null);
+			}
+		} catch (Exception e) {
+			return ResponseEntity.status(500).body(e);
 		}
-		
 	}
 	
 	// 유저 정보 수정
-	@PatchMapping("/{user_id}")
-	public ResponseEntity<?> modifyUserInfo(@PathVariable Long user_id, UserUpdatePostReq updateInfo){
-		userService.updateUserInfo(user_id, updateInfo);
-		if (userService.getUserByUserId(user_id) != null) {
-			return ResponseEntity.status(200).body(BaseResponseBody.of(200, "성공적으로 변경했습니다."));
-		}else {
-			return ResponseEntity.status(409).body(BaseResponseBody.of(409, "존재하지 않는 회원입니다."));
+	@PatchMapping("/{id}")
+	public ResponseEntity<?> modifyUserInfo(@PathVariable Long id, @RequestBody UserUpdatePostReq updateInfo){
+		try {
+			userService.updateUserInfo(id, updateInfo);
+			return ResponseEntity.status(200).body("");
+		} catch (Exception e) {
+			return ResponseEntity.status(500).body(e);
 		}
 	}
 	
 	// 유저 정보 삭제
 	@DeleteMapping("/{userId}")
 	public ResponseEntity<?> deleteUserInfo(@PathVariable Long userId){
-		userService.deleteUserInfo(userId);
-		return ResponseEntity.status(204).body(BaseResponseBody.of(204, "회원 정보를 삭제했습니다."));
+		try {
+			userService.deleteUserInfo(userId);
+			return ResponseEntity.status(204).body(BaseResponseBody.of(204, "회원 정보를 삭제했습니다."));
+		} catch (Exception e) {
+			return ResponseEntity.status(500).body(e);
+		}
 	}
 }

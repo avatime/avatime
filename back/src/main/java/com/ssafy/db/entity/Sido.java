@@ -4,14 +4,12 @@ import javax.persistence.Column;
 import javax.persistence.Entity;
 
 import lombok.Getter;
-import lombok.Setter;
 
 /**
  * 지역 모델 정의.
  */
 @Entity
 @Getter
-@Setter
 public class Sido extends BaseEntity {
 
 	@Column(updatable = false, nullable = false)

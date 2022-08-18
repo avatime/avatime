@@ -8,10 +8,6 @@ import java.io.OutputStreamWriter;
 import java.net.HttpURLConnection;
 import java.net.URL;
 import java.util.NoSuchElementException;
-import java.util.Optional;
-
-import javax.persistence.EntityNotFoundException;
-import javax.print.DocFlavor.STRING;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpEntity;
@@ -25,11 +21,9 @@ import org.springframework.util.MultiValueMap;
 import org.springframework.web.client.RestTemplate;
 
 import com.google.gson.JsonElement;
-import com.google.gson.JsonObject;
 import com.google.gson.JsonParser;
 import com.ssafy.api.request.UserRegisterPostReq;
 import com.ssafy.api.request.UserUpdatePostReq;
-import com.ssafy.api.response.UserRes;
 import com.ssafy.db.entity.User;
 import com.ssafy.db.repository.UserRepository;
 import com.ssafy.db.repository.UserRepositorySupport;
@@ -107,17 +101,12 @@ public class UserServiceImpl implements UserService {
 	
 	// 유저 정보 수정
 	@Override
-	public User updateUserInfo(Long userId, UserUpdatePostReq updateInfo) {
-		Optional<User> user = userRepository.findById(userId);
-		if (!user.isPresent()) {
-			throw new EntityNotFoundException("존재하지 않는 회원입니다.");
-		}
-		User newUserInfo = user.get();
-		newUserInfo.setName(updateInfo.getName());
-		newUserInfo.setProfileImagePath(updateInfo.getProfileImagePath());
-		newUserInfo.setDescription(updateInfo.getDescription());
-		
-		return userRepository.save(newUserInfo);
+	public void updateUserInfo(Long id, UserUpdatePostReq updateInfo) {
+		User user = userRepository.findById(id).get();
+		user.setName(updateInfo.getName());
+		user.setProfileImagePath(updateInfo.getProfileImagePath());
+		user.setDescription(updateInfo.getDescription());
+		userRepository.saveAndFlush(user);
 	}
 	
 	// 유저 정보 삭제
@@ -147,7 +136,7 @@ public class UserServiceImpl implements UserService {
             StringBuilder sb = new StringBuilder();
             sb.append("grant_type=authorization_code");
             sb.append("&client_id=6300198dbbef93aac1c88f68eeb4525a"); // TODO REST_API_KEY 입력
-            sb.append("&redirect_uri=http://localhost:8080/kakao"); // TODO 인가코드 받은 redirect_uri 입력
+            sb.append("&redirect_uri=https://i7a309.p.ssafy.io/kakao"); // TODO 인가코드 받은 redirect_uri 입력
             sb.append("&code=" + code);
             bw.write(sb.toString());
             bw.flush();
@@ -273,5 +262,4 @@ public class UserServiceImpl implements UserService {
 
 		return new HttpEntity<>(params, headers);
 	}
-		
 }

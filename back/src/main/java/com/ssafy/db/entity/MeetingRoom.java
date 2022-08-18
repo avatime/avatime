@@ -32,8 +32,17 @@ public class MeetingRoom  extends BaseEntity {
     @Column(columnDefinition = "INT UNSIGNED")
 	private Long mainSessionId;
     
-    @Column(length = 1, columnDefinition = "TINYINT(1)")
+    @Column(length = 1, columnDefinition = "TINYINT(1) DEFAULT 0")
    	private int status;
+    
+    @Column(columnDefinition = "INT DEFAULT 0")
+   	private int balance;
+    
+    @Column(columnDefinition = "INT DEFAULT 0")
+   	private int stuff;
+    
+	@Column(nullable = false)
+	private int headCount;
 	
 	@Temporal(TemporalType.TIMESTAMP)
     @Column(updatable = false, columnDefinition = "TIMESTAMP DEFAULT CURRENT_TIMESTAMP")
