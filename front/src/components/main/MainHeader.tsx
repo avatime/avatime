@@ -7,7 +7,7 @@ import Tooltip from "@mui/material/Tooltip";
 import "../../style.css";
 import { useSelector, useDispatch } from "react-redux";
 import { useNavigate } from "react-router";
-import { reset } from "../../stores/slices/userSlice";
+import { reset, setUserName, setUserDesc, setIsLogin } from "../../stores/slices/userSlice";
 import { AvatimeApi } from "../../apis/avatimeApi";
 import { AvatimeWs } from "../../apis/avatimeWs";
 import { resetMeeting } from "../../stores/slices/meetingSlice";
@@ -48,6 +48,9 @@ export const MainHeader: FC<IProps> = ({ hideSettings = false }) => {
     dispatch(reset());
     dispatch(resetWaiting());
     dispatch(resetMeeting());
+    dispatch(setUserName(""));
+    dispatch(setUserDesc(""));
+    dispatch(setIsLogin(false));
     AvatimeApi.getInstance().logout();
     AvatimeWs.getInstance().logout();
     setShowSnack(true);
