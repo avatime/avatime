@@ -4,7 +4,7 @@ import { MainHeader } from "../components/main/MainHeader";
 import { Box } from "@mui/system";
 import grey from "@mui/material/colors/grey";
 import { GaugeBar } from "../components/pickAvatar/GaugeBar";
-import { AvatarPickInfoRes, GetAvatarRes } from "../apis/response/avatarRes";
+import { AvatarInfoRes, AvatarPickInfoRes, GetAvatarRes } from "../apis/response/avatarRes";
 import { Avatar } from "@mui/material";
 import { useSelector, useDispatch } from "react-redux";
 import { AvatarProfile } from "../components/session/modal/AvatarProfile";
@@ -41,15 +41,36 @@ export const PickAvatarPage: FC<IProps> = () => {
 
   useWebSocket({
     onConnect: (frame, client) => {
-      //아바타 목록
-      client.subscribe(`/topic/meeting/avatar/${meetingRoomId}`, function (response) {
-        console.log(response.body);
-        const res = JSON.parse(response.body);
-        setOriginData(res);
-        if (res.status === 1) {
-          navigate("/session", { replace: true });
+      // 커스텀 아바타 불러오기
+      AvatimeApi.getInstance().getAvatarList(
+        {
+          user_id: userId,
+        },
+        {
+          onSuccess(data) {
+            //아바타 목록
+            client.subscribe(`/topic/meeting/avatar/${meetingRoomId}`, function (response) {
+              console.log(response.body);
+              const res = JSON.parse(response.body);
+              res.avatar_list.push(
+                ...data
+                  .filter((it) => it)
+                  .map<AvatarInfoRes>((it) => ({
+                    id: it.id,
+                    name: it.name,
+                    image_path: it.path,
+                    selected: false,
+                  }))
+              );
+              setOriginData(res);
+              if (res.status === 1) {
+                navigate("/session", { replace: true });
+              }
+            });
+          },
+          navigate,
         }
-      });
+      );
 
       //타이머 구독
       client.subscribe(`/topic/meeting/avatar/timer/${meetingRoomId}`, function (response) {
@@ -62,40 +83,6 @@ export const PickAvatarPage: FC<IProps> = () => {
     },
     beforeDisconnected: (frame, client) => {},
   });
-
-  // 커스텀 아바타 불러오기
-  const [customList, setCustomList] = useState<GetAvatarRes[]>();
-  useEffect(() => {
-    AvatimeApi.getInstance().getAvatarList(
-      {
-        user_id: userId,
-      },
-      {
-        onSuccess(data) {
-          setCustomList(data);
-        },
-        navigate,
-      }
-    );
-  }, [navigate, userId]);
-  useEffect(() => {
-    if (!customList || !originData) {
-      return;
-    }
-    console.log("ASD", customList)
-
-    setOriginData((prev) => {
-      prev?.avatar_list.push(
-        ...customList.filter((it) => it).map((it) => ({
-          id: it.id,
-          name: it.name,
-          image_path: it.path,
-          selected: false,
-        }))
-      );
-      return prev;
-    });
-  }, [originData, customList]);
 
   //아바타 선택
   const [avatarId, setAvatarId] = useState(0);
