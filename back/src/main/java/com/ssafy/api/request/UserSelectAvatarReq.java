@@ -14,12 +14,12 @@ import lombok.Setter;
 @ApiModel("UserSelectAvatar")
 public class UserSelectAvatarReq {
 	
-	@JsonProperty("meeting_room_id")
+	@JsonProperty("meetingroom_id")
 	Long meetingRoomId;
 	
 	@JsonProperty("user_id")
 	Long userId;
 	
-	@JsonProperty("avater_id")
+	@JsonProperty("avatar_id")
 	Long avatarId;
 }

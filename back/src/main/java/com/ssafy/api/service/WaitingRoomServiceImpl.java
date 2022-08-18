@@ -1,6 +1,7 @@
 package com.ssafy.api.service;
 
 import java.util.List;
+import java.util.Optional;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Sort;
@@ -19,7 +20,6 @@ public class WaitingRoomServiceImpl implements WaitingRoomService{
 	@Override
 	public List<WaitingRoom> findAll() {
 		return waitingRoomRepository.findAll(Sort.by(Sort.Direction.DESC, "createdTime"));
-//		return waitingRoomRepository.findAllOrderByCreatedTimeDesc();
 	}
 	
 	@Override
@@ -34,8 +34,7 @@ public class WaitingRoomServiceImpl implements WaitingRoomService{
 	}
 	
 	@Override
-	public WaitingRoom findById(Long waitingRoomId) {
-		WaitingRoom waitingroom = waitingRoomRepository.findById(waitingRoomId).get();
-		return null;
-	}	
+	public Optional<WaitingRoom> findById(Long waitingRoomId) {
+		return waitingRoomRepository.findById(waitingRoomId);
+	}
 }

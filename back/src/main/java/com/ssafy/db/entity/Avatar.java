@@ -14,9 +14,19 @@ import lombok.Setter;
 @Setter
 public class Avatar extends BaseEntity {
 
-	@Column(updatable = false, nullable = false)
+	@Column(nullable = false)
 	private String imagePath;
 	
-	@Column(updatable = false, nullable = false)
+	@Column(nullable = false)
 	private String name;
+	
+	// 제작자
+	@Column(columnDefinition = "INT UNSIGNED DEFAULT 0")
+	private Long userId;
+	
+	@Column(columnDefinition = "INT UNSIGNED DEFAULT 0")
+	private Long slot;
+	
+	@Column
+	private String picPath;
 }

@@ -1,5 +1,8 @@
 package com.ssafy.api.response;
 
+import org.json.JSONPropertyIgnore;
+
+import com.fasterxml.jackson.annotation.JsonProperty;
 import com.ssafy.api.request.UserRegisterPostReq;
 import com.ssafy.common.model.response.BaseResponseBody;
 
@@ -14,12 +17,21 @@ import lombok.ToString;
 @ApiModel("UserRegisterPostRequest")
 @ToString
 public class UserRegisterPostRes extends BaseResponseBody{
+	@JsonProperty("user_id")
 	Long userId;
+	
+	@JsonProperty("social_id")
 	String socialId;
+	
+	@JsonProperty("social_type")
 	int socialType;
+	
 	String gender;
 	String name;
+	
+	@JsonProperty("profile_image_path")
 	String profileImagePath;
+	
 	String description;
 	
 	public static UserRegisterPostRes of(Integer statusCode, String message, UserRegisterPostRes registerInfo) {

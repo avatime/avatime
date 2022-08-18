@@ -21,18 +21,18 @@ public class QWaitingRoom extends EntityPathBase<WaitingRoom> {
 
     public final QBaseEntity _super = new QBaseEntity(this);
 
-    public final NumberPath<Integer> age = createNumber("age", Integer.class);
+    public final NumberPath<Long> ageId = createNumber("ageId", Long.class);
 
-    public final DateTimePath<java.util.Date> created_time = createDateTime("created_time", java.util.Date.class);
+    public final DateTimePath<java.util.Date> createdTime = createDateTime("createdTime", java.util.Date.class);
 
-    public final NumberPath<Integer> head_count = createNumber("head_count", Integer.class);
+    public final NumberPath<Integer> headCount = createNumber("headCount", Integer.class);
 
     //inherited
     public final NumberPath<Long> id = _super.id;
 
     public final StringPath name = createString("name");
 
-    public final NumberPath<Integer> sido_id = createNumber("sido_id", Integer.class);
+    public final NumberPath<Long> sidoId = createNumber("sidoId", Long.class);
 
     public final NumberPath<Integer> status = createNumber("status", Integer.class);
 

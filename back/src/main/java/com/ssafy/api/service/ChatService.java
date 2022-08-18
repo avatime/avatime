@@ -45,7 +45,6 @@ public class ChatService {
     public List<ChattingRoom> findAll() {
         //채팅방 최근 생성 순으로 반환
         List<ChattingRoom> result = chattingRoomRepository.findAll();
-        Collections.reverse(result);
 
         return result;
     }

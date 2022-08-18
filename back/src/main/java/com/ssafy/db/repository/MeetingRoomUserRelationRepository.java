@@ -13,6 +13,13 @@ import com.ssafy.db.entity.MeetingRoomUserRelation;
 public interface MeetingRoomUserRelationRepository extends JpaRepository<MeetingRoomUserRelation, Long> {
 
 	Optional<MeetingRoomUserRelation>findByMeetingRoomIdAndUserId(Long meetingRoomId, Long userId);
+	List<MeetingRoomUserRelation> findAllByMeetingRoomId(Long meetingRoomId);
+	List<MeetingRoomUserRelation> findAllByMeetingRoomIdOrderByStuffId(Long meetingRoomId);
     boolean existsByMeetingRoomIdAndAvatarId(Long meetingRoomId, Long avatarId);
-    List<MeetingRoomUserRelation> findAllByMeetingRoomId(Long meetingRoomId);
+    boolean existsByMeetingRoomIdAndUserId(Long meetingRoomId, Long userId);
+    List<MeetingRoomUserRelation> findAllByMeetingRoomIdAndLeftMeeting(Long meetingRoomId, boolean leftMeeting);
+    int countByMeetingRoomIdAndLeftMeeting(Long meetingRoomId, boolean leftMeeting);
+    boolean existsByMeetingRoomIdAndStuffId(Long meetingRoomId, Long stuffId);
+    Optional<List<MeetingRoomUserRelation>> findByMeetingRoomIdAndStuffId(Long meetingRoomId, Long stuffId);
+	int countByMeetingRoomIdAndAvatarIdNotNull(Long meetingRoomId);
 }
