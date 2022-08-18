@@ -207,9 +207,9 @@ const FinalPickResultPagePresenter: FC<IPresenterProps> = ({
         </Typography>
       </Backdrop>
       <SessionModal open={timer <= -headCount - 1} justifyContent="center" onClose={onModalClose}>
-        <Typography variant="h3">
+        <Typography variant="h3" textAlign="center">
           {pickResult.matched
-            ? "매칭에 성공하셨어요!!\n클릭 시, 가면이 벗겨지고 둘만의 시간을 갖게 돼요 >.<"
+            ? (<>{"매칭에 성공하셨어요!!"}<br/>{"클릭 시, 가면이 벗겨지고 둘만의 시간을 갖게 돼요 >.<"}</>)
             : "힝ㅠㅠ 다음 인연을 찾아보세요!"}
         </Typography>
       </SessionModal>
