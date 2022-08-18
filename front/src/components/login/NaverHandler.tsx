@@ -1,4 +1,4 @@
-import React, { FC } from "react";
+import React, { FC, useState } from "react";
 import { useDispatch } from "react-redux";
 import {
   setUserId,
@@ -9,11 +9,13 @@ import {
   setSocialType,
   setProfileImagePath,
   setIsLogin,
+  setToken,
 } from "../../stores/slices/userSlice";
-import { useQuery } from "react-query";
 import { Backdrop, CircularProgress } from "@mui/material";
 import { useNavigate } from "react-router";
-import { naverLogin } from "../../apis/userApi";
+import { AvatimeApi } from "../../apis/avatimeApi";
+import { AvatimeWs } from "../../apis/avatimeWs";
+import { AlertSnackbar } from '../AlertSnackbar';
 
 interface Iprops {}
 
@@ -22,41 +24,78 @@ export const NaverHandler: FC<Iprops> = (props) => {
   let code = new URL(window.location.href).searchParams.get("code");
   let state = new URL(window.location.href).searchParams.get("state");
   const navigate = useNavigate();
+  const [showLoginSnack, setShowLoginSnack] = useState(false);
+  const [showRegisterSnack, setShowRegisterSnack] = useState(false);
+  const [tempToken, setTempToken] = useState("");
 
-  // const {data} = useQuery("key", 함수이름(), {onSuccess: (res: any) => {
-  //console.log(data)}},);
-  useQuery("login", naverLogin(code as string, state as string), {
-    onSuccess: (res: any) => {
-      const datas = res.data;
-      if (datas.statusCode === 201) {
-        console.log(datas);
-        dispatch(setUserGender(datas.gender));
-        dispatch(setSocialId(datas.socialId));
-        dispatch(setSocialType(datas.socialType));
+  const login = () => {
+    localStorage.setItem("token", tempToken);
+    dispatch(setToken(tempToken));
+    navigate("/main", { replace: true });
+  }
+
+  const register = () => {
+    navigate("/mypage", { replace: true });
+  }
+
+  const cancelconfirm = () => {
+    setShowRegisterSnack(false);
+    navigate("/login", { replace: true });
+  }
+
+  AvatimeApi.getInstance().naverLogin(code as string, state as string, {
+    onSuccess(data) {
+      if (data.statusCode === 201) {
+        console.log(data);
+        dispatch(setUserGender(data.gender));
+        dispatch(setSocialId(data.social_id));
+        dispatch(setSocialType(data.social_type));
         dispatch(setIsLogin(false));
-        navigate("/mypage");
-        alert("회원가입이 필요합니다.");
-      } else if (res.data.statusCode === 200) {
-        console.log(datas);
-        dispatch(setUserId(datas.userId));
-        dispatch(setUserName(datas.name));
-        dispatch(setUserGender(datas.gender));
-        dispatch(setUserDesc(datas.description));
-        dispatch(setProfileImagePath(datas.profileImagePath));
-        dispatch(setSocialId(datas.socialId));
-        dispatch(setSocialType(datas.socialType));
+        //navigate("/mypage");
+        //alert("회원가입이 필요합니다.");
+        setShowRegisterSnack(true);
+      } else if (data.statusCode === 200) {
+        console.log(data);
+        dispatch(setUserId(data.user_id));
+        dispatch(setUserName(data.name));
+        dispatch(setUserGender(data.gender));
+        dispatch(setUserDesc(data.description));
+        dispatch(setProfileImagePath(data.profile_image_path));
+        dispatch(setSocialId(data.social_id));
+        dispatch(setSocialType(data.social_type));
         dispatch(setIsLogin(true));
-        localStorage.setItem("token", datas.accessToken);
-        navigate("/main");
-        alert("로그인 성공");
+        setTempToken(data.accessToken);
+        setShowLoginSnack(true);
+        AvatimeApi.getInstance().login(data.accessToken);
+        AvatimeWs.getInstance().login(data.accessToken);
+        //navigate("/main");
+        //alert("로그인 성공");
       }
     },
-    onError: (err) => console.log(err),
+    navigate,
   });
 
   return (
-    <Backdrop open={true}>
-      <CircularProgress />
-    </Backdrop>
+    <>
+      <Backdrop open={true}>
+        <CircularProgress />
+      </Backdrop>
+      <AlertSnackbar
+        open={showLoginSnack}
+        onClose={() => setShowLoginSnack(false)}
+        message="로그인에 성공했어요!"
+        alertColor="success"
+        type="confirm"
+        onSuccess={login}
+      />
+     <AlertSnackbar
+        open={showRegisterSnack}
+        onClose={cancelconfirm}
+        message="회원가입이 필요해요!!"
+        alertColor="warning"
+        type="confirm"
+        onSuccess={register}
+      />
+    </>
   );
 };

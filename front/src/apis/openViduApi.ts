@@ -1,7 +1,5 @@
 import axios from "axios";
-
-const OPENVIDU_SERVER_URL = 'https://' + window.location.hostname + ':4443';
-const OPENVIDU_SERVER_SECRET = 'MY_SECRET';
+import { OPENVIDU_SERVER_SECRET, OPENVIDU_SERVER_URL } from "./url";
 
 export function getToken(roomId: string): Promise<any> {
     return createSession(roomId).then((roomId) => createToken(roomId));
@@ -31,18 +29,7 @@ function createSession(roomId: string): Promise<any> {
                         'No connection to OpenVidu Server. This may be a certificate error at ' +
                         OPENVIDU_SERVER_URL,
                     );
-                    if (
-                        window.confirm(
-                            'No connection to OpenVidu Server. This may be a certificate error at "' +
-                            OPENVIDU_SERVER_URL +
-                            '"\n\nClick OK to navigate and accept it. ' +
-                            'If no certificate warning is shown, then check that your OpenVidu Server is up and running at "' +
-                            OPENVIDU_SERVER_URL +
-                            '"',
-                        )
-                    ) {
-                        window.location.assign(OPENVIDU_SERVER_URL + '/accept-certificate');
-                    }
+                    window.location.assign(OPENVIDU_SERVER_URL + '/accept-certificate');
                 }
             });
     });

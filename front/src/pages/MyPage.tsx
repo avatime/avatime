@@ -3,9 +3,8 @@ import { Container } from "@mui/material";
 import CssBaseline from "@mui/material/CssBaseline";
 import Box from "@mui/material/Box";
 import { ProfileArea } from "../components/login/ProfileArea";
-import { MyPageInfo } from "../components/login/MyPageInfo";
 import "../style.css";
-import { Logo } from '../components/login/Logo';
+import { Logo } from "../components/login/Logo";
 
 interface IProps {}
 
@@ -13,7 +12,6 @@ export const MyPage: FC<IProps> = (props) => {
   return (
     <div className="mainback">
       <React.Fragment>
-        <CssBaseline />
         <Container maxWidth="sm" sx={{ height: "100vh" }}>
           <Box display="flex" justifyContent="center" height="100%" alignItems="center">
             <Box

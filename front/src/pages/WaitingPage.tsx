@@ -1,47 +1,281 @@
-import React, { FC, useState } from "react";
+import React, { FC, useEffect, useMemo, useState } from "react";
 import { ChatRoom } from "../components/chat/ChatRoom";
-import { Box, Grid } from "@mui/material";
+import {
+  Badge,
+  BadgeProps,
+  Box,
+  Grid,
+  IconButton,
+  styled,
+  Typography,
+  Stack,
+  Snackbar,
+  Slide,
+  SlideProps,
+  Alert,
+} from "@mui/material";
 import { grey } from "@mui/material/colors";
-import { MainHeader } from "../components/main/MainHeader";
-
+import "../components/chat/style.css";
 import Button from "@mui/material/Button";
-import DeleteIcon from "@mui/icons-material/Delete";
-import SendIcon from "@mui/icons-material/Send";
+import PlayCircleOutlineIcon from "@mui/icons-material/PlayCircleOutline";
+import ExitToAppIcon from "@mui/icons-material/ExitToApp";
+import PeopleAltIcon from "@mui/icons-material/PeopleAlt";
+import { useSelector, useDispatch } from "react-redux";
+import { useNavigate } from "react-router";
+import { WaitingUser } from "../apis/response/waitingRoomRes";
+import { ReceptionModal } from "../components/waitingRoom/ReceptionModal";
+import { WaitingUserProfile } from "../components/waitingRoom/WaitingUserProfile";
+import { UserInfoModal } from "../components/waitingRoom/UserInfoModal";
+import { setMeetingRoomId } from "../stores/slices/meetingSlice";
+import { setMaster } from "../stores/slices/waitingSlice";
+import { useWebSocket } from "../hooks/useWebSocket";
+import { AvatimeApi } from "../apis/avatimeApi";
+import { AlertSnackbar } from "../components/AlertSnackbar";
+import { SoundButton, SoundIconButton } from "../components/SoundButton";
+import { VolumeController } from "../components/VolumeController";
+
 interface IProps {}
 
+const StyledBadge = styled(Badge)<BadgeProps>(({ theme }) => ({
+  "& .MuiBadge-badge": {
+    right: -3,
+    top: 13,
+    border: `2px solid ${theme.palette.background.paper}`,
+    padding: "0 4px",
+  },
+}));
+
 export const WaitingPage: FC<IProps> = (props) => {
-  const [opened, setOpened] = useState<boolean[]>([true, true]);
-  //const cntOpened = opened.filter((it) => it).length;
+  const waitingState = useSelector((state: any) => state.waiting);
+  const userId = useSelector((state: any) => state.user.userId);
+  const headCount = useSelector((state: any) => state.waiting.headCount);
+  const gender = useSelector((state: any) => state.user.userGender);
+
+  const [waitingUserList, setWaitingUserList] = useState<WaitingUser[]>([]);
+  const [candidateList, setCandidateList] = useState<WaitingUser[]>([]);
+  const [isMaster, setIsMaster] = useState<boolean>();
+  const [showSnack, setShowSnack] = useState(false);
+
+  const navigate = useNavigate();
+  const dispatch = useDispatch();
+
+  useWebSocket({
+    onConnect: (frame, client) => {
+      client.subscribe(`/topic/waiting/info/${waitingState.roomId}`, (response) => {
+        const res = JSON.parse(response.body);
+        console.log(res);
+        setWaitingUserList(res.user_list);
+        const isMaster = res.user_list.find((it: any) => it.id === userId).type === 0;
+        setIsMaster(isMaster);
+        dispatch(setMaster(isMaster));
+
+        if (res.status) {
+          dispatch(setMeetingRoomId(res.meeting_room_id));
+          navigate("/pickAvatar", { replace: true });
+        }
+      });
+      client.publish({ destination: `/app/waiting/info/${waitingState.roomId}` });
+
+      client.subscribe(`/topic/reception/${waitingState.roomId}`, (response) => {
+        setCandidateList((prev) => {
+          const res = JSON.parse(response.body);
+          if (prev.length < res.length) {
+            setShowSnack(true);
+          }
+          return res;
+        });
+      });
+      client.publish({ destination: `/app/reception/${waitingState.roomId}` });
+    },
+    beforeDisconnected: function (frame, client): void {
+      AvatimeApi.getInstance().requestEnterRoom(
+        {
+          room_id: waitingState?.roomId,
+          user_id: userId,
+          type: 5,
+        },
+        {
+          navigate,
+        }
+      );
+    },
+  });
+
+  const [openReception, setOpenReception] = useState(false);
+  const onClickReception = () => {
+    setOpenReception((prev) => !prev);
+  };
+
+  const [showConfirm, setShowConfirm] = useState(0);
+  const [confirmMessage, setConfirmMessage] = useState("");
+
+  const onClickStart = () => {
+    setShowConfirm(1);
+    setConfirmMessage("정말 시작하실 건가요?");
+  };
+  const start = () => {
+    AvatimeApi.getInstance().startPickAvatar(
+      {
+        waiting_room_id: Number(waitingState.roomId),
+      },
+      {
+        navigate,
+      }
+    );
+  };
+
+  const onClickExit = () => {
+    setShowConfirm(2);
+    setConfirmMessage("정말 나가실 건가요?");
+  };
+  const exit = () => {
+    navigate("/main", { replace: true });
+  };
+
+  const [openInfo, setOpenInfo] = useState<boolean>(false);
+  const [infoUserId, setInfoUserId] = useState<number>(-1);
+  const onOpenInfo = (userId: number) => {
+    setOpenInfo(true);
+    setInfoUserId(userId);
+  };
+  const onCloseInfo = () => {
+    setOpenInfo(false);
+  };
+
+  const chatRoomId = useSelector((state: any) => state.waiting.chatRoomId);
+
+  const sameGenderUserList = useMemo(
+    () => waitingUserList.filter((it) => it.gender === gender),
+    [gender, waitingUserList]
+  );
+
+  const diffGenderUserList = useMemo(
+    () => waitingUserList.filter((it) => it.gender !== gender),
+    [gender, waitingUserList]
+  );
 
   return (
-    <div className="mainback">
-      <MainHeader />
-      <Grid container spacing={3} sx={{ float: "left" }} p={2}>
-        <Grid item xs={9}>
-          <Box height="80%" display="flex" flexDirection="column">
-            <Box borderRadius="10px" flex={1} position="relative" bgcolor={grey[200]}></Box>
+    <div className="mainback" style={{ display: "flex", flexDirection: "column" }}>
+      <Grid container spacing={3} p={2} sx={{ flex: "1" }}>
+        <Grid item xs={9} sx={{ float: "left", display: "flex", flexDirection: "column" }}>
+          <Box pl={1}>
+            <Typography variant="h4">
+              {waitingState.roomName} / {waitingState.sido} / {waitingState.age}
+            </Typography>
+          </Box>
+          <Box
+            display="flex"
+            flex={1}
+            flexDirection="column"
+            alignItems="stretch"
+            borderRadius="10px"
+            bgcolor={grey[200]}
+            p={2}
+          >
+            {[0, 1].map((outerIdx) => (
+              <Grid
+                key={outerIdx}
+                container
+                justifyContent="space-evenly"
+                alignItems="center"
+                spacing={2}
+                flex={1}
+              >
+                {Array.from(Array(headCount / 2)).map((_, innerIdx) => {
+                  const list = outerIdx === 0 ? sameGenderUserList : diffGenderUserList;
+                  const it = innerIdx < list.length ? list[innerIdx] : null;
+                  return (
+                    <Grid key={innerIdx} item xs={3} height="80%">
+                      <WaitingUserProfile
+                        waitingUser={it}
+                        onClickAvatar={onOpenInfo}
+                        me={userId === it?.id}
+                      />
+                    </Grid>
+                  );
+                })}
+              </Grid>
+            ))}
           </Box>
         </Grid>
-        <Grid item xs={3}>
-          <Box display="flex" flexDirection="column" height="95vh" sx={{ overflow: "hidden" }}>
+        <Grid item xs={3} sx={{ float: "left", display: "flex", flexDirection: "column" }}>
+          <Stack width="100%" direction="row" alignItems="center">
+            <SoundIconButton onClick={onClickReception} sx={{ mr: "auto" }}>
+              <StyledBadge color="primary" badgeContent={candidateList.length} overlap="circular">
+                <PeopleAltIcon />
+              </StyledBadge>
+            </SoundIconButton>
+            <Box ml="auto">
+              <VolumeController />
+            </Box>
+          </Stack>
+          <Box flex={1}>
             <ChatRoom
               chatType="all"
-              isOpened={opened[0]}
-              onClickHeader={() => {
-                setOpened((prev) => [!prev[0], prev[1]]);
-              }}
-              maxHeight={"70%"}
-              chattingRoomId={1}
+              isOpened={true}
+              maxHeight="100%"
+              chattingRoomId={chatRoomId}
+              foldable={false}
             />
           </Box>
-          <Button variant="outlined" startIcon={<DeleteIcon />}>
-            Delete
-          </Button>
-          <Button variant="contained" endIcon={<SendIcon />}>
-            Send
-          </Button>
+          <Box p={1} />
+          <Grid container spacing={2} alignItems="end">
+            {isMaster && (
+              <Grid item xs>
+                <SoundButton
+                  variant="contained"
+                  startIcon={<PlayCircleOutlineIcon />}
+                  sx={{ width: "100%" }}
+                  onClick={onClickStart}
+                  color="secondary"
+                  // disabled={waitingUserList.length !== waitingState.headCount}
+                >
+                  시작
+                </SoundButton>
+              </Grid>
+            )}
+            <Grid item xs>
+              <SoundButton
+                variant="contained"
+                color="error"
+                startIcon={<ExitToAppIcon />}
+                sx={{ width: "100%" }}
+                onClick={onClickExit}
+              >
+                나가기
+              </SoundButton>
+            </Grid>
+          </Grid>
         </Grid>
       </Grid>
+      <ReceptionModal
+        open={openReception}
+        onClickClose={onClickReception}
+        candidateList={candidateList}
+        isMaster={!!isMaster}
+        onClickAvatar={onOpenInfo}
+      />
+      <UserInfoModal
+        open={openInfo}
+        onClose={onCloseInfo}
+        userId={infoUserId}
+        useBackdrop={!openReception && openInfo}
+      />
+      <AlertSnackbar
+        open={showSnack}
+        onClose={() => setShowSnack(false)}
+        message="누군가 참가 신청을 했어요!!"
+        alertColor="info"
+        type="alert"
+      />
+      <AlertSnackbar
+        open={showConfirm !== 0}
+        onClose={() => setShowConfirm(0)}
+        message={confirmMessage}
+        type="confirm"
+        onSuccess={showConfirm === 1 ? start : exit}
+        alertColor="warning"
+      />
     </div>
   );
 };
