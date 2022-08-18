@@ -48,19 +48,32 @@ export const ChatRoom: FC<IProps> = ({
   const [chatList, setChatList] = useState<ChatMessageRes[]>([]);
   const userId = useSelector((state: any) => state.user.userId);
 
-  useEffect(() => {
-    AvatimeApi.getInstance().sendMessage(
-      {
-        chattingroom_id: chattingRoomId,
-        chat_type: "ENTER",
-        user_id: userId,
-        message: "ENTER",
-      },
-      {
-        navigate,
-      }
-    );
-    return () => {
+  useWebSocket({
+    onConnect(frame, client) {
+      client.subscribe(`/topic/chatting/receive/${chattingRoomId}`, (res) => {
+        const list: ChatMessageRes[] = JSON.parse(res.body);
+        setChatList(
+          list.filter(
+            (item, index) =>
+              item.chat_type === "TALK" ||
+              list.findIndex((it) => it.user_id === item.user_id) === index
+          )
+        );
+      });
+
+      AvatimeApi.getInstance().sendMessage(
+        {
+          chattingroom_id: chattingRoomId,
+          chat_type: "ENTER",
+          user_id: userId,
+          message: "ENTER",
+        },
+        {
+          navigate,
+        }
+      );
+    },
+    beforeDisconnected(frame, client) {
       AvatimeApi.getInstance().sendMessage(
         {
           chattingroom_id: chattingRoomId,
@@ -72,16 +85,7 @@ export const ChatRoom: FC<IProps> = ({
           navigate,
         }
       );
-    };
-  }, [chattingRoomId, navigate, userId]);
-
-  useWebSocket({
-    onConnect(frame, client) {
-      client.subscribe(`/topic/chatting/receive/${chattingRoomId}`, (res) => {
-        setChatList(JSON.parse(res.body));
-      });
     },
-    beforeDisconnected(frame, client) {},
   });
 
   const chatBodyRef = useScrollToBottomRef();
@@ -105,7 +109,7 @@ export const ChatRoom: FC<IProps> = ({
       return;
     }
 
-    AvatimeApi.getInstance().sendMessage( 
+    AvatimeApi.getInstance().sendMessage(
       {
         chattingroom_id: chattingRoomId,
         chat_type: "TALK",

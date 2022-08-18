@@ -23,11 +23,8 @@ export const PickAvatarPage: FC<IProps> = () => {
     if (avatarId === 0) {
       return;
     }
-    setSelected((prev: any) => (prev ? prev : !prev));
-
-    if (!selected) {
-      finishSelectingAvatar();
-    }
+    setSelected(true);
+    finishSelectingAvatar();
   };
   const navigate = useNavigate();
 
