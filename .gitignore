@@ -1,1 +1,7 @@
 /.metadata/
+
+/Servers/
+
+*.gz
+*.log
+generated/

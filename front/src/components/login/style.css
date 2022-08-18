@@ -1,0 +1,37 @@
+.kakao_btn {
+    background-image: url("/src/assets/kakaoLogin.png");
+    background-repeat: no-repeat;
+    background-size: cover;
+    margin: 20px auto;
+    /* padding: -10px; */
+    color: transparent;
+    width: 300px;
+    height: 45px;
+  }
+
+.naver_btn {
+    background-image: url("/src/assets/naverLogin.png");
+    background-repeat: no-repeat;
+    background-size: cover;
+    margin: 20px auto;
+    /* padding: -10px; */
+    color: transparent;
+    width: 300px;
+    height: 45px;
+  }
+
+.social_login {
+  display : flex;
+  justify-content: center;
+  align-items: center;
+  flex-direction: column;
+  height : 80%;
+}
+
+.logo_div {
+  display : flex;
+  justify-content: center;
+  align-items: center;
+  flex-direction: column;
+  height : 20%;
+}
