@@ -2,39 +2,114 @@ import { BrowserRouter, Routes } from "react-router-dom";
 import { Route } from "react-router";
 import { TestPage } from "./pages/TestPage";
 import { MainPage } from "./pages/MainPage";
-import store from "./stores";
-import { Provider } from "react-redux";
-import { PersistGate } from "redux-persist/integration/react";
-import { persistStore } from "redux-persist";
-import { SessionPage } from './pages/SessionPage';
+import { SessionPage } from "./pages/SessionPage";
 import { WaitingPage } from "./pages/WaitingPage";
 import "./style.css";
-import { FinalPickResultPage } from './pages/FinalPickResultPage';
-import { KakaoHandler } from './components/login/KakaoHandler';
-import { NaverHandler } from './components/login/NaverHandler';
-import { LoginPage } from './pages/LoginPage';
-import { MyPage } from './pages/MyPage';
+import { FinalPickResultPage } from "./pages/FinalPickResultPage";
+import { KakaoHandler } from "./components/login/KakaoHandler";
+import { NaverHandler } from "./components/login/NaverHandler";
+import { LoginPage } from "./pages/LoginPage";
+import { MyPage } from "./pages/MyPage";
+import { PickAvatarPage } from "./pages/PickAvatarPage";
+import { CanvasPage } from "./pages/CanvasPage";
+import { SubSessionPage } from "./pages/SubSessionPage";
+import green from "@mui/material/colors/green";
+import { createTheme, ThemeProvider } from "@mui/material/styles";
+import { LandingPage } from "./pages/Landing/LandingPage";
+import ProtectedRoute from "./ProtectedRoute";
+import { useSelector } from "react-redux";
+import { BgmPlayer } from "./components/BgmPlayer";
+import { NotFoundPage } from "./pages/NotFoundPage";
+
+export const theme = createTheme({
+  palette: {
+    secondary: {
+      main: green[900],
+    },
+  },
+});
 
 function App() {
+  const isLogin = !!useSelector((state: any) => state.user.token);
+  const socialId = useSelector((state: any) => state.user.socialId);
+
   return (
     <div>
-      <Provider store={store}>
-        <PersistGate persistor={persistStore(store)}>
-          <BrowserRouter>
+      <ThemeProvider theme={theme}>
+        <BrowserRouter>
+          <BgmPlayer>
             <Routes>
-              <Route path="/" element={<TestPage />} />
-              <Route path="/main" element={<MainPage />} />
-              <Route path="/waiting" element={<WaitingPage />} />
-              <Route path="/session" element={<SessionPage />} />
-              <Route path="/login" element={<LoginPage />} />
-              <Route path="/mypage" element={<MyPage />} />
-              <Route path="/finalPickResult" element={<FinalPickResultPage />} />
-              <Route path="/kakao" element={<KakaoHandler />} />
-              <Route path="/naver" element={<NaverHandler />} />
+              <Route path="/" element={<LandingPage />} />
+              <Route path="/test" element={<TestPage />} />
+              <Route
+                path="/main"
+                element={<ProtectedRoute outlet={<MainPage />} isAuthentication={isLogin} />}
+              />
+              <Route
+                path="/waiting"
+                element={<ProtectedRoute outlet={<WaitingPage />} isAuthentication={isLogin} />}
+              />
+              <Route
+                path="/session"
+                element={<ProtectedRoute outlet={<SessionPage />} isAuthentication={isLogin} />}
+              />
+              <Route
+                path="/login"
+                element={
+                  <ProtectedRoute
+                    outlet={<LoginPage />}
+                    isAuthentication={!isLogin}
+                    redirectPath="/main"
+                  />
+                }
+              />
+              <Route
+                path="/mypage"
+                element={<ProtectedRoute outlet={<MyPage />} isAuthentication={socialId} />}
+              />
+              <Route
+                path="/finalPickResult"
+                element={
+                  <ProtectedRoute outlet={<FinalPickResultPage />} isAuthentication={isLogin} />
+                }
+              />
+              <Route
+                path="/pickAvatar"
+                element={<ProtectedRoute outlet={<PickAvatarPage />} isAuthentication={isLogin} />}
+              />
+              <Route
+                path="/kakao"
+                element={
+                  <ProtectedRoute
+                    outlet={<KakaoHandler />}
+                    isAuthentication={!isLogin}
+                    redirectPath="/main"
+                  />
+                }
+              />
+              <Route
+                path="/naver"
+                element={
+                  <ProtectedRoute
+                    outlet={<NaverHandler />}
+                    isAuthentication={!isLogin}
+                    redirectPath="/main"
+                  />
+                }
+              />
+              <Route
+                path="/canvas"
+                element={<ProtectedRoute outlet={<CanvasPage />} isAuthentication={isLogin} />}
+              />
+              <Route
+                path="/subSession"
+                element={<ProtectedRoute outlet={<SubSessionPage />} isAuthentication={isLogin} />}
+              />
+              <Route path="/*" element={<NotFoundPage />} />
             </Routes>
-          </BrowserRouter>
-        </PersistGate>
-      </Provider>
+          </BgmPlayer>
+        </BrowserRouter>
+      </ThemeProvider>
     </div>
   );
 }

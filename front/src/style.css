@@ -11,3 +11,63 @@
   overflow: hidden;
 }
 
+
+@font-face {
+  font-family: 'MabinogiClassicR';
+  src: url('https://cdn.jsdelivr.net/gh/projectnoonnu/noonfonts_2207-01@1.0/MabinogiClassicR.woff2') format('woff2');
+  font-weight: 900;
+  font-size: large;
+  font-style: normal;
+}
+
+@font-face {
+  font-family: 'ONE-Mobile-Title';
+  src: url('https://cdn.jsdelivr.net/gh/projectnoonnu/noonfonts_2105_2@1.0/ONE-Mobile-Title.woff') format('woff');
+  font-weight: normal;
+  font-style: normal;
+}
+
+@font-face {
+  font-family: 'IM_Hyemin-Bold';
+  src: url('https://cdn.jsdelivr.net/gh/projectnoonnu/noonfonts_2106@1.1/IM_Hyemin-Bold.woff2') format('woff');
+  font-weight: normal;
+  font-style: normal;
+}
+
+* {
+  font-family: 'MabinogiClassicR' !important;
+
+}
+
+h1 {
+  font-family: 'ONE-Mobile-Title' !important;
+}
+
+.click:hover {
+
+  background: #FEE299!important;
+  
+
+}
+input[type=color]{
+	width: 36px;
+	height: 36px;
+	border: none;
+	border-radius: 10px;
+	background: none;
+}
+input[type="color"]::-webkit-color-swatch-wrapper {
+	padding: 0;
+}
+input[type="color"]::-webkit-color-swatch {
+	border: solid 1px #000; /*change color of the swatch border here*/
+	border-radius: 5px;
+}
+
+*{
+
+  cursor: url("./assets/cursor.cur"), auto;
+
+ 
+}
+

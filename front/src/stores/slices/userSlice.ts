@@ -7,8 +7,9 @@ const initialState = {
   userDesc: "",
   socialId: undefined,
   socialType: undefined,
-  profileImagePath: "https://jira.ssafy.com/secure/useravatar?avatarId=10334",
+  profileImagePath: "https://avatimebucket2022.s3.ap-northeast-2.amazonaws.com/%ED%94%84%EB%A1%9C%ED%95%84/profile01.png",
   isLogin: false,
+  token: "",
 };
 
 const userSlice = createSlice({
@@ -43,6 +44,9 @@ const userSlice = createSlice({
     setIsLogin(state, action) {
       state.isLogin = action.payload;
     },
+    setToken(state, action) {
+      state.token = action.payload;
+    },
   },
 });
 
@@ -56,6 +60,7 @@ export const {
   setSocialType,
   setProfileImagePath,
   setIsLogin,
+  setToken,
 } = userSlice.actions;
 
 export default userSlice.reducer;

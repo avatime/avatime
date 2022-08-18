@@ -1,5 +1,6 @@
 import {
   AccordionSummary,
+  Box,
   Button,
   CardContent,
   List,
@@ -8,7 +9,6 @@ import {
   Typography,
 } from "@mui/material";
 import React, { FC, useEffect, useState } from "react";
-import chatApi from "../../apis/chatApi";
 import { ChatMessageRes } from "../../apis/response/chatRes";
 import { ChatBlock } from "./ChatBlock";
 import "./style.css";
@@ -18,19 +18,22 @@ import { styled } from "@mui/material/styles";
 import useScrollToBottomRef from "../../hooks/useScrollToBottomRef";
 import { grey } from "@mui/material/colors";
 import SendIcon from "@mui/icons-material/Send";
-import SockJS from "sockjs-client";
-import * as Stomp from "stompjs";
 import { useSelector } from "react-redux";
 import { formatDate } from "../../utils/day";
+import { useWebSocket } from "../../hooks/useWebSocket";
+import { useNavigate } from "react-router";
+import { AvatimeApi } from "../../apis/avatimeApi";
+import { SoundButton } from "../SoundButton";
 
 type ChatType = "all" | "gender";
 
 interface IProps {
   chatType: ChatType;
   isOpened: boolean;
-  onClickHeader: () => void | null;
+  onClickHeader?: () => void;
   maxHeight: string;
   chattingRoomId: number;
+  foldable?: boolean;
 }
 
 export const ChatRoom: FC<IProps> = ({
@@ -39,39 +42,47 @@ export const ChatRoom: FC<IProps> = ({
   onClickHeader,
   maxHeight,
   chattingRoomId,
+  foldable = true,
 }) => {
+  const navigate = useNavigate();
   const [chatList, setChatList] = useState<ChatMessageRes[]>([]);
   const userId = useSelector((state: any) => state.user.userId);
 
   useEffect(() => {
-    if (!userId) {
-      return;
-    }
-
-    const socket = new SockJS("http://localhost:8080/ws/ava");
-    const client = Stomp.over(socket);
-    client.connect({}, () => {
-      client.subscribe(`/topic/chatting/receive/${chattingRoomId}`, (res) => {
-        setChatList(JSON.parse(res.body));
-      });
-
-      chatApi.sendMessage({
+    AvatimeApi.getInstance().sendMessage(
+      {
         chattingroom_id: chattingRoomId,
         chat_type: "ENTER",
         user_id: userId,
         message: "ENTER",
-      });
-    });
-
+      },
+      {
+        navigate,
+      }
+    );
     return () => {
-      chatApi.sendMessage({
-        chattingroom_id: chattingRoomId,
-        chat_type: "LEAVE",
-        user_id: userId,
-        message: "LEAVE",
-      });
+      AvatimeApi.getInstance().sendMessage(
+        {
+          chattingroom_id: chattingRoomId,
+          chat_type: "LEAVE",
+          user_id: userId,
+          message: "LEAVE",
+        },
+        {
+          navigate,
+        }
+      );
     };
-  }, [chattingRoomId, userId]);
+  }, [chattingRoomId, navigate, userId]);
+
+  useWebSocket({
+    onConnect(frame, client) {
+      client.subscribe(`/topic/chatting/receive/${chattingRoomId}`, (res) => {
+        setChatList(JSON.parse(res.body));
+      });
+    },
+    beforeDisconnected(frame, client) {},
+  });
 
   const chatBodyRef = useScrollToBottomRef();
   const chatInputRef = useScrollToBottomRef();
@@ -94,12 +105,18 @@ export const ChatRoom: FC<IProps> = ({
       return;
     }
 
-    chatApi.sendMessage({
-      chattingroom_id: chattingRoomId,
-      chat_type: "TALK",
-      user_id: userId,
-      message,
-    });
+    AvatimeApi.getInstance().sendMessage( 
+      {
+        chattingroom_id: chattingRoomId,
+        chat_type: "TALK",
+        user_id: userId,
+        message,
+      },
+      {
+        navigate,
+      }
+    );
+
     setMessage("");
   };
 
@@ -118,6 +135,7 @@ export const ChatRoom: FC<IProps> = ({
       onKeyUp={onKeyUp}
       onKeyDown={onKeyDown}
       sendMessage={sendMessage}
+      foldable={foldable}
     />
   );
 };
@@ -127,7 +145,7 @@ interface IPresenterProps {
   title: string;
   chatList: Array<ChatMessageRes>;
   isOpened: boolean;
-  onClickHeader: () => void | null;
+  onClickHeader?: () => void;
   maxHeight: string;
   chatBodyRef: any;
   chatInputRef: any;
@@ -136,6 +154,7 @@ interface IPresenterProps {
   onKeyUp: (e: any) => void;
   onKeyDown: (e: any) => void;
   sendMessage: () => void;
+  foldable: boolean;
 }
 
 const Accordion = styled((props: AccordionProps) => (
@@ -164,48 +183,64 @@ const ChatRoomPresenter: FC<IPresenterProps> = ({
   onKeyUp,
   onKeyDown,
   sendMessage,
+  foldable,
 }) => {
   return (
     <Accordion
       className="chat"
-      expanded={isOpened}
+      expanded={!foldable || isOpened}
       onChange={onClickHeader}
       sx={{
+        width: "100%",
         flexGrow: isOpened ? 1 : 0,
         display: "flex",
         flexDirection: "column",
-        maxHeight: maxHeight,
         borderRadius: "10px",
         bgcolor: grey[50],
+        height: isOpened ? maxHeight : "auto",
       }}
     >
-      <AccordionSummary expandIcon={<ExpandMoreIcon />}>
+      <AccordionSummary expandIcon={foldable && <ExpandMoreIcon />}>
         <Typography align="inherit">{title}</Typography>
       </AccordionSummary>
 
-      <List ref={chatBodyRef} sx={{ flexGrow: "1", bgcolor: grey[50], overflow: "auto" }}>
-        {chatList.map((it, idx) => {
-          const formatedTime = formatDate(it.created_time, "A h:mm");
-          return (
-            <ChatBlock
-              key={idx}
-              chatMessageRes={it}
-              order={it.user_id === userId ? "right" : "left"}
-              showName={
-                idx === 0 ||
-                chatList[idx - 1].user_id !== it.user_id ||
-                chatList[idx - 1].created_time !== it.created_time
-              }
-              showTime={
-                idx === chatList.length - 1 ||
-                chatList[idx + 1].user_id !== it.user_id ||
-                formatDate(chatList[idx + 1].created_time, "A h:mm") !== formatedTime
-              }
-              formatedTime={formatedTime}
-            />
-          );
-        })}
-      </List>
+      <Box flex={1} position="relative">
+        <List
+          ref={chatBodyRef}
+          sx={{
+            bgcolor: grey[50],
+            overflow: "auto",
+            position: "absolute",
+            top: 0,
+            right: 0,
+            bottom: 0,
+            left: 0,
+          }}
+        >
+          {chatList.map((it, idx) => {
+            const formatedTime = formatDate(it.created_time, "A h:mm");
+            return (
+              <ChatBlock
+                key={idx}
+                chatMessageRes={it}
+                order={it.user_id === userId ? "right" : "left"}
+                showName={
+                  idx === 0 ||
+                  chatList[idx - 1].chat_type !== it.chat_type ||
+                  chatList[idx - 1].user_id !== it.user_id ||
+                  formatDate(chatList[idx - 1].created_time, "A h:mm") !== formatedTime
+                }
+                showTime={
+                  idx === chatList.length - 1 ||
+                  chatList[idx + 1].user_id !== it.user_id ||
+                  formatDate(chatList[idx + 1].created_time, "A h:mm") !== formatedTime
+                }
+                formatedTime={formatedTime}
+              />
+            );
+          })}
+        </List>
+      </Box>
 
       <CardContent
         sx={{ borderBottomLeftRadius: "10px", borderBottomRightRadius: "10px", bgcolor: "#D9D9D9" }}
@@ -224,9 +259,14 @@ const ChatRoomPresenter: FC<IPresenterProps> = ({
             onKeyUp={onKeyUp}
             onKeyDown={onKeyDown}
           />
-          <Button variant="contained" onClick={sendMessage} disabled={!message}>
+          <SoundButton
+            variant="contained"
+            onClick={sendMessage}
+            disabled={!message}
+            color="secondary"
+          >
             <SendIcon />
-          </Button>
+          </SoundButton>
         </Stack>
       </CardContent>
     </Accordion>

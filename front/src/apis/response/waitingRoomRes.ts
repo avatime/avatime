@@ -9,18 +9,17 @@ export interface WaitingRoomInfoRes {
   sido: string;
   created_time: string;
   status: number;
-}
-export interface WaitingUserListRes {
-  userList: Array<WaitingUser>;
+  image_path: string;
 }
 
 export interface WaitingUser {
-  userId: number;
-  userName: string;
-  avatarId: number;
-  avatarName: string;
-  avatarImagePath: string;
+  id: number;
+  type: number;
+  name: string;
+  gender: string;
+  profile_img_path: string;
 }
+
 export interface WaitingRoomEnterRes {
   name: string; //=username
   type: number;
@@ -35,4 +34,9 @@ export interface SidoRes {
 export interface AgeRes {
   id: number;
   name: string;
+}
+
+export interface RequestEnterRoomRes {
+  chatting_room_id: number;
+  waiting_room_id : number;
 }

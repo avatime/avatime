@@ -1,51 +1,63 @@
 import React, { FC, useState } from "react";
-import { Backdrop, Box, Button, Grid, Typography, useTheme } from "@mui/material";
+import { Backdrop, Box, Grid, Typography, useTheme, CircularProgress } from "@mui/material";
 import { grey } from "@mui/material/colors";
-import { useSelector } from "react-redux";
+import { useSelector, useDispatch } from "react-redux";
 import Xarrow, { Xwrapper } from "react-xarrows";
-import { useQuery } from "react-query";
-import sessionApi from "../apis/sessionApi";
 import { FinalPickResultRes } from "../apis/response/sessionRes";
 import useTimer from "../hooks/useTimer";
 import { useEffect } from "react";
 import { SessionModal } from "../components/session/modal/SessionModal";
 import { useNavigate } from "react-router";
+import { setSubMeetingRoomId } from "../stores/slices/meetingSlice";
+import { AvatimeApi } from "../apis/avatimeApi";
 
 interface IProps {}
 
 export const FinalPickResultPage: FC<IProps> = (props) => {
-  const userList = useSelector((state: any) => state.meeting.userList);
+  const navigate = useNavigate();
+  const roomId = useSelector((state: any) => state.meeting.roomId);
+  const gender = useSelector((state: any) => state.user.userGender);
+  const userId = useSelector((state: any) => state.user.userId);
+  const [pickResult, setPickResult] = useState<FinalPickResultRes>();
 
-  const { data } = useQuery(
-    "meeting/resultMeetingPick",
-    () => sessionApi.getFinalPickResult(0, userList.length),
-    {
-      staleTime: Infinity,
+  useEffect(() => {
+    if (!roomId || !gender || !userId) {
+      return;
     }
-  );
+
+    AvatimeApi.getInstance().getFinalPickResult({
+      meetingroom_id: roomId,
+      user_id: userId,
+    }, {
+      onSuccess: (data) => {
+        data.result_list.sort((a: any) => (a.gender === gender ? -1 : 1));
+        setPickResult(data);
+      },
+      navigate,
+    })
+  }, [gender, navigate, roomId, userId]);
 
   const timer = useTimer(5, 1000);
-
   const [arrowOrderList, setArrowOrderList] = useState<number[]>([]);
 
   useEffect(() => {
-    if (!data) {
+    if (!pickResult) {
       return;
     }
 
     let idx = 1;
     let cnt = 1;
     let prevUserIndex = 0;
-    const temp = Array(userList.length).fill(-1);
+    const temp = Array(pickResult.result_list.length).fill(-1);
     temp[0] = 0;
 
-    while (cnt < userList.length) {
-      const pickUserIndex = data.resultList.findIndex(
+    while (cnt < pickResult.result_list.length) {
+      const pickUserIndex = pickResult.result_list.findIndex(
         // eslint-disable-next-line no-loop-func
-        (it) => it.userId === data.resultList[prevUserIndex].pickUserId
+        (it) => it.id === pickResult.result_list[prevUserIndex].pick_user_id
       );
       if (temp[pickUserIndex] !== -1) {
-        while (temp[idx] !== -1 && idx < userList.length) {
+        while (temp[idx] !== -1 && idx < pickResult.result_list.length) {
           idx++;
         }
         temp[idx] = cnt++;
@@ -56,90 +68,101 @@ export const FinalPickResultPage: FC<IProps> = (props) => {
       }
     }
     setArrowOrderList(temp);
-  }, [data, userList.length]);
+  }, [pickResult]);
 
-  const navigate = useNavigate();
+  const dispatch = useDispatch();
   const onModalClose = () => {
-    if (data?.matched) {
-      navigate("/session");
+    if (pickResult?.matched) {
+      dispatch(setSubMeetingRoomId(pickResult.meetingroom_id));
+      navigate("/subSession", { replace: true });
     } else {
-      navigate("/");
+      navigate("/main", { replace: true });
     }
   };
 
+  if (!pickResult) {
+    return <CircularProgress />;
+  }
+
   return (
     <FinalPickResultPagePresenter
-      userList={userList}
-      data={data}
+      pickResult={pickResult}
       timer={timer}
       arrowOrderList={arrowOrderList}
       onModalClose={onModalClose}
+      gender={gender}
     />
   );
 };
 
 interface IPresenterProps {
-  userList: any[];
-  data?: FinalPickResultRes;
+  pickResult: FinalPickResultRes;
   timer: number;
   arrowOrderList: number[];
   onModalClose: () => void;
+  gender: string;
 }
 
 const FinalPickResultPagePresenter: FC<IPresenterProps> = ({
-  userList,
-  data,
+  pickResult,
   timer,
   arrowOrderList,
   onModalClose,
+  gender,
 }) => {
-  const UserProfileList = (l: number, r: number) => (
-    <Grid container item spacing={2} direction="column" xs={2}>
-      {userList.slice(l, r).map((it) => (
-        <Grid
-          item
-          xs
-          key={it.userId}
-          position="relative"
-          display="flex"
-          flexDirection="column"
-          alignItems="center"
-        >
-          <Box
+  const theme = useTheme();
+
+  const UserProfileList = (left: boolean) => (
+    <Grid container item spacing={2} direction="column" xs={2} justifyContent="center">
+      {pickResult.result_list
+        .filter((it) => (left ? gender === it.gender : gender !== it.gender))
+        .map((it) => (
+          <Grid
+            item
+            xs={3}
+            key={it.avatar_id}
             position="relative"
-            sx={{
-              height: "70%",
-              aspectRatio: "auto 1 / 1",
-              backgroundColor: "white",
-              backgroundImage: `url(${it.avatarImagePath})`,
-              backgroundSize: "cover",
-              backgroundPosition: "center 50%",
-              borderRadius: "100%",
-              border: "2px solid black",
-            }}
+            display="flex"
+            flexDirection="column"
+            alignItems="center"
           >
             <Box
-              id={(l === 0 ? "in" : "out") + it.userId}
-              position="absolute"
-              top="20%"
-              right={l === 0 ? 0 : 100}
-              left={l === 0 ? 100 : 0}
-            />
-            <Box
-              id={(l === 0 ? "out" : "in") + it.userId}
-              position="absolute"
-              bottom="20%"
-              right={l === 0 ? 0 : 100}
-              left={l === 0 ? 100 : 0}
-            />
-          </Box>
-          <Typography variant="subtitle1">{it.avatarName}</Typography>
-        </Grid>
-      ))}
+              position="relative"
+              sx={{
+                height: "70%",
+                aspectRatio: "auto 1 / 1",
+                backgroundColor: "white",
+                backgroundImage: `url(${it.avatar_image_path})`,
+                backgroundSize: "cover",
+                backgroundPosition: "center 50%",
+                borderRadius: "100%",
+                border: `3px solid ${
+                  it.gender === "M" ? theme.palette.primary.light : theme.palette.error.light
+                }`,
+              }}
+            >
+              <Box
+                id={(left ? "in" : "out") + it.id}
+                position="absolute"
+                top="20%"
+                right={left ? 0 : 100}
+                left={left ? 100 : 0}
+              />
+              <Box
+                id={(left ? "out" : "in") + it.id}
+                position="absolute"
+                bottom="20%"
+                right={left ? 0 : 100}
+                left={left ? 100 : 0}
+              />
+            </Box>
+            <Typography variant="subtitle1">{it.avatar_name}</Typography>
+          </Grid>
+        ))}
     </Grid>
   );
 
-  const theme = useTheme();
+  const headCount = pickResult.result_list.length;
 
   return (
     <Box height="100vh" display="flex" alignItems="stretch" justifyContent="stretch">
@@ -152,36 +175,30 @@ const FinalPickResultPagePresenter: FC<IPresenterProps> = ({
         direction="row"
         spacing={3}
       >
-        {UserProfileList(0, userList.length / 2)}
+        {UserProfileList(true)}
         <Grid item xs />
-        {UserProfileList(userList.length / 2, userList.length)}
+        {UserProfileList(false)}
         <Xwrapper>
-          {data?.resultList?.map(
-            (it, idx) =>
+          {pickResult.result_list.map((it, idx) => {
+            const color =
+              headCount <= -timer &&
+              it.id === pickResult.result_list?.find((i) => i.id === it.pick_user_id)?.pick_user_id
+                ? "red"
+                : theme.palette.primary.main;
+            return (
               arrowOrderList[idx] <= -timer && (
                 <Xarrow
-                  key={it.userId}
-                  start={"out" + it.userId}
-                  end={"in" + it.pickUserId}
+                  key={it.id}
+                  start={"out" + it.id}
+                  end={"in" + it.pick_user_id}
                   curveness={0}
-                  lineColor={
-                    userList.length <= -timer &&
-                    it.userId ===
-                      data?.resultList?.find((i) => i.userId === it.pickUserId)?.pickUserId
-                      ? "red"
-                      : theme.palette.primary.main
-                  }
-                  headColor={
-                    userList.length <= -timer &&
-                    it.userId ===
-                      data?.resultList?.find((i) => i.userId === it.pickUserId)?.pickUserId
-                      ? "red"
-                      : theme.palette.primary.main
-                  }
+                  lineColor={color}
+                  headColor={color}
                   animateDrawing={0.5}
                 />
               )
-          )}
+            );
+          })}
         </Xwrapper>
       </Grid>
       <Backdrop open={0 < timer}>
@@ -189,13 +206,11 @@ const FinalPickResultPagePresenter: FC<IPresenterProps> = ({
           {timer}
         </Typography>
       </Backdrop>
-      <SessionModal
-        open={timer <= -userList.length - 1}
-        justifyContent="center"
-        onClose={onModalClose}
-      >
-        <Typography variant="h3">
-          {data?.matched ? "잠시 후에 둘만의 시간을 갖게돼요 >.<" : "힝 다음 인연을 찾아보세요!"}
+      <SessionModal open={timer <= -headCount - 1} justifyContent="center" onClose={onModalClose}>
+        <Typography variant="h3" textAlign="center">
+          {pickResult.matched
+            ? (<>{"매칭에 성공하셨어요!!"}<br/>{"클릭 시, 가면이 벗겨지고 둘만의 시간을 갖게 돼요 >.<"}</>)
+            : "힝ㅠㅠ 다음 인연을 찾아보세요!"}
         </Typography>
       </SessionModal>
     </Box>

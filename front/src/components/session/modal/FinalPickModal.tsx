@@ -1,70 +1,82 @@
-import { Box,  Typography, Grid } from "@mui/material";
+import { Box, Typography, Grid, Stack, useTheme } from "@mui/material";
 import React, { FC, useState } from "react";
 import { useEffect } from "react";
-import { useQuery } from "react-query";
-import { useSelector } from "react-redux";
+import { useSelector, useDispatch } from "react-redux";
 import { useNavigate } from "react-router";
-import sessionApi from "../../../apis/sessionApi";
 import { AvatarProfile } from "./AvatarProfile";
 import { SessionModal } from "./SessionModal";
+import { setPickUserName } from "../../../stores/slices/meetingSlice";
+import { MeetingUserInfoRes } from "../../../apis/response/sessionRes";
+import { useWebSocket } from "../../../hooks/useWebSocket";
+import { AvatimeApi } from "../../../apis/avatimeApi";
+import { Timer } from "../../timer/Timer";
 
 interface IProps {
   isOpened: boolean;
 }
 
 export const FinalPickModal: FC<IProps> = ({ isOpened }) => {
-  const totalUserList = useSelector((state: any) => state.meeting.userList);
+  const totalUserList = useSelector((state: any) => state.meeting.userInfoList);
+  const meetingRoomId = useSelector((state: any) => state.meeting.roomId);
+  const userId = useSelector((state: any) => state.user.userId);
+  const gender = useSelector((state: any) => state.user.userGender);
 
-  const [selectedUserId, setSelectedUserId] = useState(
-    totalUserList[totalUserList.length / 2].userId
-  );
-
-  const [timer, setTimer] = useState(-1);
-
+  const [targetUserList, setTargetUserList] = useState<MeetingUserInfoRes[]>();
+  const [selectedUserId, setSelectedUserId] = useState(0);
   useEffect(() => {
-    if (isOpened) {
-      setTimer(5);
+    if (!totalUserList || !gender) {
+      return;
     }
-  }, [isOpened]);
 
-  useEffect(() => {
-    if (0 < timer) {
-      const id = setInterval(() => {
-        setTimer((prev) => prev - 1);
-      }, 1000);
-      return () => clearInterval(id);
-    }
-  }, [timer]);
+    const targetUserList = totalUserList.filter((it: any) => it.gender !== gender);
+    setTargetUserList(targetUserList);
+    setSelectedUserId(targetUserList[0].user_id);
+  }, [totalUserList, gender, setSelectedUserId]);
 
-  const { isLoading } = useQuery(
-    "meeting/pick",
-    () =>
-      sessionApi.patchMeetingPick({
-        meetingRoomId: 0,
-        userId: 0,
-        pickUserId: selectedUserId,
-      }),
-    {
-      enabled: timer === 0,
-      keepPreviousData: false,
-    }
-  );
+  const [timer, setTimer] = useState(15);
 
+  useWebSocket({
+    onConnect: (frame, client) => {
+      client.subscribe(`/topic/meeting/pick/timer/${meetingRoomId}`, function (response) {
+        setTimer(JSON.parse(response.body));
+      });
+      client.publish({ destination: `/app/meeting/pick/timer/${meetingRoomId}` });
+    },
+    beforeDisconnected: (frame, client) => {},
+  });
+
+  const dispatch = useDispatch();
   const navigate = useNavigate();
   useEffect(() => {
-    if (timer === 0 && !isLoading) {
-      navigate("/finalPickResult");
+    if (timer !== 0 || !targetUserList) {
+      return;
     }
-  }, [timer, isLoading, navigate]);
+
+    dispatch(
+      setPickUserName(targetUserList.find((it) => it.user_id === selectedUserId)!.user_name)
+    );
+    AvatimeApi.getInstance().patchFinalPick(
+      {
+        meetingroom_id: meetingRoomId,
+        user_id: userId,
+        pick_user_id: selectedUserId,
+      },
+      {
+        onSuccess() {
+          navigate("/finalPickResult", { replace: true });
+        },
+        navigate,
+      }
+    );
+  }, [timer, navigate, meetingRoomId, userId, selectedUserId, dispatch, targetUserList]);
 
   return (
     <FinalPickModalPresenter
       isOpened={isOpened}
       timer={timer}
-      userList={totalUserList.slice(totalUserList.length / 2)}
+      targetUserList={targetUserList!}
       selectedUserId={selectedUserId}
       onClickAvatar={(userId) => setSelectedUserId(userId)}
-      isLoading={isLoading}
     />
   );
 };
@@ -72,33 +84,39 @@ export const FinalPickModal: FC<IProps> = ({ isOpened }) => {
 interface IPresenterProps {
   isOpened: boolean;
   timer: number;
-  userList: any[];
+  targetUserList: any[];
   selectedUserId: number;
   onClickAvatar: (userId: number) => void;
-  isLoading: boolean;
 }
 
 const FinalPickModalPresenter: FC<IPresenterProps> = ({
   isOpened,
   timer,
-  userList,
+  targetUserList,
   selectedUserId,
   onClickAvatar,
-  isLoading,
 }) => {
+  const theme = useTheme();
   return (
     <SessionModal open={isOpened} justifyContent="stretch">
       <>
-        <Typography variant="h4">마음에 드는 상대를 골라주세요! {timer}</Typography>
-        <Box p={3} />
+        <Stack width="100%" direction="row" justifyContent="center" alignItems="center">
+          <Typography variant="h4" alignSelf="center" ml="auto">마음에 드는 상대를 골라주세요!</Typography>
+          <Box ml="auto">
+            <Timer duration={15} remainingTime={timer} />
+          </Box>
+        </Stack>
+        <Box p={1} />
+        <Box width="100%" height="1px" bgcolor={theme.palette.divider} />
+        <Box p={2} />
         <Grid container width="100%" height="100%" spacing={3}>
-          {userList?.map((it, idx) => (
+          {targetUserList?.map((it, idx) => (
             <Grid item key={idx} xs>
               <AvatarProfile
-                selected={selectedUserId === it.userId}
-                onClick={() => onClickAvatar(it.userId)}
-                avatarName={it.avatarName}
-                avatarImagePath={it.avatarImagePath}
+                selected={selectedUserId === it.user_id}
+                onClick={() => onClickAvatar(it.user_id)}
+                avatarName={it.avatar_name}
+                avatarImagePath={it.avatar_image_path}
               />
             </Grid>
           ))}
