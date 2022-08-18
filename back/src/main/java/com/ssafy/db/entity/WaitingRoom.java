@@ -51,8 +51,6 @@ public class WaitingRoom extends BaseEntity {
     @Column(updatable = false, columnDefinition = "TIMESTAMP DEFAULT CURRENT_TIMESTAMP")
 	@JsonProperty("created_time")
     private Date createdTime;
-    
-	@OneToMany()
 	
     @PrePersist
     protected void onCreate() {

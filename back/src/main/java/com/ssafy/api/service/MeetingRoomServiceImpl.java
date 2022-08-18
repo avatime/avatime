@@ -123,20 +123,20 @@ public class MeetingRoomServiceImpl implements MeetingRoomService {
 	public void matched(MeetingRoomUserRelation meetingRoomUser, MeetingRoomUserRelation pickedUserInfo, Long meetingRoomId) throws Exception {
 		meetingRoomUser.setMatched(true);
 		pickedUserInfo.setMatched(true);
-		meetingRoomUserRelationRepository.save(pickedUserInfo);
+		meetingRoomUserRelationRepository.saveAndFlush(pickedUserInfo);
 		MeetingRoom subMeetingRoom = createMeetingRoomSession(1, meetingRoomId);
 		MeetingRoomUserRelation meetingRoomUserRelation1 = MeetingRoomUserRelation.builder()
 				.meetingRoom(subMeetingRoom)
 				.avatarId(meetingRoomUser.getAvatarId())
 				.user(meetingRoomUser.getUser())
 				.build();
-		meetingRoomUserRelationRepository.save(meetingRoomUserRelation1);
+		meetingRoomUserRelationRepository.saveAndFlush(meetingRoomUserRelation1);
 		MeetingRoomUserRelation meetingRoomUserRelation2 = MeetingRoomUserRelation.builder()
 				.meetingRoom(subMeetingRoom)
 				.avatarId(pickedUserInfo.getAvatarId())
 				.user(pickedUserInfo.getUser())
 				.build();
-		meetingRoomUserRelationRepository.save(meetingRoomUserRelation2);
+		meetingRoomUserRelationRepository.saveAndFlush(meetingRoomUserRelation2);
 	}
 
 	@Override
