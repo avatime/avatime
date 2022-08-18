@@ -9,14 +9,11 @@ import lombok.ToString;
 
 @Getter
 @Setter
-@ToString
 @ApiModel("UserUpdatePostReq")
 public class UserUpdatePostReq {
 
 	Long id;
-	
-	long id;
-	
+
 	String name;
 	
 	@JsonProperty("profile_image_path")
