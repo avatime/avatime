@@ -16,6 +16,7 @@ import VideogameAssetIcon from "@mui/icons-material/VideogameAsset";
 import BalanceIcon from "@mui/icons-material/Balance";
 import FavoriteIcon from "@mui/icons-material/Favorite";
 import { useWebSocket } from "../../hooks/useWebSocket";
+import { MeetingUserInfoRes } from "../../apis/response/sessionRes";
 
 type Type = "master" | "normal";
 interface IProps {
@@ -69,6 +70,8 @@ export const ControllBarPresenter: FC<IPresenterProps> = ({
 }) => {
   const userId = useSelector((state: any) => state.user.userId);
   const meetingRoomId = useSelector((state: any) => state.meeting.roomId);
+  const gender = useSelector((state: any) => state.user.userGender);
+  const userInfoList = useSelector((state: any) => state.meeting.userInfoList);
   const [showSnack, setShowSnack] = useState(0);
   const [snackMessage, setSnackMessage] = useState("");
 
@@ -99,6 +102,10 @@ export const ControllBarPresenter: FC<IPresenterProps> = ({
   };
 
   const onClickPick = () => {
+    if (userInfoList.findIndex((it: MeetingUserInfoRes) => it.gender !== gender) === -1) {
+      alert("이성 사용자가 없어 최종 선택을 할 수 없습니다.");
+      return;
+    }
     setShowSnack(1);
     setSnackMessage("정말 최종 선택을 하실 건가요?");
   };

@@ -64,6 +64,8 @@ export const PickAvatarPage: FC<IProps> = () => {
                 navigate("/session", { replace: true });
               }
             });
+            
+            client.publish({ destination: `/app/meeting/avatar/${meetingRoomId}` });
           },
           navigate,
         }
@@ -75,7 +77,6 @@ export const PickAvatarPage: FC<IProps> = () => {
         setTimer(JSON.parse(response.body));
       });
 
-      client.publish({ destination: `/app/meeting/avatar/${meetingRoomId}` });
       client.publish({ destination: `/app/meeting/avatar/timer/${meetingRoomId}` });
     },
     beforeDisconnected: (frame, client) => {},
