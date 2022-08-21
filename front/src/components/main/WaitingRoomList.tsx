@@ -237,6 +237,7 @@ export const WaitingRoomList: FC<IProps> = (props) => {
 
   const dispatch = useDispatch();
 
+  const [showFailEnterSnack, setShowFailEnterSnack] = useState(false);
   const connected = useWebSocket({
     onConnect: (frame, client) => {
       client.subscribe("/topic/getList", function (response) {
@@ -254,6 +255,7 @@ export const WaitingRoomList: FC<IProps> = (props) => {
           dispatch(setChatRoomId(res.chatting_room_id));
           //웨이팅방입장!!!!!
         } else {
+          setShowFailEnterSnack(true);
           setopenWaiting(false);
         }
       });
@@ -599,6 +601,13 @@ export const WaitingRoomList: FC<IProps> = (props) => {
         type="alert"
         alertColor="warning"
         onSuccess={() => setShowConfirm(0)}
+      />
+      <AlertSnackbar
+        open={showFailEnterSnack}
+        onClose={() => setShowFailEnterSnack(false)}
+        message="참가 신청을 거부당했어요."
+        type="alert"
+        alertColor="error"
       />
     </div>
   );
