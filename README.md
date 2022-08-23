@@ -110,7 +110,7 @@ WebRTC를 보다 간단하게 적용할 수 있고, 다양한 프레임워크와
 ## 2. Web Socket
 
 ### web Socket이란?
-![webSocket](https://upload.wikimedia.org/wikipedia/commons/1/10/Websocket_connection.png)
+    ![webSocket](https://upload.wikimedia.org/wikipedia/commons/1/10/Websocket_connection.png)
 <aside>
 웹 소켓은 사용자의 브라우저와 서버 사이의 인터액티브 통신 세션을 설정할 수 있게 하는 기술입니다. 
 개발자는 웹 소켓 API를 통해 서버로 메시지를 보내고 서버의 응답을 위해 서버를 폴링하지 않고도 이벤트 중심 응답을 받는 것이 가능합니다.
