@@ -12,7 +12,7 @@
     >  👉 ** **미팅을 하고 싶은 모든 사람들** **
 
 # UCC
-[![Video Label](./assets/avatime.PNG)](https://www.youtube.com/L7aE3ULdHA8)
+[![Video Label](./assets/avatime.PNG)](https://www.youtube.com/watch?v=JVvkABP36vE)
 # 기획 배경
 ## 배경 
 
@@ -127,9 +127,40 @@ WebRTC를 보다 간단하게 적용할 수 있고, 다양한 프레임워크와
  3. 아바타 선택화면 
  -> 다른 사용자가 어떤 아바타를 선택했는지 실시간으로 알 수 있고 아바타 중복 선택을 막을 수 있습니다.
 
-![기술스택-01](./assets/기술스택-01.jpg)
-![기술스택-02](./assets/기술스택-02.jpg)
+## 3. Facemesh
 
+> MediaPipe Face Mesh는 모바일 기기에서도 실시간으로 468개의 3D 얼굴 랜드마크를 추정하는 솔루션입니다. 머신 러닝(ML)을 사용하여 3D 얼굴 표면을 추론하므로 전용 깊이 센서 없이 단일 카메라 입력만 있으면 됩니다. 이 솔루션은 파이프라인 전반에 걸쳐 GPU 가속과 함께 경량 모델 아키텍처를 활용하여 라이브 경험에 중요한 실시간 성능을 제공합니다.
+
+![기술스택-facemesh](https://google.github.io/mediapipe/images/face_mesh_ar_effects.gif)
+
+(출처: https://google.github.io/mediapipe/solutions/face_mesh.html)
+
+
+## 4. Three js
+
+> Three.js는 특정 웹 브라우저나 플러그인에 의존하지 않고 자바스크립트 언어를 사용하여 웹 컨텐츠의 한 부분으로서 그래픽 처리 장치(GPU)에서 가속되는 3차원 컨텐츠를 만들 수 있도록 해줍니다.
+
+
+![기술스택-threejs](./assets/기술스택-01-threejs.gif)
+
+### 적용
+
+`AVATIME` 에서는 Facemesh API를 적용해 추출한 3D 얼굴 랜드마크를 Threejs 라이브러리를 통해 사용자의 얼굴 위에 마스크를 그려냅니다.
+
+![기술스택-02](./assets/기술스택-02-마스크적용.gif)
+
+추가로, 사용자가 그린 이미지를 적용하여 `AVATIME` 의 마스크 기능을 완성할 수 있었습니다. 왼쪽은 사용자가 직접 그린 액션가면 이미지 파일이고, 오른쪽은 해당 파일을 적용한 시연 영상입니다.
+
+![기술스택-액션가면](./assets/기술스택-03-액션가면.jpg)
+![기술스택-02](./assets/기술스택-04-액션가면적용.gif)
+
+## 5. 개발 환경
+
+![기술스택-01](./assets/기술스택-01.jpg)
+
+## 6. CI/CD 배포 환경
+
+![기술스택-02](./assets/기술스택-02.jpg)
 
 # 프로젝트 일정
 
