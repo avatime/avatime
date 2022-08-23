@@ -72,20 +72,20 @@
 <aside>
 WebRTC (Web Real-Time Communication)는 웹 브라우저 간에 플러그인의 도움 없이 서로 통신할 수 있도록 설계된 API이다.
 음성 통화, 영상 통화, P2P 파일 공유 등으로 활용될 수 있다.
-[webRTC] (https://cdn.ttgtmedia.com/rms/onlineimages/how_webrtc_works-f.png)
+![webRTC](https://cdn.ttgtmedia.com/rms/onlineimages/how_webrtc_works-f.png)
 </aside>
 
 ### openvidu
 WebRTC를 보다 간단하게 적용할 수 있고, 다양한 프레임워크와 호환성이 높은 openvidu를 사용하여 프로젝트를 진행했습니다.
 
 ### 적용
-> AVATIME에서는 미팅시 화상 통화를 하기 위해 openVidu를 사용합니다. 
+`AVATIME` 에서는 미팅시 화상 통화를 하기 위해 openVidu를 사용합니다. 
 
 
 ## 2. Web Socket
 
 ### web Socket이란?
-[webSocket](https://upload.wikimedia.org/wikipedia/commons/1/10/Websocket_connection.png)
+![webSocket](https://upload.wikimedia.org/wikipedia/commons/1/10/Websocket_connection.png)
 <aside>
 웹 소켓은 사용자의 브라우저와 서버 사이의 인터액티브 통신 세션을 설정할 수 있게 하는 기술입니다. 
 개발자는 웹 소켓 API를 통해 서버로 메시지를 보내고 서버의 응답을 위해 서버를 폴링하지 않고도 이벤트 중심 응답을 받는 것이 가능합니다.
@@ -94,7 +94,8 @@ WebRTC를 보다 간단하게 적용할 수 있고, 다양한 프레임워크와
 
 ### 적용
 
-> AVATIME 에서는 실시간 상태 공유를 위해 다음 세 부분에서 webSocket을 사용합니다. 
+`AVATIME` 에서는 실시간 상태 공유를 위해 다음 세 부분에서 webSocket을 사용합니다. 
+
  1. 채팅 (전체채팅, 성별채팅)
  2. 방 목록화면 
     -> 방의 상태(참여 유저 수, 게임시작유무)를 실시간으로 공유합니다.
