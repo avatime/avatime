@@ -12,7 +12,7 @@
     >  👉 ** **미팅을 하고 싶은 모든 사람들** **
 
 # UCC
-[![Video Label](./assets/avatime.PNG)](https://www.youtube.com/watch?v=JVvkABP36vE)
+[![Video Label](./assets/thumb.gif)](https://www.youtube.com/watch?v=L7aE3ULdHA8)
 # 기획 배경
 ## 배경 
 
