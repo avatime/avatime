@@ -1,7 +1,7 @@
 [![AVATIME](./assets/thumb.gif)](https://www.youtube.com/watch?v=L7aE3ULdHA8)
 
 <div align="center">
-  <h5>**↑ GIF 파일을 클릭하면 UCC를 볼 수 있어요!**</h5>
+  <h5 style="font-weight: bold;">↑ GIF 파일을 클릭하면 UCC를 볼 수 있어요!</h5>
   <br/>
   <br/>
 </div>
