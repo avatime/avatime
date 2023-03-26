@@ -147,6 +147,7 @@
 WebRTC (Web Real-Time Communication)는 웹 브라우저 간에 플러그인의 도움 없이 서로 통신할 수 있도록 설계된 API 입니다.
 음성 통화, 영상 통화, P2P 파일 공유 등으로 활용될 수 있습니다.
 ![webRTC](https://cdn.ttgtmedia.com/rms/onlineimages/how_webrtc_works-f.png)
+
 </aside>
 
 ### openvidu
